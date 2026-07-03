@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Resistance Forge — PoE2 Elemental Resistance &amp; Rarity Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #0d0b0f;
+    --panel: #1a1620;
+    --panel-raised: #211c28;
+    --panel-sunken: #14111a;
+    --border: #35303c;
+    --border-soft: #26212d;
+    --text: #e9e3f0;
+    --text-muted: #8d84a0;
+    --text-dim: #5f5871;
+
+    --fire: #e2572a;
+    --fire-glow: #ff7a4d;
+    --cold: #4fb4d8;
+    --cold-glow: #7fd4f2;
+    --lightning: #e8c94a;
+    --lightning-glow: #ffe98a;
+    --chaos: #b25ad1;
+    --chaos-glow: #d68cf0;
+
+    --gold: #b3924f;
+    --gold-glow: #e8cf98;
+    --gold-dim: #6b5a34;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.035), transparent 55%),
+      radial-gradient(ellipse at top, #1c1722 0%, var(--void) 55%),
+      radial-gradient(ellipse at 50% 130%, rgba(0,0,0,0.65), transparent 60%),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, transparent 1px, transparent 3px);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    padding: 32px 20px 60px;
+    min-height: 100vh;
+  }
+
+  .app { max-width: 1080px; margin: 0 auto; }
+
+  header { text-align: center; margin-bottom: 8px; }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: clamp(28px, 4.5vw, 42px);
+    margin: 0 0 8px;
+    background: linear-gradient(135deg, #f5e9c8 0%, #cbab6a 55%, #8a6f3f 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 0.03em;
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 14px;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .header-divider {
+    position: relative;
+    height: 1px;
+    margin: 22px 0 6px;
+    background: linear-gradient(90deg, transparent, var(--gold) 50%, transparent);
+  }
+  .header-divider::after {
+    content: '\2726';
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--void);
+    color: var(--gold-glow);
+    font-size: 13px;
+    padding: 0 14px;
+  }
+
+  /* ---------- Fixed penalty readout ---------- */
+  .penalty-readout {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin: 22px 0 4px;
+  }
+  .penalty-readout strong { color: var(--fire-glow); font-size: 14px; }
+  .penalty-note {
+    text-align: center;
+    font-size: 10.5px;
+    color: var(--text-dim);
+    margin: 0 0 22px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ---------- Preset bar ---------- */
+  .preset-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 28px;
+    flex-wrap: wrap;
+  }
+  .preset-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-right: 4px;
+  }
+  .preset-tab {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: var(--panel-raised);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 8px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s, box-shadow 0.15s;
+  }
+  .preset-tab:hover { border-color: var(--gold-dim); color: var(--gold-glow); }
+  .preset-tab:focus-visible { outline: 2px solid var(--gold-glow); outline-offset: 1px; }
+  .preset-tab.active {
+    border-color: var(--gold);
+    color: var(--gold-glow);
+    background: linear-gradient(160deg, #2a2418, var(--panel-raised));
+    box-shadow: 0 0 10px rgba(179, 146, 79, 0.3);
+  }
+  .preset-save-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-left: 6px;
+  }
+
+  /* ---------- Ornate corner frame ---------- */
+  .ornate { position: relative; }
+  .corner { position: absolute; width: 16px; height: 16px; pointer-events: none; opacity: 0.85; }
+  .corner.tl { top: -1px; left: -1px; border-top: 2px solid var(--gold); border-left: 2px solid var(--gold); }
+  .corner.tr { top: -1px; right: -1px; border-top: 2px solid var(--gold); border-right: 2px solid var(--gold); }
+  .corner.bl { bottom: -1px; left: -1px; border-bottom: 2px solid var(--gold); border-left: 2px solid var(--gold); }
+  .corner.br { bottom: -1px; right: -1px; border-bottom: 2px solid var(--gold); border-right: 2px solid var(--gold); }
+
+  /* ---------- Layout: paperdoll + editor side by side ---------- */
+  .gear-layout {
+    display: grid;
+    grid-template-columns: minmax(300px, 380px) 1fr;
+    gap: 24px;
+    align-items: start;
+    margin-bottom: 32px;
+  }
+  @media (max-width: 760px) {
+    .gear-layout { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Paperdoll ---------- */
+  .paperdoll-frame {
+    background:
+      radial-gradient(ellipse at 50% 15%, #241f2d 0%, var(--panel) 65%);
+    border: 1px solid var(--border);
+    box-shadow: 0 0 0 1px var(--panel-sunken) inset, 0 8px 22px rgba(0,0,0,0.35);
+    border-radius: 6px;
+    padding: 22px;
+  }
+
+  .paperdoll {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas:
+      ".      helmet  amulet"
+      "weapon chest   offhand"
+      "gloves belt    boots"
+      "ringL  .       ringR";
+    gap: 10px;
+    max-width: 340px;
+    margin: 0 auto;
+  }
+
+  .equip-slot {
+    grid-area: var(--area);
+    aspect-ratio: 1 / 1;
+    background: linear-gradient(160deg, var(--panel-sunken), var(--panel-raised));
+    border: 2px solid var(--border);
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 4px;
+    position: relative;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+    color: var(--text-dim);
+  }
+  .equip-slot:hover { border-color: var(--gold-dim); transform: translateY(-1px); }
+  .equip-slot:focus-visible { outline: 2px solid var(--gold-glow); outline-offset: 2px; }
+  .equip-slot.active {
+    border-color: var(--gold);
+    color: var(--gold-glow);
+    background: linear-gradient(160deg, #2a2418, var(--panel-raised));
+    box-shadow: 0 0 0 1px var(--gold), 0 0 16px rgba(179, 146, 79, 0.35);
+  }
+  .equip-slot.has-data:not(.active) { border-color: #4a4258; color: var(--text-muted); }
+
+  .equip-slot .slot-icon-svg { width: 30px; height: 30px; }
+  .equip-slot .slot-icon-svg svg { width: 100%; height: 100%; }
+
+  .equip-slot .slot-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .stat-dots { display: flex; gap: 3px; margin-top: 1px; }
+  .stat-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #3a3446;
+    transition: background 0.15s, box-shadow 0.15s;
+  }
+  .stat-dot.on[data-el="fire"] { background: var(--fire-glow); box-shadow: 0 0 4px var(--fire-glow); }
+  .stat-dot.on[data-el="cold"] { background: var(--cold-glow); box-shadow: 0 0 4px var(--cold-glow); }
+  .stat-dot.on[data-el="lightning"] { background: var(--lightning-glow); box-shadow: 0 0 4px var(--lightning-glow); }
+  .stat-dot.on[data-el="chaos"] { background: var(--chaos-glow); box-shadow: 0 0 4px var(--chaos-glow); }
+  .stat-dot.on[data-el="mf"] { background: var(--gold-glow); box-shadow: 0 0 4px var(--gold-glow); }
+
+  /* ---------- Jewel sockets ---------- */
+  .jewel-section { margin-top: 20px; }
+  .jewel-title {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 0 0 10px;
+  }
+  .jewel-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .jewel-slot {
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: radial-gradient(circle at 35% 30%, var(--panel-raised), var(--panel-sunken));
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--text-dim);
+    position: relative;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+  }
+  .jewel-slot:hover { border-color: var(--gold-dim); transform: translateY(-1px); }
+  .jewel-slot:focus-visible { outline: 2px solid var(--gold-glow); outline-offset: 2px; }
+  .jewel-slot.active {
+    border-color: var(--gold);
+    color: var(--gold-glow);
+    box-shadow: 0 0 0 1px var(--gold), 0 0 12px rgba(179, 146, 79, 0.4);
+  }
+  .jewel-slot.has-data:not(.active) { border-color: #4a4258; color: var(--text-muted); }
+  .jewel-slot svg { width: 18px; height: 18px; }
+  .jewel-badge {
+    position: absolute;
+    bottom: -4px; right: -4px;
+    min-width: 14px; height: 14px;
+    border-radius: 7px;
+    background: var(--gold);
+    color: #1a1620;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 3px;
+  }
+
+  .paperdoll-hint {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--text-dim);
+    margin: 16px 0 0;
+  }
+
+  /* ---------- Item editor (tooltip-style panel) ---------- */
+  .item-editor {
+    background: linear-gradient(180deg, var(--panel-raised), var(--panel));
+    border: 1px solid #4a3f28;
+    border-radius: 6px;
+    padding: 20px 20px 18px;
+    box-shadow: 0 0 0 1px rgba(179, 146, 79, 0.15) inset, 0 8px 22px rgba(0,0,0,0.35);
+    min-height: 260px;
+  }
+
+  .item-editor-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .item-editor-header .slot-icon-svg { width: 26px; height: 26px; color: var(--gold-glow); flex-shrink: 0; }
+  .item-editor-header .slot-icon-svg svg { width: 100%; height: 100%; }
+  .item-editor-header h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--gold-glow);
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+
+  .rows-container { display: flex; flex-direction: column; gap: 8px; min-height: 4px; }
+
+  .empty-state {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    padding: 18px 4px;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+  }
+
+  .res-row {
+    display: grid;
+    grid-template-columns: 1fr 84px 22px;
+    gap: 6px;
+    align-items: center;
+  }
+
+  select.element-select {
+    background: var(--panel-raised);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    padding: 7px 8px;
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+  }
+  select.element-select:focus-visible { outline: 2px solid var(--gold-glow); outline-offset: 1px; }
+  select.element-select[data-el="fire"] { color: var(--fire-glow); }
+  select.element-select[data-el="cold"] { color: var(--cold-glow); }
+  select.element-select[data-el="lightning"] { color: var(--lightning-glow); }
+  select.element-select[data-el="chaos"] { color: var(--chaos-glow); }
+  select.element-select[data-el="rarity"] { color: var(--gold-glow); }
+
+  .value-wrap {
+    display: flex;
+    align-items: center;
+    background: var(--panel-raised);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 0 6px 0 0;
+  }
+
+  input.value-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    padding: 7px 4px 7px 8px;
+    outline: none;
+    text-align: right;
+  }
+  input.value-input:focus-visible { outline: 2px solid var(--gold-glow); outline-offset: 1px; border-radius: 4px; }
+  .value-wrap span { font-size: 11px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+
+  button.remove-row {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    width: 22px;
+    height: 30px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  button.remove-row:hover { color: var(--fire-glow); border-color: var(--fire); }
+
+  button.add-row {
+    margin-top: 10px;
+    width: 100%;
+    background: transparent;
+    border: 1px dashed var(--border);
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 9px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  button.add-row:hover { border-color: var(--gold); color: var(--gold-glow); }
+  button.add-row:focus-visible { outline: 2px solid var(--gold-glow); outline-offset: 1px; }
+
+  /* ---------- Totals ---------- */
+  .totals-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px var(--panel-sunken) inset, 0 8px 22px rgba(0,0,0,0.35);
+    padding: 24px 22px 22px;
+  }
+
+  .totals-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 0 0 18px;
+  }
+  .totals-title.mf-title { margin-top: 22px; }
+
+  .gauge-row {
+    display: grid;
+    grid-template-columns: 100px 1fr 110px;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 0;
+  }
+  .gauge-row + .gauge-row { border-top: 1px solid var(--border-soft); }
+
+  .gauge-label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+  }
+  .gauge-label.fire { color: var(--fire-glow); }
+  .gauge-label.cold { color: var(--cold-glow); }
+  .gauge-label.lightning { color: var(--lightning-glow); }
+  .gauge-label.chaos { color: var(--chaos-glow); }
+  .gauge-label.rarity { color: var(--gold-glow); }
+
+  .gauge-track {
+    position: relative;
+    height: 16px;
+    background: #0c0a0f;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5) inset;
+  }
+
+  .gauge-fill {
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    border-radius: 3px 0 0 3px;
+    transition: width 0.25s ease, background 0.25s ease;
+  }
+  .gauge-fill.negative { border-radius: 3px; }
+
+  .gauge-cap-marker {
+    position: absolute;
+    top: -2px; bottom: -2px;
+    width: 2px;
+    background: rgba(233, 227, 240, 0.55);
+  }
+
+  .gauge-zero-marker {
+    position: absolute;
+    top: -2px; bottom: -2px;
+    width: 1px;
+    background: rgba(233, 227, 240, 0.25);
+  }
+
+  .gauge-soft-marker {
+    position: absolute;
+    top: -2px; bottom: -2px;
+    width: 1px;
+    border-left: 1px dashed rgba(232, 207, 152, 0.6);
+  }
+
+  .gauge-overflow-tick {
+    position: absolute;
+    top: -6px;
+    width: 0; height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 6px solid #8ee6a8;
+    filter: drop-shadow(0 0 3px #8ee6a8);
+  }
+
+  .gauge-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 15px;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .gauge-value.under { color: var(--text-muted); }
+  .gauge-value.capped { color: #8ee6a8; }
+  .gauge-value.negative { color: var(--fire-glow); }
+  .gauge-value.mf-zero { color: var(--text-dim); }
+  .gauge-value.mf-positive { color: var(--gold-glow); }
+
+  .totals-footnote {
+    margin-top: 18px;
+    font-size: 11.5px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .totals-footnote strong { color: var(--text-muted); }
+
+  @media (max-width: 480px) {
+    .gauge-row { grid-template-columns: 62px 1fr 88px; gap: 8px; }
+    .gauge-value { font-size: 12.5px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gauge-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="eyebrow">Path of Exile 2 · Endgame</div>
+    <h1>Resistance Forge</h1>
+    <p class="subtitle">คลิกที่ช่องอุปกรณ์แบบใน inventory หรือช่อง jewel เพื่อใส่ค่าต้านทานธาตุ / Item Rarity ที่ไอเทมชิ้นนั้นให้ ระบบจะรวมทุกชิ้นให้อัตโนมัติ</p>
+    <div class="header-divider"></div>
+  </header>
+
+  <p class="penalty-readout">บทลงโทษต้านทานธาตุ (fix): <strong>−40%</strong> · Chaos ไม่โดนบทลงโทษนี้</p>
+  <p class="penalty-note">* ค่ามาตรฐานตอนจบแคมเปญเต็มในเกมจริงคือ −60% — ค่านี้ถูกตั้งตายตัวไว้ที่ −40% ตามที่กำหนด</p>
+
+  <div class="preset-bar" id="presetBar">
+    <span class="preset-label">Preset</span>
+  </div>
+
+  <div class="gear-layout">
+    <div class="paperdoll-frame ornate">
+      <div class="paperdoll" id="paperdoll"></div>
+
+      <div class="jewel-section">
+        <p class="jewel-title">Jewels</p>
+        <div class="jewel-row" id="jewelRow"></div>
+      </div>
+
+      <p class="paperdoll-hint">คลิกช่องอุปกรณ์หรือ jewel เพื่อแก้ไขค่าของชิ้นนั้น</p>
+    </div>
+
+    <div class="item-editor ornate">
+      <div class="item-editor-header">
+        <span class="slot-icon-svg" id="editorIcon"></span>
+        <h2 id="editorTitle">Helmet</h2>
+      </div>
+      <div class="rows-container" id="editorRows"></div>
+      <button class="add-row" type="button" id="addRowBtn">+ เพิ่มค่าสเตตัส</button>
+    </div>
+  </div>
+
+  <div class="totals-panel ornate">
+    <p class="totals-title">Total Resistance</p>
+    <div id="gaugesRes"></div>
+    <p class="totals-title mf-title">Magic Find</p>
+    <div id="gaugesMf"></div>
+    <p class="totals-footnote">
+      เส้นขาวจาง = 75% (cap มาตรฐาน) · ถ้ารวมได้เกิน 75% จะแสดงเป็น <strong>75%(xx%)</strong> หมายถึงยอดจริงคือ xx% แต่ถูก cap ไว้ที่ 75% — การ overcap ยังมีประโยชน์เพราะ curse/debuff บางอย่างลดต้านทานคุณชั่วคราว (บางไอเทม/พาสซีฟหายากดัน max resistance ได้ถึง 90%)<br>
+      เส้นประทอง = 150% ของ Item Rarity ซึ่งเป็นช่วงที่ผลตอบแทนเริ่มลดลง (diminishing returns)<br>
+      Preset ที่เลือกจะถูกบันทึกไว้ในเบราว์เซอร์นี้อัตโนมัติ (localStorage)
+    </p>
+  </div>
+</div>
+
+<script>
+const ICONS = {
+  helmet: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 15c0-5.5 3.5-9 8-9s8 3.5 8 9v2H4v-2z"/><path d="M4 17h16v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2z"/><path d="M9 8.5V6"/><path d="M15 8.5V6"/></svg>`,
+  amulet: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3l4 4 4-4"/><path d="M12 7v3.2"/><circle cx="12" cy="15.5" r="4.3"/><circle cx="12" cy="15.5" r="1.4"/></svg>`,
+  weapon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M19 5 8.5 15.5"/><path d="M5 19l2.5-1 1-2.5-2-2-2.5 1z"/><path d="M15 3l6 6"/><path d="M14 7l3 3"/></svg>`,
+  chest: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 4l4 2 4-2 3 3-2 2v9a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-9L5 7l3-3z"/><path d="M12 6v13"/></svg>`,
+  offhand: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/></svg>`,
+  gloves: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 11V5.5a1.5 1.5 0 0 1 3 0V10"/><path d="M10 10V4.5a1.5 1.5 0 0 1 3 0V10"/><path d="M13 10V5a1.5 1.5 0 0 1 3 0v7"/><path d="M16 11.5V8a1.5 1.5 0 0 1 3 0v6.5c0 3.5-2 6.5-6 6.5H10a5 5 0 0 1-5-5v-4.3c0-.9.7-1.7 1.6-1.7.9 0 1.4.6 1.4 1.5"/></svg>`,
+  belt: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="10" width="18" height="4" rx="1"/><circle cx="12" cy="12" r="2.2"/></svg>`,
+  boots: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3v8.5c0 1-.4 2-1.2 2.7L4 17v3a1 1 0 0 0 1 1h15a1 1 0 0 0 1-1c0-2.2-1.8-4-4-4h-3.2c-1.3 0-2.4-.7-3-1.8L9 12"/><path d="M8 3h4v6"/></svg>`,
+  ring: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="13" r="6"/><path d="M9 7l1.5-3h3L15 7"/></svg>`,
+  gem: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l6 5-6 13-6-13 6-5z"/><path d="M6 8h12"/><path d="M9.5 8L12 21"/><path d="M14.5 8L12 21"/></svg>`,
+};
+
+const STATS = [
+  { key: 'fire', label: 'Fire Resistance', group: 'res', color: 'var(--fire)', glow: 'var(--fire-glow)' },
+  { key: 'cold', label: 'Cold Resistance', group: 'res', color: 'var(--cold)', glow: 'var(--cold-glow)' },
+  { key: 'lightning', label: 'Lightning Resistance', group: 'res', color: 'var(--lightning)', glow: 'var(--lightning-glow)' },
+  { key: 'chaos', label: 'Chaos Resistance', group: 'res', color: 'var(--chaos)', glow: 'var(--chaos-glow)' },
+  { key: 'rarity', label: 'Item Rarity', group: 'mf', color: 'var(--gold)', glow: 'var(--gold-glow)' },
+];
+const RES_STATS = STATS.filter(s => s.group === 'res');
+const MF_STATS = STATS.filter(s => s.group === 'mf');
+
+const CAP = 75;
+const PENALTY = -40; // fixed per user setting (real endgame value is -60%, see penalty-note)
+
+const EQUIP_SLOTS = [
+  { key: 'helmet', label: 'Helmet', icon: ICONS.helmet, area: 'helmet' },
+  { key: 'amulet', label: 'Amulet', icon: ICONS.amulet, area: 'amulet' },
+  { key: 'weapon', label: 'Weapon', icon: ICONS.weapon, area: 'weapon' },
+  { key: 'chest', label: 'Body Armour', icon: ICONS.chest, area: 'chest' },
+  { key: 'offhand', label: 'Off Hand', icon: ICONS.offhand, area: 'offhand' },
+  { key: 'gloves', label: 'Gloves', icon: ICONS.gloves, area: 'gloves' },
+  { key: 'belt', label: 'Belt', icon: ICONS.belt, area: 'belt' },
+  { key: 'boots', label: 'Boots', icon: ICONS.boots, area: 'boots' },
+  { key: 'ringL', label: 'Ring', icon: ICONS.ring, area: 'ringL' },
+  { key: 'ringR', label: 'Ring', icon: ICONS.ring, area: 'ringR' },
+];
+const JEWEL_SLOTS = [1, 2, 3, 4, 5, 6].map(n => ({ key: 'jewel' + n, label: 'Jewel ' + n, icon: ICONS.gem }));
+const ALL_SLOTS = EQUIP_SLOTS.concat(JEWEL_SLOTS);
+function slotByKey(k) { return ALL_SLOTS.find(s => s.key === k); }
+
+const STORAGE_KEY = 'poe2ResForge.presets.v2';
+const ACTIVE_KEY = 'poe2ResForge.activePreset.v2';
+const PRESET_COUNT = 3;
+
+function emptyGearState() {
+  const s = {};
+  ALL_SLOTS.forEach(sl => s[sl.key] = []);
+  return s;
+}
+
+function loadPresets() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length === PRESET_COUNT) return parsed;
+    }
+  } catch (e) { /* ignore malformed storage */ }
+  const fresh = [];
+  for (let i = 0; i < PRESET_COUNT; i++) fresh.push(emptyGearState());
+  return fresh;
+}
+
+function persistPresets() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(presets)); } catch (e) { /* storage unavailable */ }
+}
+function persistActivePreset() {
+  try { localStorage.setItem(ACTIVE_KEY, String(activePreset)); } catch (e) { /* storage unavailable */ }
+}
+
+let presets = loadPresets();
+let activePreset = parseInt(localStorage.getItem(ACTIVE_KEY) || '0', 10);
+if (isNaN(activePreset) || activePreset < 0 || activePreset >= PRESET_COUNT) activePreset = 0;
+
+let state = presets[activePreset];
+let currentSlot = 'helmet';
+
+function addCorners(el) {
+  ['tl', 'tr', 'bl', 'br'].forEach(c => {
+    const s = document.createElement('span');
+    s.className = 'corner ' + c;
+    el.appendChild(s);
+  });
+}
+
+function renderPresetBar() {
+  const bar = document.getElementById('presetBar');
+  bar.innerHTML = '<span class="preset-label">Preset</span>';
+  for (let i = 0; i < PRESET_COUNT; i++) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'preset-tab' + (i === activePreset ? ' active' : '');
+    btn.textContent = 'ชุดที่ ' + (i + 1);
+    btn.addEventListener('click', () => {
+      activePreset = i;
+      state = presets[activePreset];
+      currentSlot = 'helmet';
+      persistActivePreset();
+      renderPresetBar();
+      renderPaperdoll();
+      renderJewelRow();
+      renderEditor();
+      recalc();
+    });
+    bar.appendChild(btn);
+  }
+  const tag = document.createElement('span');
+  tag.className = 'preset-save-tag';
+  tag.textContent = '(บันทึกอัตโนมัติ)';
+  bar.appendChild(tag);
+}
+
+function slotHasStat(slotKey, statKey) {
+  return state[slotKey].some(r => r.stat === statKey && (r.value || 0) !== 0);
+}
+function slotHasAnyData(slotKey) {
+  return state[slotKey].some(r => (r.value || 0) !== 0);
+}
+
+function renderPaperdoll() {
+  const grid = document.getElementById('paperdoll');
+  grid.innerHTML = '';
+  EQUIP_SLOTS.forEach(slot => {
+    const cell = document.createElement('div');
+    cell.className = 'equip-slot' + (slot.key === currentSlot ? ' active' : '') + (slotHasAnyData(slot.key) ? ' has-data' : '');
+    cell.style.setProperty('--area', slot.area);
+    cell.tabIndex = 0;
+    cell.setAttribute('role', 'button');
+    cell.setAttribute('aria-pressed', slot.key === currentSlot ? 'true' : 'false');
+    cell.title = slot.label;
+
+    const iconWrap = document.createElement('span');
+    iconWrap.className = 'slot-icon-svg';
+    iconWrap.innerHTML = slot.icon;
+    cell.appendChild(iconWrap);
+
+    const name = document.createElement('span');
+    name.className = 'slot-name';
+    name.textContent = slot.label;
+    cell.appendChild(name);
+
+    const dots = document.createElement('div');
+    dots.className = 'stat-dots';
+    ['fire', 'cold', 'lightning', 'chaos'].forEach(elKey => {
+      const dot = document.createElement('span');
+      dot.className = 'stat-dot' + (slotHasStat(slot.key, elKey) ? ' on' : '');
+      dot.dataset.el = elKey;
+      dots.appendChild(dot);
+    });
+    const mfDot = document.createElement('span');
+    mfDot.className = 'stat-dot' + (slotHasStat(slot.key, 'rarity') ? ' on' : '');
+    mfDot.dataset.el = 'mf';
+    dots.appendChild(mfDot);
+    cell.appendChild(dots);
+
+    const select = () => {
+      currentSlot = slot.key;
+      renderPaperdoll();
+      renderJewelRow();
+      renderEditor();
+    };
+    cell.addEventListener('click', select);
+    cell.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(); }
+    });
+
+    grid.appendChild(cell);
+  });
+}
+
+function renderJewelRow() {
+  const row = document.getElementById('jewelRow');
+  row.innerHTML = '';
+  JEWEL_SLOTS.forEach(slot => {
+    const cell = document.createElement('div');
+    cell.className = 'jewel-slot' + (slot.key === currentSlot ? ' active' : '') + (slotHasAnyData(slot.key) ? ' has-data' : '');
+    cell.tabIndex = 0;
+    cell.setAttribute('role', 'button');
+    cell.setAttribute('aria-pressed', slot.key === currentSlot ? 'true' : 'false');
+    cell.title = slot.label;
+
+    const iconWrap = document.createElement('span');
+    iconWrap.className = 'slot-icon-svg';
+    iconWrap.innerHTML = slot.icon;
+    cell.appendChild(iconWrap);
+
+    const rowCount = state[slot.key].length;
+    if (rowCount > 0) {
+      const badge = document.createElement('span');
+      badge.className = 'jewel-badge';
+      badge.textContent = rowCount;
+      cell.appendChild(badge);
+    }
+
+    const select = () => {
+      currentSlot = slot.key;
+      renderPaperdoll();
+      renderJewelRow();
+      renderEditor();
+    };
+    cell.addEventListener('click', select);
+    cell.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(); }
+    });
+
+    row.appendChild(cell);
+  });
+}
+
+function renderEditor() {
+  const slot = slotByKey(currentSlot);
+  document.getElementById('editorIcon').innerHTML = slot.icon;
+  document.getElementById('editorTitle').textContent = slot.label;
+
+  const container = document.getElementById('editorRows');
+  container.innerHTML = '';
+
+  if (state[slot.key].length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.textContent = 'ยังไม่มีค่าจากไอเทมชิ้นนี้ — กด "+ เพิ่มค่าสเตตัส" ด้านล่าง';
+    container.appendChild(empty);
+  }
+
+  state[slot.key].forEach((row, idx) => {
+    const rowEl = document.createElement('div');
+    rowEl.className = 'res-row';
+
+    const select = document.createElement('select');
+    select.className = 'element-select';
+    select.dataset.el = row.stat;
+
+    const resGroup = document.createElement('optgroup');
+    resGroup.label = 'ต้านทานธาตุ (Resistance)';
+    RES_STATS.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.key;
+      opt.textContent = s.label;
+      if (s.key === row.stat) opt.selected = true;
+      resGroup.appendChild(opt);
+    });
+    const mfGroup = document.createElement('optgroup');
+    mfGroup.label = 'Magic Find';
+    MF_STATS.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.key;
+      opt.textContent = s.label;
+      if (s.key === row.stat) opt.selected = true;
+      mfGroup.appendChild(opt);
+    });
+    select.appendChild(resGroup);
+    select.appendChild(mfGroup);
+
+    select.addEventListener('change', (e) => {
+      row.stat = e.target.value;
+      select.dataset.el = row.stat;
+      persistPresets();
+      renderPaperdoll();
+      renderJewelRow();
+      recalc();
+    });
+
+    const valueWrap = document.createElement('div');
+    valueWrap.className = 'value-wrap';
+    const input = document.createElement('input');
+    input.className = 'value-input';
+    input.type = 'number';
+    input.value = row.value;
+    input.placeholder = '0';
+    input.addEventListener('input', (e) => {
+      const v = parseFloat(e.target.value);
+      row.value = isNaN(v) ? 0 : v;
+      persistPresets();
+      renderPaperdoll();
+      renderJewelRow();
+      recalc();
+    });
+    const pct = document.createElement('span');
+    pct.textContent = '%';
+    valueWrap.appendChild(input);
+    valueWrap.appendChild(pct);
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'remove-row';
+    removeBtn.type = 'button';
+    removeBtn.textContent = '✕';
+    removeBtn.setAttribute('aria-label', 'ลบแถวนี้');
+    removeBtn.addEventListener('click', () => {
+      state[slot.key].splice(idx, 1);
+      persistPresets();
+      renderEditor();
+      renderPaperdoll();
+      renderJewelRow();
+      recalc();
+    });
+
+    rowEl.appendChild(select);
+    rowEl.appendChild(valueWrap);
+    rowEl.appendChild(removeBtn);
+    container.appendChild(rowEl);
+  });
+}
+
+document.getElementById('addRowBtn').addEventListener('click', () => {
+  state[currentSlot].push({ stat: 'fire', value: 0 });
+  persistPresets();
+  renderEditor();
+  renderPaperdoll();
+  renderJewelRow();
+  recalc();
+});
+
+function renderResGauges() {
+  const wrap = document.getElementById('gaugesRes');
+  wrap.innerHTML = '';
+  RES_STATS.forEach(el => {
+    const row = document.createElement('div');
+    row.className = 'gauge-row';
+    row.dataset.el = el.key;
+
+    const label = document.createElement('div');
+    label.className = `gauge-label ${el.key}`;
+    label.textContent = el.label.replace(' Resistance', '');
+
+    const track = document.createElement('div');
+    track.className = 'gauge-track';
+    const fill = document.createElement('div');
+    fill.className = 'gauge-fill';
+    fill.style.background = `linear-gradient(90deg, ${el.color}, ${el.glow})`;
+    track.appendChild(fill);
+
+    const capMarker = document.createElement('div');
+    capMarker.className = 'gauge-cap-marker';
+    capMarker.style.left = '100%';
+    track.appendChild(capMarker);
+
+    const zeroMarker = document.createElement('div');
+    zeroMarker.className = 'gauge-zero-marker';
+    track.appendChild(zeroMarker);
+
+    const overflowTick = document.createElement('div');
+    overflowTick.className = 'gauge-overflow-tick';
+    overflowTick.style.display = 'none';
+    overflowTick.style.left = '100%';
+    track.appendChild(overflowTick);
+
+    const value = document.createElement('div');
+    value.className = 'gauge-value';
+
+    row.appendChild(label);
+    row.appendChild(track);
+    row.appendChild(value);
+    wrap.appendChild(row);
+  });
+}
+
+function renderMfGauges() {
+  const wrap = document.getElementById('gaugesMf');
+  wrap.innerHTML = '';
+  MF_STATS.forEach(el => {
+    const row = document.createElement('div');
+    row.className = 'gauge-row';
+    row.dataset.el = el.key;
+
+    const label = document.createElement('div');
+    label.className = `gauge-label ${el.key}`;
+    label.textContent = el.label.replace('Item ', '');
+
+    const track = document.createElement('div');
+    track.className = 'gauge-track';
+    const fill = document.createElement('div');
+    fill.className = 'gauge-fill';
+    fill.style.background = `linear-gradient(90deg, ${el.color}, ${el.glow})`;
+    track.appendChild(fill);
+
+    const softMarker = document.createElement('div');
+    softMarker.className = 'gauge-soft-marker';
+    softMarker.style.left = '50%'; // 150 / 300
+    softMarker.title = 'จุดที่ผลตอบแทนของ Item Rarity เริ่มลดลง (~150%)';
+    track.appendChild(softMarker);
+
+    const value = document.createElement('div');
+    value.className = 'gauge-value';
+
+    row.appendChild(label);
+    row.appendChild(track);
+    row.appendChild(value);
+    wrap.appendChild(row);
+  });
+}
+
+function formatResValue(total) {
+  if (total > CAP) return `${CAP}%(${total}%)`;
+  return (total > 0 ? '+' : '') + total + '%';
+}
+
+function recalc() {
+  const totals = {
+    fire: PENALTY, cold: PENALTY, lightning: PENALTY, chaos: 0,
+    rarity: 0,
+  };
+  ALL_SLOTS.forEach(slot => {
+    state[slot.key].forEach(row => {
+      totals[row.stat] += (row.value || 0);
+    });
+  });
+
+  RES_STATS.forEach(el => {
+    const total = totals[el.key];
+    const row = document.querySelector(`#gaugesRes .gauge-row[data-el="${el.key}"]`);
+    const fill = row.querySelector('.gauge-fill');
+    const zeroMarker = row.querySelector('.gauge-zero-marker');
+    const overflowTick = row.querySelector('.gauge-overflow-tick');
+    const valueEl = row.querySelector('.gauge-value');
+
+    const rangeMin = -70, rangeMax = CAP;
+    const widthTotal = Math.max(rangeMin, Math.min(total, rangeMax));
+    const zeroPct = ((0 - rangeMin) / (rangeMax - rangeMin)) * 100;
+    zeroMarker.style.left = zeroPct + '%';
+
+    if (widthTotal >= 0) {
+      const startPct = zeroPct;
+      const endPct = ((widthTotal - rangeMin) / (rangeMax - rangeMin)) * 100;
+      fill.classList.remove('negative');
+      fill.style.left = startPct + '%';
+      fill.style.width = Math.max(0, endPct - startPct) + '%';
+    } else {
+      const endPct = zeroPct;
+      const startPct = ((widthTotal - rangeMin) / (rangeMax - rangeMin)) * 100;
+      fill.classList.add('negative');
+      fill.style.left = startPct + '%';
+      fill.style.width = Math.max(0, endPct - startPct) + '%';
+    }
+
+    overflowTick.style.display = total > CAP ? 'block' : 'none';
+
+    valueEl.textContent = formatResValue(total);
+    valueEl.classList.remove('under', 'capped', 'negative');
+    if (total < 0) valueEl.classList.add('negative');
+    else if (total >= CAP) valueEl.classList.add('capped');
+    else valueEl.classList.add('under');
+  });
+
+  MF_STATS.forEach(el => {
+    const total = totals[el.key];
+    const row = document.querySelector(`#gaugesMf .gauge-row[data-el="${el.key}"]`);
+    const fill = row.querySelector('.gauge-fill');
+    const valueEl = row.querySelector('.gauge-value');
+
+    const rangeMax = 300;
+    const widthPct = Math.max(0, Math.min(total, rangeMax)) / rangeMax * 100;
+    fill.classList.remove('negative');
+    fill.style.left = '0%';
+    fill.style.width = widthPct + '%';
+
+    valueEl.textContent = (total > 0 ? '+' : '') + total + '%';
+    valueEl.classList.remove('mf-zero', 'mf-positive');
+    valueEl.classList.add(total > 0 ? 'mf-positive' : 'mf-zero');
+  });
+}
+
+renderPresetBar();
+renderPaperdoll();
+renderJewelRow();
+renderEditor();
+renderResGauges();
+renderMfGauges();
+recalc();
+
+addCorners(document.querySelector('.paperdoll-frame'));
+addCorners(document.querySelector('.item-editor'));
+addCorners(document.querySelector('.totals-panel'));
+</script>
+</body>
+</html>
