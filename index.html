@@ -458,6 +458,25 @@
     letter-spacing: 0.02em;
   }
 
+  button.clear-slot {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  button.clear-slot:hover { color: var(--fire-glow); border-color: var(--fire); }
+  button.clear-slot:focus-visible { outline: 2px solid var(--gold-glow); outline-offset: 1px; }
+  button.clear-slot:disabled { opacity: 0.35; cursor: default; }
+  button.clear-slot:disabled:hover { color: var(--text-dim); border-color: var(--border); }
+
   .rows-container { display: flex; flex-direction: column; gap: 8px; min-height: 4px; }
 
   .empty-state {
@@ -718,6 +737,7 @@
       <div class="item-editor-header">
         <span class="slot-icon-svg" id="editorIcon"></span>
         <h2 id="editorTitle">Helmet</h2>
+        <button class="clear-slot" type="button" id="clearSlotBtn" aria-label="ล้างค่าทั้งหมดในช่องนี้">✕ ล้างช่องนี้</button>
       </div>
       <div class="rows-container" id="editorRows"></div>
       <button class="add-row" type="button" id="addRowBtn">+ เพิ่มค่าสเตตัส</button>
@@ -953,6 +973,7 @@ function renderEditor() {
   const slot = slotByKey(currentSlot);
   document.getElementById('editorIcon').innerHTML = slot.icon;
   document.getElementById('editorTitle').textContent = slot.label;
+  document.getElementById('clearSlotBtn').disabled = state[slot.key].length === 0;
 
   const container = document.getElementById('editorRows');
   container.innerHTML = '';
@@ -1042,6 +1063,15 @@ function renderEditor() {
     container.appendChild(rowEl);
   });
 }
+
+document.getElementById('clearSlotBtn').addEventListener('click', () => {
+  state[currentSlot] = [];
+  persistPresets();
+  renderEditor();
+  renderPaperdoll();
+  renderJewelRow();
+  recalc();
+});
 
 document.getElementById('addRowBtn').addEventListener('click', () => {
   state[currentSlot].push({ stat: 'fire', value: 0 });
