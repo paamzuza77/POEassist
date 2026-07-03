@@ -47,7 +47,7 @@
     min-height: 100vh;
   }
 
-  .app { max-width: 1080px; margin: 0 auto; }
+  .app { max-width: 1520px; margin: 0 auto; }
 
   header { text-align: center; margin-bottom: 8px; }
 
@@ -681,6 +681,254 @@
   }
   .totals-footnote strong { color: var(--text-muted); }
 
+  /* ---------- Tab navigation ---------- */
+  .tab-nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0 28px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--panel-raised);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 11px 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s, box-shadow 0.15s;
+  }
+  .tab-btn:hover { border-color: var(--gold-dim); color: var(--gold-glow); }
+  .tab-btn:focus-visible { outline: 2px solid var(--gold-glow); outline-offset: 1px; }
+  .tab-btn.active {
+    border-color: var(--gold);
+    color: var(--gold-glow);
+    background: linear-gradient(160deg, #2a2418, var(--panel-raised));
+    box-shadow: 0 0 12px rgba(179, 146, 79, 0.3);
+  }
+
+  /* ---------- Build Shopping List: summary cards ---------- */
+  .shop-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .summary-card {
+    background: linear-gradient(180deg, var(--panel-raised), var(--panel));
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .summary-card .sc-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 7px;
+  }
+  .summary-card .sc-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .summary-card .sc-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    white-space: nowrap;
+  }
+  .summary-card.gold .sc-value { color: var(--gold-glow); }
+  .summary-card .sc-value.neg { color: var(--fire-glow); }
+  .summary-card.rate-card .sc-value {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+  .summary-card.rate-card input {
+    width: 84px;
+    background: var(--panel-sunken);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--gold-glow);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 5px 8px;
+    text-align: right;
+    outline: none;
+  }
+  .summary-card.rate-card input:focus-visible { outline: 2px solid var(--gold-glow); }
+
+  /* ---------- Build Shopping List: toolbar ---------- */
+  .shop-toolbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .shop-filter {
+    flex: 1;
+    min-width: 220px;
+    background: var(--panel-raised);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    padding: 9px 12px;
+    outline: none;
+  }
+  .shop-filter:focus-visible { outline: 2px solid var(--gold-glow); outline-offset: 1px; }
+  .ocr-btn.danger:hover { border-color: var(--fire); color: var(--fire-glow); }
+
+  /* ---------- Build Shopping List: table ---------- */
+  .shop-table-wrap {
+    overflow: auto;
+    max-height: 72vh;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px var(--panel-sunken) inset, 0 8px 22px rgba(0,0,0,0.35);
+  }
+  table.shop-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1180px;
+  }
+  .shop-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #221d2a;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .shop-table tbody td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border-soft);
+    vertical-align: middle;
+    font-size: 13px;
+  }
+  .shop-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+  .shop-table tbody tr.bought { background: rgba(179, 146, 79, 0.08); }
+  .shop-table tbody tr.bought:hover { background: rgba(179, 146, 79, 0.12); }
+  .shop-table tbody tr.checked td:first-child { box-shadow: 2px 0 0 var(--cold) inset; }
+
+  .col-check { width: 36px; text-align: center; }
+  .col-no { width: 56px; text-align: center; }
+  .col-link { width: 160px; }
+  .col-type { width: 170px; }
+  .col-num { width: 96px; }
+  .col-deal { width: 250px; }
+  .col-actions { width: 78px; text-align: center; }
+
+  .shop-table td.col-no {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-dim);
+    font-size: 12px;
+  }
+  .bought-badge {
+    display: inline-block;
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5px;
+    letter-spacing: 0.06em;
+    color: #1a1620;
+    background: var(--gold);
+    border-radius: 3px;
+    padding: 1px 5px;
+    text-transform: uppercase;
+  }
+
+  .shop-table input[type="text"],
+  .shop-table input[type="number"] {
+    width: 100%;
+    background: var(--panel-sunken);
+    border: 1px solid var(--border-soft);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    padding: 6px 8px;
+    outline: none;
+  }
+  .shop-table input:focus-visible { outline: none; border-color: var(--gold-dim); }
+  .shop-table input[type="number"] {
+    font-family: 'JetBrains Mono', monospace;
+    text-align: right;
+  }
+  .shop-table input[type="checkbox"] {
+    width: 15px; height: 15px;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+
+  .link-cell { display: flex; align-items: center; gap: 5px; }
+  .link-cell a {
+    color: var(--cold-glow);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    background: var(--panel-sunken);
+    padding: 5px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 110px;
+  }
+  .link-cell a:hover { border-color: var(--cold); }
+
+  .icon-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    width: 24px; height: 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    line-height: 1;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .icon-btn:hover { color: var(--gold-glow); border-color: var(--gold-dim); }
+  .icon-btn.danger:hover { color: var(--fire-glow); border-color: var(--fire); }
+
+  .deal-cell { display: flex; align-items: center; gap: 5px; }
+  .deal-cell .deal-price { width: 74px; flex-shrink: 0; }
+
+  .shop-empty {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    padding: 28px 10px !important;
+  }
+
   @media (max-width: 480px) {
     .gauge-row { grid-template-columns: 62px 1fr 88px; gap: 8px; }
     .gauge-value { font-size: 12.5px; }
@@ -700,6 +948,12 @@
     <div class="header-divider"></div>
   </header>
 
+  <nav class="tab-nav" role="tablist">
+    <button class="tab-btn" type="button" id="tabBtnForge" role="tab">Resistance Forge</button>
+    <button class="tab-btn" type="button" id="tabBtnShop" role="tab">Build Shopping List</button>
+  </nav>
+
+  <div id="pageForge">
   <p class="penalty-readout">บทลงโทษต้านทานธาตุ (fix): <strong>−40%</strong> · Chaos ไม่โดนบทลงโทษนี้</p>
   <p class="penalty-note">* ค่ามาตรฐานตอนจบแคมเปญเต็มในเกมจริงคือ −60% — ค่านี้ถูกตั้งตายตัวไว้ที่ −40% ตามที่กำหนด</p>
 
@@ -755,6 +1009,77 @@
       Preset ที่เลือกจะถูกบันทึกไว้ในเบราว์เซอร์นี้อัตโนมัติ (localStorage)
     </p>
   </div>
+  </div><!-- /pageForge -->
+
+  <div id="pageShop" hidden>
+    <div class="shop-summary" id="shopSummary">
+      <div class="summary-card rate-card">
+        <div class="sc-label">เรท Divine → THB</div>
+        <div class="sc-value">1 Div = <input type="number" id="divineRateInput" step="0.01" min="0" placeholder="0"> ฿</div>
+        <div class="sc-sub">ใส่เรทเองได้ตลอด</div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-label">Total Min Price</div>
+        <div class="sc-value" id="sumMin">0 Div</div>
+        <div class="sc-sub" id="sumMinThb">= 0 ฿</div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-label">Total Max Price</div>
+        <div class="sc-value" id="sumMax">0 Div</div>
+        <div class="sc-sub" id="sumMaxThb">= 0 ฿</div>
+      </div>
+      <div class="summary-card gold">
+        <div class="sc-label">Total Bought</div>
+        <div class="sc-value" id="sumBought">0 Div</div>
+        <div class="sc-sub" id="sumBoughtThb">= 0 ฿</div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-label">Remaining Min</div>
+        <div class="sc-value" id="remMin">0 Div</div>
+        <div class="sc-sub" id="remMinThb">= 0 ฿</div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-label">Remaining Max</div>
+        <div class="sc-value" id="remMax">0 Div</div>
+        <div class="sc-sub" id="remMaxThb">= 0 ฿</div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-label">Status</div>
+        <div class="sc-value" id="statusCounts">0 / 0</div>
+        <div class="sc-sub" id="statusTotal">bought / not bought · 0 rows</div>
+      </div>
+    </div>
+
+    <div class="shop-toolbar">
+      <input type="text" class="shop-filter" id="shopFilter" placeholder="🔍 ค้นหา: type / option / link…">
+      <button class="ocr-btn primary" type="button" id="shopAddRowBtn">+ Add Row</button>
+      <button class="ocr-btn" type="button" id="shopExportBtn">Export JSON</button>
+      <button class="ocr-btn" type="button" id="shopImportBtn">Import JSON</button>
+      <input type="file" id="shopImportFile" accept="application/json,.json" hidden>
+      <button class="ocr-btn danger" type="button" id="shopClearAllBtn">Clear All Rows</button>
+    </div>
+
+    <div class="shop-table-wrap">
+      <table class="shop-table">
+        <thead>
+          <tr>
+            <th class="col-check"></th>
+            <th class="col-no">No.</th>
+            <th class="col-link">Link Item</th>
+            <th class="col-type">Type</th>
+            <th>Important Option</th>
+            <th class="col-num">Min (Div)</th>
+            <th class="col-num">Max (Div)</th>
+            <th class="col-num">Bought (Div)</th>
+            <th class="col-deal">Saved Deal / Good Item</th>
+            <th class="col-actions"></th>
+          </tr>
+        </thead>
+        <tbody id="shopTbody"></tbody>
+      </table>
+    </div>
+    <datalist id="itemTypeList"></datalist>
+  </div><!-- /pageShop -->
 </div>
 
 <script>
@@ -1580,6 +1905,7 @@ ocrFileInput.addEventListener('change', (e) => {
 });
 
 document.addEventListener('paste', (e) => {
+  if (activeTab !== 'forge') return; // OCR paste only applies to the Resistance Forge tab
   const items = e.clipboardData && e.clipboardData.items;
   if (!items) return;
   for (const item of items) {
@@ -1614,6 +1940,411 @@ recalc();
 addCorners(document.querySelector('.paperdoll-frame'));
 addCorners(document.querySelector('.item-editor'));
 addCorners(document.querySelector('.totals-panel'));
+
+/* ==================== Tabs ==================== */
+
+const TAB_KEY = 'poeAssist.activeTab.v1';
+let activeTab = localStorage.getItem(TAB_KEY) === 'shop' ? 'shop' : 'forge';
+
+function switchTab(tab) {
+  activeTab = tab;
+  try { localStorage.setItem(TAB_KEY, tab); } catch (e) { /* storage unavailable */ }
+  document.getElementById('pageForge').hidden = tab !== 'forge';
+  document.getElementById('pageShop').hidden = tab !== 'shop';
+  document.getElementById('tabBtnForge').classList.toggle('active', tab === 'forge');
+  document.getElementById('tabBtnShop').classList.toggle('active', tab === 'shop');
+}
+document.getElementById('tabBtnForge').addEventListener('click', () => switchTab('forge'));
+document.getElementById('tabBtnShop').addEventListener('click', () => switchTab('shop'));
+switchTab(activeTab);
+
+/* ==================== Build Shopping List ==================== */
+
+// รายการประเภทไอเทมใน dropdown ช่อง Type — แก้ไข/เพิ่ม/ลบได้ที่ array นี้ที่เดียว
+// (อิงหมวดหมู่จากเว็บเทรด PoE2; ผู้ใช้พิมพ์ค่าอื่นนอกเหนือจากนี้เองได้เสมอ)
+const ITEM_TYPES = [
+  'Helmet', 'Body Armour', 'Gloves', 'Boots', 'Belt', 'Ring', 'Amulet',
+  'Weapon', 'One-Handed Weapon', 'Two-Handed Weapon',
+  'Wand', 'Sceptre', 'Staff', 'Quarterstaff', 'Bow', 'Crossbow', 'Spear', 'Flail',
+  'Quiver', 'Shield', 'Focus', 'Buckler',
+  'Jewel', 'Charm', 'Flask', 'Life Flask', 'Mana Flask',
+  'Rune', 'Soul Core', 'Waystone', 'Tablet', 'Currency', 'Other',
+];
+
+const SHOP_ROWS_KEY = 'poe2ShopList.rows.v1';
+const SHOP_RATE_KEY = 'poe2ShopList.rate.v1';
+
+function newShopRow() {
+  return { checked: false, link: '', type: '', option: '', min: null, max: null, bought: null, dealLink: '', dealPrice: null };
+}
+
+let shopRows = (function loadShopRows() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(SHOP_ROWS_KEY));
+    if (Array.isArray(raw)) return raw.map(r => Object.assign(newShopRow(), r));
+  } catch (e) { /* malformed storage */ }
+  return [];
+})();
+
+let divineRate = (function loadRate() {
+  const v = parseFloat(localStorage.getItem(SHOP_RATE_KEY));
+  return isNaN(v) || v < 0 ? 0 : v;
+})();
+
+let shopFilterText = '';
+
+function persistShopRows() {
+  try { localStorage.setItem(SHOP_ROWS_KEY, JSON.stringify(shopRows)); } catch (e) { /* storage unavailable */ }
+}
+function persistDivineRate() {
+  try { localStorage.setItem(SHOP_RATE_KEY, String(divineRate)); } catch (e) { /* storage unavailable */ }
+}
+
+function fmtNum(n) {
+  return (Math.round((n + Number.EPSILON) * 100) / 100).toLocaleString('en-US', { maximumFractionDigits: 2 });
+}
+
+function isBought(row) {
+  return typeof row.bought === 'number' && !isNaN(row.bought);
+}
+
+function updateShopSummary() {
+  let totalMin = 0, totalMax = 0, totalBought = 0, boughtCount = 0;
+  shopRows.forEach(r => {
+    totalMin += r.min || 0;
+    totalMax += r.max || 0;
+    if (isBought(r)) { totalBought += r.bought; boughtCount++; }
+  });
+  const remMin = totalMin - totalBought;
+  const remMax = totalMax - totalBought;
+
+  const set = (id, div, isRemaining) => {
+    const el = document.getElementById(id);
+    el.textContent = fmtNum(div) + ' Div';
+    if (isRemaining) el.classList.toggle('neg', div < 0);
+  };
+  const setThb = (id, div) => {
+    document.getElementById(id).textContent = '= ' + fmtNum(div * divineRate) + ' ฿';
+  };
+
+  set('sumMin', totalMin); setThb('sumMinThb', totalMin);
+  set('sumMax', totalMax); setThb('sumMaxThb', totalMax);
+  set('sumBought', totalBought); setThb('sumBoughtThb', totalBought);
+  set('remMin', remMin, true); setThb('remMinThb', remMin);
+  set('remMax', remMax, true); setThb('remMaxThb', remMax);
+
+  document.getElementById('statusCounts').textContent = boughtCount + ' / ' + (shopRows.length - boughtCount);
+  document.getElementById('statusTotal').textContent = 'bought / not bought · ' + shopRows.length + ' rows';
+}
+
+function makeIconBtn(symbol, label, onClick, danger) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'icon-btn' + (danger ? ' danger' : '');
+  b.textContent = symbol;
+  b.title = label;
+  b.setAttribute('aria-label', label);
+  b.addEventListener('click', onClick);
+  return b;
+}
+
+// Link cell: stores the full URL but renders a short clickable chip;
+// switches to an input when editing or while empty.
+function buildLinkCell(row, field, chipText, placeholder) {
+  const wrap = document.createElement('div');
+  wrap.className = 'link-cell';
+
+  function renderChip() {
+    wrap.innerHTML = '';
+    const a = document.createElement('a');
+    a.href = row[field];
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.textContent = chipText;
+    a.title = row[field];
+    wrap.appendChild(a);
+    wrap.appendChild(makeIconBtn('✎', 'แก้ไขลิงก์', () => renderInput(true)));
+    wrap.appendChild(makeIconBtn('✕', 'ลบลิงก์', () => {
+      row[field] = '';
+      persistShopRows();
+      renderInput(false);
+    }, true));
+  }
+
+  function renderInput(focus) {
+    wrap.innerHTML = '';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = placeholder;
+    input.value = row[field] || '';
+    const commit = () => {
+      row[field] = input.value.trim();
+      persistShopRows();
+      if (row[field]) renderChip(); else if (document.activeElement !== input) { /* stay as empty input */ }
+    };
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') input.blur(); });
+    input.addEventListener('blur', commit);
+    wrap.appendChild(input);
+    if (focus) input.focus();
+  }
+
+  if (row[field]) renderChip(); else renderInput(false);
+  return wrap;
+}
+
+function updateRowVisual(tr, row) {
+  tr.classList.toggle('bought', isBought(row));
+  tr.classList.toggle('checked', !!row.checked);
+  const badge = tr.querySelector('.bought-badge');
+  if (badge) badge.style.display = isBought(row) ? 'inline-block' : 'none';
+}
+
+function rowMatchesFilter(row) {
+  const q = shopFilterText.trim().toLowerCase();
+  if (!q) return true;
+  return [row.type, row.option, row.link, row.dealLink].join(' ').toLowerCase().includes(q);
+}
+
+function renderShopTable() {
+  const tbody = document.getElementById('shopTbody');
+  tbody.innerHTML = '';
+
+  if (shopRows.length === 0) {
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 10;
+    td.className = 'shop-empty';
+    td.textContent = 'ยังไม่มีรายการ — กด "+ Add Row" เพื่อเริ่มวางแผนของที่ต้องซื้อ';
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    updateShopSummary();
+    return;
+  }
+
+  let anyVisible = false;
+  shopRows.forEach((row, idx) => {
+    if (!rowMatchesFilter(row)) return;
+    anyVisible = true;
+
+    const tr = document.createElement('tr');
+
+    // Checkbox
+    const tdCheck = document.createElement('td');
+    tdCheck.className = 'col-check';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = !!row.checked;
+    cb.title = 'มาร์กแถวนี้';
+    cb.addEventListener('change', () => {
+      row.checked = cb.checked;
+      persistShopRows();
+      updateRowVisual(tr, row);
+    });
+    tdCheck.appendChild(cb);
+    tr.appendChild(tdCheck);
+
+    // No. (+ bought badge)
+    const tdNo = document.createElement('td');
+    tdNo.className = 'col-no';
+    tdNo.textContent = idx + 1;
+    const badge = document.createElement('span');
+    badge.className = 'bought-badge';
+    badge.textContent = 'Bought';
+    badge.style.display = isBought(row) ? 'inline-block' : 'none';
+    tdNo.appendChild(document.createElement('br'));
+    tdNo.appendChild(badge);
+    tr.appendChild(tdNo);
+
+    // Link Item
+    const tdLink = document.createElement('td');
+    tdLink.className = 'col-link';
+    tdLink.appendChild(buildLinkCell(row, 'link', '🔗 Trade Link', 'วางลิงก์ไอเทม…'));
+    tr.appendChild(tdLink);
+
+    // Type (searchable datalist + free text)
+    const tdType = document.createElement('td');
+    tdType.className = 'col-type';
+    const typeInput = document.createElement('input');
+    typeInput.type = 'text';
+    typeInput.setAttribute('list', 'itemTypeList');
+    typeInput.placeholder = 'เลือก/พิมพ์ type…';
+    typeInput.value = row.type || '';
+    typeInput.addEventListener('input', () => {
+      row.type = typeInput.value;
+      persistShopRows();
+    });
+    tdType.appendChild(typeInput);
+    tr.appendChild(tdType);
+
+    // Important Option
+    const tdOpt = document.createElement('td');
+    const optInput = document.createElement('input');
+    optInput.type = 'text';
+    optInput.placeholder = 'เช่น must have / BIS / budget…';
+    optInput.value = row.option || '';
+    optInput.addEventListener('input', () => {
+      row.option = optInput.value;
+      persistShopRows();
+    });
+    tdOpt.appendChild(optInput);
+    tr.appendChild(tdOpt);
+
+    // Min / Max / Bought (Divine)
+    [['min', 'Min'], ['max', 'Max'], ['bought', 'ราคาที่ซื้อ']].forEach(([field, ph]) => {
+      const td = document.createElement('td');
+      td.className = 'col-num';
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.step = '0.1';
+      input.min = '0';
+      input.placeholder = ph;
+      input.value = row[field] === null || row[field] === undefined ? '' : row[field];
+      input.addEventListener('input', () => {
+        const v = parseFloat(input.value);
+        row[field] = isNaN(v) ? null : v;
+        persistShopRows();
+        updateShopSummary();
+        updateRowVisual(tr, row);
+      });
+      td.appendChild(input);
+      tr.appendChild(td);
+    });
+
+    // Saved Deal / Good Item (link + price in one cell)
+    const tdDeal = document.createElement('td');
+    tdDeal.className = 'col-deal';
+    const dealWrap = document.createElement('div');
+    dealWrap.className = 'deal-cell';
+    dealWrap.appendChild(buildLinkCell(row, 'dealLink', '🔗 Deal', 'วางลิงก์ deal…'));
+    const dealPrice = document.createElement('input');
+    dealPrice.type = 'number';
+    dealPrice.step = '0.1';
+    dealPrice.min = '0';
+    dealPrice.className = 'deal-price';
+    dealPrice.placeholder = 'Div';
+    dealPrice.title = 'ราคาของ deal นี้ (Divine)';
+    dealPrice.value = row.dealPrice === null || row.dealPrice === undefined ? '' : row.dealPrice;
+    dealPrice.addEventListener('input', () => {
+      const v = parseFloat(dealPrice.value);
+      row.dealPrice = isNaN(v) ? null : v;
+      persistShopRows();
+    });
+    dealWrap.appendChild(dealPrice);
+    tdDeal.appendChild(dealWrap);
+    tr.appendChild(tdDeal);
+
+    // Row actions: duplicate / delete
+    const tdActions = document.createElement('td');
+    tdActions.className = 'col-actions';
+    tdActions.appendChild(makeIconBtn('⧉', 'คัดลอกแถวนี้', () => {
+      shopRows.splice(idx + 1, 0, JSON.parse(JSON.stringify(row)));
+      persistShopRows();
+      renderShopTable();
+    }));
+    tdActions.appendChild(makeIconBtn('✕', 'ลบแถวนี้', () => {
+      shopRows.splice(idx, 1);
+      persistShopRows();
+      renderShopTable();
+    }, true));
+    tr.appendChild(tdActions);
+
+    updateRowVisual(tr, row);
+    tbody.appendChild(tr);
+  });
+
+  if (!anyVisible) {
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 10;
+    td.className = 'shop-empty';
+    td.textContent = 'ไม่มีแถวที่ตรงกับคำค้นหา';
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+  }
+
+  updateShopSummary();
+}
+
+/* ---- Shopping list: toolbar wiring ---- */
+
+document.getElementById('shopAddRowBtn').addEventListener('click', () => {
+  shopRows.push(newShopRow());
+  persistShopRows();
+  renderShopTable();
+});
+
+document.getElementById('shopClearAllBtn').addEventListener('click', () => {
+  if (shopRows.length === 0) return;
+  if (confirm('ลบทุกแถวใน Build Shopping List? (' + shopRows.length + ' แถว)\nการลบนี้ย้อนกลับไม่ได้ — แนะนำ Export JSON เก็บไว้ก่อนถ้าไม่แน่ใจ')) {
+    shopRows = [];
+    persistShopRows();
+    renderShopTable();
+  }
+});
+
+document.getElementById('shopExportBtn').addEventListener('click', () => {
+  const payload = { version: 1, exportedAt: new Date().toISOString(), divineRate, rows: shopRows };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'poe2-build-shopping-list.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+document.getElementById('shopImportBtn').addEventListener('click', () => {
+  document.getElementById('shopImportFile').click();
+});
+document.getElementById('shopImportFile').addEventListener('change', (e) => {
+  const file = e.target.files && e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      const rows = Array.isArray(data) ? data : data.rows;
+      if (!Array.isArray(rows)) throw new Error('ไม่พบรายการแถวในไฟล์');
+      if (!confirm('นำเข้า ' + rows.length + ' แถวแทนที่รายการปัจจุบัน (' + shopRows.length + ' แถว)?')) return;
+      shopRows = rows.map(r => Object.assign(newShopRow(), r));
+      if (data && typeof data.divineRate === 'number' && data.divineRate >= 0) {
+        divineRate = data.divineRate;
+        document.getElementById('divineRateInput').value = divineRate || '';
+        persistDivineRate();
+      }
+      persistShopRows();
+      renderShopTable();
+    } catch (err) {
+      alert('Import ไม่สำเร็จ: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+});
+
+document.getElementById('shopFilter').addEventListener('input', (e) => {
+  shopFilterText = e.target.value;
+  renderShopTable();
+});
+
+document.getElementById('divineRateInput').addEventListener('input', (e) => {
+  const v = parseFloat(e.target.value);
+  divineRate = isNaN(v) || v < 0 ? 0 : v;
+  persistDivineRate();
+  updateShopSummary();
+});
+
+/* ---- Shopping list: init ---- */
+
+(function initShop() {
+  const dl = document.getElementById('itemTypeList');
+  ITEM_TYPES.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t;
+    dl.appendChild(opt);
+  });
+  document.getElementById('divineRateInput').value = divineRate || '';
+  renderShopTable();
+})();
 </script>
 </body>
 </html>
