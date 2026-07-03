@@ -159,6 +159,127 @@
     margin-left: 6px;
   }
 
+  /* ---------- OCR paste zone ---------- */
+  .ocr-zone {
+    background: linear-gradient(180deg, var(--panel-raised), var(--panel));
+    border: 1px dashed var(--gold-dim);
+    border-radius: 6px;
+    padding: 16px 18px;
+    margin: 0 0 28px;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .ocr-zone:hover, .ocr-zone.dragover {
+    border-color: var(--gold);
+    box-shadow: 0 0 12px rgba(179, 146, 79, 0.25);
+  }
+  .ocr-zone:focus-visible { outline: 2px solid var(--gold-glow); outline-offset: 2px; }
+
+  .ocr-idle {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+  .ocr-idle .ocr-big { color: var(--gold-glow); font-size: 13px; font-weight: 700; }
+  .ocr-idle .ocr-sub { font-size: 10.5px; color: var(--text-dim); }
+
+  .ocr-progress { text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gold-glow); }
+  .ocr-progress-track {
+    height: 6px;
+    background: #0c0a0f;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 10px;
+  }
+  .ocr-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-glow));
+    transition: width 0.2s ease;
+  }
+
+  .ocr-review { cursor: default; }
+  .ocr-review-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .ocr-review-title {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gold-glow);
+    margin: 0;
+  }
+  .ocr-review-basename {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--text-dim);
+  }
+  .ocr-review-grid {
+    display: grid;
+    grid-template-columns: minmax(200px, 300px) 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+  @media (max-width: 640px) { .ocr-review-grid { grid-template-columns: 1fr; } }
+  .ocr-thumb {
+    max-width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    display: block;
+  }
+  .ocr-review .res-row { grid-template-columns: 1fr 84px 22px; }
+  .ocr-slot-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    flex-wrap: wrap;
+  }
+  .ocr-actions { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+  .ocr-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 9px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--panel-raised);
+    color: var(--text-muted);
+    transition: border-color 0.15s, color 0.15s, box-shadow 0.15s;
+  }
+  .ocr-btn:focus-visible { outline: 2px solid var(--gold-glow); outline-offset: 1px; }
+  .ocr-btn.primary { border-color: var(--gold); color: var(--gold-glow); }
+  .ocr-btn.primary:hover { box-shadow: 0 0 10px rgba(179, 146, 79, 0.35); }
+  .ocr-btn:hover { border-color: var(--gold-dim); color: var(--gold-glow); }
+  .ocr-warning {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--fire-glow);
+    margin: 8px 0 0;
+  }
+  .ocr-empty-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    border: 1px dashed var(--border);
+    border-radius: 5px;
+    padding: 12px;
+    text-align: center;
+  }
+
   /* ---------- Ornate corner frame ---------- */
   .ornate { position: relative; }
   .corner { position: absolute; width: 16px; height: 16px; pointer-events: none; opacity: 0.85; }
@@ -565,6 +686,20 @@
 
   <div class="preset-bar" id="presetBar">
     <span class="preset-label">Preset</span>
+  </div>
+
+  <div class="ocr-zone" id="ocrZone" tabindex="0" role="button" aria-label="แปะหรือเลือกรูปไอเทมเพื่ออ่านค่าอัตโนมัติ">
+    <input type="file" id="ocrFile" accept="image/*" hidden>
+    <div class="ocr-idle" id="ocrIdle">
+      <div class="ocr-big">📋 แคปรูปไอเทมจากเกมแล้วกด Ctrl+V ที่หน้านี้ได้เลย</div>
+      หรือลากรูปมาวางตรงนี้ / คลิกเพื่อเลือกไฟล์<br>
+      <span class="ocr-sub">ระบบอ่านค่าต้านทาน + Rarity จากรูปให้อัตโนมัติ — ประมวลผลในเครื่องคุณ 100% ฟรี ไม่ส่งรูปขึ้นเซิร์ฟเวอร์</span>
+    </div>
+    <div class="ocr-progress" id="ocrProgress" hidden>
+      <span id="ocrProgressText">กำลังโหลดตัวอ่านรูป…</span>
+      <div class="ocr-progress-track"><div class="ocr-progress-fill" id="ocrProgressFill"></div></div>
+    </div>
+    <div class="ocr-review" id="ocrReview" hidden></div>
   </div>
 
   <div class="gear-layout">
@@ -1065,6 +1200,378 @@ function recalc() {
     valueEl.classList.add(total > 0 ? 'mf-positive' : 'mf-zero');
   });
 }
+
+/* ---------- OCR: paste a screenshot of an item, auto-fill stats ----------
+   Fully client-side via Tesseract.js (loaded lazily from CDN on first use).
+   No API calls, no tokens, no cost. */
+
+const TESSERACT_CDN = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+let tesseractLoading = null;
+
+function loadTesseract() {
+  if (window.Tesseract) return Promise.resolve();
+  if (tesseractLoading) return tesseractLoading;
+  tesseractLoading = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = TESSERACT_CDN;
+    s.onload = () => resolve();
+    s.onerror = () => { tesseractLoading = null; reject(new Error('โหลดไลบรารี OCR ไม่สำเร็จ — ตรวจสอบอินเทอร์เน็ตแล้วลองใหม่')); };
+    document.head.appendChild(s);
+  });
+  return tesseractLoading;
+}
+
+// PoE tooltips are light text on a dark backdrop; Tesseract reads dark-on-light
+// better, so upscale small images and invert when the image is mostly dark.
+function preprocessImage(img) {
+  const scale = img.width < 900 ? Math.min(3, 900 / img.width) : 1.5;
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(img.width * scale);
+  canvas.height = Math.round(img.height * scale);
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const px = data.data;
+  let lumSum = 0;
+  for (let i = 0; i < px.length; i += 4) {
+    lumSum += 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2];
+  }
+  const avgLum = lumSum / (px.length / 4);
+  const invert = avgLum < 110;
+  for (let i = 0; i < px.length; i += 4) {
+    let g = 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2];
+    if (invert) g = 255 - g;
+    g = Math.max(0, Math.min(255, (g - 128) * 1.35 + 128));
+    px[i] = px[i + 1] = px[i + 2] = g;
+  }
+  ctx.putImageData(data, 0, 0);
+  return canvas;
+}
+
+const STAT_PATTERNS = [
+  { re: /([+-]?\d{1,3})\s*%\s*[tf]o\s*Fire\s*Res/i, stat: 'fire' },
+  { re: /([+-]?\d{1,3})\s*%\s*[tf]o\s*Cold\s*Res/i, stat: 'cold' },
+  { re: /([+-]?\d{1,3})\s*%\s*[tf]o\s*Lightning\s*Res/i, stat: 'lightning' },
+  { re: /([+-]?\d{1,3})\s*%\s*[tf]o\s*Chaos\s*Res/i, stat: 'chaos' },
+  { re: /([+-]?\d{1,3})\s*%\s*[tf]o\s*all\s*Elemental\s*Res/i, stat: 'allres' },
+  { re: /(\d{1,3})\s*%\s*increased\s*Rarity/i, stat: 'rarity' },
+];
+
+const SLOT_KEYWORDS = [
+  { slot: 'gloves', words: ['glove', 'gauntlet', 'mitt', 'wraps', 'cuffs'] },
+  { slot: 'boots', words: ['boot', 'greaves', 'sandal', 'shoes', 'slipper', 'leggings'] },
+  { slot: 'helmet', words: ['helm', 'crown', 'hood', 'mask', 'burgonet', 'sallet', 'coif', 'tiara', 'circlet', 'visage', 'cap '] },
+  { slot: 'belt', words: ['belt', 'sash', 'girdle', 'strap'] },
+  { slot: 'amulet', words: ['amulet', 'talisman', 'locket', 'pendant', 'collar'] },
+  { slot: 'chest', words: ['armour', 'armor', 'plate', 'vest', 'robe', 'raiment', 'tunic', 'mail', 'jacket', 'coat', 'garb', 'hauberk', 'cuirass', 'regalia'] },
+  { slot: 'offhand', words: ['shield', 'buckler', 'targe', 'crest', 'focus', 'tome'] },
+  { slot: 'weapon', words: ['sword', 'axe', 'mace', 'bow', 'staff', 'quarterstaff', 'wand', 'sceptre', 'scepter', 'dagger', 'claw', 'spear', 'flail', 'crossbow', 'hammer', 'blade'] },
+  { slot: 'jewel', words: ['jewel', 'emerald', 'ruby', 'sapphire', 'diamond'] },
+  { slot: 'ringL', words: ['ring', 'band'] },
+];
+
+function guessSlot(text) {
+  const lower = text.toLowerCase();
+  for (const entry of SLOT_KEYWORDS) {
+    for (const w of entry.words) {
+      const re = new RegExp('\\b' + w.trim() + (w.endsWith(' ') ? '\\b' : ''), 'i');
+      if (re.test(lower)) {
+        if (entry.slot === 'jewel') {
+          const free = JEWEL_SLOTS.find(j => state[j.key].length === 0);
+          return free ? free.key : 'jewel1';
+        }
+        return entry.slot;
+      }
+    }
+  }
+  return null;
+}
+
+function parseItemText(text) {
+  const stats = [];
+  const seen = new Set();
+  text.split(/\r?\n/).forEach(line => {
+    for (const p of STAT_PATTERNS) {
+      const m = line.match(p.re);
+      if (!m) continue;
+      const value = Math.abs(parseInt(m[1], 10));
+      if (isNaN(value) || value === 0 || value > 100) continue;
+      if (p.stat === 'allres') {
+        ['fire', 'cold', 'lightning'].forEach(el => stats.push({ stat: el, value }));
+      } else {
+        // allow duplicates of the same stat only from different lines
+        const sig = p.stat + ':' + value + ':' + line.trim();
+        if (seen.has(sig)) continue;
+        seen.add(sig);
+        stats.push({ stat: p.stat, value });
+      }
+      break;
+    }
+  });
+  return { stats, slotGuess: guessSlot(text) };
+}
+
+const ocrZone = document.getElementById('ocrZone');
+const ocrIdle = document.getElementById('ocrIdle');
+const ocrProgress = document.getElementById('ocrProgress');
+const ocrProgressText = document.getElementById('ocrProgressText');
+const ocrProgressFill = document.getElementById('ocrProgressFill');
+const ocrReview = document.getElementById('ocrReview');
+const ocrFileInput = document.getElementById('ocrFile');
+let ocrBusy = false;
+
+function ocrShow(mode) {
+  ocrIdle.hidden = mode !== 'idle';
+  ocrProgress.hidden = mode !== 'progress';
+  ocrReview.hidden = mode !== 'review';
+}
+
+function setOcrProgress(text, frac) {
+  ocrProgressText.textContent = text;
+  ocrProgressFill.style.width = Math.round((frac || 0) * 100) + '%';
+}
+
+async function handleItemImage(blob) {
+  if (ocrBusy) return;
+  ocrBusy = true;
+  ocrShow('progress');
+  setOcrProgress('กำลังโหลดตัวอ่านรูป (ครั้งแรกอาจใช้เวลาสักครู่)…', 0.05);
+
+  const imgURL = URL.createObjectURL(blob);
+  try {
+    await loadTesseract();
+
+    const img = await new Promise((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = () => reject(new Error('ไฟล์รูปไม่ถูกต้อง'));
+      i.src = imgURL;
+    });
+
+    setOcrProgress('กำลังเตรียมรูป…', 0.15);
+    const canvas = preprocessImage(img);
+
+    const result = await Tesseract.recognize(canvas, 'eng', {
+      logger: (m) => {
+        if (m.status === 'recognizing text') {
+          setOcrProgress('กำลังอ่านข้อความจากรูป… ' + Math.round(m.progress * 100) + '%', 0.2 + m.progress * 0.8);
+        }
+      },
+    });
+
+    const parsed = parseItemText(result.data.text || '');
+    showOcrReview(parsed, imgURL, result.data.text || '');
+  } catch (err) {
+    ocrShow('idle');
+    alert('อ่านรูปไม่สำเร็จ: ' + err.message);
+    URL.revokeObjectURL(imgURL);
+  } finally {
+    ocrBusy = false;
+  }
+}
+
+function showOcrReview(parsed, imgURL, rawText) {
+  ocrReview.innerHTML = '';
+
+  const head = document.createElement('div');
+  head.className = 'ocr-review-head';
+  const title = document.createElement('p');
+  title.className = 'ocr-review-title';
+  title.textContent = 'ตรวจสอบค่าที่อ่านได้';
+  head.appendChild(title);
+  ocrReview.appendChild(head);
+
+  const grid = document.createElement('div');
+  grid.className = 'ocr-review-grid';
+
+  const thumb = document.createElement('img');
+  thumb.className = 'ocr-thumb';
+  thumb.src = imgURL;
+  thumb.alt = 'รูปไอเทมที่แปะ';
+  grid.appendChild(thumb);
+
+  const right = document.createElement('div');
+
+  const reviewRows = parsed.stats.map(s => ({ ...s }));
+
+  const rowsWrap = document.createElement('div');
+  rowsWrap.className = 'rows-container';
+
+  function renderReviewRows() {
+    rowsWrap.innerHTML = '';
+    if (reviewRows.length === 0) {
+      const note = document.createElement('div');
+      note.className = 'ocr-empty-note';
+      note.textContent = 'ไม่พบค่าต้านทาน/Rarity ในรูป — เพิ่มเองด้านล่าง หรือลองแคปรูปให้ชัด/ใหญ่ขึ้น (ต้องเป็นข้อความภาษาอังกฤษในเกม)';
+      rowsWrap.appendChild(note);
+    }
+    reviewRows.forEach((row, idx) => {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'res-row';
+
+      const select = document.createElement('select');
+      select.className = 'element-select';
+      select.dataset.el = row.stat;
+      STATS.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.key;
+        opt.textContent = s.label;
+        if (s.key === row.stat) opt.selected = true;
+        select.appendChild(opt);
+      });
+      select.addEventListener('change', (e) => {
+        row.stat = e.target.value;
+        select.dataset.el = row.stat;
+      });
+
+      const valueWrap = document.createElement('div');
+      valueWrap.className = 'value-wrap';
+      const input = document.createElement('input');
+      input.className = 'value-input';
+      input.type = 'number';
+      input.value = row.value;
+      input.addEventListener('input', (e) => {
+        const v = parseFloat(e.target.value);
+        row.value = isNaN(v) ? 0 : v;
+      });
+      const pct = document.createElement('span');
+      pct.textContent = '%';
+      valueWrap.appendChild(input);
+      valueWrap.appendChild(pct);
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-row';
+      removeBtn.type = 'button';
+      removeBtn.textContent = '✕';
+      removeBtn.addEventListener('click', () => {
+        reviewRows.splice(idx, 1);
+        renderReviewRows();
+      });
+
+      rowEl.appendChild(select);
+      rowEl.appendChild(valueWrap);
+      rowEl.appendChild(removeBtn);
+      rowsWrap.appendChild(rowEl);
+    });
+  }
+  renderReviewRows();
+  right.appendChild(rowsWrap);
+
+  const addBtn = document.createElement('button');
+  addBtn.className = 'add-row';
+  addBtn.type = 'button';
+  addBtn.textContent = '+ เพิ่มค่าเอง';
+  addBtn.addEventListener('click', () => {
+    reviewRows.push({ stat: 'fire', value: 0 });
+    renderReviewRows();
+  });
+  right.appendChild(addBtn);
+
+  const slotRow = document.createElement('div');
+  slotRow.className = 'ocr-slot-row';
+  const slotLabel = document.createElement('span');
+  slotLabel.textContent = 'ใส่ลงช่อง:';
+  slotRow.appendChild(slotLabel);
+  const slotSelect = document.createElement('select');
+  slotSelect.className = 'element-select';
+  ALL_SLOTS.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.key;
+    opt.textContent = s.label + (s.key === 'ringL' ? ' (ซ้าย)' : s.key === 'ringR' ? ' (ขวา)' : '');
+    if (s.key === (parsed.slotGuess || currentSlot)) opt.selected = true;
+    slotSelect.appendChild(opt);
+  });
+  slotRow.appendChild(slotSelect);
+  if (parsed.slotGuess) {
+    const guessed = document.createElement('span');
+    guessed.textContent = '(เดาจากรูป — เปลี่ยนได้)';
+    slotRow.appendChild(guessed);
+  }
+  right.appendChild(slotRow);
+
+  const warning = document.createElement('p');
+  warning.className = 'ocr-warning';
+  warning.textContent = '⚠ ค่าเดิมในช่องที่เลือกจะถูกแทนที่ด้วยค่าใหม่นี้';
+  right.appendChild(warning);
+
+  const actions = document.createElement('div');
+  actions.className = 'ocr-actions';
+  const applyBtn = document.createElement('button');
+  applyBtn.className = 'ocr-btn primary';
+  applyBtn.type = 'button';
+  applyBtn.textContent = '✓ ใส่ลงช่องนี้';
+  applyBtn.addEventListener('click', () => {
+    const slotKey = slotSelect.value;
+    state[slotKey] = reviewRows.filter(r => (r.value || 0) !== 0).map(r => ({ stat: r.stat, value: r.value }));
+    currentSlot = slotKey;
+    persistPresets();
+    renderPaperdoll();
+    renderJewelRow();
+    renderEditor();
+    recalc();
+    ocrShow('idle');
+    URL.revokeObjectURL(imgURL);
+  });
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'ocr-btn';
+  cancelBtn.type = 'button';
+  cancelBtn.textContent = 'ยกเลิก';
+  cancelBtn.addEventListener('click', () => {
+    ocrShow('idle');
+    URL.revokeObjectURL(imgURL);
+  });
+  actions.appendChild(applyBtn);
+  actions.appendChild(cancelBtn);
+  right.appendChild(actions);
+
+  grid.appendChild(right);
+  ocrReview.appendChild(grid);
+  ocrShow('review');
+}
+
+ocrZone.addEventListener('click', (e) => {
+  // don't hijack clicks inside the review UI
+  if (!ocrReview.hidden || ocrBusy) return;
+  ocrFileInput.click();
+});
+ocrZone.addEventListener('keydown', (e) => {
+  if ((e.key === 'Enter' || e.key === ' ') && ocrReview.hidden && !ocrBusy) {
+    e.preventDefault();
+    ocrFileInput.click();
+  }
+});
+ocrFileInput.addEventListener('change', (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (file) handleItemImage(file);
+  e.target.value = '';
+});
+
+document.addEventListener('paste', (e) => {
+  const items = e.clipboardData && e.clipboardData.items;
+  if (!items) return;
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      e.preventDefault();
+      handleItemImage(item.getAsFile());
+      return;
+    }
+  }
+});
+
+ocrZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  ocrZone.classList.add('dragover');
+});
+ocrZone.addEventListener('dragleave', () => ocrZone.classList.remove('dragover'));
+ocrZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  ocrZone.classList.remove('dragover');
+  const file = e.dataTransfer.files && e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) handleItemImage(file);
+});
 
 renderPresetBar();
 renderPaperdoll();
