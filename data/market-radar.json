@@ -1,20 +1,20 @@
 {
   "version": 1,
   "league": "runesofaldur",
-  "updatedAt": "2026-07-04T17:31:40.416Z",
+  "updatedAt": "2026-07-04T19:39:52.483Z",
   "source": {
     "name": "poe.ninja",
     "url": "https://poe.ninja/poe2/economy/runesofaldur/currency"
   },
   "topRisingItems": [
     {
-      "name": "Lesser Resolve Rune",
+      "name": "Lesser Desert Rune",
       "category": "Runes",
-      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUnVuZXMvSW50UnVuZVRpZXIxIiwic2NhbGUiOjEsInJlYWxtIjoicG9lMiJ9XQ/5d21464699/IntRuneTier1.png",
-      "value": 0.05,
+      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUnVuZXMvRmlyZVJ1bmVUaWVyMSIsInNjYWxlIjoxLCJyZWFsbSI6InBvZTIifV0/fdc8d95dd7/FireRuneTier1.png",
+      "value": 0.03,
       "valueCurrency": "Divine",
-      "trend7d": 1749,
-      "volumeScore": 0.48,
+      "trend7d": 1312,
+      "volumeScore": 0.54,
       "liquidityLabel": "Low",
       "mappedContent": "Runes of Aldur / Ezomyte Remnants",
       "contentKey": "runes",
@@ -24,34 +24,18 @@
       "risk": "Low liquidity; Spiking hard — price may correct"
     },
     {
-      "name": "Storm Rune",
+      "name": "Lesser Glacial Rune",
       "category": "Runes",
-      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUnVuZXMvTGlnaHRuaW5nUnVuZSIsInNjYWxlIjoxLCJyZWFsbSI6InBvZTIifV0/98319b3998/LightningRune.png",
-      "value": 0.07,
+      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUnVuZXMvQ29sZFJ1bmVUaWVyMSIsInNjYWxlIjoxLCJyZWFsbSI6InBvZTIifV0/69c7e6d2a3/ColdRuneTier1.png",
+      "value": 0.03,
       "valueCurrency": "Divine",
-      "trend7d": 894.2,
-      "volumeScore": 0.59,
+      "trend7d": 655.5,
+      "volumeScore": 0.53,
       "liquidityLabel": "Low",
       "mappedContent": "Runes of Aldur / Ezomyte Remnants",
       "contentKey": "runes",
       "confidence": 0.9,
       "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/runes",
-      "wikiUrl": "",
-      "risk": "Low liquidity; Spiking hard — price may correct"
-    },
-    {
-      "name": "Gnawed Collarbone",
-      "category": "Abyss",
-      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQWJ5c3MvR25hd2VkQ2xhdmljbGUiLCJzY2FsZSI6MSwicmVhbG0iOiJwb2UyIn1d/ff42f1ab47/GnawedClavicle.png",
-      "value": 0.02,
-      "valueCurrency": "Divine",
-      "trend7d": 525.2,
-      "volumeScore": 0.57,
-      "liquidityLabel": "Low",
-      "mappedContent": "Abyss",
-      "contentKey": "abyss",
-      "confidence": 0.85,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/abyss",
       "wikiUrl": "",
       "risk": "Low liquidity; Spiking hard — price may correct"
     },
@@ -61,8 +45,8 @@
       "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvSW5jdXJzaW9uQ3JhZnRpbmdPcmJzL1ZhYWxBcmNhbmlzdHNFdGNoZXIiLCJzY2FsZSI6MSwicmVhbG0iOiJwb2UyIn1d/3eb344ecc5/VaalArcanistsEtcher.png",
       "value": 0.01,
       "valueCurrency": "Divine",
-      "trend7d": 514.7,
-      "volumeScore": 0.6,
+      "trend7d": 470.3,
+      "volumeScore": 0.61,
       "liquidityLabel": "Low",
       "mappedContent": "",
       "contentKey": "",
@@ -72,60 +56,12 @@
       "risk": "Low liquidity; Spiking hard — price may correct"
     },
     {
-      "name": "Fenumus' Rune of Spinning",
+      "name": "Storm Rune",
       "category": "Runes",
-      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUnVuZXMvTmV3UnVuZTEzIiwic2NhbGUiOjEsInJlYWxtIjoicG9lMiJ9XQ/d0e9100877/NewRune13.png",
-      "value": 0.06,
+      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUnVuZXMvTGlnaHRuaW5nUnVuZSIsInNjYWxlIjoxLCJyZWFsbSI6InBvZTIifV0/98319b3998/LightningRune.png",
+      "value": 0.07,
       "valueCurrency": "Divine",
-      "trend7d": 381.4,
-      "volumeScore": 0.61,
-      "liquidityLabel": "Low",
-      "mappedContent": "Runes of Aldur / Ezomyte Remnants",
-      "contentKey": "runes",
-      "confidence": 0.9,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/runes",
-      "wikiUrl": "",
-      "risk": "Low liquidity; Spiking hard — price may correct"
-    },
-    {
-      "name": "Farrul's Rune of the Hunt",
-      "category": "Runes",
-      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUnVuZXMvTmV3UnVuZTkiLCJzY2FsZSI6MSwicmVhbG0iOiJwb2UyIn1d/8040a2785b/NewRune9.png",
-      "value": 0.02,
-      "valueCurrency": "Divine",
-      "trend7d": 356.9,
-      "volumeScore": 0.6,
-      "liquidityLabel": "Low",
-      "mappedContent": "Runes of Aldur / Ezomyte Remnants",
-      "contentKey": "runes",
-      "confidence": 0.9,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/runes",
-      "wikiUrl": "",
-      "risk": "Low liquidity; Spiking hard — price may correct"
-    },
-    {
-      "name": "Perfect Essence of Command",
-      "category": "Essences",
-      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRXNzZW5jZS9BbGx5RXNzZW5jZVBlcmZlY3QiLCJzY2FsZSI6MSwicmVhbG0iOiJwb2UyIn1d/0e06dceedc/AllyEssencePerfect.png",
-      "value": 0.01,
-      "valueCurrency": "Divine",
-      "trend7d": 298,
-      "volumeScore": 0.48,
-      "liquidityLabel": "Low",
-      "mappedContent": "Essence farming",
-      "contentKey": "essences",
-      "confidence": 0.8,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/essences",
-      "wikiUrl": "",
-      "risk": "Low liquidity; Spiking hard — price may correct"
-    },
-    {
-      "name": "Greater Mind Rune",
-      "category": "Runes",
-      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUnVuZXMvTWFuYVJ1bmVUaWVyMiIsInNjYWxlIjoxLCJyZWFsbSI6InBvZTIifV0/49619b701f/ManaRuneTier2.png",
-      "value": 0.01,
-      "valueCurrency": "Divine",
-      "trend7d": 293.3,
+      "trend7d": 423,
       "volumeScore": 0.59,
       "liquidityLabel": "Low",
       "mappedContent": "Runes of Aldur / Ezomyte Remnants",
@@ -136,20 +72,100 @@
       "risk": "Low liquidity; Spiking hard — price may correct"
     },
     {
-      "name": "Liquid Envy",
-      "category": "Delirium",
-      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRGlzdGlsbGVkRW1vdGlvbnMvRGlzdGlsbGVkRW52eSIsInNjYWxlIjoxLCJyZWFsbSI6InBvZTIifV0/abf219916e/DistilledEnvy.png",
-      "value": 0,
+      "name": "Resolve Rune",
+      "category": "Runes",
+      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUnVuZXMvSW50UnVuZSIsInNjYWxlIjoxLCJyZWFsbSI6InBvZTIifV0/d988cf54fc/IntRune.png",
+      "value": 0.05,
       "valueCurrency": "Divine",
-      "trend7d": 256.7,
-      "volumeScore": 0.51,
+      "trend7d": 385.9,
+      "volumeScore": 0.45,
       "liquidityLabel": "Low",
-      "mappedContent": "Delirium",
-      "contentKey": "delirium",
-      "confidence": 0.95,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "mappedContent": "Runes of Aldur / Ezomyte Remnants",
+      "contentKey": "runes",
+      "confidence": 0.9,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/runes",
       "wikiUrl": "",
-      "risk": "Low liquidity; Very cheap per unit — needs bulk selling; Spiking hard — price may correct"
+      "risk": "Low liquidity; Spiking hard — price may correct"
+    },
+    {
+      "name": "Runic Alloy",
+      "category": "Verisium",
+      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRXhwZWRpdGlvbjIvU2NyYXBWZXJpc2l1bSIsInNjYWxlIjoxLCJyZWFsbSI6InBvZTIifV0/a16ffa5970/ScrapVerisium.png",
+      "value": 0.04,
+      "valueCurrency": "Divine",
+      "trend7d": 357.7,
+      "volumeScore": 0.7,
+      "liquidityLabel": "OK",
+      "mappedContent": "Verisium content",
+      "contentKey": "verisium",
+      "confidence": 0.6,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/verisium",
+      "wikiUrl": "",
+      "risk": "Spiking hard — price may correct"
+    },
+    {
+      "name": "Gnawed Collarbone",
+      "category": "Abyss",
+      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQWJ5c3MvR25hd2VkQ2xhdmljbGUiLCJzY2FsZSI6MSwicmVhbG0iOiJwb2UyIn1d/ff42f1ab47/GnawedClavicle.png",
+      "value": 0.02,
+      "valueCurrency": "Divine",
+      "trend7d": 343.8,
+      "volumeScore": 0.55,
+      "liquidityLabel": "Low",
+      "mappedContent": "Abyss",
+      "contentKey": "abyss",
+      "confidence": 0.85,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/abyss",
+      "wikiUrl": "",
+      "risk": "Low liquidity; Spiking hard — price may correct"
+    },
+    {
+      "name": "Perfect Essence of Grounding",
+      "category": "Essences",
+      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRXNzZW5jZS9MaWdodG5pbmdSZXNpc3RhbmNlRXNzZW5jZVBlcmZlY3QiLCJzY2FsZSI6MSwicmVhbG0iOiJwb2UyIn1d/10c362c717/LightningResistanceEssencePerfect.png",
+      "value": 0.01,
+      "valueCurrency": "Divine",
+      "trend7d": 343.2,
+      "volumeScore": 0.63,
+      "liquidityLabel": "Low",
+      "mappedContent": "Essence farming",
+      "contentKey": "essences",
+      "confidence": 0.8,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/essences",
+      "wikiUrl": "",
+      "risk": "Spiking hard — price may correct"
+    },
+    {
+      "name": "Saqawal's Rune of Memory",
+      "category": "Runes",
+      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUnVuZXMvTmV3UnVuZTciLCJzY2FsZSI6MSwicmVhbG0iOiJwb2UyIn1d/6a71f0e666/NewRune7.png",
+      "value": 0.05,
+      "valueCurrency": "Divine",
+      "trend7d": 336,
+      "volumeScore": 0.59,
+      "liquidityLabel": "Low",
+      "mappedContent": "Runes of Aldur / Ezomyte Remnants",
+      "contentKey": "runes",
+      "confidence": 0.9,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/runes",
+      "wikiUrl": "",
+      "risk": "Low liquidity; Spiking hard — price may correct"
+    },
+    {
+      "name": "Fenumus' Rune of Spinning",
+      "category": "Runes",
+      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUnVuZXMvTmV3UnVuZTEzIiwic2NhbGUiOjEsInJlYWxtIjoicG9lMiJ9XQ/d0e9100877/NewRune13.png",
+      "value": 0.05,
+      "valueCurrency": "Divine",
+      "trend7d": 324.9,
+      "volumeScore": 0.63,
+      "liquidityLabel": "Low",
+      "mappedContent": "Runes of Aldur / Ezomyte Remnants",
+      "contentKey": "runes",
+      "confidence": 0.9,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/runes",
+      "wikiUrl": "",
+      "risk": "Spiking hard — price may correct"
     },
     {
       "name": "Medved's Saga",
@@ -157,7 +173,7 @@
       "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRXhwZWRpdGlvbjIvU3BlY2lhbEV4cGVkaXRpb25QYWdlMyIsInNjYWxlIjoxLCJyZWFsbSI6InBvZTIifV0/9eb5b576fc/SpecialExpeditionPage3.png",
       "value": 0.03,
       "valueCurrency": "Divine",
-      "trend7d": 251.7,
+      "trend7d": 311,
       "volumeScore": 0.69,
       "liquidityLabel": "OK",
       "mappedContent": "Expedition",
@@ -168,36 +184,20 @@
       "risk": "Spiking hard — price may correct"
     },
     {
-      "name": "Saqawal's Rune of Memory",
-      "category": "Runes",
-      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUnVuZXMvTmV3UnVuZTciLCJzY2FsZSI6MSwicmVhbG0iOiJwb2UyIn1d/6a71f0e666/NewRune7.png",
-      "value": 0.04,
+      "name": "Ancient Concentrated Liquid Fear",
+      "category": "Delirium",
+      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRGlzdGlsbGVkRW1vdGlvbnMvVGltZWxvc3RDb25jZW50cmF0ZWREaXN0aWxsZWRGZWFyIiwic2NhbGUiOjEsInJlYWxtIjoicG9lMiJ9XQ/5beedf767c/TimelostConcentratedDistilledFear.png",
+      "value": 0.01,
       "valueCurrency": "Divine",
-      "trend7d": 251.5,
-      "volumeScore": 0.57,
+      "trend7d": 273.8,
+      "volumeScore": 0.46,
       "liquidityLabel": "Low",
-      "mappedContent": "Runes of Aldur / Ezomyte Remnants",
-      "contentKey": "runes",
-      "confidence": 0.9,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/runes",
+      "mappedContent": "Delirium",
+      "contentKey": "delirium",
+      "confidence": 0.95,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
       "wikiUrl": "",
       "risk": "Low liquidity; Spiking hard — price may correct"
-    },
-    {
-      "name": "Uhtred's Sidereus",
-      "category": "Runes",
-      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRXhwZWRpdGlvbjIvR2FtZVdhcnBSdW5lVGltZSIsInNjYWxlIjoxLCJyZWFsbSI6InBvZTIifV0/63a40dc79d/GameWarpRuneTime.png",
-      "value": 0.3,
-      "valueCurrency": "Divine",
-      "trend7d": 245.9,
-      "volumeScore": 0.76,
-      "liquidityLabel": "OK",
-      "mappedContent": "Runes of Aldur / Ezomyte Remnants",
-      "contentKey": "runes",
-      "confidence": 0.9,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/runes",
-      "wikiUrl": "",
-      "risk": "Spiking hard — price may correct"
     }
   ],
   "contentRecommendations": [
@@ -209,13 +209,13 @@
       "relatedItems": [
         "Aldur's Legacy",
         "Emergent Possibility",
-        "Perfect Iron Rune",
-        "Serle's Triumph"
+        "Astrid's Creativity",
+        "Emergent Vigour"
       ],
       "reason": [
-        "97 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
-        "เทรนด์เฉลี่ยของไอเทมท็อป: +47.4% (7d)",
-        "14 รายการมีปริมาณเทรดสูง ขายออกง่าย"
+        "96 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
+        "เทรนด์เฉลี่ยของไอเทมท็อป: +49.58% (7d)",
+        "15 รายการมีปริมาณเทรดสูง ขายออกง่าย"
       ],
       "risk": "",
       "sourceUrls": [
@@ -225,7 +225,7 @@
     {
       "content": "Boss / Fragment content",
       "contentKey": "fragments",
-      "score": 90,
+      "score": 89,
       "confidence": 0.75,
       "relatedItems": [
         "The Trialmaster's Reliquary Key",
@@ -235,7 +235,7 @@
       ],
       "reason": [
         "15 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
-        "เทรนด์เฉลี่ยของไอเทมท็อป: +44.68% (7d)",
+        "เทรนด์เฉลี่ยของไอเทมท็อป: +44.59% (7d)",
         "20 รายการมีปริมาณเทรดสูง ขายออกง่าย"
       ],
       "risk": "",
@@ -251,12 +251,12 @@
       "relatedItems": [
         "Refined Sibilant Catalyst",
         "Refined Reaver Catalyst",
-        "Refined Tul's Catalyst",
-        "Skittering Catalyst"
+        "Refined Carapace Catalyst",
+        "Refined Tul's Catalyst"
       ],
       "reason": [
-        "10 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
-        "เทรนด์เฉลี่ยของไอเทมท็อป: +50.89% (7d)",
+        "11 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
+        "เทรนด์เฉลี่ยของไอเทมท็อป: +36.81% (7d)",
         "18 รายการมีปริมาณเทรดสูง ขายออกง่าย"
       ],
       "risk": "",
@@ -273,37 +273,16 @@
         "Omen of Chance",
         "Head of the King",
         "Omen of Sinistral Erasure",
-        "Omen of Sinistral Annulment"
+        "Omen of Dextral Annulment"
       ],
       "reason": [
-        "18 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
-        "เทรนด์เฉลี่ยของไอเทมท็อป: +47.51% (7d)",
+        "14 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
+        "เทรนด์เฉลี่ยของไอเทมท็อป: +45.81% (7d)",
         "21 รายการมีปริมาณเทรดสูง ขายออกง่าย"
       ],
       "risk": "Spiking hard — price may correct",
       "sourceUrls": [
         "https://poe.ninja/poe2/economy/runesofaldur/ritual"
-      ]
-    },
-    {
-      "content": "Expedition",
-      "contentKey": "expedition",
-      "score": 81,
-      "confidence": 0.85,
-      "relatedItems": [
-        "Uhtred's Saga",
-        "Perfect Flux",
-        "Aldur's Saga",
-        "Blazing Flux"
-      ],
-      "reason": [
-        "16 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
-        "เทรนด์เฉลี่ยของไอเทมท็อป: +42.27% (7d)",
-        "4 รายการมีปริมาณเทรดสูง ขายออกง่าย"
-      ],
-      "risk": "",
-      "sourceUrls": [
-        "https://poe.ninja/poe2/economy/runesofaldur/expedition"
       ]
     },
     {
@@ -314,17 +293,59 @@
       "relatedItems": [
         "Jiquani's Thesis",
         "Xopec's Soul Core of Power",
-        "Quipolatl's Soul Core of Flow",
-        "Opiloti's Soul Core of Assault"
+        "Opiloti's Soul Core of Assault",
+        "Quipolatl's Soul Core of Flow"
       ],
       "reason": [
-        "22 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
-        "เทรนด์เฉลี่ยของไอเทมท็อป: +83.05% (7d)",
+        "20 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
+        "เทรนด์เฉลี่ยของไอเทมท็อป: +64.6% (7d)",
         "6 รายการมีปริมาณเทรดสูง ขายออกง่าย"
       ],
       "risk": "Spiking hard — price may correct",
       "sourceUrls": [
         "https://poe.ninja/poe2/economy/runesofaldur/soulcores"
+      ]
+    },
+    {
+      "content": "Abyss",
+      "contentKey": "abyss",
+      "score": 80,
+      "confidence": 0.85,
+      "relatedItems": [
+        "Altered Collarbone",
+        "Preserved Cranium",
+        "Ancient Collarbone",
+        "Preserved Collarbone"
+      ],
+      "reason": [
+        "8 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
+        "เทรนด์เฉลี่ยของไอเทมท็อป: +30.2% (7d)",
+        "7 รายการมีปริมาณเทรดสูง ขายออกง่าย"
+      ],
+      "risk": "",
+      "sourceUrls": [
+        "https://poe.ninja/poe2/economy/runesofaldur/abyss"
+      ]
+    },
+    {
+      "content": "Expedition",
+      "contentKey": "expedition",
+      "score": 80,
+      "confidence": 0.85,
+      "relatedItems": [
+        "Aldur's Saga",
+        "Uhtred's Saga",
+        "Perfect Flux",
+        "Void Flux"
+      ],
+      "reason": [
+        "15 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
+        "เทรนด์เฉลี่ยของไอเทมท็อป: +39.47% (7d)",
+        "4 รายการมีปริมาณเทรดสูง ขายออกง่าย"
+      ],
+      "risk": "",
+      "sourceUrls": [
+        "https://poe.ninja/poe2/economy/runesofaldur/expedition"
       ]
     },
     {
@@ -335,12 +356,12 @@
       "relatedItems": [
         "Ancient Potent Liquid Contempt",
         "Concentrated Liquid Fear",
-        "Liquid Despair",
-        "Potent Liquid Ferocity"
+        "Ancient Potent Liquid Melancholy",
+        "Liquid Despair"
       ],
       "reason": [
-        "13 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
-        "เทรนด์เฉลี่ยของไอเทมท็อป: +78.83% (7d)",
+        "14 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
+        "เทรนด์เฉลี่ยของไอเทมท็อป: +72.27% (7d)",
         "5 รายการมีปริมาณเทรดสูง ขายออกง่าย"
       ],
       "risk": "Spiking hard — price may correct",
@@ -349,40 +370,19 @@
       ]
     },
     {
-      "content": "Abyss",
-      "contentKey": "abyss",
-      "score": 79,
-      "confidence": 0.85,
-      "relatedItems": [
-        "Altered Collarbone",
-        "Preserved Cranium",
-        "Ancient Collarbone",
-        "Ancient Rib"
-      ],
-      "reason": [
-        "8 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
-        "เทรนด์เฉลี่ยของไอเทมท็อป: +29.86% (7d)",
-        "7 รายการมีปริมาณเทรดสูง ขายออกง่าย"
-      ],
-      "risk": "",
-      "sourceUrls": [
-        "https://poe.ninja/poe2/economy/runesofaldur/abyss"
-      ]
-    },
-    {
       "content": "Essence farming",
       "contentKey": "essences",
-      "score": 78,
+      "score": 76,
       "confidence": 0.8,
       "relatedItems": [
         "Essence of the Breach",
-        "Essence of Delirium",
         "Perfect Essence of the Infinite",
-        "Perfect Essence of Opulence"
+        "Perfect Essence of Enhancement",
+        "Essence of Delirium"
       ],
       "reason": [
-        "34 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
-        "เทรนด์เฉลี่ยของไอเทมท็อป: +83.91% (7d)",
+        "35 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
+        "เทรนด์เฉลี่ยของไอเทมท็อป: +92.59% (7d)",
         "4 รายการมีปริมาณเทรดสูง ขายออกง่าย"
       ],
       "risk": "Spiking hard — price may correct",
@@ -396,14 +396,14 @@
       "score": 71,
       "confidence": 0.6,
       "relatedItems": [
-        "Transcendent Alloy",
-        "Prismatic Alloy",
         "Sovereign Alloy",
-        "Warding Starlit Ore"
+        "Warding Starlit Ore",
+        "Prismatic Alloy",
+        "Mystic Alloy"
       ],
       "reason": [
-        "14 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
-        "เทรนด์เฉลี่ยของไอเทมท็อป: +83.82% (7d)",
+        "16 รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน",
+        "เทรนด์เฉลี่ยของไอเทมท็อป: +114.75% (7d)",
         "3 รายการมีปริมาณเทรดสูง ขายออกง่าย"
       ],
       "risk": "Spiking hard — price may correct",
