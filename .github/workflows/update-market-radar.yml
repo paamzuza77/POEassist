@@ -1,0 +1,38 @@
+# สร้าง data/market-radar.json จาก poe.ninja ทุกชั่วโมง แล้ว commit กลับเข้า repo
+# GitHub Pages จะเสิร์ฟไฟล์นี้ให้แท็บ Atlas Farm Planner อ่าน
+# รันเองได้จากหน้า Actions → Update Market Radar → Run workflow
+name: Update Market Radar
+
+on:
+  workflow_dispatch:
+  schedule:
+    # นาทีที่ 17 ของทุกชั่วโมง — เลี่ยงนาที 0 ที่คิว Actions แน่นสุด
+    - cron: "17 * * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update-market-radar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Generate market radar data
+        run: node scripts/update-market-radar.mjs
+
+      - name: Commit updated market data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/market-radar.json
+          if git diff --cached --quiet; then
+            echo "No market data changes."
+          else
+            git commit -m "Update market radar data"
+            git push
+          fi

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Resistance Forge — PoE2 Elemental Resistance &amp; Rarity Calculator</title>
+<title>Build Checker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -968,25 +968,516 @@
   @media (prefers-reduced-motion: reduce) {
     .gauge-fill { transition: none; }
   }
+  /* ==================== Atlas Farm Planner ==================== */
+
+  /* ---------- Market Farm Radar ---------- */
+  .radar-panel {
+    background: linear-gradient(180deg, var(--panel-raised), var(--panel));
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px 20px;
+    margin-bottom: 22px;
+  }
+  .radar-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+  .radar-title {
+    font-family: 'Cinzel', serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--gold-glow);
+    margin: 0;
+  }
+  .radar-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin: 0 0 12px;
+  }
+  .radar-meta {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+  .radar-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+  .radar-badge.fresh { color: #8ee08e; border-color: #3f6b3f; background: rgba(90, 200, 90, 0.08); }
+  .radar-badge.stale { color: var(--lightning-glow); border-color: #6b5c2a; background: rgba(255, 217, 79, 0.07); }
+  .radar-badge.missing { color: var(--text-dim); }
+  .radar-badge.error { color: var(--fire-glow); border-color: #6b3a2a; background: rgba(255, 107, 53, 0.08); }
+  .radar-refresh { margin-left: auto; }
+  .radar-fallback {
+    color: var(--text-muted);
+    font-size: 13.5px;
+    padding: 14px;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    text-align: center;
+  }
+  .radar-errors {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--lightning-glow);
+    background: rgba(255, 217, 79, 0.06);
+    border: 1px solid rgba(255, 217, 79, 0.25);
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin-top: 12px;
+  }
+  .radar-section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 16px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .radar-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 10px;
+  }
+  .radar-item-card {
+    background: var(--panel-sunken);
+    border: 1px solid var(--border-soft);
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    min-width: 0;
+  }
+  .radar-item-card img { width: 34px; height: 34px; flex-shrink: 0; object-fit: contain; }
+  .radar-item-body { min-width: 0; flex: 1; }
+  .radar-item-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .radar-item-cat { font-size: 10.5px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+  .radar-item-line {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    flex-wrap: wrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .radar-price { color: var(--gold-glow); font-weight: 700; }
+  .trend-up { color: #8ee08e; }
+  .trend-down { color: var(--fire-glow); }
+  .radar-item-map {
+    font-size: 11px;
+    color: var(--cold-glow);
+    margin-top: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .radar-item-risk { font-size: 10.5px; color: var(--lightning-glow); margin-top: 2px; }
+  .radar-liq { color: var(--text-dim); font-size: 10.5px; }
+
+  .reco-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 12px;
+  }
+  .reco-card {
+    background: var(--panel-sunken);
+    border: 1px solid var(--border-soft);
+    border-radius: 6px;
+    padding: 13px 15px;
+    min-width: 0;
+  }
+  .reco-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .reco-name { font-family: 'Cinzel', serif; font-size: 14.5px; font-weight: 700; color: var(--text); }
+  .score-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gold-glow);
+    white-space: nowrap;
+  }
+  .score-badge small { font-size: 9px; color: var(--text-dim); display: block; text-align: right; letter-spacing: 0.08em; }
+  .score-bar { height: 5px; background: var(--border-soft); border-radius: 3px; overflow: hidden; margin-bottom: 10px; }
+  .score-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold-dim), var(--gold-glow)); border-radius: 3px; }
+  .reason-list { margin: 0 0 8px; padding-left: 18px; font-size: 12px; color: var(--text-muted); }
+  .reason-list li { margin-bottom: 3px; }
+  .reco-related { font-size: 11.5px; color: var(--cold-glow); margin-bottom: 6px; }
+  .reco-foot {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--text-dim);
+  }
+  .reco-risk { font-size: 11px; color: var(--lightning-glow); margin-bottom: 6px; }
+
+  /* ---------- Farm planner toolbar & filter chips ---------- */
+  .farm-toolbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .farm-filters {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .filter-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--panel-raised);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .filter-chip:hover { border-color: var(--gold-dim); color: var(--gold-glow); }
+  .filter-chip.active {
+    border-color: var(--gold);
+    color: var(--gold-glow);
+    background: linear-gradient(160deg, #40351f, var(--panel-raised));
+  }
+
+  /* ---------- Farm cards ---------- */
+  .farm-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 14px;
+    align-items: start;
+  }
+  .farm-card {
+    background: linear-gradient(180deg, var(--panel-raised), var(--panel));
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    min-width: 0;
+  }
+  .farm-card.favorite { border-color: var(--gold-dim); box-shadow: 0 0 12px rgba(207, 167, 92, 0.14); }
+  .farm-card.is-active { border-left: 3px solid var(--gold); }
+  .farm-card.muted { opacity: 0.62; }
+  .farm-card.muted:hover { opacity: 0.9; }
+  .farm-card.warn { border-color: #6b4a2a; }
+
+  .farm-card-head {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .fav-btn {
+    background: none;
+    border: none;
+    font-size: 19px;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 0 2px;
+    line-height: 1;
+  }
+  .fav-btn.on { color: var(--gold-glow); text-shadow: 0 0 8px rgba(255, 223, 148, 0.5); }
+  .farm-name {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    color: var(--text);
+    font-family: 'Cinzel', serif;
+    font-size: 15.5px;
+    font-weight: 700;
+    padding: 3px 2px;
+    outline: none;
+  }
+  .farm-name:hover, .farm-name:focus { border-bottom-color: var(--border); }
+  .farm-active-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--text-muted);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .farm-active-label input { accent-color: var(--gold); cursor: pointer; }
+
+  .farm-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .farm-field { flex: 1; min-width: 130px; }
+  .farm-field-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 3px;
+    display: block;
+  }
+  .farm-card select,
+  .farm-card textarea,
+  .farm-card input[type="text"],
+  .farm-card input[type="date"],
+  .farm-card input[type="url"] {
+    width: 100%;
+    background: var(--panel-sunken);
+    border: 1px solid var(--border-soft);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    padding: 6px 8px;
+    outline: none;
+  }
+  .farm-card select:focus-visible,
+  .farm-card textarea:focus-visible,
+  .farm-card input:focus-visible { border-color: var(--gold-dim); }
+  .farm-card textarea { resize: vertical; min-height: 40px; line-height: 1.5; }
+  .farm-card select option { background: var(--panel-sunken); }
+
+  .status-select.st-active { color: var(--gold-glow); border-color: var(--gold-dim); }
+  .status-select.st-good { color: #8ee08e; }
+  .status-select.st-warn { color: var(--lightning-glow); }
+  .status-select.st-bad { color: var(--fire-glow); }
+  .status-select.st-muted { color: var(--text-dim); }
+
+  .mech-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+  .mech-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 12px;
+    border: 1px solid var(--border-soft);
+    background: var(--panel-sunken);
+    color: var(--text-dim);
+    cursor: pointer;
+  }
+  .mech-tag.on { border-color: var(--cold); color: var(--cold-glow); background: rgba(88, 199, 240, 0.08); }
+
+  .farm-links { margin-bottom: 8px; }
+  .farm-link-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 4px;
+    min-width: 0;
+  }
+  .farm-link-chip {
+    display: inline-block;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--cold-glow);
+    background: rgba(88, 199, 240, 0.07);
+    border: 1px solid rgba(88, 199, 240, 0.3);
+    border-radius: 14px;
+    padding: 3px 11px;
+    text-decoration: none;
+  }
+  .farm-link-chip:hover { border-color: var(--cold-glow); }
+  .farm-link-label { font-size: 11.5px; color: var(--text-muted); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .farm-link-type { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--text-dim); }
+  .add-link-btn {
+    background: none;
+    border: 1px dashed var(--border);
+    border-radius: 4px;
+    color: var(--text-dim);
+    font-size: 11px;
+    padding: 4px 10px;
+    cursor: pointer;
+    width: 100%;
+  }
+  .add-link-btn:hover { color: var(--gold-glow); border-color: var(--gold-dim); }
+  .link-edit-row { display: flex; gap: 5px; margin-bottom: 4px; flex-wrap: wrap; }
+  .link-edit-row input, .link-edit-row select { flex: 1; min-width: 90px; }
+  .link-edit-row input.link-url-input { flex: 2; min-width: 140px; }
+
+  .farm-card-foot {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-soft);
+  }
+  .farm-date-wrap { flex: 1; display: flex; align-items: center; gap: 6px; }
+  .farm-date-wrap input { width: auto; }
+  .farm-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--text-dim);
+    padding: 40px 0;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+  }
+
+  /* ---------- Patch notes ---------- */
+  .patch-btn {
+    position: fixed;
+    top: 14px;
+    right: 16px;
+    z-index: 60;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--panel-raised);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--text-muted);
+    padding: 6px 14px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  }
+  .patch-btn:hover { border-color: var(--gold-dim); color: var(--gold-glow); }
+  .patch-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 7, 14, 0.72);
+    z-index: 70;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 70px 16px 30px;
+  }
+  .patch-panel {
+    background: linear-gradient(180deg, var(--panel-raised), var(--panel));
+    border: 1px solid var(--gold-dim);
+    border-radius: 8px;
+    max-width: 520px;
+    width: 100%;
+    max-height: 75vh;
+    overflow: auto;
+    padding: 20px 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  }
+  .patch-panel h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    color: var(--gold-glow);
+    margin: 0 0 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .patch-close {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 3px 10px;
+    cursor: pointer;
+  }
+  .patch-close:hover { color: var(--fire-glow); border-color: var(--fire); }
+  .patch-entry { margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border-soft); }
+  .patch-entry:last-child { border-bottom: none; }
+  .patch-ver {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold-glow);
+  }
+  .patch-date { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); margin-left: 8px; }
+  .patch-entry ul { margin: 6px 0 0; padding-left: 18px; font-size: 12.5px; color: var(--text-muted); }
+  .patch-entry li { margin-bottom: 3px; }
+
+  @media (max-width: 640px) {
+    .farm-grid { grid-template-columns: 1fr; }
+    .patch-btn { top: 8px; right: 8px; }
+  }
 </style>
 </head>
 <body>
 <div class="app">
   <header>
     <div class="eyebrow">Path of Exile 2 · Endgame</div>
-    <h1>Resistance Forge</h1>
+    <h1>Build Checker</h1>
     <p class="subtitle">คลิกที่ช่องอุปกรณ์แบบใน inventory หรือช่อง jewel เพื่อใส่ค่าต้านทานธาตุ / Item Rarity ที่ไอเทมชิ้นนั้นให้ ระบบจะรวมทุกชิ้นให้อัตโนมัติ</p>
     <div class="header-divider"></div>
   </header>
 
+  <button class="patch-btn" type="button" id="patchNotesBtn">📜 Patch Notes</button>
+
   <nav class="tab-nav" role="tablist">
-    <button class="tab-btn" type="button" id="tabBtnForge" role="tab">Resistance Forge</button>
+    <button class="tab-btn" type="button" id="tabBtnFarm" role="tab">Atlas Farm Planner</button>
+    <button class="tab-btn" type="button" id="tabBtnForge" role="tab">Gear Stat Checker</button>
     <button class="tab-btn" type="button" id="tabBtnShop" role="tab">Build Shopping List</button>
   </nav>
 
+  <div id="pageFarm" hidden>
+
+    <!-- ===== Market Farm Radar =====
+         อ่านข้อมูลจากไฟล์ static: data/market-radar.json (สร้างโดย GitHub Actions รายชั่วโมง)
+         หน้าเว็บไม่เรียก poe.ninja ตรงๆ เด็ดขาด -->
+    <div class="radar-panel" id="radarPanel">
+      <div class="radar-head">
+        <h2 class="radar-title">Market Farm Radar</h2>
+        <span class="radar-badge missing" id="radarStatus">Loading…</span>
+        <button class="ocr-btn radar-refresh" type="button" id="radarRefreshBtn">⟳ Refresh</button>
+      </div>
+      <p class="radar-sub">Hourly market snapshot from poe.ninja economy data</p>
+      <div class="radar-meta" id="radarMeta"></div>
+      <div id="radarBody">
+        <div class="radar-fallback">กำลังโหลดข้อมูลตลาด…</div>
+      </div>
+    </div>
+
+    <!-- ===== Farm strategy cards ===== -->
+    <div class="farm-toolbar">
+      <input type="text" class="shop-filter" id="farmSearch" placeholder="🔍 ค้นหา: ชื่อฟาร์ม / tablet / mods / notes…">
+      <button class="ocr-btn primary" type="button" id="farmAddBtn">+ Add Farm Card</button>
+      <button class="ocr-btn" type="button" id="farmExportBtn">Export JSON</button>
+      <button class="ocr-btn" type="button" id="farmImportBtn">Import JSON</button>
+      <input type="file" id="farmImportFile" accept="application/json,.json" hidden>
+      <button class="ocr-btn danger" type="button" id="farmClearBtn">Clear All</button>
+    </div>
+    <div class="farm-filters" id="farmFilters"></div>
+    <div class="farm-grid" id="farmGrid"></div>
+  </div><!-- /pageFarm -->
+
   <div id="pageForge">
-  <p class="penalty-readout">บทลงโทษต้านทานธาตุ (fix): <strong>−40%</strong> · Chaos ไม่โดนบทลงโทษนี้</p>
-  <p class="penalty-note">* ค่ามาตรฐานตอนจบแคมเปญเต็มในเกมจริงคือ −60% — ค่านี้ถูกตั้งตายตัวไว้ที่ −40% ตามที่กำหนด</p>
+  <p class="penalty-readout">บทลงโทษต้านทานธาตุ (fixed): <strong>−40%</strong></p>
+  <p class="penalty-note">* ค่ามาตรฐานตอนจบแคมเปญเต็มในเกมจริงคือ −60% — ค่า −40% มาจากการที่เราเก็บ Quest Rewards ครบทั้งหมด</p>
 
   <div class="preset-bar" id="presetBar">
     <span class="preset-label">Preset</span>
@@ -997,7 +1488,7 @@
     <div class="ocr-idle" id="ocrIdle">
       <div class="ocr-big">📋 แคปรูปไอเทมจากเกมแล้วกด Ctrl+V ที่หน้านี้ได้เลย</div>
       หรือลากรูปมาวางตรงนี้ / คลิกเพื่อเลือกไฟล์<br>
-      <span class="ocr-sub">ระบบอ่านค่าต้านทาน + Rarity จากรูปให้อัตโนมัติ — ประมวลผลในเครื่องคุณ 100% ฟรี ไม่ส่งรูปขึ้นเซิร์ฟเวอร์</span>
+      <span class="ocr-sub">ระบบอ่านค่าต้านทาน + Rarity จากรูปให้อัตโนมัติ</span>
     </div>
     <div class="ocr-progress" id="ocrProgress" hidden>
       <span id="ocrProgressText">กำลังโหลดตัวอ่านรูป…</span>
@@ -1984,16 +2475,21 @@ addCorners(document.querySelector('.totals-panel'));
 /* ==================== Tabs ==================== */
 
 const TAB_KEY = 'poeAssist.activeTab.v1';
-let activeTab = localStorage.getItem(TAB_KEY) === 'shop' ? 'shop' : 'forge';
+const TAB_IDS = { farm: 'pageFarm', forge: 'pageForge', shop: 'pageShop' };
+let activeTab = localStorage.getItem(TAB_KEY);
+if (!TAB_IDS[activeTab]) activeTab = 'forge';
 
 function switchTab(tab) {
   activeTab = tab;
   try { localStorage.setItem(TAB_KEY, tab); } catch (e) { /* storage unavailable */ }
-  document.getElementById('pageForge').hidden = tab !== 'forge';
-  document.getElementById('pageShop').hidden = tab !== 'shop';
+  Object.keys(TAB_IDS).forEach(k => {
+    document.getElementById(TAB_IDS[k]).hidden = k !== tab;
+  });
+  document.getElementById('tabBtnFarm').classList.toggle('active', tab === 'farm');
   document.getElementById('tabBtnForge').classList.toggle('active', tab === 'forge');
   document.getElementById('tabBtnShop').classList.toggle('active', tab === 'shop');
 }
+document.getElementById('tabBtnFarm').addEventListener('click', () => switchTab('farm'));
 document.getElementById('tabBtnForge').addEventListener('click', () => switchTab('forge'));
 document.getElementById('tabBtnShop').addEventListener('click', () => switchTab('shop'));
 switchTab(activeTab);
@@ -2386,6 +2882,864 @@ document.getElementById('divineRateInput').addEventListener('input', (e) => {
   document.getElementById('divineRateInput').value = divineRate || '';
   renderShopTable();
 })();
+
+/* ==================== Patch Notes ==================== */
+// เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
+const PATCH_NOTES = [
+  {
+    version: '0.1',
+    date: '2026-07-04',
+    notes: [
+      'เพิ่มแท็บ Atlas Farm Planner — การ์ดจดสูตรฟาร์ม + Market Farm Radar อ่านราคาจาก poe.ninja อัปเดตรายชั่วโมง',
+      'เพิ่มเมนู Patch Notes นี้ และเปลี่ยนชื่อแท็บแรกเป็น Gear Stat Checker',
+    ],
+  },
+];
+
+(function initPatchNotes() {
+  const btn = document.getElementById('patchNotesBtn');
+  btn.textContent = '📜 Patch ' + PATCH_NOTES[0].version;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'patch-overlay';
+  overlay.hidden = true;
+
+  const panel = document.createElement('div');
+  panel.className = 'patch-panel';
+
+  const h = document.createElement('h2');
+  h.textContent = 'Patch Notes';
+  const close = document.createElement('button');
+  close.className = 'patch-close';
+  close.type = 'button';
+  close.textContent = '✕ ปิด';
+  h.appendChild(close);
+  panel.appendChild(h);
+
+  PATCH_NOTES.forEach(p => {
+    const entry = document.createElement('div');
+    entry.className = 'patch-entry';
+    const head = document.createElement('div');
+    const ver = document.createElement('span');
+    ver.className = 'patch-ver';
+    ver.textContent = 'Patch ' + p.version;
+    const date = document.createElement('span');
+    date.className = 'patch-date';
+    date.textContent = p.date;
+    head.appendChild(ver);
+    head.appendChild(date);
+    entry.appendChild(head);
+    const ul = document.createElement('ul');
+    p.notes.forEach(n => {
+      const li = document.createElement('li');
+      li.textContent = n;
+      ul.appendChild(li);
+    });
+    entry.appendChild(ul);
+    panel.appendChild(entry);
+  });
+
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+
+  btn.addEventListener('click', () => { overlay.hidden = false; });
+  close.addEventListener('click', () => { overlay.hidden = true; });
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.hidden = true; });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') overlay.hidden = true; });
+})();
+
+/* ==================== Atlas Farm Planner ==================== */
+
+const FARM_GOALS = ['EXP', 'Drop', 'Currency', 'MF', 'Boss', 'Tablet Farm', 'Waystone Farm', 'Hybrid', 'Other'];
+const FARM_MECHANICS = ['Breach', 'Delirium', 'Abyss', 'Ritual', 'Overseer', 'Irradiated', 'Runes', 'Expedition', 'Waystone', 'Other'];
+const FARM_STATUSES = ['Active', 'Testing', 'Good', 'Budget', 'Expensive', 'Too Expensive', 'Later', 'Outdated', 'Skipped'];
+const SOURCE_TYPES = ['YouTube', 'Reddit', 'Mobalytics', 'Maxroll', 'PoE Forum', 'Discord', 'Wiki', 'PoE2DB', 'Personal Test', 'Friend', 'Other'];
+// สถานะที่ทำให้การ์ดดูจาง (เลิกใช้/แพงเกิน/ข้าม)
+const MUTED_STATUSES = ['Outdated', 'Too Expensive', 'Skipped'];
+
+const FARM_CARDS_KEY = 'poe2FarmPlanner.cards.v1';
+const FARM_FILTER_KEY = 'poe2FarmPlanner.filter.v1';
+
+function newFarmCard() {
+  return {
+    id: 'f' + Date.now() + Math.random().toString(36).slice(2, 7),
+    favorite: false,
+    active: false,
+    name: '',
+    goal: '',
+    mechanics: [],
+    status: 'Testing',
+    tabletSetup: '',
+    waystoneSetup: '',
+    keyMods: '',
+    tradeLinks: [],   // { label, url }
+    sourceLinks: [],  // { name, type, url }
+    notes: '',
+    lastChecked: '',
+    createdAt: Date.now(),
+  };
+}
+
+let farmCards = (function loadFarmCards() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(FARM_CARDS_KEY));
+    if (Array.isArray(raw)) return raw.map(c => Object.assign(newFarmCard(), c));
+  } catch (e) { /* malformed storage */ }
+  return [];
+})();
+
+let farmFilter = localStorage.getItem(FARM_FILTER_KEY) || 'All';
+let farmSearchText = '';
+
+function persistFarmCards() {
+  try { localStorage.setItem(FARM_CARDS_KEY, JSON.stringify(farmCards)); } catch (e) { /* storage unavailable */ }
+}
+function persistFarmFilter() {
+  try { localStorage.setItem(FARM_FILTER_KEY, farmFilter); } catch (e) { /* storage unavailable */ }
+}
+
+// ปุ่ม filter ด้านบน: ชื่อปุ่ม → เงื่อนไขการกรอง
+const FARM_FILTERS = [
+  { label: 'All', test: () => true },
+  { label: 'Favorites', test: c => c.favorite },
+  { label: 'Active', test: c => c.active || c.status === 'Active' },
+  { label: 'EXP', test: c => c.goal === 'EXP' },
+  { label: 'Currency', test: c => c.goal === 'Currency' },
+  { label: 'Breach', test: c => c.mechanics.includes('Breach') },
+  { label: 'Delirium', test: c => c.mechanics.includes('Delirium') },
+  { label: 'Abyss', test: c => c.mechanics.includes('Abyss') },
+  { label: 'Ritual', test: c => c.mechanics.includes('Ritual') },
+  { label: 'Runes', test: c => c.mechanics.includes('Runes') },
+  { label: 'Testing', test: c => c.status === 'Testing' },
+  { label: 'Outdated', test: c => c.status === 'Outdated' },
+];
+
+function farmCardMatches(card) {
+  const f = FARM_FILTERS.find(x => x.label === farmFilter) || FARM_FILTERS[0];
+  if (!f.test(card)) return false;
+  const q = farmSearchText.trim().toLowerCase();
+  if (!q) return true;
+  const hay = [
+    card.name, card.goal, card.status, card.tabletSetup, card.waystoneSetup,
+    card.keyMods, card.notes, card.mechanics.join(' '),
+    card.tradeLinks.map(l => l.label).join(' '),
+    card.sourceLinks.map(l => l.name + ' ' + l.type).join(' '),
+  ].join(' ').toLowerCase();
+  return hay.includes(q);
+}
+
+function renderFarmFilters() {
+  const wrap = document.getElementById('farmFilters');
+  wrap.innerHTML = '';
+  FARM_FILTERS.forEach(f => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'filter-chip' + (farmFilter === f.label ? ' active' : '');
+    b.textContent = f.label;
+    b.addEventListener('click', () => {
+      farmFilter = f.label;
+      persistFarmFilter();
+      renderFarmFilters();
+      renderFarmGrid();
+    });
+    wrap.appendChild(b);
+  });
+}
+
+function statusClass(status) {
+  if (status === 'Active') return 'st-active';
+  if (status === 'Good' || status === 'Budget') return 'st-good';
+  if (status === 'Expensive' || status === 'Testing') return 'st-warn';
+  if (status === 'Too Expensive') return 'st-bad';
+  if (MUTED_STATUSES.includes(status) || status === 'Later') return 'st-muted';
+  return '';
+}
+
+function makeFarmField(labelText, node) {
+  const field = document.createElement('div');
+  field.className = 'farm-field';
+  const label = document.createElement('span');
+  label.className = 'farm-field-label';
+  label.textContent = labelText;
+  field.appendChild(label);
+  field.appendChild(node);
+  return field;
+}
+
+function makeTextarea(card, key, placeholder) {
+  const ta = document.createElement('textarea');
+  ta.rows = 2;
+  ta.placeholder = placeholder;
+  ta.value = card[key] || '';
+  ta.addEventListener('input', () => {
+    card[key] = ta.value;
+    persistFarmCards();
+  });
+  return ta;
+}
+
+// รายการลิงก์ (ใช้ทั้ง Trade Filter Links และ Source Links)
+// แสดง URL ยาวๆ เป็น chip สั้นเสมอ ไม่ให้ลิงก์ดันการ์ดพัง
+function buildFarmLinkList(card, key, opts) {
+  const wrap = document.createElement('div');
+  wrap.className = 'farm-links';
+
+  function render() {
+    wrap.innerHTML = '';
+    const label = document.createElement('span');
+    label.className = 'farm-field-label';
+    label.textContent = opts.title;
+    wrap.appendChild(label);
+
+    card[key].forEach((lnk, i) => {
+      const row = document.createElement('div');
+      row.className = 'farm-link-row';
+
+      const name = document.createElement('span');
+      name.className = 'farm-link-label';
+      name.textContent = (opts.isSource ? (lnk.name || 'Source') : (lnk.label || 'Link'));
+      name.title = name.textContent;
+      row.appendChild(name);
+
+      if (opts.isSource && lnk.type) {
+        const t = document.createElement('span');
+        t.className = 'farm-link-type';
+        t.textContent = '[' + lnk.type + ']';
+        row.appendChild(t);
+      }
+
+      if (lnk.url) {
+        const a = document.createElement('a');
+        a.className = 'farm-link-chip';
+        a.href = lnk.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = opts.chipText;
+        a.title = lnk.url;
+        row.appendChild(a);
+      }
+
+      row.appendChild(makeIconBtn('✎', 'แก้ไขลิงก์', () => renderEdit(i)));
+      row.appendChild(makeIconBtn('✕', 'ลบลิงก์', () => {
+        card[key].splice(i, 1);
+        persistFarmCards();
+        render();
+      }, true));
+      wrap.appendChild(row);
+    });
+
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'add-link-btn';
+    add.textContent = opts.addText;
+    add.addEventListener('click', () => renderEdit(-1));
+    wrap.appendChild(add);
+  }
+
+  function renderEdit(index) {
+    const editing = index >= 0 ? card[key][index] : (opts.isSource
+      ? { name: '', type: 'YouTube', url: '' }
+      : { label: '', url: '' });
+
+    render();
+    const form = document.createElement('div');
+    form.className = 'link-edit-row';
+
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.placeholder = opts.isSource ? 'ชื่อ source…' : 'ชื่อลิงก์ เช่น Tablet Filter…';
+    nameInput.value = opts.isSource ? editing.name : editing.label;
+    form.appendChild(nameInput);
+
+    let typeSelect = null;
+    if (opts.isSource) {
+      typeSelect = document.createElement('select');
+      SOURCE_TYPES.forEach(t => {
+        const o = document.createElement('option');
+        o.value = t; o.textContent = t;
+        if (t === editing.type) o.selected = true;
+        typeSelect.appendChild(o);
+      });
+      form.appendChild(typeSelect);
+    }
+
+    const urlInput = document.createElement('input');
+    urlInput.type = 'url';
+    urlInput.className = 'link-url-input';
+    urlInput.placeholder = 'https://…';
+    urlInput.value = editing.url;
+    form.appendChild(urlInput);
+
+    const save = document.createElement('button');
+    save.type = 'button';
+    save.className = 'ocr-btn primary';
+    save.textContent = '✓';
+    save.title = 'บันทึกลิงก์';
+    save.addEventListener('click', () => {
+      const entry = opts.isSource
+        ? { name: nameInput.value.trim(), type: typeSelect.value, url: urlInput.value.trim() }
+        : { label: nameInput.value.trim(), url: urlInput.value.trim() };
+      if (!entry.url && !(opts.isSource ? entry.name : entry.label)) { render(); return; }
+      if (index >= 0) card[key][index] = entry; else card[key].push(entry);
+      persistFarmCards();
+      render();
+    });
+    form.appendChild(save);
+
+    const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.className = 'ocr-btn';
+    cancel.textContent = '✕';
+    cancel.title = 'ยกเลิก';
+    cancel.addEventListener('click', render);
+    form.appendChild(cancel);
+
+    // แทรกฟอร์มไว้ก่อนปุ่ม add
+    wrap.insertBefore(form, wrap.lastChild);
+    nameInput.focus();
+  }
+
+  render();
+  return wrap;
+}
+
+function buildFarmCard(card) {
+  const el = document.createElement('div');
+
+  function applyCardClasses() {
+    el.className = 'farm-card'
+      + (card.favorite ? ' favorite' : '')
+      + (card.active || card.status === 'Active' ? ' is-active' : '')
+      + (MUTED_STATUSES.includes(card.status) ? ' muted' : '')
+      + (card.status === 'Too Expensive' || card.status === 'Expensive' ? ' warn' : '');
+  }
+  applyCardClasses();
+
+  // --- head: star + name + active checkbox ---
+  const head = document.createElement('div');
+  head.className = 'farm-card-head';
+
+  const fav = document.createElement('button');
+  fav.type = 'button';
+  fav.className = 'fav-btn' + (card.favorite ? ' on' : '');
+  fav.textContent = card.favorite ? '★' : '☆';
+  fav.title = 'ปักดาว (แสดงบนสุด)';
+  fav.addEventListener('click', () => {
+    card.favorite = !card.favorite;
+    persistFarmCards();
+    renderFarmGrid(); // favorite เปลี่ยนลำดับการ์ด ต้อง render ใหม่
+  });
+  head.appendChild(fav);
+
+  const name = document.createElement('input');
+  name.type = 'text';
+  name.className = 'farm-name';
+  name.placeholder = 'ชื่อสูตรฟาร์ม เช่น Delirium 200% + Breach…';
+  name.value = card.name || '';
+  name.addEventListener('input', () => {
+    card.name = name.value;
+    persistFarmCards();
+  });
+  head.appendChild(name);
+
+  const activeLabel = document.createElement('label');
+  activeLabel.className = 'farm-active-label';
+  const activeCb = document.createElement('input');
+  activeCb.type = 'checkbox';
+  activeCb.checked = !!card.active;
+  activeCb.addEventListener('change', () => {
+    card.active = activeCb.checked;
+    persistFarmCards();
+    applyCardClasses();
+  });
+  activeLabel.appendChild(activeCb);
+  activeLabel.appendChild(document.createTextNode('ใช้อยู่'));
+  head.appendChild(activeLabel);
+  el.appendChild(head);
+
+  // --- goal + status ---
+  const row1 = document.createElement('div');
+  row1.className = 'farm-row';
+
+  const goalSel = document.createElement('select');
+  const goalEmpty = document.createElement('option');
+  goalEmpty.value = ''; goalEmpty.textContent = '— เลือกเป้าหมาย —';
+  goalSel.appendChild(goalEmpty);
+  FARM_GOALS.forEach(g => {
+    const o = document.createElement('option');
+    o.value = g; o.textContent = g;
+    if (g === card.goal) o.selected = true;
+    goalSel.appendChild(o);
+  });
+  goalSel.addEventListener('change', () => {
+    card.goal = goalSel.value;
+    persistFarmCards();
+  });
+  row1.appendChild(makeFarmField('Goal', goalSel));
+
+  const statusSel = document.createElement('select');
+  statusSel.className = 'status-select ' + statusClass(card.status);
+  FARM_STATUSES.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s; o.textContent = s;
+    if (s === card.status) o.selected = true;
+    statusSel.appendChild(o);
+  });
+  statusSel.addEventListener('change', () => {
+    card.status = statusSel.value;
+    statusSel.className = 'status-select ' + statusClass(card.status);
+    persistFarmCards();
+    applyCardClasses();
+  });
+  row1.appendChild(makeFarmField('Status', statusSel));
+  el.appendChild(row1);
+
+  // --- mechanic tags ---
+  const tags = document.createElement('div');
+  tags.className = 'mech-tags';
+  FARM_MECHANICS.forEach(m => {
+    const t = document.createElement('button');
+    t.type = 'button';
+    t.className = 'mech-tag' + (card.mechanics.includes(m) ? ' on' : '');
+    t.textContent = m;
+    t.addEventListener('click', () => {
+      const i = card.mechanics.indexOf(m);
+      if (i >= 0) card.mechanics.splice(i, 1); else card.mechanics.push(m);
+      t.classList.toggle('on', i < 0);
+      persistFarmCards();
+    });
+    tags.appendChild(t);
+  });
+  el.appendChild(makeFarmField('Mechanics', tags));
+  el.appendChild(document.createElement('br'));
+
+  // --- setup textareas ---
+  const row2 = document.createElement('div');
+  row2.className = 'farm-row';
+  row2.appendChild(makeFarmField('Tablet Setup', makeTextarea(card, 'tabletSetup', 'เช่น ใช้ Delirium tablet 3 ใบ…')));
+  row2.appendChild(makeFarmField('Waystone Setup', makeTextarea(card, 'waystoneSetup', 'เช่น High pack size / Boss map…')));
+  el.appendChild(row2);
+  el.appendChild(makeFarmField('Key Mods', makeTextarea(card, 'keyMods', 'เช่น Irradiated, Additional Rare Monsters…')));
+
+  // --- links ---
+  el.appendChild(buildFarmLinkList(card, 'tradeLinks', {
+    title: 'Trade Filter Links',
+    chipText: '🔗 Open Trade',
+    addText: '+ เพิ่ม trade filter link',
+    isSource: false,
+  }));
+  el.appendChild(buildFarmLinkList(card, 'sourceLinks', {
+    title: 'Source Links',
+    chipText: '🔗 Open Source',
+    addText: '+ เพิ่ม source link',
+    isSource: true,
+  }));
+
+  // --- notes ---
+  el.appendChild(makeFarmField('Notes', makeTextarea(card, 'notes', 'โน้ตเพิ่มเติม เช่น ผลตอบแทนต่อชั่วโมง จุดที่ต้องระวัง…')));
+
+  // --- foot: last checked + duplicate/delete ---
+  const foot = document.createElement('div');
+  foot.className = 'farm-card-foot';
+
+  const dateWrap = document.createElement('div');
+  dateWrap.className = 'farm-date-wrap';
+  const dateLabel = document.createElement('span');
+  dateLabel.className = 'farm-field-label';
+  dateLabel.textContent = 'Last Checked';
+  const dateInput = document.createElement('input');
+  dateInput.type = 'date';
+  dateInput.value = card.lastChecked || '';
+  dateInput.addEventListener('input', () => {
+    card.lastChecked = dateInput.value;
+    persistFarmCards();
+  });
+  dateWrap.appendChild(dateLabel);
+  dateWrap.appendChild(dateInput);
+  foot.appendChild(dateWrap);
+
+  foot.appendChild(makeIconBtn('⧉', 'คัดลอกการ์ดนี้', () => {
+    const copy = JSON.parse(JSON.stringify(card));
+    copy.id = newFarmCard().id;
+    copy.createdAt = Date.now();
+    copy.name = (card.name || 'Farm') + ' (copy)';
+    const idx = farmCards.indexOf(card);
+    farmCards.splice(idx + 1, 0, copy);
+    persistFarmCards();
+    renderFarmGrid();
+  }));
+  foot.appendChild(makeIconBtn('✕', 'ลบการ์ดนี้', () => {
+    if (!confirm('ลบการ์ด "' + (card.name || 'ไม่มีชื่อ') + '" ?')) return;
+    farmCards.splice(farmCards.indexOf(card), 1);
+    persistFarmCards();
+    renderFarmGrid();
+  }, true));
+  el.appendChild(foot);
+
+  return el;
+}
+
+function renderFarmGrid() {
+  const grid = document.getElementById('farmGrid');
+  grid.innerHTML = '';
+
+  if (farmCards.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'farm-empty';
+    empty.textContent = 'ยังไม่มีสูตรฟาร์ม — กด "+ Add Farm Card" เพื่อจดสูตรแรก';
+    grid.appendChild(empty);
+    return;
+  }
+
+  // favorite ขึ้นก่อนเสมอ ภายในกลุ่มเรียงตามลำดับที่สร้าง
+  const sorted = farmCards.slice().sort((a, b) => (b.favorite - a.favorite));
+  let anyVisible = false;
+  sorted.forEach(card => {
+    if (!farmCardMatches(card)) return;
+    anyVisible = true;
+    grid.appendChild(buildFarmCard(card));
+  });
+
+  if (!anyVisible) {
+    const empty = document.createElement('div');
+    empty.className = 'farm-empty';
+    empty.textContent = 'ไม่มีการ์ดที่ตรงกับตัวกรอง/คำค้นหา';
+    grid.appendChild(empty);
+  }
+}
+
+/* ---- Farm planner: toolbar wiring ---- */
+
+document.getElementById('farmAddBtn').addEventListener('click', () => {
+  farmCards.unshift(newFarmCard());
+  persistFarmCards();
+  renderFarmGrid();
+});
+
+document.getElementById('farmSearch').addEventListener('input', (e) => {
+  farmSearchText = e.target.value;
+  renderFarmGrid();
+});
+
+document.getElementById('farmClearBtn').addEventListener('click', () => {
+  if (farmCards.length === 0) return;
+  if (confirm('ลบสูตรฟาร์มทั้งหมด ' + farmCards.length + ' การ์ด?\nการลบนี้ย้อนกลับไม่ได้ — แนะนำ Export JSON เก็บไว้ก่อน')) {
+    farmCards = [];
+    persistFarmCards();
+    renderFarmGrid();
+  }
+});
+
+document.getElementById('farmExportBtn').addEventListener('click', () => {
+  const payload = { version: 1, exportedAt: new Date().toISOString(), cards: farmCards };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'poe2-atlas-farm-planner.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+document.getElementById('farmImportBtn').addEventListener('click', () => {
+  document.getElementById('farmImportFile').click();
+});
+document.getElementById('farmImportFile').addEventListener('change', (e) => {
+  const file = e.target.files && e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      const cards = Array.isArray(data) ? data : data.cards;
+      if (!Array.isArray(cards)) throw new Error('ไม่พบการ์ดในไฟล์');
+      if (!confirm('นำเข้า ' + cards.length + ' การ์ดแทนที่ของเดิม (' + farmCards.length + ' การ์ด)?')) return;
+      farmCards = cards.map(c => Object.assign(newFarmCard(), c));
+      persistFarmCards();
+      renderFarmGrid();
+    } catch (err) {
+      alert('Import ไม่สำเร็จ: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+});
+
+renderFarmFilters();
+renderFarmGrid();
+
+/* ==================== Market Farm Radar ==================== */
+// อ่านไฟล์ static ที่ GitHub Actions สร้างไว้เท่านั้น — ห้าม fetch poe.ninja ตรงจากเบราว์เซอร์
+// ตำแหน่งไฟล์: data/market-radar.json (แก้ path ได้ที่ค่าคงที่ด้านล่าง)
+const RADAR_URL = 'data/market-radar.json';
+const RADAR_FRESH_HOURS = 3; // เก่ากว่านี้ = Stale
+
+function radarSetStatus(kind, text) {
+  const badge = document.getElementById('radarStatus');
+  badge.className = 'radar-badge ' + kind;
+  badge.textContent = text;
+}
+
+function radarFmtValue(v, cur) {
+  if (typeof v !== 'number' || isNaN(v)) return '—';
+  const num = v >= 100 ? Math.round(v).toLocaleString('en-US')
+    : v >= 1 ? v.toFixed(2)
+    : v.toPrecision(2);
+  return num + ' ' + (cur || 'Div');
+}
+
+function renderRadar(data) {
+  const body = document.getElementById('radarBody');
+  const meta = document.getElementById('radarMeta');
+  body.innerHTML = '';
+  meta.innerHTML = '';
+
+  // --- meta line: league + updated time ---
+  const updated = data.updatedAt ? new Date(data.updatedAt) : null;
+  const league = document.createElement('span');
+  league.textContent = 'League: ' + (data.league || '?');
+  meta.appendChild(league);
+  const upd = document.createElement('span');
+  upd.textContent = 'Updated: ' + (updated && !isNaN(updated) ? updated.toLocaleString('th-TH') : '—');
+  meta.appendChild(upd);
+  if (data.source && data.source.url) {
+    const src = document.createElement('a');
+    src.href = data.source.url;
+    src.target = '_blank';
+    src.rel = 'noopener noreferrer';
+    src.className = 'farm-link-chip';
+    src.textContent = 'Source: ' + (data.source.name || 'poe.ninja');
+    meta.appendChild(src);
+  }
+
+  // --- fresh / stale ---
+  if (updated && !isNaN(updated)) {
+    const ageH = (Date.now() - updated.getTime()) / 3600000;
+    if (ageH < RADAR_FRESH_HOURS) radarSetStatus('fresh', 'Fresh');
+    else radarSetStatus('stale', 'Stale · ' + Math.round(ageH) + 'h ago');
+  } else {
+    radarSetStatus('stale', 'Stale');
+  }
+
+  // --- A) top rising items ---
+  const items = Array.isArray(data.topRisingItems) ? data.topRisingItems : [];
+  const t1 = document.createElement('p');
+  t1.className = 'radar-section-title';
+  t1.textContent = '📈 Top Rising Items / Currency';
+  body.appendChild(t1);
+
+  if (items.length === 0) {
+    const none = document.createElement('div');
+    none.className = 'radar-fallback';
+    none.textContent = 'ยังไม่มีข้อมูลไอเทมในรอบนี้';
+    body.appendChild(none);
+  } else {
+    const grid = document.createElement('div');
+    grid.className = 'radar-items';
+    items.forEach(it => {
+      const cardEl = document.createElement('div');
+      cardEl.className = 'radar-item-card';
+      if (it.icon) {
+        const img = document.createElement('img');
+        img.src = it.icon;
+        img.alt = '';
+        img.loading = 'lazy';
+        img.onerror = () => img.remove();
+        cardEl.appendChild(img);
+      }
+      const b = document.createElement('div');
+      b.className = 'radar-item-body';
+
+      const nm = document.createElement('div');
+      nm.className = 'radar-item-name';
+      if (it.sourceUrl) {
+        const a = document.createElement('a');
+        a.href = it.sourceUrl;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.style.color = 'inherit';
+        a.textContent = it.name || '?';
+        nm.appendChild(a);
+      } else {
+        nm.textContent = it.name || '?';
+      }
+      nm.title = it.name || '';
+      b.appendChild(nm);
+
+      const cat = document.createElement('div');
+      cat.className = 'radar-item-cat';
+      cat.textContent = it.category || '';
+      b.appendChild(cat);
+
+      const line = document.createElement('div');
+      line.className = 'radar-item-line';
+      const price = document.createElement('span');
+      price.className = 'radar-price';
+      price.textContent = radarFmtValue(it.value, it.valueCurrency);
+      line.appendChild(price);
+      if (typeof it.trend7d === 'number') {
+        const tr = document.createElement('span');
+        tr.className = it.trend7d >= 0 ? 'trend-up' : 'trend-down';
+        tr.textContent = (it.trend7d >= 0 ? '▲ +' : '▼ ') + it.trend7d.toFixed(1) + '% 7d';
+        line.appendChild(tr);
+      }
+      if (it.liquidityLabel) {
+        const liq = document.createElement('span');
+        liq.className = 'radar-liq';
+        liq.textContent = 'liq: ' + it.liquidityLabel;
+        line.appendChild(liq);
+      }
+      b.appendChild(line);
+
+      if (it.mappedContent) {
+        const map = document.createElement('div');
+        map.className = 'radar-item-map';
+        map.textContent = '→ ' + it.mappedContent;
+        map.title = it.mappedContent;
+        b.appendChild(map);
+      }
+      if (it.risk) {
+        const rk = document.createElement('div');
+        rk.className = 'radar-item-risk';
+        rk.textContent = '⚠ ' + it.risk;
+        b.appendChild(rk);
+      }
+      cardEl.appendChild(b);
+      grid.appendChild(cardEl);
+    });
+    body.appendChild(grid);
+  }
+
+  // --- B) recommended content ---
+  const recos = Array.isArray(data.contentRecommendations) ? data.contentRecommendations : [];
+  const t2 = document.createElement('p');
+  t2.className = 'radar-section-title';
+  t2.textContent = '🗺 Recommended Content — Farm Score (ไม่ใช่ % drop chance)';
+  body.appendChild(t2);
+
+  if (recos.length === 0) {
+    const none = document.createElement('div');
+    none.className = 'radar-fallback';
+    none.textContent = 'ยังไม่มีคำแนะนำ content ในรอบนี้';
+    body.appendChild(none);
+  } else {
+    const grid = document.createElement('div');
+    grid.className = 'reco-grid';
+    recos.forEach(rc => {
+      const cardEl = document.createElement('div');
+      cardEl.className = 'reco-card';
+
+      const headEl = document.createElement('div');
+      headEl.className = 'reco-head';
+      const nm = document.createElement('span');
+      nm.className = 'reco-name';
+      nm.textContent = rc.content || '?';
+      headEl.appendChild(nm);
+      const score = document.createElement('span');
+      score.className = 'score-badge';
+      const sVal = typeof rc.score === 'number' ? Math.round(rc.score) : null;
+      score.textContent = sVal === null ? '—' : sVal + '%';
+      const sLabel = document.createElement('small');
+      sLabel.textContent = 'FARM SCORE';
+      score.appendChild(sLabel);
+      headEl.appendChild(score);
+      cardEl.appendChild(headEl);
+
+      const bar = document.createElement('div');
+      bar.className = 'score-bar';
+      const fill = document.createElement('div');
+      fill.className = 'score-bar-fill';
+      fill.style.width = (sVal === null ? 0 : Math.max(0, Math.min(100, sVal))) + '%';
+      bar.appendChild(fill);
+      cardEl.appendChild(bar);
+
+      if (Array.isArray(rc.reason) && rc.reason.length) {
+        const ul = document.createElement('ul');
+        ul.className = 'reason-list';
+        rc.reason.forEach(r => {
+          const li = document.createElement('li');
+          li.textContent = r;
+          ul.appendChild(li);
+        });
+        cardEl.appendChild(ul);
+      }
+
+      if (Array.isArray(rc.relatedItems) && rc.relatedItems.length) {
+        const rel = document.createElement('div');
+        rel.className = 'reco-related';
+        rel.textContent = 'Items: ' + rc.relatedItems.join(', ');
+        cardEl.appendChild(rel);
+      }
+
+      if (rc.risk) {
+        const rk = document.createElement('div');
+        rk.className = 'reco-risk';
+        rk.textContent = '⚠ ' + rc.risk;
+        cardEl.appendChild(rk);
+      }
+
+      const footEl = document.createElement('div');
+      footEl.className = 'reco-foot';
+      if (typeof rc.confidence === 'number') {
+        const cf = document.createElement('span');
+        cf.textContent = 'confidence ' + Math.round(rc.confidence * 100) + '%';
+        footEl.appendChild(cf);
+      }
+      (Array.isArray(rc.sourceUrls) ? rc.sourceUrls : []).forEach((u, i) => {
+        if (!u) return;
+        const a = document.createElement('a');
+        a.className = 'farm-link-chip';
+        a.href = u;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = 'source ' + (i + 1);
+        footEl.appendChild(a);
+      });
+      cardEl.appendChild(footEl);
+      grid.appendChild(cardEl);
+    });
+    body.appendChild(grid);
+  }
+
+  // --- generator errors (บางหมวดดึงไม่สำเร็จ) ---
+  if (Array.isArray(data.errors) && data.errors.length) {
+    const err = document.createElement('div');
+    err.className = 'radar-errors';
+    err.textContent = '⚠ บางหมวดดึงข้อมูลไม่สำเร็จ: ' + data.errors.join(' · ');
+    body.appendChild(err);
+  }
+}
+
+async function loadRadar() {
+  radarSetStatus('missing', 'Loading…');
+  try {
+    // cache-buster กัน GitHub Pages / browser cache ค้าง
+    const res = await fetch(RADAR_URL + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) {
+      radarSetStatus('missing', 'Missing');
+      document.getElementById('radarBody').innerHTML =
+        '<div class="radar-fallback">Market Farm Radar data is not generated yet. Run the GitHub Action or use manual farm cards.</div>';
+      document.getElementById('radarMeta').innerHTML = '';
+      return;
+    }
+    let data;
+    try {
+      data = await res.json();
+    } catch (parseErr) {
+      radarSetStatus('error', 'Error');
+      document.getElementById('radarBody').innerHTML =
+        '<div class="radar-fallback">อ่านไฟล์ข้อมูลไม่สำเร็จ (JSON เสียหาย) — ลองรัน GitHub Action ใหม่</div>';
+      return;
+    }
+    renderRadar(data || {});
+  } catch (netErr) {
+    radarSetStatus('missing', 'Missing');
+    document.getElementById('radarBody').innerHTML =
+      '<div class="radar-fallback">Market Farm Radar data is not generated yet. Run the GitHub Action or use manual farm cards.</div>';
+  }
+}
+
+document.getElementById('radarRefreshBtn').addEventListener('click', loadRadar);
+loadRadar();
 </script>
 </body>
 </html>
