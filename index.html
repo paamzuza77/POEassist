@@ -8,28 +8,28 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --void: #0d0b0f;
-    --panel: #1a1620;
-    --panel-raised: #211c28;
-    --panel-sunken: #14111a;
-    --border: #35303c;
-    --border-soft: #26212d;
-    --text: #e9e3f0;
-    --text-muted: #8d84a0;
-    --text-dim: #5f5871;
+    --void: #171220;
+    --panel: #241d31;
+    --panel-raised: #2d2540;
+    --panel-sunken: #1b1526;
+    --border: #4a3f5c;
+    --border-soft: #372e48;
+    --text: #f3edde;
+    --text-muted: #b0a5c4;
+    --text-dim: #7d7295;
 
-    --fire: #e2572a;
-    --fire-glow: #ff7a4d;
-    --cold: #4fb4d8;
-    --cold-glow: #7fd4f2;
-    --lightning: #e8c94a;
-    --lightning-glow: #ffe98a;
-    --chaos: #b25ad1;
-    --chaos-glow: #d68cf0;
+    --fire: #ff6b35;
+    --fire-glow: #ff9d66;
+    --cold: #58c7f0;
+    --cold-glow: #9ce4ff;
+    --lightning: #ffd94f;
+    --lightning-glow: #fff0a3;
+    --chaos: #c96be0;
+    --chaos-glow: #e8aaff;
 
-    --gold: #b3924f;
-    --gold-glow: #e8cf98;
-    --gold-dim: #6b5a34;
+    --gold: #cfa75c;
+    --gold-glow: #ffdf94;
+    --gold-dim: #96793f;
   }
 
   * { box-sizing: border-box; }
@@ -37,10 +37,11 @@
   body {
     margin: 0;
     background:
-      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.035), transparent 55%),
-      radial-gradient(ellipse at top, #1c1722 0%, var(--void) 55%),
-      radial-gradient(ellipse at 50% 130%, rgba(0,0,0,0.65), transparent 60%),
-      repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, transparent 1px, transparent 3px);
+      radial-gradient(circle at 50% 0%, rgba(255, 223, 148, 0.07), transparent 50%),
+      radial-gradient(ellipse at top, #2b2140 0%, var(--void) 60%),
+      radial-gradient(ellipse at 15% 100%, rgba(88, 199, 240, 0.05), transparent 55%),
+      radial-gradient(ellipse at 85% 100%, rgba(255, 107, 53, 0.05), transparent 55%),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, transparent 1px, transparent 3px);
     color: var(--text);
     font-family: 'Inter', sans-serif;
     padding: 32px 20px 60px;
@@ -149,7 +150,7 @@
   .preset-tab.active {
     border-color: var(--gold);
     color: var(--gold-glow);
-    background: linear-gradient(160deg, #2a2418, var(--panel-raised));
+    background: linear-gradient(160deg, #40351f, var(--panel-raised));
     box-shadow: 0 0 10px rgba(179, 146, 79, 0.3);
   }
   .preset-save-tag {
@@ -303,7 +304,7 @@
   /* ---------- Paperdoll ---------- */
   .paperdoll-frame {
     background:
-      radial-gradient(ellipse at 50% 15%, #241f2d 0%, var(--panel) 65%);
+      radial-gradient(ellipse at 50% 15%, #352c49 0%, var(--panel) 65%);
     border: 1px solid var(--border);
     box-shadow: 0 0 0 1px var(--panel-sunken) inset, 0 8px 22px rgba(0,0,0,0.35);
     border-radius: 6px;
@@ -345,7 +346,7 @@
   .equip-slot.active {
     border-color: var(--gold);
     color: var(--gold-glow);
-    background: linear-gradient(160deg, #2a2418, var(--panel-raised));
+    background: linear-gradient(160deg, #40351f, var(--panel-raised));
     box-shadow: 0 0 0 1px var(--gold), 0 0 16px rgba(179, 146, 79, 0.35);
   }
   .equip-slot.has-data:not(.active) { border-color: #4a4258; color: var(--text-muted); }
@@ -708,69 +709,96 @@
   .tab-btn.active {
     border-color: var(--gold);
     color: var(--gold-glow);
-    background: linear-gradient(160deg, #2a2418, var(--panel-raised));
+    background: linear-gradient(160deg, #40351f, var(--panel-raised));
     box-shadow: 0 0 12px rgba(179, 146, 79, 0.3);
   }
 
-  /* ---------- Build Shopping List: summary cards ---------- */
+  /* ---------- Build Shopping List: summary ledger ---------- */
   .shop-summary {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    grid-template-columns: 250px 1fr 1fr 1fr;
     gap: 12px;
     margin-bottom: 20px;
   }
-  .summary-card {
+  @media (max-width: 1100px) { .shop-summary { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 640px) { .shop-summary { grid-template-columns: 1fr; } }
+
+  .summary-group {
     background: linear-gradient(180deg, var(--panel-raised), var(--panel));
     border: 1px solid var(--border);
     border-radius: 6px;
-    padding: 14px 16px;
+    padding: 14px 18px;
   }
-  .summary-card .sc-label {
+  .summary-group.bought-group { border-color: var(--gold-dim); box-shadow: 0 0 14px rgba(207, 167, 92, 0.12); }
+  .summary-group.remain-group { border-color: #5a4a72; }
+
+  .sg-title {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.14em;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--text-dim);
-    margin-bottom: 7px;
+    margin: 0 0 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-soft);
   }
-  .summary-card .sc-value {
+  .summary-group.bought-group .sg-title { color: var(--gold-glow); border-color: rgba(207, 167, 92, 0.3); }
+
+  .sg-row {
+    display: grid;
+    grid-template-columns: 1fr auto minmax(96px, auto);
+    align-items: baseline;
+    gap: 12px;
+    padding: 4px 0;
+  }
+  .sg-label { font-size: 12.5px; color: var(--text-muted); }
+  .sg-div {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 19px;
+    font-size: 17px;
     font-weight: 700;
     color: var(--text);
+    text-align: right;
     white-space: nowrap;
   }
-  .summary-card .sc-sub {
+  .sg-div.neg { color: var(--fire-glow); }
+  .summary-group.bought-group .sg-div { color: var(--gold-glow); }
+  .sg-thb {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-dim);
+    text-align: right;
     white-space: nowrap;
   }
-  .summary-card.gold .sc-value { color: var(--gold-glow); }
-  .summary-card .sc-value.neg { color: var(--fire-glow); }
-  .summary-card.rate-card .sc-value {
+
+  .rate-group .rate-line {
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 13px;
-    font-weight: 500;
     color: var(--text-muted);
+    margin-bottom: 10px;
   }
-  .summary-card.rate-card input {
-    width: 84px;
+  .rate-group input {
+    width: 90px;
     background: var(--panel-sunken);
     border: 1px solid var(--border);
     border-radius: 4px;
     color: var(--gold-glow);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 700;
-    padding: 5px 8px;
+    padding: 6px 9px;
     text-align: right;
     outline: none;
   }
-  .summary-card.rate-card input:focus-visible { outline: 2px solid var(--gold-glow); }
+  .rate-group input:focus-visible { outline: 2px solid var(--gold-glow); }
+  .rate-group .sg-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
 
   /* ---------- Build Shopping List: toolbar ---------- */
   .shop-toolbar {
@@ -813,7 +841,7 @@
     position: sticky;
     top: 0;
     z-index: 2;
-    background: #221d2a;
+    background: #332a47;
     font-family: 'JetBrains Mono', monospace;
     font-size: 10.5px;
     letter-spacing: 0.1em;
@@ -840,7 +868,7 @@
   .col-link { width: 160px; }
   .col-type { width: 170px; }
   .col-num { width: 96px; }
-  .col-deal { width: 250px; }
+  .col-deal { width: 320px; }
   .col-actions { width: 78px; text-align: center; }
 
   .shop-table td.col-no {
@@ -919,7 +947,10 @@
   .icon-btn.danger:hover { color: var(--fire-glow); border-color: var(--fire); }
 
   .deal-cell { display: flex; align-items: center; gap: 5px; }
-  .deal-cell .deal-price { width: 74px; flex-shrink: 0; }
+  .deal-cell .link-cell { flex: 1; min-width: 0; }
+  .deal-cell .link-cell input { min-width: 150px; }
+  .deal-cell .link-cell a { max-width: 190px; flex: 1; }
+  .shop-table .deal-cell input.deal-price { width: 58px; flex-shrink: 0; padding: 6px 4px; font-size: 11.5px; }
 
   .shop-empty {
     text-align: center;
@@ -1013,40 +1044,49 @@
 
   <div id="pageShop" hidden>
     <div class="shop-summary" id="shopSummary">
-      <div class="summary-card rate-card">
-        <div class="sc-label">เรท Divine → THB</div>
-        <div class="sc-value">1 Div = <input type="number" id="divineRateInput" step="0.01" min="0" placeholder="0"> ฿</div>
-        <div class="sc-sub">ใส่เรทเองได้ตลอด</div>
+      <div class="summary-group rate-group">
+        <p class="sg-title">💱 เรทเงิน</p>
+        <div class="rate-line">1 Div = <input type="number" id="divineRateInput" step="0.01" min="0" placeholder="0"> ฿</div>
+        <div class="sg-note" id="statusTotal">ซื้อแล้ว 0 จาก 0 รายการ</div>
       </div>
-      <div class="summary-card">
-        <div class="sc-label">Total Min Price</div>
-        <div class="sc-value" id="sumMin">0 Div</div>
-        <div class="sc-sub" id="sumMinThb">= 0 ฿</div>
+      <div class="summary-group">
+        <p class="sg-title">💰 รวมงบที่วางแผน</p>
+        <div class="sg-row">
+          <span class="sg-label">รวม Min</span>
+          <span class="sg-div" id="sumMin">0 Div</span>
+          <span class="sg-thb" id="sumMinThb">= 0 ฿</span>
+        </div>
+        <div class="sg-row">
+          <span class="sg-label">รวม Max</span>
+          <span class="sg-div" id="sumMax">0 Div</span>
+          <span class="sg-thb" id="sumMaxThb">= 0 ฿</span>
+        </div>
       </div>
-      <div class="summary-card">
-        <div class="sc-label">Total Max Price</div>
-        <div class="sc-value" id="sumMax">0 Div</div>
-        <div class="sc-sub" id="sumMaxThb">= 0 ฿</div>
+      <div class="summary-group bought-group">
+        <p class="sg-title">✓ ซื้อไปแล้ว</p>
+        <div class="sg-row">
+          <span class="sg-label">จ่ายจริงรวม</span>
+          <span class="sg-div" id="sumBought">0 Div</span>
+          <span class="sg-thb" id="sumBoughtThb">= 0 ฿</span>
+        </div>
+        <div class="sg-row">
+          <span class="sg-label">จำนวนที่ซื้อแล้ว</span>
+          <span class="sg-div" id="statusCounts">0 / 0</span>
+          <span class="sg-thb">รายการ</span>
+        </div>
       </div>
-      <div class="summary-card gold">
-        <div class="sc-label">Total Bought</div>
-        <div class="sc-value" id="sumBought">0 Div</div>
-        <div class="sc-sub" id="sumBoughtThb">= 0 ฿</div>
-      </div>
-      <div class="summary-card">
-        <div class="sc-label">Remaining Min</div>
-        <div class="sc-value" id="remMin">0 Div</div>
-        <div class="sc-sub" id="remMinThb">= 0 ฿</div>
-      </div>
-      <div class="summary-card">
-        <div class="sc-label">Remaining Max</div>
-        <div class="sc-value" id="remMax">0 Div</div>
-        <div class="sc-sub" id="remMaxThb">= 0 ฿</div>
-      </div>
-      <div class="summary-card">
-        <div class="sc-label">Status</div>
-        <div class="sc-value" id="statusCounts">0 / 0</div>
-        <div class="sc-sub" id="statusTotal">bought / not bought · 0 rows</div>
+      <div class="summary-group remain-group">
+        <p class="sg-title">⏳ ที่ขาด (เหลือต้องจ่าย)</p>
+        <div class="sg-row">
+          <span class="sg-label">ถ้าได้ราคา Min</span>
+          <span class="sg-div" id="remMin">0 Div</span>
+          <span class="sg-thb" id="remMinThb">= 0 ฿</span>
+        </div>
+        <div class="sg-row">
+          <span class="sg-label">ถ้าได้ราคา Max</span>
+          <span class="sg-div" id="remMax">0 Div</span>
+          <span class="sg-thb" id="remMaxThb">= 0 ฿</span>
+        </div>
       </div>
     </div>
 
@@ -1071,7 +1111,7 @@
             <th class="col-num">Min (Div)</th>
             <th class="col-num">Max (Div)</th>
             <th class="col-num">Bought (Div)</th>
-            <th class="col-deal">Saved Deal / Good Item</th>
+            <th class="col-deal">Link Best Item</th>
             <th class="col-actions"></th>
           </tr>
         </thead>
@@ -2033,8 +2073,9 @@ function updateShopSummary() {
   set('remMin', remMin, true); setThb('remMinThb', remMin);
   set('remMax', remMax, true); setThb('remMaxThb', remMax);
 
-  document.getElementById('statusCounts').textContent = boughtCount + ' / ' + (shopRows.length - boughtCount);
-  document.getElementById('statusTotal').textContent = 'bought / not bought · ' + shopRows.length + ' rows';
+  document.getElementById('statusCounts').textContent = boughtCount + ' / ' + shopRows.length;
+  document.getElementById('statusTotal').textContent =
+    'ซื้อแล้ว ' + boughtCount + ' จาก ' + shopRows.length + ' รายการ · เหลืออีก ' + (shopRows.length - boughtCount);
 }
 
 function makeIconBtn(symbol, label, onClick, danger) {
