@@ -1369,6 +1369,7 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
   }
   .patch-btn:hover { border-color: var(--gold-dim); color: var(--gold-glow); }
+  .patch-overlay[hidden] { display: none; }
   .patch-overlay {
     position: fixed;
     inset: 0;
@@ -2886,6 +2887,13 @@ document.getElementById('divineRateInput').addEventListener('input', (e) => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.2',
+    date: '2026-07-04',
+    notes: [
+      'แก้บั๊ก Patch Notes เด้งขึ้นเองตอนเข้าเว็บและกดปิดไม่ได้ — ตอนนี้เปิดจากปุ่มมุมขวาบนเท่านั้น',
+    ],
+  },
   {
     version: '0.1',
     date: '2026-07-04',
