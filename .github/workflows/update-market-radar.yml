@@ -1,8 +1,9 @@
-# สร้างไฟล์ data ทุกชั่วโมง แล้ว commit กลับเข้า repo:
+# สร้างไฟล์ data แล้ว commit กลับเข้า repo:
 #   - data/market-radar.json จาก poe.ninja (แท็บ Market Radar)
 #   - data/home-status.json จาก poe2db.tw (แท็บ Exile Hub — League Status + Stash Sale)
 # GitHub Pages จะเสิร์ฟไฟล์เหล่านี้ให้หน้าเว็บอ่าน — เบราว์เซอร์ไม่เรียกเว็บภายนอกเอง
-# รันเองได้จากหน้า Actions → Update Market Radar → Run workflow
+#
+# รัน 3 แบบ: กดเองจากหน้า Actions / ทุกชั่วโมง / ทุกครั้งที่ push ขึ้น main
 name: Update Market Radar
 
 on:
@@ -10,17 +11,32 @@ on:
   schedule:
     # นาทีที่ 17 ของทุกชั่วโมง — เลี่ยงนาที 0 ที่คิว Actions แน่นสุด
     - cron: "17 * * * *"
+  push:
+    branches:
+      - main
+    # สำคัญ: ตอนบอท commit ไฟล์ data กลับเข้า repo ต้องไม่ trigger ตัวเองซ้ำ (กัน loop ไม่รู้จบ)
+    # push ที่แตะแค่ไฟล์เหล่านี้จะถูกข้าม — push โค้ดปกติยังรันตามเดิม
+    paths-ignore:
+      - "data/market-radar.json"
+      - "data/home-status.json"
 
 permissions:
   contents: write
+
+# กันหลายรอบรันชนกัน (เช่น push ติดๆ กัน หรือ push ชนรอบ schedule)
+concurrency:
+  group: update-market-radar
+  cancel-in-progress: false
 
 jobs:
   update-market-radar:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
@@ -35,10 +51,12 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
           git add data/market-radar.json data/home-status.json
+
           if git diff --cached --quiet; then
             echo "No data changes."
           else
-            git commit -m "Update market radar + home status data"
+            git commit -m "Update market radar data"
             git push
           fi

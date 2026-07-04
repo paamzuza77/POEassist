@@ -1051,6 +1051,34 @@
     padding: 8px 12px;
     margin-top: 12px;
   }
+  .radar-errors summary { cursor: pointer; }
+  .radar-errors ul { margin: 8px 0 0; padding-left: 18px; color: var(--text-muted); }
+  .radar-stale-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--lightning-glow);
+    background: rgba(255, 217, 79, 0.06);
+    border: 1px dashed rgba(255, 217, 79, 0.35);
+    border-radius: 4px;
+    padding: 7px 12px;
+    margin-bottom: 12px;
+  }
+  .radar-hidden {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+  .radar-hidden span:not(.radar-hidden-hint) {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border-soft);
+    background: var(--panel-sunken);
+    color: var(--text-dim);
+  }
+  .radar-hidden-hint { font-size: 10.5px; color: var(--text-dim); }
   .radar-section-title {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
@@ -1707,10 +1735,10 @@
         <div id="stashBody"><div class="hub-missing">Loading…</div></div>
         <div class="stash-manual">
           <label>Next sale starts
-            <input type="datetime-local" id="stashStartInput">
+            <input type="datetime-local" id="stashStartInput" step="1">
           </label>
           <label>Next sale ends
-            <input type="datetime-local" id="stashEndInput">
+            <input type="datetime-local" id="stashEndInput" step="1">
           </label>
           <button class="ocr-btn primary" type="button" id="stashSaveBtn">Save</button>
           <button class="ocr-btn" type="button" id="stashResetBtn">Reset manual values</button>
@@ -1732,10 +1760,10 @@
         <span class="radar-badge missing" id="radarStatus">Loading…</span>
         <button class="ocr-btn radar-refresh" type="button" id="radarRefreshBtn">⟳ Refresh</button>
       </div>
-      <p class="radar-sub">Hourly market snapshot from poe.ninja economy data</p>
+      <p class="radar-sub">Hourly market snapshot from poe.ninja economy data — Farm Score is based on price trend, item value, liquidity, content mapping, and risk (not a drop rate)</p>
       <div class="radar-meta" id="radarMeta"></div>
       <div class="radar-filter" id="radarFilter">
-        <label>Min value
+        <label>Minimum item price to consider
           <input type="number" id="rfMin" min="0" step="0.1" value="1">
         </label>
         <label>Unit
@@ -1753,7 +1781,8 @@
         <button class="ocr-btn" type="button" id="rfResetBtn">Reset filters</button>
         <span class="rf-warn" id="rfWarn" hidden></span>
         <span class="rf-count" id="rfCount"></span>
-        <p class="rf-note">Divine filtering works by default. Other units require manual rates.</p>
+        <p class="rf-note">Only items worth at least this amount will be used to calculate farm recommendations.
+          Divine filtering works by default. Other units require manual rates.</p>
       </div>
       <div id="radarBody">
         <div class="radar-fallback">กำลังโหลดข้อมูลตลาด…</div>
@@ -3190,6 +3219,16 @@ document.getElementById('divineRateInput').addEventListener('input', (e) => {
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.4',
+    date: '2026-07-04',
+    notes: [
+      'Market Radar: คำนวณ Recommended Farm Now ใหม่ตามฟิลเตอร์ราคาขั้นต่ำ — กรองไอเทม → ให้คะแนน → จัดกลุ่มตาม content → เรียง Farm Score ใหม่ + โชว์ content ที่ถูกซ่อนเพราะต่ำกว่าเกณฑ์',
+      'Market Radar: แสดง Updated/Browser time/อายุ snapshot ชัดขึ้น (Fresh ≤ 2 ชม.) + error จาก generator พับเก็บไว้ debug ได้',
+      'Exile Hub: ตัวนับ Running for / Stash sale countdown เดินสดทุกวินาที (เช่น 35d 9h 24m 12s) และช่องกรอกเวลาใส่วินาทีได้',
+      'Workflow อัปเดตข้อมูลรันตอน push ขึ้น main ด้วย และกัน loop ตอนบอท commit ไฟล์ data',
+    ],
+  },
+  {
     version: '0.3',
     date: '2026-07-04',
     notes: [
@@ -3790,7 +3829,7 @@ renderFarmGrid();
 // อ่านไฟล์ static ที่ GitHub Actions สร้างไว้เท่านั้น — ห้าม fetch poe.ninja ตรงจากเบราว์เซอร์
 // ตำแหน่งไฟล์: data/market-radar.json (แก้ path ได้ที่ค่าคงที่ด้านล่าง)
 const RADAR_URL = 'data/market-radar.json';
-const RADAR_FRESH_HOURS = 3; // เก่ากว่านี้ = Stale
+const RADAR_FRESH_HOURS = 2; // เก่ากว่านี้ = Stale
 
 /* ---- Value filter (data/market-radar.json ใช้ Divine เป็นฐาน) ----
    เรทแปลงหน่วยอื่น (Exalted/Chaos/THB) ผู้ใช้กรอกเองเท่านั้น — ห้าม hardcode เรทเด็ดขาด */
@@ -3839,6 +3878,60 @@ function radarMinDivine() {
   return null;
 }
 
+/* ---- Farm Score (0-1 ต่อไอเทม) ----
+   ไม่ใช่อัตราดรอปจริง — คำนวณจาก price trend + มูลค่าไอเทม + สภาพคล่อง + risk
+   trend ถูก cap ไว้กัน spike ของไอเทมสภาพคล่องต่ำครองอันดับ */
+function radarItemScore(it) {
+  const t = Math.max(-50, Math.min(150, typeof it.trend7d === 'number' ? it.trend7d : 0));
+  const trendScore = (t + 50) / 200;                              // 0..1
+  const v = typeof it.value === 'number' && it.value > 0 ? it.value : 0;
+  const valueScore = Math.min(1, Math.log10(1 + v * 10) / 2);     // log scale: ~10 Div = เต็ม
+  const volScore = typeof it.volumeScore === 'number' ? Math.max(0, Math.min(1, it.volumeScore)) : 0.3;
+  let s = trendScore * 0.45 + valueScore * 0.25 + volScore * 0.30;
+  if (it.liquidityLabel === 'Low' && t > 100) s *= 0.75;          // spike + สภาพคล่องต่ำ = หักแรง
+  else if (it.liquidityLabel === 'Low') s *= 0.9;
+  if (it.risk) s *= 0.95;
+  return Math.max(0, Math.min(1, s));
+}
+
+/* ---- Recommended Farm Now ----
+   จัดกลุ่มไอเทม (ที่ผ่านฟิลเตอร์แล้ว) ตาม contentKey → คิด Farm Score ต่อ content
+   → เรียงจากมากไปน้อย — คำนวณใหม่ทุกครั้งที่ฟิลเตอร์เปลี่ยน */
+function buildRadarRecos(items) {
+  const groups = new Map();
+  items.forEach(it => {
+    if (!it.contentKey) return;
+    if (!groups.has(it.contentKey)) groups.set(it.contentKey, []);
+    groups.get(it.contentKey).push(it);
+  });
+  const recos = [];
+  groups.forEach((list, key) => {
+    const scored = list.map(it => ({ it, s: radarItemScore(it) })).sort((a, b) => b.s - a.s);
+    const top = scored.slice(0, 3);
+    const avgScore = top.reduce((sum, x) => sum + x.s, 0) / top.length;
+    const conf = Math.max(...list.map(x => (typeof x.confidence === 'number' ? x.confidence : 0.7)));
+    const avgTrend = top.reduce((sum, x) => sum + (x.it.trend7d || 0), 0) / top.length;
+    const avgValue = top.reduce((sum, x) => sum + (x.it.value || 0), 0) / top.length;
+    const lowLiq = list.filter(x => x.liquidityLabel === 'Low').length;
+    recos.push({
+      content: list[0].mappedContent || key,
+      contentKey: key,
+      score: Math.round(avgScore * conf * 100),
+      confidence: conf,
+      relatedItems: scored.slice(0, 4).map(x => x.it.name),
+      reason: [
+        list.length + ' รายการผ่านเกณฑ์ราคาขั้นต่ำ',
+        'เทรนด์เฉลี่ยไอเทมท็อป: ' + (avgTrend >= 0 ? '+' : '') + avgTrend.toFixed(1) + '% (7d)',
+        'มูลค่าเฉลี่ยไอเทมท็อป: ' + avgValue.toFixed(2) + ' Div',
+      ],
+      risk: lowLiq > list.length / 2 ? 'ไอเทมส่วนใหญ่สภาพคล่องต่ำ — ราคา spike อาจย่อ' : '',
+      sourceUrls: [...new Set(list.map(x => x.sourceUrl).filter(Boolean))].slice(0, 2),
+    });
+  });
+  recos.sort((a, b) => b.score - a.score);
+  return recos;
+}
+
 function radarSetStatus(kind, text) {
   const badge = document.getElementById('radarStatus');
   badge.className = 'radar-badge ' + kind;
@@ -3859,14 +3952,26 @@ function renderRadar(data) {
   body.innerHTML = '';
   meta.innerHTML = '';
 
-  // --- meta line: league + updated time ---
+  // --- meta line: league + updated time + browser time + snapshot age (ไว้ debug ความสด) ---
   const updated = data.updatedAt ? new Date(data.updatedAt) : null;
+  const updatedValid = updated && !isNaN(updated);
+  const hasErrors = Array.isArray(data.errors) && data.errors.length > 0;
+  const ageH = updatedValid ? (Date.now() - updated.getTime()) / 3600000 : null;
+
   const league = document.createElement('span');
   league.textContent = 'League: ' + (data.league || '?');
   meta.appendChild(league);
   const upd = document.createElement('span');
-  upd.textContent = 'Updated: ' + (updated && !isNaN(updated) ? updated.toLocaleString('th-TH') : '—');
+  upd.textContent = 'Updated: ' + (updatedValid ? updated.toLocaleString('th-TH') : '—');
   meta.appendChild(upd);
+  const nowEl = document.createElement('span');
+  nowEl.textContent = 'Browser time: ' + new Date().toLocaleString('th-TH');
+  meta.appendChild(nowEl);
+  if (ageH !== null) {
+    const age = document.createElement('span');
+    age.textContent = 'Updated ' + (ageH < 1 ? Math.max(0, Math.round(ageH * 60)) + 'm' : Math.round(ageH) + 'h') + ' ago';
+    meta.appendChild(age);
+  }
   if (data.source && data.source.url) {
     const src = document.createElement('a');
     src.href = data.source.url;
@@ -3877,13 +3982,20 @@ function renderRadar(data) {
     meta.appendChild(src);
   }
 
-  // --- fresh / stale ---
-  if (updated && !isNaN(updated)) {
-    const ageH = (Date.now() - updated.getTime()) / 3600000;
-    if (ageH < RADAR_FRESH_HOURS) radarSetStatus('fresh', 'Fresh');
+  // --- status: Error > Fresh/Stale > Missing ---
+  if (hasErrors) {
+    radarSetStatus('error', 'Error');
+  } else if (updatedValid) {
+    if (ageH <= RADAR_FRESH_HOURS) radarSetStatus('fresh', 'Fresh');
     else radarSetStatus('stale', 'Stale · ' + Math.round(ageH) + 'h ago');
   } else {
-    radarSetStatus('stale', 'Stale');
+    radarSetStatus('missing', 'Missing');
+  }
+  if (updatedValid && ageH > RADAR_FRESH_HOURS) {
+    const staleNote = document.createElement('div');
+    staleNote.className = 'radar-stale-note';
+    staleNote.textContent = '⏰ Market snapshot is stale. Check GitHub Actions → Update Market Radar.';
+    body.appendChild(staleNote);
   }
 
   // --- value filter (threshold แปลงกลับเป็น Divine ก่อนเสมอ) ---
@@ -3892,7 +4004,7 @@ function renderRadar(data) {
   const warnEl = document.getElementById('rfWarn');
   if (minDiv === null) {
     warnEl.hidden = false;
-    warnEl.textContent = '⚠ No manual rate set for ' + radarFilter.unit + ' — filter not applied. Enter "1 Divine = …" above.';
+    warnEl.textContent = '⚠ Divine filtering works by default. Other units require manual rates — no rate set for ' + radarFilter.unit + ', filter not applied.';
   } else {
     warnEl.hidden = true;
     warnEl.textContent = '';
@@ -3905,13 +4017,13 @@ function renderRadar(data) {
   }
   const countEl = document.getElementById('rfCount');
   countEl.textContent = (minDiv !== null && minDiv > 0)
-    ? 'showing ' + items.length + ' / ' + allItems.length + ' items'
+    ? 'using ' + items.length + ' / ' + allItems.length + ' items'
     : '';
 
-  // --- A) top rising items ---
+  // --- A) top rising items (เฉพาะที่ผ่านฟิลเตอร์ — ตัวที่ใช้คิดคะแนนจริง) ---
   const t1 = document.createElement('p');
   t1.className = 'radar-section-title';
-  t1.textContent = '📈 Top Rising Items / Currency';
+  t1.textContent = '📈 Top Rising Items Used';
   body.appendChild(t1);
 
   if (items.length === 0) {
@@ -3919,7 +4031,7 @@ function renderRadar(data) {
     none.className = 'radar-fallback';
     none.textContent = allItems.length === 0
       ? 'ยังไม่มีข้อมูลไอเทมในรอบนี้'
-      : 'ไม่มีไอเทมถึงเกณฑ์มูลค่าขั้นต่ำ — ลองลดค่า Min value ดู';
+      : 'ไม่มีไอเทมถึงเกณฑ์ราคาขั้นต่ำ — ลองลดค่า Minimum item price ดู';
     body.appendChild(none);
   } else {
     const grid = document.createElement('div');
@@ -3998,31 +4110,33 @@ function renderRadar(data) {
     body.appendChild(grid);
   }
 
-  // --- B) recommended content ---
-  // ถ้าเปิดฟิลเตอร์อยู่: content ที่ไม่มีไอเทมผ่านเกณฑ์จะถูกลดความเด่น (dim) และเรียงไว้ท้ายสุด
-  let recos = Array.isArray(data.contentRecommendations) ? data.contentRecommendations : [];
-  const filterOn = minDiv !== null && minDiv > 0;
-  const passingKeys = new Set(items.map(it => it.contentKey).filter(Boolean));
-  const recoDimmed = rc => filterOn && !!rc.contentKey && !passingKeys.has(rc.contentKey);
-  if (filterOn) {
-    recos = recos.slice().sort((a, b) => (recoDimmed(a) ? 1 : 0) - (recoDimmed(b) ? 1 : 0));
-  }
+  // --- B) Recommended Farm Now ---
+  // คำนวณใหม่จากไอเทมที่ผ่านฟิลเตอร์เท่านั้น: กรอง → ให้คะแนนไอเทม → จัดกลุ่มตาม content → เรียง Farm Score ใหม่
+  // (ไม่ใช้ contentRecommendations สำเร็จรูปจาก JSON แล้ว — อันนั้นคิดจากไอเทมทุกตัวก่อนกรอง)
+  const recos = buildRadarRecos(items);
   const t2 = document.createElement('p');
   t2.className = 'radar-section-title';
-  t2.textContent = '🗺 Recommended Content — Farm Score (ไม่ใช่ % drop chance)';
+  t2.textContent = '🎯 Recommended Farm Now — Farm Score (ไม่ใช่ % drop chance)';
   body.appendChild(t2);
+  const scoreNote = document.createElement('p');
+  scoreNote.className = 'rf-note';
+  scoreNote.style.margin = '0 0 10px';
+  scoreNote.textContent = 'Farm Score คิดจาก price trend + item value + liquidity + content mapping + risk — ไม่ใช่อัตราดรอปจริง';
+  body.appendChild(scoreNote);
 
   if (recos.length === 0) {
     const none = document.createElement('div');
     none.className = 'radar-fallback';
-    none.textContent = 'ยังไม่มีคำแนะนำ content ในรอบนี้';
+    none.textContent = items.length === 0
+      ? 'ไม่มีไอเทมผ่านเกณฑ์ราคา — ยังคำนวณคำแนะนำไม่ได้'
+      : 'ไอเทมที่ผ่านเกณฑ์ไม่มีตัวไหน map กับ content ได้ในรอบนี้';
     body.appendChild(none);
   } else {
     const grid = document.createElement('div');
     grid.className = 'reco-grid';
     recos.forEach(rc => {
       const cardEl = document.createElement('div');
-      cardEl.className = 'reco-card' + (recoDimmed(rc) ? ' dimmed' : '');
+      cardEl.className = 'reco-card';
 
       const headEl = document.createElement('div');
       headEl.className = 'reco-head';
@@ -4091,23 +4205,55 @@ function renderRadar(data) {
         footEl.appendChild(a);
       });
       cardEl.appendChild(footEl);
-      if (recoDimmed(rc)) {
-        const dn = document.createElement('div');
-        dn.className = 'reco-dim-note';
-        dn.textContent = 'No related item meets the minimum value filter';
-        cardEl.appendChild(dn);
-      }
       grid.appendChild(cardEl);
     });
     body.appendChild(grid);
   }
 
-  // --- generator errors (บางหมวดดึงไม่สำเร็จ) ---
-  if (Array.isArray(data.errors) && data.errors.length) {
-    const err = document.createElement('div');
-    err.className = 'radar-errors';
-    err.textContent = '⚠ บางหมวดดึงข้อมูลไม่สำเร็จ: ' + data.errors.join(' · ');
-    body.appendChild(err);
+  // --- C) Hidden / Below Filter — content ที่หายไปเพราะไอเทมที่เกี่ยวข้องต่ำกว่าเกณฑ์ทั้งหมด ---
+  const passingKeys = new Set(items.map(it => it.contentKey).filter(Boolean));
+  const hiddenContents = [];
+  const seenKeys = new Set();
+  allItems.forEach(it => {
+    if (!it.contentKey || seenKeys.has(it.contentKey)) return;
+    seenKeys.add(it.contentKey);
+    if (!passingKeys.has(it.contentKey)) hiddenContents.push(it.mappedContent || it.contentKey);
+  });
+  if (hiddenContents.length) {
+    const t3 = document.createElement('p');
+    t3.className = 'radar-section-title';
+    t3.textContent = '🚫 Hidden / Below Filter';
+    body.appendChild(t3);
+    const wrap = document.createElement('div');
+    wrap.className = 'radar-hidden';
+    hiddenContents.forEach(name => {
+      const chip = document.createElement('span');
+      chip.textContent = name;
+      chip.title = 'ทุกไอเทมที่เกี่ยวข้องมีราคาต่ำกว่าเกณฑ์ขั้นต่ำ';
+      wrap.appendChild(chip);
+    });
+    const hint = document.createElement('span');
+    hint.className = 'radar-hidden-hint';
+    hint.textContent = '— excluded because all related items are below the minimum price filter';
+    wrap.appendChild(hint);
+    body.appendChild(wrap);
+  }
+
+  // --- generator errors (บางหมวดดึงไม่สำเร็จ) — พับเก็บไว้สำหรับ debug ---
+  if (hasErrors) {
+    const det = document.createElement('details');
+    det.className = 'radar-errors';
+    const sum = document.createElement('summary');
+    sum.textContent = '⚠ ' + data.errors.length + ' generator error(s) — คลิกเพื่อดูรายละเอียด';
+    det.appendChild(sum);
+    const ul = document.createElement('ul');
+    data.errors.forEach(e => {
+      const li = document.createElement('li');
+      li.textContent = String(e);
+      ul.appendChild(li);
+    });
+    det.appendChild(ul);
+    body.appendChild(det);
   }
 }
 
@@ -4313,15 +4459,25 @@ const HUB_RESOURCES = [
 /* ---- League Status + Stash Sale Watch ---- */
 let homeStatus = null;
 
+// แตกช่วงเวลาเป็นส่วนๆ สำหรับ ticker (วัน/ชม./นาที/วินาที)
+function formatDurationParts(ms) {
+  if (typeof ms !== 'number' || isNaN(ms) || ms < 0) ms = 0;
+  const totalSec = Math.floor(ms / 1000);
+  return {
+    days: Math.floor(totalSec / 86400),
+    hours: Math.floor((totalSec % 86400) / 3600),
+    minutes: Math.floor((totalSec % 3600) / 60),
+    seconds: totalSec % 60,
+  };
+}
+
+// รูปแบบแสดงผล: "35d 9h 24m 12s" — วัน/ชม.ไม่เติมศูนย์, นาที/วินาทีเป็น 2 หลักเสมอ
 function fmtDuration(ms) {
-  if (ms < 0) ms = 0;
-  const mins = Math.floor(ms / 60000);
-  const d = Math.floor(mins / 1440);
-  const h = Math.floor((mins % 1440) / 60);
-  const m = mins % 60;
-  if (d > 0) return d + 'd ' + h + 'h';
-  if (h > 0) return h + 'h ' + m + 'm';
-  return m + 'm';
+  const p = formatDurationParts(ms);
+  const pad = n => String(n).padStart(2, '0');
+  if (p.days > 0) return p.days + 'd ' + p.hours + 'h ' + pad(p.minutes) + 'm ' + pad(p.seconds) + 's';
+  if (p.hours > 0) return p.hours + 'h ' + pad(p.minutes) + 'm ' + pad(p.seconds) + 's';
+  return p.minutes + 'm ' + pad(p.seconds) + 's';
 }
 
 function parseIso(s) {
@@ -4372,7 +4528,9 @@ function renderLeagueCard() {
   const start = parseIso(lg.startAt);
   if (start) {
     bodyEl.appendChild(hubLine('Started at', start.toLocaleString()));
-    bodyEl.appendChild(hubLine('Running for', fmtDuration(Date.now() - start.getTime()), 'hub-big'));
+    const runLine = hubLine('Running for', fmtDuration(Date.now() - start.getTime()), 'hub-big');
+    runLine.querySelector('strong').id = 'leagueRunningVal'; // ticker อัปเดตค่านี้ทุกวินาที
+    bodyEl.appendChild(runLine);
   } else {
     bodyEl.appendChild(hubLine('Started at', 'Missing'));
   }
@@ -4389,13 +4547,35 @@ function loadStashManual() {
   return null;
 }
 
+// รวมเวลาที่ใช้จริง: manual override (localStorage) ชนะค่าจากไฟล์เสมอ
+function getStashTimes() {
+  const manual = loadStashManual();
+  const fileSale = (homeStatus && homeStatus.stashSale) || {};
+  return {
+    manual,
+    fileSale,
+    startAt: parseIso(manual && manual.nextStartAt) || parseIso(fileSale.nextStartAt),
+    endAt: parseIso(manual && manual.nextEndAt) || parseIso(fileSale.nextEndAt),
+  };
+}
+
+// เฟสปัจจุบันของ sale — ticker ใช้ตรวจว่าต้อง re-render ทั้งการ์ดไหม (เช่นข้าม upcoming → live)
+function stashPhaseNow() {
+  const { startAt, endAt } = getStashTimes();
+  const now = Date.now();
+  if (startAt && startAt.getTime() > now) return 'upcoming';
+  if (startAt && endAt && endAt.getTime() > now) return 'live';
+  if (startAt) return 'ended';
+  return 'missing';
+}
+
+let stashPhase = null;
+
 function renderStashCard() {
   const bodyEl = document.getElementById('stashBody');
   bodyEl.innerHTML = '';
-  const manual = loadStashManual();
-  const fileSale = (homeStatus && homeStatus.stashSale) || {};
-  const startAt = parseIso(manual && manual.nextStartAt) || parseIso(fileSale.nextStartAt);
-  const endAt = parseIso(manual && manual.nextEndAt) || parseIso(fileSale.nextEndAt);
+  const { manual, fileSale, startAt, endAt } = getStashTimes();
+  stashPhase = stashPhaseNow();
 
   if (manual && (manual.nextStartAt || manual.nextEndAt)) {
     setHubBadge('stashBadge', 'fresh', 'Manual');
@@ -4407,15 +4587,20 @@ function renderStashCard() {
   }
 
   const now = Date.now();
-  if (startAt && startAt.getTime() > now) {
-    bodyEl.appendChild(hubLine('Stash Tab Sales start in', fmtDuration(startAt.getTime() - now), 'hub-big'));
+  if (stashPhase === 'upcoming') {
+    const cd = hubLine('Stash Tab Sales start in', fmtDuration(startAt.getTime() - now), 'hub-big');
+    cd.querySelector('strong').id = 'stashCountVal'; // ticker อัปเดตค่านี้ทุกวินาที
+    bodyEl.appendChild(cd);
     bodyEl.appendChild(hubLine('Starts at', startAt.toLocaleString()));
     if (endAt) bodyEl.appendChild(hubLine('Ends at', endAt.toLocaleString()));
-  } else if (startAt && endAt && endAt.getTime() > now) {
-    bodyEl.appendChild(hubLine('Stash Tab Sale', 'LIVE NOW', 'hub-big hub-live'));
-    bodyEl.appendChild(hubLine('Ends in', fmtDuration(endAt.getTime() - now)));
-  } else if (startAt) {
-    bodyEl.appendChild(hubLine('Last known sale', startAt.toLocaleString()));
+  } else if (stashPhase === 'live') {
+    bodyEl.appendChild(hubLine('Stash Tab Sale', 'Stash Tab Sale is live', 'hub-big hub-live'));
+    const cd = hubLine('Ends in', fmtDuration(endAt.getTime() - now));
+    cd.querySelector('strong').id = 'stashCountVal';
+    bodyEl.appendChild(cd);
+  } else if (stashPhase === 'ended') {
+    bodyEl.appendChild(hubLine('Last known sale', startAt.toLocaleString(), ''));
+    bodyEl.appendChild(hubLine('Status', 'Ended'));
     const note = document.createElement('div');
     note.className = 'hub-missing';
     note.textContent = 'Sale date has passed — set the next sale below.';
@@ -4437,12 +4622,13 @@ function renderStashCard() {
   const startInput = document.getElementById('stashStartInput');
   const endInput = document.getElementById('stashEndInput');
 
-  // datetime-local ใช้เวลาท้องถิ่น — เก็บเป็น ISO (UTC) ใน localStorage
+  // datetime-local ใช้เวลาท้องถิ่น — เก็บเป็น ISO (UTC) ใน localStorage (รวมวินาที, step="1")
   const toLocalInput = iso => {
     const d = parseIso(iso);
     if (!d) return '';
     const pad = n => String(n).padStart(2, '0');
-    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T'
+      + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
   };
   const manual = loadStashManual();
   if (manual) {
@@ -4478,12 +4664,38 @@ async function loadHomeStatus() {
   renderStashCard();
 }
 loadHomeStatus();
-// อัปเดตตัวนับ "Running for" / countdown ทุก 30 วิ (คำนวณในเครื่อง ไม่ fetch ซ้ำ)
-setInterval(() => {
-  if (activeTab !== 'home') return;
-  renderLeagueCard();
-  renderStashCard();
-}, 30000);
+
+/* ---- Live ticker (ทุก 1 วินาที) ----
+   อัปเดตเฉพาะ text ของตัวเลขเวลา ไม่ re-render ทั้งการ์ด (จะได้ไม่กวน input)
+   ยกเว้นตอนเฟสของ sale เปลี่ยน (เช่น upcoming → live) ถึงจะ re-render การ์ด stash
+   สร้าง interval เดียวตอนโหลดหน้า — ไม่สร้างซ้ำตอนสลับแท็บ */
+let hubTickTimer = null;
+function startHubTicker() {
+  if (hubTickTimer !== null) clearInterval(hubTickTimer); // กัน interval ซ้อน
+  hubTickTimer = setInterval(() => {
+    if (activeTab !== 'home') return; // แท็บอื่นไม่ต้องคำนวณ
+    const now = Date.now();
+
+    // League: Running for = เวลาปัจจุบัน - league.startAt
+    const runEl = document.getElementById('leagueRunningVal');
+    const lg = homeStatus && homeStatus.league;
+    const leagueStart = lg && parseIso(lg.startAt);
+    if (runEl && leagueStart) runEl.textContent = fmtDuration(now - leagueStart.getTime());
+
+    // Stash: เฟสเปลี่ยน → วาดการ์ดใหม่ / เฟสเดิม → อัปเดตแค่ตัวเลข
+    if (stashPhaseNow() !== stashPhase) {
+      renderStashCard();
+      return;
+    }
+    const cdEl = document.getElementById('stashCountVal');
+    if (cdEl) {
+      const { startAt, endAt } = getStashTimes();
+      if (stashPhase === 'upcoming' && startAt) cdEl.textContent = fmtDuration(startAt.getTime() - now);
+      else if (stashPhase === 'live' && endAt) cdEl.textContent = fmtDuration(endAt.getTime() - now);
+    }
+  }, 1000);
+}
+startHubTicker();
 </script>
 </body>
 </html>
