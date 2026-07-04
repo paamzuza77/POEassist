@@ -1,5 +1,7 @@
-# สร้าง data/market-radar.json จาก poe.ninja ทุกชั่วโมง แล้ว commit กลับเข้า repo
-# GitHub Pages จะเสิร์ฟไฟล์นี้ให้แท็บ Atlas Farm Planner อ่าน
+# สร้างไฟล์ data ทุกชั่วโมง แล้ว commit กลับเข้า repo:
+#   - data/market-radar.json จาก poe.ninja (แท็บ Market Radar)
+#   - data/home-status.json จาก poe2db.tw (แท็บ Exile Hub — League Status + Stash Sale)
+# GitHub Pages จะเสิร์ฟไฟล์เหล่านี้ให้หน้าเว็บอ่าน — เบราว์เซอร์ไม่เรียกเว็บภายนอกเอง
 # รันเองได้จากหน้า Actions → Update Market Radar → Run workflow
 name: Update Market Radar
 
@@ -25,14 +27,18 @@ jobs:
       - name: Generate market radar data
         run: node scripts/update-market-radar.mjs
 
-      - name: Commit updated market data
+      # script นี้ไม่ throw — ถ้าดึง poe2db ไม่ได้จะคงไฟล์เดิมไว้ (UI ขึ้น Stale เอง)
+      - name: Generate home status data
+        run: node scripts/update-home-status.mjs
+
+      - name: Commit updated data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/market-radar.json
+          git add data/market-radar.json data/home-status.json
           if git diff --cached --quiet; then
-            echo "No market data changes."
+            echo "No data changes."
           else
-            git commit -m "Update market radar data"
+            git commit -m "Update market radar + home status data"
             git push
           fi

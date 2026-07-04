@@ -1,0 +1,55 @@
+{
+  "Divine": {
+    "type": "currency",
+    "label": "Divine Orb",
+    "icon": "assets/icons/divine-orb.png",
+    "fallback": "💎"
+  },
+  "Exalted": {
+    "type": "currency",
+    "label": "Exalted Orb",
+    "icon": "assets/icons/exalted-orb.png",
+    "fallback": "✨"
+  },
+  "Chaos": {
+    "type": "currency",
+    "label": "Chaos Orb",
+    "icon": "assets/icons/chaos-orb.png",
+    "fallback": "🌀"
+  },
+  "THB": {
+    "type": "currency",
+    "label": "Thai Baht",
+    "fallback": "฿"
+  },
+  "Exile Hub": {
+    "type": "menu",
+    "label": "Exile Hub",
+    "fallback": "🏠"
+  },
+  "Market Radar": {
+    "type": "menu",
+    "label": "Market Radar",
+    "fallback": "📡"
+  },
+  "Atlas Planner": {
+    "type": "menu",
+    "label": "Atlas Planner",
+    "fallback": "🗺️"
+  },
+  "Gear Checker": {
+    "type": "menu",
+    "label": "Gear Checker",
+    "fallback": "🛡️"
+  },
+  "Shopping List": {
+    "type": "menu",
+    "label": "Shopping List",
+    "fallback": "🛒"
+  },
+  "Patch Notes": {
+    "type": "menu",
+    "label": "Patch Notes",
+    "fallback": "📰"
+  }
+}

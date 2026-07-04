@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Build Checker</title>
+<title>Exile Assistant</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -682,36 +682,48 @@
   }
   .totals-footnote strong { color: var(--text-muted); }
 
-  /* ---------- Tab navigation ---------- */
+  /* ---------- Tab navigation (pill style) ---------- */
   .tab-nav {
     display: flex;
-    justify-content: center;
-    gap: 10px;
+    gap: 8px;
     margin: 20px 0 28px;
-    flex-wrap: wrap;
+    overflow-x: auto;
+    padding: 4px 2px 8px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+    -webkit-overflow-scrolling: touch;
   }
+  /* keeps pills centered when they fit, scrollable when they don't */
+  .tab-nav::before, .tab-nav::after { content: ''; margin: auto; }
   .tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
     font-family: 'Cinzel', serif;
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    background: var(--panel-raised);
+    background: linear-gradient(180deg, var(--panel-raised), var(--panel));
     border: 1px solid var(--border);
     color: var(--text-muted);
-    padding: 11px 28px;
-    border-radius: 4px;
+    padding: 10px 22px;
+    border-radius: 999px;
     cursor: pointer;
-    transition: border-color 0.15s, color 0.15s, background 0.15s, box-shadow 0.15s;
+    transition: border-color 0.15s, color 0.15s, background 0.15s, box-shadow 0.15s, transform 0.1s;
   }
-  .tab-btn:hover { border-color: var(--gold-dim); color: var(--gold-glow); }
+  .tab-ico { font-size: 16px; line-height: 1; filter: saturate(0.85); }
+  .tab-btn:hover { border-color: var(--gold-dim); color: var(--gold-glow); transform: translateY(-1px); }
   .tab-btn:focus-visible { outline: 2px solid var(--gold-glow); outline-offset: 1px; }
   .tab-btn.active {
     border-color: var(--gold);
     color: var(--gold-glow);
     background: linear-gradient(160deg, #40351f, var(--panel-raised));
-    box-shadow: 0 0 12px rgba(179, 146, 79, 0.3);
+    box-shadow: 0 0 14px rgba(179, 146, 79, 0.35), 0 0 26px rgba(88, 199, 240, 0.12), inset 0 1px 0 rgba(255, 223, 148, 0.15);
   }
+  .tab-btn.active .tab-ico { filter: none; }
 
   /* ---------- Build Shopping List: summary ledger ---------- */
   .shop-summary {
@@ -1352,6 +1364,225 @@
     border-radius: 6px;
   }
 
+  /* ---------- Exile Hub ---------- */
+  .hub-hero {
+    background:
+      radial-gradient(ellipse at 50% -20%, rgba(255, 223, 148, 0.10), transparent 60%),
+      linear-gradient(180deg, var(--panel-raised), var(--panel));
+    border: 1px solid var(--gold-dim);
+    border-radius: 8px;
+    padding: 28px 26px 24px;
+    text-align: center;
+    margin-bottom: 18px;
+    box-shadow: 0 0 24px rgba(179, 146, 79, 0.12);
+  }
+  .hub-hero h2 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(22px, 3.2vw, 30px);
+    margin: 0 0 6px;
+    background: linear-gradient(135deg, #f5e9c8 0%, #cbab6a 55%, #8a6f3f 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hub-hero .hub-tagline { color: var(--text-muted); font-size: 14px; margin: 0 0 10px; }
+  .hub-hero .hub-desc {
+    color: var(--text-dim);
+    font-size: 12.5px;
+    line-height: 1.7;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .hub-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 860px) { .hub-grid { grid-template-columns: 1fr; } }
+  .hub-card {
+    background: linear-gradient(180deg, var(--panel-raised), var(--panel));
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    min-width: 0;
+  }
+  .hub-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .hub-card-head h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    color: var(--text);
+    margin: 0;
+    flex: 1;
+  }
+  .hub-card-ico { font-size: 22px; line-height: 1; }
+  .hub-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 4px 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .hub-line strong { color: var(--text); font-weight: 600; text-align: right; }
+  .hub-line .hub-big {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--gold-glow);
+  }
+  .hub-line .hub-live { color: #8ee08e; }
+  .hub-missing { color: var(--text-dim); font-size: 12.5px; padding: 8px 0; }
+  .stash-manual {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border-soft);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: end;
+  }
+  .stash-manual label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .stash-manual input[type="datetime-local"] {
+    background: var(--panel-sunken);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 6px 8px;
+    color-scheme: dark;
+  }
+  .hub-section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 17px;
+    color: var(--gold-glow);
+    margin: 0 0 12px;
+  }
+  .link-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 12px;
+  }
+  .link-card {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--panel-sunken);
+    border: 1px solid var(--border-soft);
+    border-radius: 6px;
+    padding: 13px 14px;
+    min-width: 0;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .link-card:hover { border-color: var(--gold-dim); box-shadow: 0 0 12px rgba(207, 167, 92, 0.12); }
+  .link-card-ico {
+    font-size: 26px;
+    line-height: 1;
+    width: 32px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .link-card-ico img { width: 28px; height: 28px; object-fit: contain; }
+  .link-card-body { flex: 1; min-width: 0; }
+  .link-card-title { font-size: 13.5px; font-weight: 600; color: var(--text); }
+  .link-card-cat {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cold-glow);
+    border: 1px solid rgba(88, 199, 240, 0.3);
+    border-radius: 10px;
+    padding: 1px 8px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .link-card-desc { font-size: 11.5px; color: var(--text-dim); margin-top: 4px; line-height: 1.5; }
+  .link-open {
+    align-self: center;
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--panel-raised);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--gold-glow);
+    padding: 6px 14px;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .link-open:hover { border-color: var(--gold); box-shadow: 0 0 8px rgba(207, 167, 92, 0.25); }
+
+  /* ---------- Market Radar filters ---------- */
+  .radar-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: end;
+    background: var(--panel-sunken);
+    border: 1px solid var(--border-soft);
+    border-radius: 6px;
+    padding: 12px 14px 10px;
+    margin-bottom: 14px;
+  }
+  .radar-filter label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .radar-filter input[type="number"], .radar-filter select {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    padding: 7px 9px;
+    width: 110px;
+  }
+  .radar-filter select { width: 130px; cursor: pointer; }
+  .rf-note {
+    flex-basis: 100%;
+    margin: 4px 0 0;
+    font-size: 10.5px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .rf-warn {
+    font-size: 11.5px;
+    color: var(--lightning-glow);
+    align-self: center;
+  }
+  .rf-count { font-size: 11px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; align-self: center; }
+  .reco-card.dimmed { opacity: 0.45; }
+  .reco-card.dimmed:hover { opacity: 0.85; }
+  .reco-dim-note { font-size: 10.5px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; margin-top: 6px; }
+
   /* ---------- Patch notes ---------- */
   .patch-btn {
     position: fixed;
@@ -1425,28 +1656,73 @@
   @media (max-width: 640px) {
     .farm-grid { grid-template-columns: 1fr; }
     .patch-btn { top: 8px; right: 8px; }
+    .tab-btn { padding: 9px 16px; font-size: 12.5px; }
   }
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <div class="eyebrow">Path of Exile 2 · Endgame</div>
-    <h1>Build Checker</h1>
-    <p class="subtitle">คลิกที่ช่องอุปกรณ์แบบใน inventory หรือช่อง jewel เพื่อใส่ค่าต้านทานธาตุ / Item Rarity ที่ไอเทมชิ้นนั้นให้ ระบบจะรวมทุกชิ้นให้อัตโนมัติ</p>
+    <div class="eyebrow">Path of Exile 2 · by Usernotfoudme</div>
+    <h1>Exile Assistant</h1>
+    <p class="subtitle">Your personal PoE2 build, gear, trade, and farming assistant.</p>
     <div class="header-divider"></div>
   </header>
 
   <button class="patch-btn" type="button" id="patchNotesBtn">📜 Patch Notes</button>
 
   <nav class="tab-nav" role="tablist">
-    <button class="tab-btn" type="button" id="tabBtnFarm" role="tab">Atlas Farm Planner</button>
-    <button class="tab-btn" type="button" id="tabBtnForge" role="tab">Gear Stat Checker</button>
-    <button class="tab-btn" type="button" id="tabBtnShop" role="tab">Build Shopping List</button>
+    <button class="tab-btn" type="button" id="tabBtnHome" role="tab"><span class="tab-ico">🏠</span>Exile Hub</button>
+    <button class="tab-btn" type="button" id="tabBtnRadar" role="tab"><span class="tab-ico">📡</span>Market Radar</button>
+    <button class="tab-btn" type="button" id="tabBtnFarm" role="tab"><span class="tab-ico">🗺️</span>Atlas Planner</button>
+    <button class="tab-btn" type="button" id="tabBtnForge" role="tab"><span class="tab-ico">🛡️</span>Gear Checker</button>
+    <button class="tab-btn" type="button" id="tabBtnShop" role="tab"><span class="tab-ico">🛒</span>Shopping List</button>
   </nav>
 
-  <div id="pageFarm" hidden>
+  <div id="pageHome" hidden>
+    <div class="hub-hero">
+      <h2>Exile Assistant</h2>
+      <p class="hub-tagline">Your personal PoE2 build, gear, trade, and farming assistant.</p>
+      <p class="hub-desc">Plan your build budget, check gear resistances with OCR, keep trade links organized,
+        track atlas farming strategies, and get hourly market-driven farming recommendations — all in one place,
+        saved locally in your browser.</p>
+    </div>
 
+    <div class="hub-grid">
+      <div class="hub-card">
+        <div class="hub-card-head">
+          <span class="hub-card-ico">⚔️</span>
+          <h3>League Status</h3>
+          <span class="radar-badge missing" id="leagueBadge">Loading…</span>
+        </div>
+        <div id="leagueBody"><div class="hub-missing">Loading league info…</div></div>
+      </div>
+
+      <div class="hub-card">
+        <div class="hub-card-head">
+          <span class="hub-card-ico">⏳</span>
+          <h3>Stash Sale Watch</h3>
+          <span class="radar-badge missing" id="stashBadge">Loading…</span>
+        </div>
+        <div id="stashBody"><div class="hub-missing">Loading…</div></div>
+        <div class="stash-manual">
+          <label>Next sale starts
+            <input type="datetime-local" id="stashStartInput">
+          </label>
+          <label>Next sale ends
+            <input type="datetime-local" id="stashEndInput">
+          </label>
+          <button class="ocr-btn primary" type="button" id="stashSaveBtn">Save</button>
+          <button class="ocr-btn" type="button" id="stashResetBtn">Reset manual values</button>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="hub-section-title">⚓ Exile Resources</h2>
+    <div class="link-grid" id="linkGrid"></div>
+  </div><!-- /pageHome -->
+
+  <div id="pageRadar" hidden>
     <!-- ===== Market Farm Radar =====
          อ่านข้อมูลจากไฟล์ static: data/market-radar.json (สร้างโดย GitHub Actions รายชั่วโมง)
          หน้าเว็บไม่เรียก poe.ninja ตรงๆ เด็ดขาด -->
@@ -1458,11 +1734,34 @@
       </div>
       <p class="radar-sub">Hourly market snapshot from poe.ninja economy data</p>
       <div class="radar-meta" id="radarMeta"></div>
+      <div class="radar-filter" id="radarFilter">
+        <label>Min value
+          <input type="number" id="rfMin" min="0" step="0.1" value="1">
+        </label>
+        <label>Unit
+          <select id="rfUnit">
+            <option value="Divine">💎 Divine</option>
+            <option value="Exalted">✨ Exalted</option>
+            <option value="Chaos">🌀 Chaos</option>
+            <option value="THB">฿ THB</option>
+          </select>
+        </label>
+        <label id="rfRateWrap" hidden>1 Divine =
+          <input type="number" id="rfRate" min="0" step="0.01" placeholder="rate">
+        </label>
+        <button class="ocr-btn primary" type="button" id="rfApplyBtn">Apply filters</button>
+        <button class="ocr-btn" type="button" id="rfResetBtn">Reset filters</button>
+        <span class="rf-warn" id="rfWarn" hidden></span>
+        <span class="rf-count" id="rfCount"></span>
+        <p class="rf-note">Divine filtering works by default. Other units require manual rates.</p>
+      </div>
       <div id="radarBody">
         <div class="radar-fallback">กำลังโหลดข้อมูลตลาด…</div>
       </div>
     </div>
+  </div><!-- /pageRadar -->
 
+  <div id="pageFarm" hidden>
     <!-- ===== Farm strategy cards ===== -->
     <div class="farm-toolbar">
       <input type="text" class="shop-filter" id="farmSearch" placeholder="🔍 ค้นหา: ชื่อฟาร์ม / tablet / mods / notes…">
@@ -2437,7 +2736,7 @@ ocrFileInput.addEventListener('change', (e) => {
 });
 
 document.addEventListener('paste', (e) => {
-  if (activeTab !== 'forge') return; // OCR paste only applies to the Resistance Forge tab
+  if (activeTab !== 'forge') return; // OCR paste only applies to the Gear Stat Checker tab
   const items = e.clipboardData && e.clipboardData.items;
   if (!items) return;
   for (const item of items) {
@@ -2476,23 +2775,26 @@ addCorners(document.querySelector('.totals-panel'));
 /* ==================== Tabs ==================== */
 
 const TAB_KEY = 'poeAssist.activeTab.v1';
-const TAB_IDS = { farm: 'pageFarm', forge: 'pageForge', shop: 'pageShop' };
+const TAB_IDS = { home: 'pageHome', radar: 'pageRadar', farm: 'pageFarm', forge: 'pageForge', shop: 'pageShop' };
+const TAB_BTNS = { home: 'tabBtnHome', radar: 'tabBtnRadar', farm: 'tabBtnFarm', forge: 'tabBtnForge', shop: 'tabBtnShop' };
 let activeTab = localStorage.getItem(TAB_KEY);
-if (!TAB_IDS[activeTab]) activeTab = 'forge';
+if (!TAB_IDS[activeTab]) activeTab = 'home';
 
 function switchTab(tab) {
   activeTab = tab;
   try { localStorage.setItem(TAB_KEY, tab); } catch (e) { /* storage unavailable */ }
   Object.keys(TAB_IDS).forEach(k => {
     document.getElementById(TAB_IDS[k]).hidden = k !== tab;
+    const btn = document.getElementById(TAB_BTNS[k]);
+    btn.classList.toggle('active', k === tab);
+    btn.setAttribute('aria-selected', k === tab ? 'true' : 'false');
   });
-  document.getElementById('tabBtnFarm').classList.toggle('active', tab === 'farm');
-  document.getElementById('tabBtnForge').classList.toggle('active', tab === 'forge');
-  document.getElementById('tabBtnShop').classList.toggle('active', tab === 'shop');
+  const activeBtn = document.getElementById(TAB_BTNS[tab]);
+  if (activeBtn.scrollIntoView) activeBtn.scrollIntoView({ block: 'nearest', inline: 'nearest' });
 }
-document.getElementById('tabBtnFarm').addEventListener('click', () => switchTab('farm'));
-document.getElementById('tabBtnForge').addEventListener('click', () => switchTab('forge'));
-document.getElementById('tabBtnShop').addEventListener('click', () => switchTab('shop'));
+Object.keys(TAB_BTNS).forEach(k => {
+  document.getElementById(TAB_BTNS[k]).addEventListener('click', () => switchTab(k));
+});
 switchTab(activeTab);
 
 /* ==================== Build Shopping List ==================== */
@@ -2887,6 +3189,15 @@ document.getElementById('divineRateInput').addEventListener('input', (e) => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.3',
+    date: '2026-07-04',
+    notes: [
+      'Rebrand เป็น Exile Assistant + เพิ่มแท็บ 🏠 Exile Hub — League Status + Stash Sale Watch ดึงเวลาจริงจาก poe2db.tw ผ่าน GitHub Actions รายชั่วโมง (ตั้งเวลา sale เองทับได้) และรวมลิงก์ Exile Resources',
+      'แยก 📡 Market Radar เป็นแท็บของตัวเอง + เพิ่มฟิลเตอร์มูลค่าขั้นต่ำ (Divine เป็นค่าเริ่มต้น; Exalted/Chaos/THB ต้องกรอกเรทเอง)',
+      'ปรับเมนูเป็นแบบ pill พร้อมไอคอน เลื่อนแนวนอนได้บนจอเล็ก',
+    ],
+  },
   {
     version: '0.2',
     date: '2026-07-04',
@@ -3481,6 +3792,53 @@ renderFarmGrid();
 const RADAR_URL = 'data/market-radar.json';
 const RADAR_FRESH_HOURS = 3; // เก่ากว่านี้ = Stale
 
+/* ---- Value filter (data/market-radar.json ใช้ Divine เป็นฐาน) ----
+   เรทแปลงหน่วยอื่น (Exalted/Chaos/THB) ผู้ใช้กรอกเองเท่านั้น — ห้าม hardcode เรทเด็ดขาด */
+const RADAR_FILTER_KEY = 'poeAssist.radarFilter.v1';
+const RADAR_RATES_KEY = 'poeAssist.radarRates.v1';
+const RADAR_UNITS = ['Divine', 'Exalted', 'Chaos', 'THB'];
+
+let radarData = null; // snapshot ล่าสุดที่โหลดแล้ว — ใช้ re-render ตอนเปลี่ยนฟิลเตอร์โดยไม่ fetch ซ้ำ
+
+let radarFilter = (function loadRadarFilter() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(RADAR_FILTER_KEY));
+    if (raw && typeof raw === 'object') {
+      const min = parseFloat(raw.min);
+      return {
+        min: isNaN(min) || min < 0 ? 1 : min,
+        unit: RADAR_UNITS.includes(raw.unit) ? raw.unit : 'Divine',
+      };
+    }
+  } catch (e) { /* malformed storage */ }
+  return { min: 1, unit: 'Divine' };
+})();
+
+// เรทต่อ 1 Divine เช่น { Exalted: 60, Chaos: 900, THB: 35 } — ค่าที่ผู้ใช้กรอกเองเท่านั้น
+let radarRates = (function loadRadarRates() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(RADAR_RATES_KEY));
+    if (raw && typeof raw === 'object') return raw;
+  } catch (e) { /* malformed storage */ }
+  return {};
+})();
+
+function persistRadarFilter() {
+  try { localStorage.setItem(RADAR_FILTER_KEY, JSON.stringify(radarFilter)); } catch (e) { /* storage unavailable */ }
+}
+function persistRadarRates() {
+  try { localStorage.setItem(RADAR_RATES_KEY, JSON.stringify(radarRates)); } catch (e) { /* storage unavailable */ }
+}
+
+// คืนค่า threshold ในหน่วย Divine / 0 = ไม่กรอง / null = หน่วยอื่นแต่ไม่มีเรท (ห้ามกรอง + เตือน)
+function radarMinDivine() {
+  if (!(radarFilter.min > 0)) return 0;
+  if (radarFilter.unit === 'Divine') return radarFilter.min;
+  const rate = parseFloat(radarRates[radarFilter.unit]);
+  if (!isNaN(rate) && rate > 0) return radarFilter.min / rate;
+  return null;
+}
+
 function radarSetStatus(kind, text) {
   const badge = document.getElementById('radarStatus');
   badge.className = 'radar-badge ' + kind;
@@ -3528,8 +3886,29 @@ function renderRadar(data) {
     radarSetStatus('stale', 'Stale');
   }
 
+  // --- value filter (threshold แปลงกลับเป็น Divine ก่อนเสมอ) ---
+  const allItems = Array.isArray(data.topRisingItems) ? data.topRisingItems : [];
+  const minDiv = radarMinDivine();
+  const warnEl = document.getElementById('rfWarn');
+  if (minDiv === null) {
+    warnEl.hidden = false;
+    warnEl.textContent = '⚠ No manual rate set for ' + radarFilter.unit + ' — filter not applied. Enter "1 Divine = …" above.';
+  } else {
+    warnEl.hidden = true;
+    warnEl.textContent = '';
+  }
+  let items = allItems;
+  if (minDiv !== null && minDiv > 0) {
+    items = allItems
+      .filter(it => typeof it.value === 'number' && it.value >= minDiv)
+      .sort((a, b) => (b.value || 0) - (a.value || 0)); // re-rank ตามมูลค่าหลังกรอง
+  }
+  const countEl = document.getElementById('rfCount');
+  countEl.textContent = (minDiv !== null && minDiv > 0)
+    ? 'showing ' + items.length + ' / ' + allItems.length + ' items'
+    : '';
+
   // --- A) top rising items ---
-  const items = Array.isArray(data.topRisingItems) ? data.topRisingItems : [];
   const t1 = document.createElement('p');
   t1.className = 'radar-section-title';
   t1.textContent = '📈 Top Rising Items / Currency';
@@ -3538,7 +3917,9 @@ function renderRadar(data) {
   if (items.length === 0) {
     const none = document.createElement('div');
     none.className = 'radar-fallback';
-    none.textContent = 'ยังไม่มีข้อมูลไอเทมในรอบนี้';
+    none.textContent = allItems.length === 0
+      ? 'ยังไม่มีข้อมูลไอเทมในรอบนี้'
+      : 'ไม่มีไอเทมถึงเกณฑ์มูลค่าขั้นต่ำ — ลองลดค่า Min value ดู';
     body.appendChild(none);
   } else {
     const grid = document.createElement('div');
@@ -3618,7 +3999,14 @@ function renderRadar(data) {
   }
 
   // --- B) recommended content ---
-  const recos = Array.isArray(data.contentRecommendations) ? data.contentRecommendations : [];
+  // ถ้าเปิดฟิลเตอร์อยู่: content ที่ไม่มีไอเทมผ่านเกณฑ์จะถูกลดความเด่น (dim) และเรียงไว้ท้ายสุด
+  let recos = Array.isArray(data.contentRecommendations) ? data.contentRecommendations : [];
+  const filterOn = minDiv !== null && minDiv > 0;
+  const passingKeys = new Set(items.map(it => it.contentKey).filter(Boolean));
+  const recoDimmed = rc => filterOn && !!rc.contentKey && !passingKeys.has(rc.contentKey);
+  if (filterOn) {
+    recos = recos.slice().sort((a, b) => (recoDimmed(a) ? 1 : 0) - (recoDimmed(b) ? 1 : 0));
+  }
   const t2 = document.createElement('p');
   t2.className = 'radar-section-title';
   t2.textContent = '🗺 Recommended Content — Farm Score (ไม่ใช่ % drop chance)';
@@ -3634,7 +4022,7 @@ function renderRadar(data) {
     grid.className = 'reco-grid';
     recos.forEach(rc => {
       const cardEl = document.createElement('div');
-      cardEl.className = 'reco-card';
+      cardEl.className = 'reco-card' + (recoDimmed(rc) ? ' dimmed' : '');
 
       const headEl = document.createElement('div');
       headEl.className = 'reco-head';
@@ -3703,6 +4091,12 @@ function renderRadar(data) {
         footEl.appendChild(a);
       });
       cardEl.appendChild(footEl);
+      if (recoDimmed(rc)) {
+        const dn = document.createElement('div');
+        dn.className = 'reco-dim-note';
+        dn.textContent = 'No related item meets the minimum value filter';
+        cardEl.appendChild(dn);
+      }
       grid.appendChild(cardEl);
     });
     body.appendChild(grid);
@@ -3738,7 +4132,8 @@ async function loadRadar() {
         '<div class="radar-fallback">อ่านไฟล์ข้อมูลไม่สำเร็จ (JSON เสียหาย) — ลองรัน GitHub Action ใหม่</div>';
       return;
     }
-    renderRadar(data || {});
+    radarData = data || {};
+    renderRadar(radarData);
   } catch (netErr) {
     radarSetStatus('missing', 'Missing');
     document.getElementById('radarBody').innerHTML =
@@ -3748,6 +4143,347 @@ async function loadRadar() {
 
 document.getElementById('radarRefreshBtn').addEventListener('click', loadRadar);
 loadRadar();
+
+/* ---- Radar filter UI wiring ---- */
+(function initRadarFilter() {
+  const minInput = document.getElementById('rfMin');
+  const unitSelect = document.getElementById('rfUnit');
+  const rateWrap = document.getElementById('rfRateWrap');
+  const rateInput = document.getElementById('rfRate');
+
+  function syncRateUi() {
+    const unit = unitSelect.value;
+    rateWrap.hidden = unit === 'Divine';
+    rateWrap.childNodes[0].textContent = '1 Divine = ? ' + (unit === 'Divine' ? '' : unit) + ' ';
+    if (unit === 'Divine') return;
+    const saved = parseFloat(radarRates[unit]);
+    if (!isNaN(saved) && saved > 0) {
+      rateInput.value = saved;
+    } else if (unit === 'THB' && divineRate > 0) {
+      // ยืมเรท 1 Div = ? ฿ ที่ผู้ใช้กรอกไว้แล้วในแท็บ Shopping List (ไม่ใช่เรทที่ระบบเดาเอง)
+      rateInput.value = divineRate;
+    } else {
+      rateInput.value = '';
+    }
+  }
+
+  minInput.value = radarFilter.min;
+  unitSelect.value = radarFilter.unit;
+  syncRateUi();
+
+  unitSelect.addEventListener('change', syncRateUi);
+
+  document.getElementById('rfApplyBtn').addEventListener('click', () => {
+    const min = parseFloat(minInput.value);
+    radarFilter.min = isNaN(min) || min < 0 ? 0 : min;
+    radarFilter.unit = RADAR_UNITS.includes(unitSelect.value) ? unitSelect.value : 'Divine';
+    if (radarFilter.unit !== 'Divine') {
+      const rate = parseFloat(rateInput.value);
+      if (!isNaN(rate) && rate > 0) radarRates[radarFilter.unit] = rate;
+      else delete radarRates[radarFilter.unit];
+      persistRadarRates();
+    }
+    persistRadarFilter();
+    if (radarData) renderRadar(radarData);
+  });
+
+  document.getElementById('rfResetBtn').addEventListener('click', () => {
+    radarFilter = { min: 1, unit: 'Divine' };
+    persistRadarFilter();
+    minInput.value = 1;
+    unitSelect.value = 'Divine';
+    syncRateUi();
+    if (radarData) renderRadar(radarData);
+  });
+})();
+
+/* ==================== Icon map (lightweight) ==================== */
+// data/icon-map.json — ใส่ path รูปจริงใน assets/icons/ ภายหลังได้ ถ้าไฟล์ไม่มีจะ fallback เป็น emoji เสมอ
+let ICON_MAP = {};
+fetch('data/icon-map.json')
+  .then(r => (r.ok ? r.json() : {}))
+  .then(m => {
+    if (m && typeof m === 'object') ICON_MAP = m;
+    applyMenuIcons();
+  })
+  .catch(() => { /* ไม่มีไฟล์ก็ใช้ emoji fallback */ });
+
+// ถ้า mapping ของเมนูมีไฟล์รูปจริง (field icon) ให้สลับ emoji เป็นรูปขนาด 18px
+const MENU_ICON_LABELS = { home: 'Exile Hub', radar: 'Market Radar', farm: 'Atlas Planner', forge: 'Gear Checker', shop: 'Shopping List' };
+function applyMenuIcons() {
+  Object.keys(MENU_ICON_LABELS).forEach(k => {
+    const label = MENU_ICON_LABELS[k];
+    const def = ICON_MAP[label];
+    if (!def || !def.icon) return; // ไม่มีไฟล์รูป → คง emoji เดิม
+    const span = document.getElementById(TAB_BTNS[k]).querySelector('.tab-ico');
+    if (!span) return;
+    const current = span.textContent;
+    span.textContent = '';
+    span.appendChild(iconEl(label, current, 18));
+  });
+}
+
+// สร้าง element ไอคอน: มีไฟล์รูป → <img>, โหลดรูปพัง/ไม่มี mapping → emoji fallback
+function iconEl(key, fallbackEmoji, sizePx) {
+  const wrap = document.createElement('span');
+  wrap.style.display = 'inline-flex';
+  wrap.style.alignItems = 'center';
+  wrap.style.justifyContent = 'center';
+  wrap.style.lineHeight = '1';
+  const def = ICON_MAP[key];
+  const emoji = (def && def.fallback) || fallbackEmoji || '❔';
+  if (def && def.icon) {
+    const img = document.createElement('img');
+    img.src = def.icon;
+    img.alt = def.label || key;
+    img.width = sizePx || 24;
+    img.height = sizePx || 24;
+    img.style.objectFit = 'contain';
+    img.onerror = () => { wrap.textContent = emoji; };
+    wrap.appendChild(img);
+  } else {
+    wrap.textContent = emoji;
+  }
+  if (!def || !def.icon) wrap.style.fontSize = (sizePx || 24) + 'px';
+  return wrap;
+}
+
+/* ==================== Exile Hub ==================== */
+// อ่านสถานะลีคจากไฟล์ static: data/home-status.json
+// (สร้างโดย scripts/update-home-status.mjs ผ่าน GitHub Actions รายชั่วโมง — ดึงจาก poe2db.tw ฝั่ง server)
+// ห้าม scrape PoE2DB หรือเว็บภายนอกจากเบราว์เซอร์เด็ดขาด
+const HOME_STATUS_URL = 'data/home-status.json';
+const HOME_STALE_HOURS = 6; // updatedAt เก่ากว่านี้ = Stale (Action รันทุกชั่วโมง)
+const STASH_MANUAL_KEY = 'poeAssist.stashSale.manual.v1';
+
+const HUB_RESOURCES = [
+  { title: 'POE2 DB', url: 'https://poe2db.tw/us/', cat: 'Database', desc: 'Items, modifiers, crafting, bosses, gems, and mechanics.', icon: '🧱' },
+  { title: 'POE2 Official', url: 'https://pathofexile2.com/home', cat: 'Official', desc: 'Official Path of Exile 2 website.', icon: '🏛️' },
+  { title: 'PoE Trade', url: 'https://www.pathofexile.com/trade2', cat: 'Trade', desc: 'Official trade search for PoE2 items.', icon: '🛒' },
+  { title: 'PoE Ninja', url: 'https://poe.ninja/', cat: 'Economy', desc: 'Economy snapshots, market trends, and item values.', icon: '📈' },
+  { title: 'Atlas Tree', url: 'https://mobalytics.gg/poe-2/atlas-trees/fubgun-atlas-tree-strats?ws-ngf5-f7d82102-7e77-4a44-ad24-33b67e8ae7bf=activeVariantId%2C1', cat: 'Atlas', desc: 'Atlas tree strategy reference.', icon: '🗺️' },
+  { title: 'Fubgun Guide', url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR35NJkrhF1Zf9SZZOPlsdpqbTibL2AqOiZosya0NSjEN5A1Dx8a_MeQox9VDLQw3kB0ibZCNb_e6VJ/pubhtml', cat: 'Farming', desc: 'Community farming strategy sheet.', icon: '🌾' },
+  { title: 'Expedition Sheet', url: 'https://docs.google.com/spreadsheets/d/1HSaQD2JI-Iw7hJdAee9UHHn1uAipcBCH0TBkEmdHzyc/edit?gid=0#gid=0', cat: 'Farming', desc: 'Expedition reference and farming notes.', icon: '💣' },
+  { title: 'Mobalytics Builds', url: 'https://mobalytics.gg/poe-2/builds', cat: 'Builds', desc: 'Build guides and meta ideas.', icon: '🧙' },
+  { title: 'PoE2DB Crafting', url: 'https://poe2db.tw/us/Crafting', cat: 'Crafting', desc: 'Crafting currency and item crafting reference.', icon: '⚒️' },
+  { title: 'PoE2DB Modifiers', url: 'https://poe2db.tw/us/Modifiers', cat: 'Modifiers', desc: 'Modifier pools, tiers, required levels, and weights.', icon: '✨' },
+  { title: 'GGG Developer Docs', url: 'https://www.pathofexile.com/developer/docs/reference', cat: 'API', desc: 'Official Path of Exile developer API reference.', icon: '📘' },
+  { title: 'Exiled Exchange 2', url: 'https://github.com/Kvan7/Exiled-Exchange-2', cat: 'Tool', desc: 'Community trade overlay/tool reference.', icon: '💱' },
+];
+
+(function renderHubLinks() {
+  const grid = document.getElementById('linkGrid');
+  HUB_RESOURCES.forEach(rs => {
+    const card = document.createElement('div');
+    card.className = 'link-card';
+
+    const ico = document.createElement('span');
+    ico.className = 'link-card-ico';
+    ico.textContent = rs.icon;
+    card.appendChild(ico);
+
+    const bodyEl = document.createElement('div');
+    bodyEl.className = 'link-card-body';
+    const titleEl = document.createElement('div');
+    titleEl.className = 'link-card-title';
+    titleEl.textContent = rs.title;
+    const cat = document.createElement('span');
+    cat.className = 'link-card-cat';
+    cat.textContent = rs.cat;
+    titleEl.appendChild(cat);
+    bodyEl.appendChild(titleEl);
+    const desc = document.createElement('div');
+    desc.className = 'link-card-desc';
+    desc.textContent = rs.desc;
+    bodyEl.appendChild(desc);
+    card.appendChild(bodyEl);
+
+    const open = document.createElement('a');
+    open.className = 'link-open';
+    open.href = rs.url;
+    open.target = '_blank';
+    open.rel = 'noopener noreferrer';
+    open.textContent = 'Open ↗';
+    card.appendChild(open);
+
+    grid.appendChild(card);
+  });
+})();
+
+/* ---- League Status + Stash Sale Watch ---- */
+let homeStatus = null;
+
+function fmtDuration(ms) {
+  if (ms < 0) ms = 0;
+  const mins = Math.floor(ms / 60000);
+  const d = Math.floor(mins / 1440);
+  const h = Math.floor((mins % 1440) / 60);
+  const m = mins % 60;
+  if (d > 0) return d + 'd ' + h + 'h';
+  if (h > 0) return h + 'h ' + m + 'm';
+  return m + 'm';
+}
+
+function parseIso(s) {
+  if (!s) return null;
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+
+function homeFreshness() {
+  const upd = homeStatus && parseIso(homeStatus.updatedAt);
+  if (!upd) return 'missing';
+  return (Date.now() - upd.getTime()) / 3600000 > HOME_STALE_HOURS ? 'stale' : 'fresh';
+}
+
+function setHubBadge(id, kind, text) {
+  const el = document.getElementById(id);
+  el.className = 'radar-badge ' + kind; // reuse radar badge styles (fresh/stale/missing/error)
+  el.textContent = text;
+}
+
+function hubLine(label, value, cls) {
+  const row = document.createElement('div');
+  row.className = 'hub-line';
+  const l = document.createElement('span');
+  l.textContent = label;
+  const v = document.createElement('strong');
+  if (cls) v.className = cls;
+  v.textContent = value;
+  row.appendChild(l);
+  row.appendChild(v);
+  return row;
+}
+
+function renderLeagueCard() {
+  const bodyEl = document.getElementById('leagueBody');
+  bodyEl.innerHTML = '';
+  const lg = homeStatus && homeStatus.league;
+  if (!lg || !lg.name) {
+    setHubBadge('leagueBadge', 'missing', 'Missing');
+    bodyEl.innerHTML = '<div class="hub-missing">No league data — data/home-status.json is missing or empty.</div>';
+    return;
+  }
+  const fresh = homeFreshness();
+  setHubBadge('leagueBadge', fresh, fresh === 'fresh' ? 'Fresh' : fresh === 'stale' ? 'Stale' : 'Missing');
+
+  bodyEl.appendChild(hubLine('League', lg.name));
+  if (lg.displayName) bodyEl.appendChild(hubLine('Patch', lg.displayName));
+  const start = parseIso(lg.startAt);
+  if (start) {
+    bodyEl.appendChild(hubLine('Started at', start.toLocaleString()));
+    bodyEl.appendChild(hubLine('Running for', fmtDuration(Date.now() - start.getTime()), 'hub-big'));
+  } else {
+    bodyEl.appendChild(hubLine('Started at', 'Missing'));
+  }
+  const end = parseIso(lg.endAt);
+  if (end) bodyEl.appendChild(hubLine('Ends at', end.toLocaleString()));
+  if (lg.source) bodyEl.appendChild(hubLine('Source', lg.source));
+}
+
+function loadStashManual() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(STASH_MANUAL_KEY));
+    if (raw && typeof raw === 'object') return raw;
+  } catch (e) { /* malformed storage */ }
+  return null;
+}
+
+function renderStashCard() {
+  const bodyEl = document.getElementById('stashBody');
+  bodyEl.innerHTML = '';
+  const manual = loadStashManual();
+  const fileSale = (homeStatus && homeStatus.stashSale) || {};
+  const startAt = parseIso(manual && manual.nextStartAt) || parseIso(fileSale.nextStartAt);
+  const endAt = parseIso(manual && manual.nextEndAt) || parseIso(fileSale.nextEndAt);
+
+  if (manual && (manual.nextStartAt || manual.nextEndAt)) {
+    setHubBadge('stashBadge', 'fresh', 'Manual');
+  } else if (!startAt && !endAt) {
+    setHubBadge('stashBadge', 'missing', 'Missing');
+  } else {
+    const fresh = homeFreshness();
+    setHubBadge('stashBadge', fresh, fresh === 'fresh' ? 'Fresh' : 'Stale');
+  }
+
+  const now = Date.now();
+  if (startAt && startAt.getTime() > now) {
+    bodyEl.appendChild(hubLine('Stash Tab Sales start in', fmtDuration(startAt.getTime() - now), 'hub-big'));
+    bodyEl.appendChild(hubLine('Starts at', startAt.toLocaleString()));
+    if (endAt) bodyEl.appendChild(hubLine('Ends at', endAt.toLocaleString()));
+  } else if (startAt && endAt && endAt.getTime() > now) {
+    bodyEl.appendChild(hubLine('Stash Tab Sale', 'LIVE NOW', 'hub-big hub-live'));
+    bodyEl.appendChild(hubLine('Ends in', fmtDuration(endAt.getTime() - now)));
+  } else if (startAt) {
+    bodyEl.appendChild(hubLine('Last known sale', startAt.toLocaleString()));
+    const note = document.createElement('div');
+    note.className = 'hub-missing';
+    note.textContent = 'Sale date has passed — set the next sale below.';
+    bodyEl.appendChild(note);
+  } else {
+    const none = document.createElement('div');
+    none.className = 'hub-missing';
+    none.textContent = 'No sale date set. Sales are usually announced on the official site — enter the next one below.';
+    bodyEl.appendChild(none);
+  }
+  if (manual && (manual.nextStartAt || manual.nextEndAt)) {
+    bodyEl.appendChild(hubLine('Source', 'Manual override'));
+  } else if (fileSale.source) {
+    bodyEl.appendChild(hubLine('Source', fileSale.source));
+  }
+}
+
+(function initStashManual() {
+  const startInput = document.getElementById('stashStartInput');
+  const endInput = document.getElementById('stashEndInput');
+
+  // datetime-local ใช้เวลาท้องถิ่น — เก็บเป็น ISO (UTC) ใน localStorage
+  const toLocalInput = iso => {
+    const d = parseIso(iso);
+    if (!d) return '';
+    const pad = n => String(n).padStart(2, '0');
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  };
+  const manual = loadStashManual();
+  if (manual) {
+    startInput.value = toLocalInput(manual.nextStartAt);
+    endInput.value = toLocalInput(manual.nextEndAt);
+  }
+
+  document.getElementById('stashSaveBtn').addEventListener('click', () => {
+    const s = startInput.value ? new Date(startInput.value) : null;
+    const e = endInput.value ? new Date(endInput.value) : null;
+    const val = {
+      nextStartAt: s && !isNaN(s) ? s.toISOString() : null,
+      nextEndAt: e && !isNaN(e) ? e.toISOString() : null,
+    };
+    try { localStorage.setItem(STASH_MANUAL_KEY, JSON.stringify(val)); } catch (err) { /* storage unavailable */ }
+    renderStashCard();
+  });
+
+  document.getElementById('stashResetBtn').addEventListener('click', () => {
+    try { localStorage.removeItem(STASH_MANUAL_KEY); } catch (err) { /* storage unavailable */ }
+    startInput.value = '';
+    endInput.value = '';
+    renderStashCard();
+  });
+})();
+
+async function loadHomeStatus() {
+  try {
+    const res = await fetch(HOME_STATUS_URL + '?t=' + Date.now(), { cache: 'no-store' });
+    if (res.ok) homeStatus = await res.json();
+  } catch (e) { /* ไฟล์หาย/เน็ตพัง → การ์ดแสดงสถานะ Missing เอง */ }
+  renderLeagueCard();
+  renderStashCard();
+}
+loadHomeStatus();
+// อัปเดตตัวนับ "Running for" / countdown ทุก 30 วิ (คำนวณในเครื่อง ไม่ fetch ซ้ำ)
+setInterval(() => {
+  if (activeTab !== 'home') return;
+  renderLeagueCard();
+  renderStashCard();
+}, 30000);
 </script>
 </body>
 </html>
