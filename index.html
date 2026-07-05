@@ -1138,6 +1138,59 @@
   .radar-item-risk { font-size: 10.5px; color: var(--lightning-glow); margin-top: 2px; }
   .radar-liq { color: var(--text-dim); font-size: 10.5px; }
 
+  /* ---- Top Rising Items Used: compact rows (secondary reference list) ---- */
+  .radar-item-rows-wrap { overflow-x: auto; }
+  .radar-item-rows {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-soft);
+    border-radius: 6px;
+    overflow: hidden;
+    min-width: 640px;
+  }
+  .radar-item-row {
+    display: grid;
+    grid-template-columns: 22px minmax(120px, 1.6fr) minmax(70px, 0.9fr) minmax(70px, 0.8fr) minmax(60px, 0.7fr) minmax(60px, 0.7fr) minmax(50px, 0.6fr) minmax(110px, 1.1fr);
+    gap: 8px;
+    align-items: center;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 12px;
+  }
+  .radar-item-row:last-child { border-bottom: none; }
+  .radar-item-row.radar-item-row-head {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    background: var(--panel-sunken);
+  }
+  .radar-row-icon { display: flex; align-items: center; }
+  .radar-row-icon img { width: 18px; height: 18px; object-fit: contain; }
+  .radar-row-score { font-family: 'JetBrains Mono', monospace; color: var(--gold-glow); font-weight: 600; }
+  .radar-item-risk-badge { margin-left: 4px; color: var(--lightning-glow); cursor: help; }
+  .radar-item-row .radar-item-map { margin-top: 0; }
+
+  /* ---- Farm Score compact explanation (collapsible) ---- */
+  .radar-score-info {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    background: var(--panel-sunken);
+    border: 1px solid var(--border-soft);
+    border-radius: 4px;
+    padding: 6px 10px;
+    margin: 0 0 12px;
+  }
+  .radar-score-info summary {
+    cursor: pointer;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+  }
+  .radar-score-info p { margin: 6px 0 0; line-height: 1.5; }
+
   .reco-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
@@ -4237,111 +4290,29 @@ function renderRadar(data) {
   dbg.textContent = `debug: ${allItems.length} marketItems loaded · ${items.length} pass filter · ${bucketsTotal} content buckets (${bucketsWithEvidence} with evidence) · snapshot ${updatedValid ? updated.toISOString() : '—'}`;
   meta.appendChild(dbg);
 
-  // --- A) top rising items (จาก marketItems ที่ผ่านฟิลเตอร์ — ตัวที่ใช้คิดคะแนนจริง) ---
-  const t1 = document.createElement('p');
-  t1.className = 'radar-section-title';
-  t1.textContent = '📈 Top Rising Items Used';
-  body.appendChild(t1);
-
-  if (items.length === 0) {
-    const none = document.createElement('div');
-    none.className = 'radar-fallback';
-    if (allItems.length === 0 && fallbackItems.length > 0) {
-      none.textContent = 'No marketItems in this local snapshot yet — showing fallback Top Rising list only (not used for recommendations). Run scripts/update-market-radar.mjs to refresh.';
-    } else {
-      none.textContent = 'No market items in the current local snapshot pass this filter. Try lowering the minimum price or update market-radar.json.';
-    }
-    body.appendChild(none);
-  } else {
-    const grid = document.createElement('div');
-    grid.className = 'radar-items';
-    items.forEach(it => {
-      const cardEl = document.createElement('div');
-      cardEl.className = 'radar-item-card';
-      if (it.icon) {
-        const img = document.createElement('img');
-        img.src = it.icon;
-        img.alt = '';
-        img.loading = 'lazy';
-        img.onerror = () => img.remove();
-        cardEl.appendChild(img);
-      }
-      const b = document.createElement('div');
-      b.className = 'radar-item-body';
-
-      const nm = document.createElement('div');
-      nm.className = 'radar-item-name';
-      if (it.sourceUrl) {
-        const a = document.createElement('a');
-        a.href = it.sourceUrl;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        a.style.color = 'inherit';
-        a.textContent = it.name || '?';
-        nm.appendChild(a);
-      } else {
-        nm.textContent = it.name || '?';
-      }
-      nm.title = it.name || '';
-      b.appendChild(nm);
-
-      const cat = document.createElement('div');
-      cat.className = 'radar-item-cat';
-      cat.textContent = it.category || '';
-      b.appendChild(cat);
-
-      const line = document.createElement('div');
-      line.className = 'radar-item-line';
-      const price = document.createElement('span');
-      price.className = 'radar-price';
-      price.textContent = radarFmtValue(it.value, it.valueCurrency);
-      line.appendChild(price);
-      if (typeof it.trend7d === 'number') {
-        const tr = document.createElement('span');
-        tr.className = it.trend7d >= 0 ? 'trend-up' : 'trend-down';
-        tr.textContent = (it.trend7d >= 0 ? '▲ +' : '▼ ') + it.trend7d.toFixed(1) + '% 7d';
-        line.appendChild(tr);
-      }
-      if (it.liquidityLabel) {
-        const liq = document.createElement('span');
-        liq.className = 'radar-liq';
-        liq.textContent = 'liq: ' + it.liquidityLabel;
-        line.appendChild(liq);
-      }
-      b.appendChild(line);
-
-      if (it.mappedContent) {
-        const map = document.createElement('div');
-        map.className = 'radar-item-map';
-        map.textContent = '→ ' + it.mappedContent;
-        map.title = it.mappedContent;
-        b.appendChild(map);
-      }
-      if (it.risk) {
-        const rk = document.createElement('div');
-        rk.className = 'radar-item-risk';
-        rk.textContent = '⚠ ' + it.risk;
-        b.appendChild(rk);
-      }
-      cardEl.appendChild(b);
-      grid.appendChild(cardEl);
-    });
-    body.appendChild(grid);
-  }
-
-  // --- B) Recommended Farm Now ---
+  // --- A) Recommended Farm Now (primary section — the actual farm recommendation output) ---
   // คำนวณใหม่จากไอเทมที่ผ่านฟิลเตอร์เท่านั้น: กรอง → ให้คะแนนไอเทม → จัดกลุ่มตาม content → เรียง Farm Score ใหม่
   // (ไม่ใช้ contentRecommendations สำเร็จรูปจาก JSON แล้ว — อันนั้นคิดจากไอเทมทุกตัวก่อนกรอง)
   const recos = buildRadarRecos(items, data.contentRecommendations);
   const t2 = document.createElement('p');
   t2.className = 'radar-section-title';
-  t2.textContent = '🎯 Recommended Farm Now — Farm Score (ไม่ใช่ % drop chance)';
+  t2.textContent = '🎯 Recommended Farm Now — Farm Score';
   body.appendChild(t2);
   const scoreNote = document.createElement('p');
   scoreNote.className = 'rf-note';
-  scoreNote.style.margin = '0 0 10px';
-  scoreNote.textContent = 'Farm Score คิดจาก price trend + item value + liquidity + content mapping + risk — ไม่ใช่อัตราดรอปจริง';
+  scoreNote.style.margin = '0 0 6px';
+  scoreNote.textContent = 'Farm Score คือคะแนนแนะนำการฟาร์ม ไม่ใช่โอกาสดรอปของไอเท็ม (based on item value, trend, liquidity, mapping confidence and risk).';
   body.appendChild(scoreNote);
+
+  const scoreInfo = document.createElement('details');
+  scoreInfo.className = 'radar-score-info';
+  const scoreSummary = document.createElement('summary');
+  scoreSummary.textContent = 'ℹ️ Farm Score คำนวณยังไง? / How is Farm Score calculated?';
+  scoreInfo.appendChild(scoreSummary);
+  const scoreInfoBody = document.createElement('p');
+  scoreInfoBody.textContent = 'Farm Score คือคะแนนจัดอันดับคอนเทนต์ที่น่าฟาร์มจากหลักฐานราคาในตลาด (marketItems ที่ผ่านฟิลเตอร์เท่านั้น) โดยดูจากมูลค่าไอเท็ม, เทรนด์ 7 วัน, liquidity, ความมั่นใจของการ map ไอเท็มเข้าคอนเทนต์ และความเสี่ยง คะแนนนี้ไม่ใช่โอกาสดรอป คะแนนยิ่งสูงแปลว่ามีหลักฐานตลาดสนับสนุนคอนเทนต์นั้นแรงกว่าตอนนี้ ถ้าไม่มีไอเท็ม 1 Divine+ เป็นหลักฐานใน snapshot ปัจจุบัน คอนเทนต์นั้นจะได้ 0 คะแนนแต่ยังแสดงอยู่ ข้อมูลอิงจาก market-radar.json ที่ดึงมาแล้วในเครื่อง ไม่ใช่การดึงสดจาก poe.ninja ในเบราว์เซอร์';
+  scoreInfo.appendChild(scoreInfoBody);
+  body.appendChild(scoreInfo);
 
   if (recos.length === 0) {
     const none = document.createElement('div');
@@ -4433,6 +4404,125 @@ function renderRadar(data) {
       grid.appendChild(cardEl);
     });
     body.appendChild(grid);
+  }
+
+  // --- B) Top Rising Items Used (secondary reference list — จาก marketItems ที่ผ่านฟิลเตอร์) ---
+  // แสดงเป็น compact rows ไม่ใช่การ์ด — section นี้เป็นแค่ reference list, ไม่ใช่ต้นทางคำนวณคำแนะนำ (ดู A ด้านบน)
+  const t1 = document.createElement('p');
+  t1.className = 'radar-section-title';
+  t1.textContent = '📈 Top Rising Items Used';
+  body.appendChild(t1);
+  const risingNote = document.createElement('p');
+  risingNote.className = 'rf-note';
+  risingNote.style.margin = '0 0 8px';
+  risingNote.textContent = 'Used as a rising-item reference list only. Farm recommendations above are calculated from filtered marketItems, not from this list.';
+  body.appendChild(risingNote);
+
+  if (items.length === 0) {
+    const none = document.createElement('div');
+    none.className = 'radar-fallback';
+    if (allItems.length === 0 && fallbackItems.length > 0) {
+      none.textContent = 'No marketItems in this local snapshot yet — showing fallback Top Rising list only (not used for recommendations). Run scripts/update-market-radar.mjs to refresh.';
+    } else {
+      none.textContent = 'No market items in the current local snapshot pass this filter. Try lowering the minimum price or update market-radar.json.';
+    }
+    body.appendChild(none);
+  } else {
+    const wrap = document.createElement('div');
+    wrap.className = 'radar-item-rows-wrap';
+    const rows = document.createElement('div');
+    rows.className = 'radar-item-rows';
+
+    const headRow = document.createElement('div');
+    headRow.className = 'radar-item-row radar-item-row-head';
+    ['', 'Item', 'Category', 'Value', '7d', 'Liquidity', 'Score', 'Content'].forEach(label => {
+      const cell = document.createElement('span');
+      cell.textContent = label;
+      headRow.appendChild(cell);
+    });
+    rows.appendChild(headRow);
+
+    items.forEach(it => {
+      const row = document.createElement('div');
+      row.className = 'radar-item-row';
+      if (it.risk) row.title = '⚠ ' + it.risk;
+
+      const iconCell = document.createElement('span');
+      iconCell.className = 'radar-row-icon';
+      if (it.icon) {
+        const img = document.createElement('img');
+        img.src = it.icon;
+        img.alt = '';
+        img.loading = 'lazy';
+        img.onerror = () => img.remove();
+        iconCell.appendChild(img);
+      }
+      row.appendChild(iconCell);
+
+      const nm = document.createElement('span');
+      nm.className = 'radar-item-name';
+      if (it.sourceUrl) {
+        const a = document.createElement('a');
+        a.href = it.sourceUrl;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.style.color = 'inherit';
+        a.textContent = it.name || '?';
+        nm.appendChild(a);
+      } else {
+        nm.textContent = it.name || '?';
+      }
+      nm.title = it.name || '';
+      if (it.risk) {
+        const rk = document.createElement('span');
+        rk.className = 'radar-item-risk-badge';
+        rk.textContent = '⚠';
+        rk.title = it.risk;
+        nm.appendChild(rk);
+      }
+      row.appendChild(nm);
+
+      const cat = document.createElement('span');
+      cat.className = 'radar-item-cat';
+      cat.textContent = it.category || '—';
+      row.appendChild(cat);
+
+      const price = document.createElement('span');
+      price.className = 'radar-price';
+      price.textContent = radarFmtValue(it.value, it.valueCurrency);
+      row.appendChild(price);
+
+      const tr = document.createElement('span');
+      if (typeof it.trend7d === 'number') {
+        tr.className = it.trend7d >= 0 ? 'trend-up' : 'trend-down';
+        tr.textContent = (it.trend7d >= 0 ? '▲ +' : '▼ ') + it.trend7d.toFixed(1) + '%';
+      } else {
+        tr.className = 'radar-liq';
+        tr.textContent = '—';
+      }
+      row.appendChild(tr);
+
+      const liq = document.createElement('span');
+      liq.className = 'radar-liq';
+      liq.textContent = it.liquidityLabel || '—';
+      row.appendChild(liq);
+
+      const sc = document.createElement('span');
+      sc.className = 'radar-row-score';
+      sc.textContent = Math.round(radarItemScore(it) * 100) + '%';
+      row.appendChild(sc);
+
+      const map = document.createElement('span');
+      map.className = 'radar-item-map';
+      map.textContent = it.mappedContent || it.contentKey || '—';
+      map.title = it.mappedContent || it.contentKey || '';
+      row.appendChild(map);
+
+      rows.appendChild(row);
+    });
+
+    wrap.appendChild(rows);
+    body.appendChild(wrap);
   }
 
   // หมายเหตุ: content ที่ไม่มี evidence (ไม่ว่าเพราะฟิลเตอร์ หรือไม่มีข้อมูลเลย) แสดงเป็น

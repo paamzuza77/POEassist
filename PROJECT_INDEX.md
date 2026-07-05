@@ -52,6 +52,7 @@ Tabs are switched via `TAB_IDS` / `TAB_BTNS` at line 2807-2808; panels are `<div
   - `radarItemScore()` 3884, `buildRadarRecos()` 3900 (scoring/recommendation logic), `renderRadar()` 3949, `loadRadar()` 4260
 - Data source: `data/market-radar.json` ← `scripts/update-market-radar.mjs`
 - Safe edit notes: scoring formula lives in `radarItemScore`/`buildRadarRecos` only — do not rename score to "drop chance"/"drop rate" (product rule, see SKILL.md). Value filter persists via `RADAR_FILTER_KEY`.
+- Layout order in `renderRadar()`: "Recommended Farm Now" (primary, the actual farm recommendation output, includes a `.radar-score-info` collapsible explaining Farm Score) renders first, then "Top Rising Items Used" (secondary reference list, rendered as compact `.radar-item-row` rows, not cards) below it.
 - Source of truth: `data.marketItems` (all content-mapped items ≥1 Divine) — `topRisingItems` is display/fallback only, never the calculation source. Content mapping is centralized in `CONTENT_BUCKETS` in `scripts/update-market-radar.mjs`; all supported buckets always render, muted when they have no evidence.
 
 ### Atlas Farm Planner (`farm`)
