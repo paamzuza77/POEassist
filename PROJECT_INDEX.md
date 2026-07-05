@@ -2,6 +2,8 @@
 
 Read this before opening any large file. Do not read everything — jump straight to the line ranges below.
 
+**Before editing any feature file, also read `EDIT_GUIDE.md`** — it's the main edit map (feature table, shared components, data sources, common task recipes) and is kept current whenever a feature is added.
+
 ## Summary
 
 Exile Assistant (repo: POEassist) is a single-page, static GitHub Pages app for Path of Exile 2: gear resistance checking (with OCR), a build shopping list, an atlas farm planner with a market radar, and an Exile Hub status dashboard. No backend — data is either in the browser's `localStorage` or in static JSON files refreshed by GitHub Actions.
