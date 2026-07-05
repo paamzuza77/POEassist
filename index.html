@@ -3373,6 +3373,15 @@ document.getElementById('divineRateInput').addEventListener('input', (e) => {
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.6',
+    date: '2026-07-05',
+    notes: [
+      'Market Radar: Recommended Farm Now คำนวณจาก marketItems (ไอเทมที่ map กับ content แล้ว มูลค่า ≥1 Divine) เป็นต้นทางความจริงเดียวเสมอ — ไม่ใช้ Top Rising Items เป็นตัวคำนวณอีกต่อไป (Top Rising ยังคงอยู่เป็นแค่ display/fallback)',
+      'Market Radar: เพิ่ม content bucket ให้ครบตามที่ฟาร์มได้จริง (Ritual, Expedition, Delirium, Simulacrum, Breach, Essence, Runes/Remnants, Trial/Soul Cores, Fragments/Bossing, Waystones/Mapping, Abyss, Strongboxes, Generic Currency) — ทุก bucket จะโชว์เสมอ ถ้ายังไม่มีไอเทมเข้าเกณฑ์จะแสดงแบบ muted แทนการซ่อนหาย',
+      'Market Radar: ปรับสูตร Item Score เป็น trend 30% + value (log) 30% + volume/liquidity 20% + content confidence 15% − risk penalty 5%, และเพิ่ม debug line (จำนวน marketItems / ผ่านฟิลเตอร์ / content bucket ทั้งหมด-ที่มี evidence / เวลา snapshot)',
+    ],
+  },
+  {
     version: '0.5',
     date: '2026-07-05',
     notes: [
@@ -4058,17 +4067,45 @@ function radarItemScore(it) {
 }
 
 /* ---- Recommended Farm Now ----
-   จัดกลุ่มไอเทม (ที่ผ่านฟิลเตอร์แล้ว) ตาม contentKey → คิด Farm Score ต่อ content
-   → เรียงจากมากไปน้อย — คำนวณใหม่ทุกครั้งที่ฟิลเตอร์เปลี่ยน */
-function buildRadarRecos(items) {
+   จัดกลุ่มไอเทม marketItems (ที่ผ่านฟิลเตอร์แล้ว) ตาม contentKey → คิด Farm Score ต่อ content
+   แสดง "ทุก" content bucket ที่รองรับเสมอ (จาก data.contentRecommendations) แม้ไม่มี evidence
+   → เรียง bucket ที่มี evidence ก่อนตาม Farm Score, ไม่มี evidence ไปอยู่ท้ายแบบ muted
+   คำนวณใหม่ทุกครั้งที่ฟิลเตอร์เปลี่ยน */
+function buildRadarRecos(items, allBuckets) {
   const groups = new Map();
   items.forEach(it => {
     if (!it.contentKey) return;
     if (!groups.has(it.contentKey)) groups.set(it.contentKey, []);
     groups.get(it.contentKey).push(it);
   });
+
+  // รวม key ของทุก bucket ที่รองรับ (จาก snapshot) + key ที่โผล่มาจากไอเทมจริง กันตกหล่น
+  const bucketMeta = new Map();
+  (Array.isArray(allBuckets) ? allBuckets : []).forEach(b => {
+    if (b && b.contentKey) bucketMeta.set(b.contentKey, b);
+  });
+  groups.forEach((_, key) => {
+    if (!bucketMeta.has(key)) bucketMeta.set(key, { contentKey: key, displayName: key });
+  });
+
   const recos = [];
-  groups.forEach((list, key) => {
+  bucketMeta.forEach((meta, key) => {
+    const list = groups.get(key) || [];
+    if (list.length === 0) {
+      recos.push({
+        content: meta.displayName || key,
+        contentKey: key,
+        score: 0,
+        confidence: typeof meta.confidence === 'number' ? meta.confidence : null,
+        relatedItems: [],
+        reason: [],
+        status: meta.noEvidenceStatus || meta.status || 'No qualifying 1D+ items in current snapshot',
+        risk: '',
+        sourceUrls: [],
+        hasEvidence: false,
+      });
+      return;
+    }
     const scored = list.map(it => ({ it, s: radarItemScore(it) })).sort((a, b) => b.s - a.s);
     const top = scored.slice(0, 3);
     const avgScore = top.reduce((sum, x) => sum + x.s, 0) / top.length;
@@ -4077,7 +4114,7 @@ function buildRadarRecos(items) {
     const avgValue = top.reduce((sum, x) => sum + (x.it.value || 0), 0) / top.length;
     const lowLiq = list.filter(x => x.liquidityLabel === 'Low').length;
     recos.push({
-      content: list[0].mappedContent || key,
+      content: list[0].mappedContent || meta.displayName || key,
       contentKey: key,
       score: Math.round(avgScore * conf * 100),
       confidence: conf,
@@ -4089,9 +4126,13 @@ function buildRadarRecos(items) {
       ],
       risk: lowLiq > list.length / 2 ? 'ไอเทมส่วนใหญ่สภาพคล่องต่ำ — ราคา spike อาจย่อ' : '',
       sourceUrls: [...new Set(list.map(x => x.sourceUrl).filter(Boolean))].slice(0, 2),
+      hasEvidence: true,
     });
   });
-  recos.sort((a, b) => b.score - a.score);
+  recos.sort((a, b) => {
+    if (a.hasEvidence !== b.hasEvidence) return a.hasEvidence ? -1 : 1;
+    return b.score - a.score;
+  });
   return recos;
 }
 
@@ -4162,7 +4203,9 @@ function renderRadar(data) {
   }
 
   // --- value filter (threshold แปลงกลับเป็น Divine ก่อนเสมอ) ---
-  const allItems = Array.isArray(data.topRisingItems) ? data.topRisingItems : [];
+  // marketItems คือต้นทางความจริงเดียวสำหรับคำนวณ — topRisingItems เป็นแค่ display/fallback list
+  const allItems = Array.isArray(data.marketItems) ? data.marketItems : [];
+  const fallbackItems = Array.isArray(data.topRisingItems) ? data.topRisingItems : [];
   const minDiv = radarMinDivine();
   const warnEl = document.getElementById('rfWarn');
   if (minDiv === null) {
@@ -4183,7 +4226,18 @@ function renderRadar(data) {
     ? 'using ' + items.length + ' / ' + allItems.length + ' items'
     : '';
 
-  // --- A) top rising items (เฉพาะที่ผ่านฟิลเตอร์ — ตัวที่ใช้คิดคะแนนจริง) ---
+  // --- debug info: compact snapshot/filter counters ---
+  const dbg = document.createElement('span');
+  dbg.className = 'radar-debug';
+  const bucketsTotal = Array.isArray(data.contentRecommendations) ? data.contentRecommendations.length : 0;
+  const bucketsWithEvidence = Array.isArray(data.contentRecommendations)
+    ? data.contentRecommendations.filter(c => Array.isArray(c.evidenceItems) && c.evidenceItems.length > 0).length
+    : 0;
+  dbg.title = 'Debug info';
+  dbg.textContent = `debug: ${allItems.length} marketItems loaded · ${items.length} pass filter · ${bucketsTotal} content buckets (${bucketsWithEvidence} with evidence) · snapshot ${updatedValid ? updated.toISOString() : '—'}`;
+  meta.appendChild(dbg);
+
+  // --- A) top rising items (จาก marketItems ที่ผ่านฟิลเตอร์ — ตัวที่ใช้คิดคะแนนจริง) ---
   const t1 = document.createElement('p');
   t1.className = 'radar-section-title';
   t1.textContent = '📈 Top Rising Items Used';
@@ -4192,9 +4246,11 @@ function renderRadar(data) {
   if (items.length === 0) {
     const none = document.createElement('div');
     none.className = 'radar-fallback';
-    none.textContent = allItems.length === 0
-      ? 'ยังไม่มีข้อมูลไอเทมในรอบนี้'
-      : 'ไม่มีไอเทมถึงเกณฑ์ราคาขั้นต่ำ — ลองลดค่า Minimum item price ดู';
+    if (allItems.length === 0 && fallbackItems.length > 0) {
+      none.textContent = 'No marketItems in this local snapshot yet — showing fallback Top Rising list only (not used for recommendations). Run scripts/update-market-radar.mjs to refresh.';
+    } else {
+      none.textContent = 'No market items in the current local snapshot pass this filter. Try lowering the minimum price or update market-radar.json.';
+    }
     body.appendChild(none);
   } else {
     const grid = document.createElement('div');
@@ -4276,7 +4332,7 @@ function renderRadar(data) {
   // --- B) Recommended Farm Now ---
   // คำนวณใหม่จากไอเทมที่ผ่านฟิลเตอร์เท่านั้น: กรอง → ให้คะแนนไอเทม → จัดกลุ่มตาม content → เรียง Farm Score ใหม่
   // (ไม่ใช้ contentRecommendations สำเร็จรูปจาก JSON แล้ว — อันนั้นคิดจากไอเทมทุกตัวก่อนกรอง)
-  const recos = buildRadarRecos(items);
+  const recos = buildRadarRecos(items, data.contentRecommendations);
   const t2 = document.createElement('p');
   t2.className = 'radar-section-title';
   t2.textContent = '🎯 Recommended Farm Now — Farm Score (ไม่ใช่ % drop chance)';
@@ -4299,7 +4355,7 @@ function renderRadar(data) {
     grid.className = 'reco-grid';
     recos.forEach(rc => {
       const cardEl = document.createElement('div');
-      cardEl.className = 'reco-card';
+      cardEl.className = 'reco-card' + (rc.hasEvidence === false ? ' dimmed' : '');
 
       const headEl = document.createElement('div');
       headEl.className = 'reco-head';
@@ -4334,6 +4390,12 @@ function renderRadar(data) {
           ul.appendChild(li);
         });
         cardEl.appendChild(ul);
+      } else if (rc.status) {
+        const st = document.createElement('p');
+        st.className = 'rf-note';
+        st.style.margin = '4px 0';
+        st.textContent = rc.status;
+        cardEl.appendChild(st);
       }
 
       if (Array.isArray(rc.relatedItems) && rc.relatedItems.length) {
@@ -4373,34 +4435,9 @@ function renderRadar(data) {
     body.appendChild(grid);
   }
 
-  // --- C) Hidden / Below Filter — content ที่หายไปเพราะไอเทมที่เกี่ยวข้องต่ำกว่าเกณฑ์ทั้งหมด ---
-  const passingKeys = new Set(items.map(it => it.contentKey).filter(Boolean));
-  const hiddenContents = [];
-  const seenKeys = new Set();
-  allItems.forEach(it => {
-    if (!it.contentKey || seenKeys.has(it.contentKey)) return;
-    seenKeys.add(it.contentKey);
-    if (!passingKeys.has(it.contentKey)) hiddenContents.push(it.mappedContent || it.contentKey);
-  });
-  if (hiddenContents.length) {
-    const t3 = document.createElement('p');
-    t3.className = 'radar-section-title';
-    t3.textContent = '🚫 Hidden / Below Filter';
-    body.appendChild(t3);
-    const wrap = document.createElement('div');
-    wrap.className = 'radar-hidden';
-    hiddenContents.forEach(name => {
-      const chip = document.createElement('span');
-      chip.textContent = name;
-      chip.title = 'ทุกไอเทมที่เกี่ยวข้องมีราคาต่ำกว่าเกณฑ์ขั้นต่ำ';
-      wrap.appendChild(chip);
-    });
-    const hint = document.createElement('span');
-    hint.className = 'radar-hidden-hint';
-    hint.textContent = '— excluded because all related items are below the minimum price filter';
-    wrap.appendChild(hint);
-    body.appendChild(wrap);
-  }
+  // หมายเหตุ: content ที่ไม่มี evidence (ไม่ว่าเพราะฟิลเตอร์ หรือไม่มีข้อมูลเลย) แสดงเป็น
+  // muted card ใน "Recommended Farm Now" ด้านบนแล้ว (buildRadarRecos คืน hasEvidence:false)
+  // ไม่ต้องมีลิสต์ "Hidden / Below Filter" แยกซ้ำอีกส่วน
 
   // --- generator errors (บางหมวดดึงไม่สำเร็จ) — พับเก็บไว้สำหรับ debug ---
   if (hasErrors) {

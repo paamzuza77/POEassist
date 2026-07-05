@@ -32,86 +32,45 @@ const CATEGORIES = [
   'Breach', 'SoulCores', 'Essences', 'Expedition', 'Verisium',
 ];
 
-// จับคู่หมวดไอเทม → เนื้อหาที่ควรไปฟาร์ม (แก้/เพิ่มได้ตามใจ)
-// confidence = ความมั่นใจว่าไอเทมหมวดนี้มาจาก content นี้จริง (0-1)
-// หมวดที่ไม่อยู่ใน map นี้ (เช่น Currency) จะโชว์ใน Top Rising ได้
-// แต่ไม่ถูกนำไปคิดเป็น content recommendation
-const CONTENT_MAP = {
-  Runes: {
-    content: 'Runes of Aldur / Ezomyte Remnants',
-    contentKey: 'runes',
-    confidence: 0.9,
-    wikiUrl: '',
-    sourceUrls: [],
-  },
-  Breach: {
-    content: 'Breach',
-    contentKey: 'breach',
-    confidence: 0.95,
-    wikiUrl: '',
-    sourceUrls: [],
-  },
-  Delirium: {
-    content: 'Delirium',
-    contentKey: 'delirium',
-    confidence: 0.95,
-    wikiUrl: '',
-    sourceUrls: [],
-  },
-  Ritual: {
-    content: 'Ritual',
-    contentKey: 'ritual',
-    confidence: 0.9,
-    wikiUrl: '',
-    sourceUrls: [],
-  },
-  Abyss: {
-    content: 'Abyss',
-    contentKey: 'abyss',
-    confidence: 0.85,
-    wikiUrl: '',
-    sourceUrls: [],
-  },
-  Expedition: {
-    content: 'Expedition',
-    contentKey: 'expedition',
-    confidence: 0.85,
-    wikiUrl: '',
-    sourceUrls: [],
-  },
-  SoulCores: {
-    content: 'Soul Core related content',
-    contentKey: 'soulcores',
-    confidence: 0.75,
-    wikiUrl: '',
-    sourceUrls: [],
-  },
-  Essences: {
-    content: 'Essence farming',
-    contentKey: 'essences',
-    confidence: 0.8,
-    wikiUrl: '',
-    sourceUrls: [],
-  },
-  Fragments: {
-    content: 'Boss / Fragment content',
-    contentKey: 'fragments',
-    confidence: 0.75,
-    wikiUrl: '',
-    sourceUrls: [],
-  },
-  Verisium: {
-    content: 'Verisium content',
-    contentKey: 'verisium',
-    confidence: 0.6,
-    wikiUrl: '',
-    sourceUrls: [],
-  },
-};
+// ===== Content bucket mapping (จุดเดียวที่คุมว่าหมวด poe.ninja ไหน → farm content ไหน) =====
+// นี่คือ "แหล่งความจริง" เดียวของ content mapping ทั้งระบบ — ห้าม hardcode ที่อื่น
+// - contentKey/displayName: ใช้แสดงผลและจัดกลุ่ม evidence items
+// - categories: หมวด poe.ninja (ตรงกับ CATEGORIES ด้านบน) ที่แม็ปเข้า bucket นี้
+//   ถ้าไม่มีหมวดที่ดึงได้จริง (poe.ninja ยังไม่มี category ตรงๆ) ปล่อย [] ไว้ —
+//   bucket จะยังโชว์อยู่เสมอ แต่ evidenceItems ว่างจนกว่าจะมีข้อมูล
+// - confidence: ความมั่นใจว่าไอเทมหมวดนี้มาจาก content นี้จริง (0-1)
+// - noEvidenceStatus: ข้อความตอนไม่มีไอเทม >=1 Divine เข้าเกณฑ์
+const CONTENT_BUCKETS = [
+  { contentKey: 'ritual', displayName: 'Ritual', categories: ['Ritual'], confidence: 0.9 },
+  { contentKey: 'expedition', displayName: 'Expedition', categories: ['Expedition'], confidence: 0.85 },
+  { contentKey: 'delirium', displayName: 'Delirium', categories: ['Delirium'], confidence: 0.95 },
+  { contentKey: 'simulacrum', displayName: 'Simulacrum', categories: [], confidence: 0.7 },
+  { contentKey: 'breach', displayName: 'Breach', categories: ['Breach'], confidence: 0.95 },
+  { contentKey: 'essence', displayName: 'Essence', categories: ['Essences'], confidence: 0.8 },
+  { contentKey: 'runes', displayName: 'Runes / Remnants', categories: ['Runes'], confidence: 0.9 },
+  { contentKey: 'trial_soulcores', displayName: 'Trial / Soul Cores', categories: ['SoulCores'], confidence: 0.75 },
+  { contentKey: 'fragments_bossing', displayName: 'Fragments / Bossing', categories: ['Fragments'], confidence: 0.75 },
+  { contentKey: 'waystones_mapping', displayName: 'Waystones / Mapping', categories: [], confidence: 0.6 },
+  { contentKey: 'abyss', displayName: 'Abyss', categories: ['Abyss'], confidence: 0.85 },
+  { contentKey: 'strongboxes', displayName: 'Strongboxes', categories: [], confidence: 0.6 },
+  { contentKey: 'generic_currency', displayName: 'Generic Currency', categories: ['Currency', 'Verisium'], confidence: 0.5 },
+].map((b) => ({
+  ...b,
+  wikiUrl: '',
+  sourceUrls: [],
+  noEvidenceStatus: 'No qualifying 1D+ items in current snapshot',
+}));
 
-const TOP_RISING_COUNT = 12;   // จำนวนไอเทมในกล่อง Top Rising
-const RELATED_ITEM_COUNT = 4;  // จำนวนไอเทมตัวอย่างต่อ content card
-const MIN_VOLUME_DIVINE = 0.5; // ไอเทมที่ volume ต่ำกว่านี้ (หน่วย divine) ไม่เอาเข้า Top Rising
+// reverse lookup: poe.ninja category name → bucket (มาจาก CONTENT_BUCKETS เท่านั้น จุดเดียว)
+const CATEGORY_TO_BUCKET = new Map();
+for (const bucket of CONTENT_BUCKETS) {
+  for (const cat of bucket.categories) CATEGORY_TO_BUCKET.set(cat, bucket);
+}
+
+const TOP_RISING_COUNT = 12;    // จำนวนไอเทมในกล่อง Top Rising (แสดงผล/fallback เท่านั้น ไม่ใช่ต้นทางคำนวณ)
+const EVIDENCE_ITEM_COUNT = 5;  // จำนวน evidence item สูงสุดต่อ content bucket
+const MIN_VOLUME_DIVINE = 0.5;  // ไอเทมที่ volume ต่ำกว่านี้ (หน่วย divine) ไม่เอาเข้า Top Rising
+const MIN_ITEM_VALUE_DIVINE = 1; // เกณฑ์ขั้นต่ำของ marketItems — ต่ำกว่านี้ไม่ถูกใช้คิดคะแนน/คำแนะนำ
 
 // ---------------------------------------------------------------------------
 // poe.ninja API (PoE2)
@@ -181,16 +140,16 @@ async function fetchCategory(version, category) {
 }
 
 // ---------------------------------------------------------------------------
-// 🧮 Farm Score — สูตรคะแนน (0-100, "คะแนนความน่าฟาร์ม" ไม่ใช่ % drop chance)
+// 🧮 Item Score — สูตรคะแนน (0-100, "คะแนนความน่าฟาร์ม" ไม่ใช่ % drop chance)
 //
-//   score = trendScore*0.40 + priceScore*0.25 + volumeScore*0.20
-//         + confidenceScore*0.15 - riskPenalty
+//   score = trendScore*0.30 + valueScore*0.30 + volumeScore*0.20
+//         + confidenceScore*0.15 - riskScore*0.05
 //
-// - trendScore:  %เปลี่ยนราคา 7 วัน → 0-100 (0% = 50 คะแนน, +40% ขึ้นไป = 100)
-// - priceScore:  ราคา (log scale กัน outlier ราคาโหดๆ ดันคะแนนเกินจริง)
-// - volumeScore: ปริมาณเทรด (log scale) — ไม่มีข้อมูล = 50 (neutral)
-// - confidence:  ความมั่นใจของ CONTENT_MAP
-// - riskPenalty: หักถ้าสภาพคล่องต่ำ/ราคาจิ๋วมาก (ขายจริงยาก)
+// - trendScore:  %เปลี่ยนราคา 7 วัน → 0-100, cap กัน spike สุดโต่งครองอันดับ
+// - valueScore:  มูลค่าไอเทม (log scale กัน outlier ราคาโหดๆ ดันคะแนนเกินจริง)
+// - volumeScore: ปริมาณเทรด/สภาพคล่อง (log scale) — ไม่มีข้อมูล = 50 (neutral)
+// - confidence:  ความมั่นใจของ CONTENT_BUCKETS
+// - riskScore:   0-100 ยิ่งสูงยิ่งเสี่ยง (สภาพคล่องต่ำ/ราคาจิ๋ว/spike ผิดปกติ) หักแค่ 5% น้ำหนัก
 // ---------------------------------------------------------------------------
 
 function trendScore(trend7d) {
@@ -219,31 +178,31 @@ function liquidityLabel(volume) {
 }
 
 function riskInfo(item) {
-  let penalty = 0;
+  let penalty = 0; // 0-100 scale, "quantity" of risk before weighting
   const notes = [];
   if (typeof item.volume === 'number' && item.volume > 0 && item.volume < 5) {
-    penalty += 10;
+    penalty += 40;
     notes.push('Low liquidity');
   }
   if (typeof item.value === 'number' && item.value < 0.005) {
-    penalty += 5;
+    penalty += 20;
     notes.push('Very cheap per unit — needs bulk selling');
   }
   if (typeof item.trend7d === 'number' && item.trend7d > 100) {
-    penalty += 5;
+    penalty += 20;
     notes.push('Spiking hard — price may correct');
   }
-  return { penalty, note: notes.join('; ') };
+  return { score: clamp(penalty, 0, 100), note: notes.join('; ') };
 }
 
 function itemFarmScore(item, confidence) {
   const risk = riskInfo(item);
   const raw =
-    trendScore(item.trend7d) * 0.40 +
-    priceScore(item.value) * 0.25 +
+    trendScore(item.trend7d) * 0.30 +
+    priceScore(item.value) * 0.30 +
     volumeScore(item.volume) * 0.20 +
     clamp(confidence, 0, 1) * 100 * 0.15 -
-    risk.penalty;
+    risk.score * 0.05;
   return { score: clamp(raw, 0, 100), risk };
 }
 
@@ -289,6 +248,7 @@ async function main() {
       league: LEAGUE,
       updatedAt: null,
       source: { name: 'poe.ninja', url: `${NINJA_BASE}/poe2/economy/${LEAGUE}/currency` },
+      marketItems: [],
       topRisingItems: [],
       contentRecommendations: [],
       errors: [],
@@ -299,19 +259,26 @@ async function main() {
     return;
   }
 
-  // --- คะแนนรายไอเทม ---
+  // --- ให้คะแนน + map content ให้ไอเทมทุกตัวที่ normalize มาแล้ว ---
   const scored = allItems.map((item) => {
-    const mapping = CONTENT_MAP[item.category] || null;
-    const confidence = mapping ? mapping.confidence : 0.5;
+    const bucket = CATEGORY_TO_BUCKET.get(item.category) || null;
+    const confidence = bucket ? bucket.confidence : 0.5;
     const { score, risk } = itemFarmScore(item, confidence);
-    return { ...item, mapping, confidence, score, riskPenalty: risk.penalty, riskNote: risk.note };
+    return { ...item, bucket, confidence, score, riskScore: risk.score, riskNote: risk.note };
   });
 
-  // --- A) Top Rising: เรียงตาม %7d จากมากไปน้อย กรอง volume ต่ำทิ้ง ---
-  const topRising = scored
-    .filter((x) => typeof x.trend7d === 'number' && (x.volume || 0) >= MIN_VOLUME_DIVINE)
-    .sort((a, b) => b.trend7d - a.trend7d)
-    .slice(0, TOP_RISING_COUNT)
+  // --- STEP 1: marketItems = ต้นทางความจริงเดียว ---
+  // เก็บไอเทม mapped ทุกตัวที่ value >= 1 Divine ไว้ทั้งหมด (ห้ามตัดทิ้งเพราะเทรนด์ต่ำ/ไม่ rising)
+  // กันไอเทมซ้ำด้วย name+category
+  const seenKey = new Set();
+  const marketItems = scored
+    .filter((x) => typeof x.value === 'number' && x.value >= MIN_ITEM_VALUE_DIVINE)
+    .filter((x) => {
+      const key = x.name + '|' + x.category;
+      if (seenKey.has(key)) return false;
+      seenKey.add(key);
+      return true;
+    })
     .map((x) => ({
       name: x.name,
       category: x.category,
@@ -319,54 +286,78 @@ async function main() {
       value: round2(x.value),
       valueCurrency: 'Divine',
       trend7d: round2(x.trend7d),
+      volume: x.volume === null ? null : round2(x.volume),
       volumeScore: round2(volumeScore(x.volume) / 100),
       liquidityLabel: liquidityLabel(x.volume),
-      mappedContent: x.mapping ? x.mapping.content : '',
-      contentKey: x.mapping ? x.mapping.contentKey : '',
+      mappedContent: x.bucket ? x.bucket.displayName : '',
+      contentKey: x.bucket ? x.bucket.contentKey : '',
       confidence: x.confidence,
+      score: Math.round(x.score),
       sourceUrl: `${NINJA_BASE}/poe2/economy/${LEAGUE}/${x.category.toLowerCase()}`,
-      wikiUrl: x.mapping ? x.mapping.wikiUrl : '',
+      wikiUrl: x.bucket ? x.bucket.wikiUrl : '',
       risk: x.riskNote,
     }));
 
-  // --- B) Content recommendations: คะแนนเฉลี่ยของไอเทมท็อป 5 ในแต่ละหมวดที่ map ไว้ ---
-  const contentRecommendations = [];
-  for (const [category, mapping] of Object.entries(CONTENT_MAP)) {
-    const catItems = scored
-      .filter((x) => x.category === category)
-      .sort((a, b) => b.score - a.score);
-    if (catItems.length === 0) continue;
+  // --- STEP 2: topRisingItems — display/fallback list เท่านั้น, สร้างจาก marketItems ---
+  // ห้ามใช้ตัวนี้เป็นต้นทางคำนวณ content recommendation
+  const topRising = marketItems
+    .filter((x) => typeof x.trend7d === 'number' && (x.volume || 0) >= MIN_VOLUME_DIVINE)
+    .sort((a, b) => b.trend7d - a.trend7d)
+    .slice(0, TOP_RISING_COUNT);
 
-    const top = catItems.slice(0, 5);
+  // --- STEP 3: contentRecommendations — วนทุก bucket ที่รองรับ ไม่ใช่แค่ bucket ที่มีไอเทม ---
+  const contentRecommendations = CONTENT_BUCKETS.map((bucket) => {
+    const evidence = marketItems
+      .filter((x) => x.contentKey === bucket.contentKey)
+      .sort((a, b) => b.score - a.score || b.value - a.value || (b.trend7d || 0) - (a.trend7d || 0));
+
+    if (evidence.length === 0) {
+      return {
+        contentKey: bucket.contentKey,
+        displayName: bucket.displayName,
+        farmScore: 0,
+        confidence: bucket.confidence,
+        status: bucket.noEvidenceStatus,
+        evidenceItems: [],
+        relatedItems: [],
+        risk: '',
+        sourceUrls: bucket.sourceUrls,
+      };
+    }
+
+    const top = evidence.slice(0, EVIDENCE_ITEM_COUNT);
     const avgScore = top.reduce((s, x) => s + x.score, 0) / top.length;
-    const risers = catItems.filter((x) => (x.trend7d || 0) > 20);
-    const avgTrend = top.reduce((s, x) => s + (x.trend7d || 0), 0) / top.length;
-    const goodLiq = catItems.filter((x) => (x.volume || 0) >= 100).length;
+    const bestItemBonus = top[0].score * 0.05;      // เล็กน้อย: ให้เครดิตไอเทมเด่นสุด
+    const countBonus = Math.min(10, evidence.length * 2); // เล็กน้อย: มี evidence เยอะ = มั่นใจขึ้น
+    const riskiest = top.find((x) => x.risk);
+    const riskPenalty = riskiest ? 5 : 0;
+    const farmScore = Math.round(clamp(avgScore + bestItemBonus + countBonus - riskPenalty, 0, 100));
 
-    const reason = [
-      `${risers.length} รายการในหมวดนี้ราคาขึ้น >20% ใน 7 วัน`,
-      `เทรนด์เฉลี่ยของไอเทมท็อป: ${avgTrend >= 0 ? '+' : ''}${round2(avgTrend)}% (7d)`,
-      goodLiq > 0
-        ? `${goodLiq} รายการมีปริมาณเทรดสูง ขายออกง่าย`
-        : 'ปริมาณเทรดโดยรวมยังต่ำ ขายอาจช้า',
-    ];
-
-    const riskiest = top.find((x) => x.riskNote);
-    contentRecommendations.push({
-      content: mapping.content,
-      contentKey: mapping.contentKey,
-      score: Math.round(clamp(avgScore, 0, 100)),
-      confidence: mapping.confidence,
-      relatedItems: top.slice(0, RELATED_ITEM_COUNT).map((x) => x.name),
-      reason,
-      risk: riskiest ? riskiest.riskNote : '',
+    return {
+      contentKey: bucket.contentKey,
+      displayName: bucket.displayName,
+      farmScore,
+      confidence: bucket.confidence,
+      status: `${evidence.length} item(s) ≥1 Divine mapped to this content`,
+      evidenceItems: top.map((x) => ({
+        name: x.name,
+        value: x.value,
+        valueCurrency: x.valueCurrency,
+        trend7d: x.trend7d,
+        volumeScore: x.volumeScore,
+        liquidityLabel: x.liquidityLabel,
+        score: x.score,
+        sourceUrl: x.sourceUrl,
+      })),
+      relatedItems: top.map((x) => x.name), // backward compat กับหน้าเว็บเก่า
+      risk: riskiest ? riskiest.risk : '',
       sourceUrls: [
-        `${NINJA_BASE}/poe2/economy/${LEAGUE}/${category.toLowerCase()}`,
-        ...mapping.sourceUrls,
-      ],
-    });
-  }
-  contentRecommendations.sort((a, b) => b.score - a.score);
+        `${NINJA_BASE}/poe2/economy/${LEAGUE}/${(bucket.categories[0] || '').toLowerCase()}`,
+        ...bucket.sourceUrls,
+      ].filter(Boolean),
+    };
+  });
+  contentRecommendations.sort((a, b) => b.farmScore - a.farmScore);
 
   const out = {
     version: 1,
@@ -376,6 +367,7 @@ async function main() {
       name: 'poe.ninja',
       url: `${NINJA_BASE}/poe2/economy/${LEAGUE}/currency`,
     },
+    marketItems,
     topRisingItems: topRising,
     contentRecommendations,
     errors,
@@ -383,7 +375,8 @@ async function main() {
 
   mkdirSync(dirname(OUT_FILE), { recursive: true });
   writeFileSync(OUT_FILE, JSON.stringify(out, null, 2) + '\n');
-  console.log(`wrote ${OUT_FILE}: ${topRising.length} rising items, ${contentRecommendations.length} recommendations, ${errors.length} errors`);
+  const withEvidence = contentRecommendations.filter((c) => c.evidenceItems.length > 0).length;
+  console.log(`wrote ${OUT_FILE}: ${marketItems.length} marketItems (>=1D), ${topRising.length} rising items, ${contentRecommendations.length} content buckets (${withEvidence} with evidence), ${errors.length} errors`);
 }
 
 main().catch((err) => {
