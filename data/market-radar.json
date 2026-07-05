@@ -1,7 +1,7 @@
 {
   "version": 1,
   "league": "runesofaldur",
-  "updatedAt": "2026-07-05T02:41:24.499Z",
+  "updatedAt": "2026-07-05T03:06:43.341Z",
   "source": {
     "name": "poe.ninja",
     "url": "https://poe.ninja/poe2/economy/runesofaldur/currency"
@@ -72,6 +72,22 @@
       "risk": "Low liquidity; Spiking hard — price may correct"
     },
     {
+      "name": "Cryptic Key",
+      "category": "Currency",
+      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvU3Ryb25nYm94U2tlbGV0b25LZXkiLCJzY2FsZSI6MSwicmVhbG0iOiJwb2UyIn1d/ae08d02326/StrongboxSkeletonKey.png",
+      "value": 1.41,
+      "valueCurrency": "Divine",
+      "trend7d": 498.9,
+      "volumeScore": 0.98,
+      "liquidityLabel": "Good",
+      "mappedContent": "",
+      "contentKey": "",
+      "confidence": 0.5,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/currency",
+      "wikiUrl": "",
+      "risk": "Spiking hard — price may correct"
+    },
+    {
       "name": "Fenumus' Rune of Agony",
       "category": "Runes",
       "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUnVuZXMvTmV3UnVuZTMiLCJzY2FsZSI6MSwicmVhbG0iOiJwb2UyIn1d/b8711ef6c2/NewRune3.png",
@@ -102,22 +118,6 @@
       "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/runes",
       "wikiUrl": "",
       "risk": "Low liquidity; Very cheap per unit — needs bulk selling; Spiking hard — price may correct"
-    },
-    {
-      "name": "Cryptic Key",
-      "category": "Currency",
-      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvU3Ryb25nYm94U2tlbGV0b25LZXkiLCJzY2FsZSI6MSwicmVhbG0iOiJwb2UyIn1d/ae08d02326/StrongboxSkeletonKey.png",
-      "value": 1.26,
-      "valueCurrency": "Divine",
-      "trend7d": 386,
-      "volumeScore": 0.98,
-      "liquidityLabel": "Good",
-      "mappedContent": "",
-      "contentKey": "",
-      "confidence": 0.5,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/currency",
-      "wikiUrl": "",
-      "risk": "Spiking hard — price may correct"
     },
     {
       "name": "Farrul's Rune of the Hunt",
