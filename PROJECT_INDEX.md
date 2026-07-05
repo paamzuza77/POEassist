@@ -30,7 +30,9 @@ Exile Assistant (repo: POEassist) is a single-page, static GitHub Pages app for 
 
 ## Feature map (index.html anchors)
 
-Tabs are switched via `TAB_IDS` / `TAB_BTNS` at line 2807-2808; panels are `<div id="pageX" hidden>` blocks.
+Tabs are switched via `TAB_IDS` / `TAB_BTNS` (search `TAB_IDS =`); panels are `<div id="pageX" hidden>` blocks.
+
+**App shell (2026-07-05):** navigation is a left sidebar (`<aside class="sidebar">`) with grouped nav sections (Main / Planning / Tools / System), not a top pill bar — search `class="app-shell"` in `index.html`. This was a Vercel-inspired layout/navigation refresh only; every tab below still renders the same feature content, just inside `<main class="content">` under a compact `<header class="topbar">` instead of the old centered header. See `EDIT_GUIDE.md` → "Navigation / Tabs" for exact anchors and how to add a new sidebar item.
 
 ### Exile Hub (`home`)
 - Markup: `<div id="pageHome">` line 1710-1751

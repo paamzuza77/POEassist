@@ -42,12 +42,18 @@ All "components" below are sections inside `index.html`, identified by comment b
 
 ## Navigation / Tabs
 
-- Nav buttons: `<nav class="tab-nav">` around line 1785 in `index.html` — one `<button class="tab-btn" id="tabBtnX">` per tab.
-- Tab→panel wiring: `const TAB_IDS = {...}` and `const TAB_BTNS = {...}` (search `TAB_IDS =`) — every tab key must appear in **both** maps and match a `tabBtnX` id and a `pageX` markup id.
-- Switching logic: `function switchTab(tab)` (search `function switchTab`) — generic, do not special-case new tabs here.
-- Icon fallback (optional): `MENU_ICON_LABELS` (search `MENU_ICON_LABELS =`) — only needed if `data/icon-map.json` should map a real icon image to the tab; omitting a tab here just keeps its emoji.
+As of the 2026-07-05 Vercel-inspired app-shell refresh, navigation is a **left sidebar with grouped sections**, not a top pill bar. This was a shell/layout-only change — no feature logic moved.
 
-**To add a new tab safely:** add one `<button id="tabBtnX">` to the nav, one `<div id="pageX" hidden>` block in the markup, one key in `TAB_IDS`, one key in `TAB_BTNS`. Don't touch `switchTab()` itself.
+- App shell markup: `<div class="app-shell">` (search `class="app-shell"`) wraps `<aside class="sidebar">` (brand block + grouped nav + footer) and `<div class="main-col">` (`<header class="topbar">` + `<main class="content">` holding all six `#pageX` panels, unchanged internally).
+- Sidebar nav buttons: still one `<button class="nav-item" id="tabBtnX">` per tab (was `class="tab-btn"`), grouped inside `<div class="nav-group">` blocks under a `<div class="nav-group-label">` (search `class="nav-group"` in `index.html`) — currently **Main** (Exile Hub/Market Radar/Divine Market), **Planning** (Atlas Planner/Shopping List), **Tools** (Gear Checker); Patch Notes lives in `.sidebar-footer` as a **System** group of one.
+- Tab→panel wiring: `const TAB_IDS = {...}` and `const TAB_BTNS = {...}` (search `TAB_IDS =`) — unchanged, still keyed by `getElementById`, so it doesn't care about the sidebar restructure.
+- Switching logic: `function switchTab(tab)` (search `function switchTab`) — generic, do not special-case new tabs here. It now also writes the active tab's label into `#topbarTitle`/`#topbarCrumb` via two added lookup maps, `TAB_TITLES` and `TAB_GROUPS` (declared right above `switchTab`, next to `TAB_IDS`/`TAB_BTNS`).
+- Icon fallback (optional): `MENU_ICON_LABELS` (search `MENU_ICON_LABELS =`) — unchanged; still targets the `.tab-ico` span nested in each `tabBtnX` button, which every nav item still has.
+- Shell CSS (sidebar/topbar/content/nav-item/responsive collapse) lives in one block near the top of `<style>`, search `/* ---------- App shell (sidebar dashboard) ---------- */`. Old `.tab-nav`/`.tab-btn` pill CSS and the fixed-position `.patch-btn` were removed since nothing references them anymore.
+
+**To add a new tab safely:** add one `<button class="nav-item" id="tabBtnX">` (with a nested `<span class="tab-ico">`) inside the right `.nav-group` (or a new one, with its own `.nav-group-label`), one `<div id="pageX" hidden>` block inside `<main class="content">`, one key each in `TAB_IDS`, `TAB_BTNS`, `TAB_TITLES`, `TAB_GROUPS`. Don't touch `switchTab()` itself — it stays generic.
+
+**To add a new sidebar item later:** same as above — a nav-group only needs a label + one or more `.nav-item` buttons; no JS beyond the four map entries.
 
 ## Shared UI Components
 
@@ -89,7 +95,7 @@ To add a brand-new static JSON data source: follow the `market-radar.json`/`home
 - All design tokens are CSS custom properties declared near the top of the single `<style>` block (search `--panel:` to jump there): `--panel`/`--panel-raised`/`--panel-sunken` (surfaces), `--border`/`--border-soft`, `--text`/`--text-muted`/`--text-dim`, `--gold`/`--gold-glow`/`--gold-dim` (primary accent), `--fire`/`--fire-glow` (red/danger), `--lightning`/`--lightning-glow` (yellow/caution), `--cold-glow` (blue/info).
 - Fonts: `'Cinzel', serif` for headings/titles, `'JetBrains Mono', monospace` for numbers/labels/badges.
 - Generic color utility classes `.divine-up`/`.divine-down`/`.divine-warn` (green/red/yellow) are reusable anywhere a value needs a quick status color — prefer them over new inline colors.
-- No Tailwind/CSS framework, no theme config file — it's all hand-written CSS in `index.html`. Do not introduce a redesign; match the existing dark-fantasy/gold-accent look.
+- No Tailwind/CSS framework, no theme config file — it's all hand-written CSS in `index.html`. The app shell (sidebar/topbar/content, see Navigation / Tabs above) uses a Vercel-inspired dark-dashboard look — near-black surfaces, subtle borders, minimal gradients; it was a deliberate one-time layout refresh (2026-07-05), not an open invitation to keep redesigning. Feature content inside each `#pageX` panel still uses the original dark-fantasy/gold-accent styling (`.hub-card`, `.reco-card`, `.divine-*`, etc.) — match that for any per-feature work, and don't restyle the shell again without being asked.
 
 ## Documentation Update Rules
 
