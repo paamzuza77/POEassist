@@ -42,6 +42,7 @@ Exile Assistant (repo: POEassist) is a single-page, static GitHub Pages app for 
 | `data/home-status.json` | Generated snapshot for Exile Hub (league timing, stash sale) |
 | `data/market-radar.json` | Generated poe.ninja snapshot for Market Radar |
 | `data/icon-map.json` | Currency/menu icon lookup, with emoji fallback |
+| `assets/icons/*.svg` | Original pixel-art currency icons (divine/exalted/chaos orb) referenced by `icon-map.json` |
 | `scripts/update-home-status.mjs` | Generates `data/home-status.json` (scrapes poe2db.tw) |
 | `scripts/update-market-radar.mjs` | Generates `data/market-radar.json` (fetches poe.ninja) |
 | `.github/workflows/update-market-radar.yml` | Runs both scripts hourly + on push to `main`, commits data if changed |
@@ -52,7 +53,9 @@ Tabs are switched via `TAB_IDS` / `TAB_BTNS` (search `TAB_IDS =`); panels are `<
 
 > **Line-number drift warning:** exact line numbers below predate the Divine Market tab and have shifted (index.html grew to ~5600 lines). Treat them as rough positions — always `rg` the anchor term (function name, id, comment banner) first. `EDIT_GUIDE.md` has fresher anchors.
 
-**App shell (2026-07-05):** navigation is a left sidebar (`<aside class="sidebar">`) with grouped nav sections (Main / Planning / Tools / System), not a top pill bar — search `class="app-shell"` in `index.html`. This was a Vercel-inspired layout/navigation refresh only; every tab below still renders the same feature content, just inside `<main class="content">` under a compact `<header class="topbar">` instead of the old centered header. See `EDIT_GUIDE.md` → "Navigation / Tabs" for exact anchors and how to add a new sidebar item.
+**App shell (2026-07-05):** navigation is a left sidebar (`<aside class="sidebar">`) with grouped nav sections (Main / Planning / Tools / System), not a top pill bar — search `class="app-shell"` in `index.html`. Every tab below renders the same feature content inside `<main class="content">` under a compact `<header class="topbar">`. See `EDIT_GUIDE.md` → "Navigation / Tabs" for exact anchors and how to add a new sidebar item.
+
+**Theme (2026-07-12):** the entire UI now uses the **RawBlock brutalist design system** from `design.md.md` (white/black, thick square borders, no shadows/gradients, inversion hovers, Archivo Black/Work Sans/Space Mono). Old CSS var names were kept so JS still works (`--gold*` = black accent). See `EDIT_GUIDE.md` → "Styling / Theme Notes" and "Icons" before any visual work.
 
 ### Exile Hub (`home`)
 - Markup: `<div id="pageHome">` line 1710-1751
@@ -126,7 +129,7 @@ Tabs are switched via `TAB_IDS` / `TAB_BTNS` (search `TAB_IDS =`); panels are `<
 ### Cross-cutting
 - `localStorage` keys in use: `poe2ResForge.presets.v2`, `poe2ResForge.activePreset.v2`, `poeAssist.activeTab.v1`, `poe2ShopList.rows.v1`, `poe2ShopList.rate.v1`, `poe2FarmPlanner.cards.v1`, `poe2FarmPlanner.filter.v1`, `poeAssist.radarFilter.v1`, `poeAssist.radarRates.v1`, `poeAssist.stashSale.manual.v1`. Changing a key's shape needs tolerant/migration-safe reads (existing code already wraps reads in try/catch with fallbacks).
 - `fetch()` calls: `data/market-radar.json` (line 4264), `data/icon-map.json` (line 4349), `data/home-status.json` (line 4660) — all same-origin static JSON, no external API calls from the browser.
-- Icon system: `ICON_MAP` (4348) loaded from `data/icon-map.json`; `iconEl()` (4373) falls back to emoji if a key is missing.
+- Icon system: `ICON_MAP` loaded from `data/icon-map.json`; `iconEl()` falls back to emoji if a key is missing. Since 2026-07-12: nav/card icons are original inline SVGs in markup, Exile Hub resource icons come from the `RAW_ICONS` JS map (search `const RAW_ICONS`), and currency icons are original pixel-art SVGs in `assets/icons/`. See `EDIT_GUIDE.md` → "Icons".
 
 ## Do not read everything
 
@@ -137,6 +140,6 @@ Tabs are switched via `TAB_IDS` / `TAB_BTNS` (search `TAB_IDS =`); panels are `<
 ## Other root docs (status notes)
 
 - `Index.md` — earlier draft of this file; superseded by `PROJECT_INDEX.md`. Don't read it for facts; deliberately left untracked.
-- `design.md.md` — "RawBlock" brutalist design-system spec; **the planned UI redesign target** (as of 2026-07-12). The shipped UI is still the 2026-07-05 Vercel-inspired sidebar shell until the redesign lands.
+- `design.md.md` — "RawBlock" brutalist design-system spec; **shipped as the live UI on 2026-07-12** — the whole app now follows it.
 - `PROJECT_SETUP_SKILL.md`, `PROMPT_COLLABORATION_SKILL.md` — general-purpose agent-workflow skills the user uses to drive this project; not app docs — ignore for app work.
 - `SKILL.md`, `AGENTS.md` — actively used (product rules / agent rules); tracked in git.

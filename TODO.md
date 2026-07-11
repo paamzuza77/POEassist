@@ -4,7 +4,7 @@ Short, actionable list. Phases live in `ROADMAP.md`; history in `CHANGELOG.md`.
 
 ## Next
 
-- [ ] Full RawBlock UI redesign of `index.html` per `design.md.md` (user-requested; preserve all feature behavior, tab navigation, localStorage, OCR).
+- (empty — nothing queued)
 
 ## Deferred
 - [ ] Replace placeholder `README.md` (currently just a title) with a short public-facing description + live-site link.
@@ -15,6 +15,7 @@ Short, actionable list. Phases live in `ROADMAP.md`; history in `CHANGELOG.md`.
 
 ## Done
 
+- [x] Full RawBlock UI redesign of `index.html` per `design.md.md` — shipped as patch 0.8; all 6 tabs verified via headless-browser screenshots; original SVG icon set added (2026-07-12).
 - [x] Committed active draft docs (`SKILL.md`, `AGENTS.md`, `design.md.md`, both workflow-skill docs); `Index.md` deliberately left untracked as a superseded draft (2026-07-12).
 - [x] Reconciled `PROJECT_INDEX.md` with `EDIT_GUIDE.md`/code: added the Divine Market tab (6th tab, verified in `index.html` `TAB_IDS`), corrected line count, added line-number drift warning (2026-07-12).
 - [x] Docs foundation pass: added `ROADMAP.md`, `TODO.md`, `CHANGELOG.md`, `DOC_UPDATE_RULES.md`; linked from `PROJECT_INDEX.md` (2026-07-12).

@@ -2,6 +2,13 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-12 (4)
+
+- **RawBlock UI redesign shipped** (`index.html`, patch 0.8): full retheme per `design.md.md` — white/black palette, thick square borders, no shadows/gradients/glow, inversion hovers, Archivo Black/Work Sans/Space Mono. CSS var names kept so all inline JS (gauges, chart) works unchanged; feature logic untouched.
+- Icons: nav/card emoji replaced with original inline SVGs (currentColor); Exile Hub resource icons via new `RAW_ICONS` JS map; original pixel-art currency SVGs added in `assets/icons/` and wired into `data/icon-map.json` (was pointing at nonexistent PNGs). No official PoE2 assets copied.
+- Small JS visual fixes only: Divine chart point stroke/forecast band colors for white bg, phase colors deduped (mid=purple, late=green), patch-notes button keeps its SVG when JS appends the version, mobile nav strip now a single scrollable row.
+- Verification: headless-Edge screenshots of all 6 tabs (desktop 1440px + mobile 480px) over a local HTTP server, JS syntax check of the inline script, no console errors. Interactive flows (OCR run, modal open, tooltips) not exercised — logic untouched.
+
 ## 2026-07-12 (3)
 
 - Tracked the active root drafts in git: `SKILL.md` (product rules), `AGENTS.md` (agent rules), `design.md.md` (RawBlock design spec — the planned redesign target), `PROJECT_SETUP_SKILL.md` + `PROMPT_COLLABORATION_SKILL.md` (workflow skills). `Index.md` deliberately left untracked (superseded draft).

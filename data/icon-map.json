@@ -2,19 +2,19 @@
   "Divine": {
     "type": "currency",
     "label": "Divine Orb",
-    "icon": "assets/icons/divine-orb.png",
+    "icon": "assets/icons/divine-orb.svg",
     "fallback": "💎"
   },
   "Exalted": {
     "type": "currency",
     "label": "Exalted Orb",
-    "icon": "assets/icons/exalted-orb.png",
+    "icon": "assets/icons/exalted-orb.svg",
     "fallback": "✨"
   },
   "Chaos": {
     "type": "currency",
     "label": "Chaos Orb",
-    "icon": "assets/icons/chaos-orb.png",
+    "icon": "assets/icons/chaos-orb.svg",
     "fallback": "🌀"
   },
   "THB": {

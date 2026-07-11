@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges">
+  <!-- Original pixel-art interpretation of an "exalted orb" concept (not official PoE2 art):
+       black pixel starburst with a white core -->
+  <path fill="#000000" d="M7 0h2v4H7zM7 12h2v4H7zM0 7h4v2H0zM12 7h4v2h-4zM2 2h2v2H2zM12 2h2v2h-2zM2 12h2v2H2zM12 12h2v2h-2z"/>
+  <rect x="5" y="5" width="6" height="6" fill="#000000"/>
+  <rect x="6" y="6" width="4" height="4" fill="#ffffff"/>
+  <rect x="7" y="7" width="2" height="2" fill="#000000"/>
+</svg>

@@ -92,10 +92,21 @@ To add a brand-new static JSON data source: follow the `market-radar.json`/`home
 
 ## Styling / Theme Notes
 
-- All design tokens are CSS custom properties declared near the top of the single `<style>` block (search `--panel:` to jump there): `--panel`/`--panel-raised`/`--panel-sunken` (surfaces), `--border`/`--border-soft`, `--text`/`--text-muted`/`--text-dim`, `--gold`/`--gold-glow`/`--gold-dim` (primary accent), `--fire`/`--fire-glow` (red/danger), `--lightning`/`--lightning-glow` (yellow/caution), `--cold-glow` (blue/info).
-- Fonts: `'Cinzel', serif` for headings/titles, `'JetBrains Mono', monospace` for numbers/labels/badges.
-- Generic color utility classes `.divine-up`/`.divine-down`/`.divine-warn` (green/red/yellow) are reusable anywhere a value needs a quick status color — prefer them over new inline colors.
-- No Tailwind/CSS framework, no theme config file — it's all hand-written CSS in `index.html`. The app shell (sidebar/topbar/content, see Navigation / Tabs above) uses a Vercel-inspired dark-dashboard look — near-black surfaces, subtle borders, minimal gradients; it was a deliberate one-time layout refresh (2026-07-05), not an open invitation to keep redesigning. Feature content inside each `#pageX` panel still uses the original dark-fantasy/gold-accent styling (`.hub-card`, `.reco-card`, `.divine-*`, etc.) — match that for any per-feature work, and don't restyle the shell again without being asked.
+**As of 2026-07-12 the whole app uses the RawBlock brutalist design system** (spec: `design.md.md`): white background, black text, thick square borders (2/3/5px by importance), no shadows, no glow, no gradients, no border-radius, hard black↔white inversion on hover/active, uppercase tracked labels/buttons. The old dark-fantasy/gold theme and the Vercel-style dark shell are gone — do not reintroduce dark surfaces, gold accents, glows, or rounded corners.
+
+- All design tokens are CSS custom properties at the top of the single `<style>` block (search `RawBlock design tokens`). **Var names were kept from the old theme so inline JS keeps working**: `--void`/`--panel*` are white/near-white surfaces, `--border` is black (`--border-soft` = light grey for subtle dividers/chart grid), `--gold`/`--gold-glow`/`--gold-dim` all = black (accent), element hues are pure web colors (`--fire` red, `--cold` blue, `--lightning` orange, `--chaos` purple), plus new `--ok` (green) and `--link` (hyperlink blue).
+- Fonts: `var(--font-head)` = 'Archivo Black' (headings, uppercase), `var(--font-body)` = 'Work Sans', `var(--font-mono)` = 'Space Mono' (numbers/labels/badges/buttons).
+- Status color rules: green = fresh/up/capped, orange = stale/warning, red = error/down/destructive, blue = links/info only. `.divine-up`/`.divine-down`/`.divine-warn` utility classes still work — prefer them over new inline colors.
+- Hierarchy comes from border weight, not shadows: 5px = hero/emphasized panel, 3px = standard panel/card, 2px = sub-card/chip/input. Focus rings use inset `box-shadow: inset 0 0 0 2px var(--border)` (border simulation, the only allowed box-shadow use besides the checked-row marker).
+- Disabled/muted states use grey borders (`#ccc`) + grey fills (`#f5f5f5`), not opacity.
+- No Tailwind/CSS framework, no theme config file — all hand-written CSS in `index.html`.
+
+## Icons
+
+- Nav/tab icons and hub/divine card icons are **original inline SVGs in the markup** (16×16 viewBox, `fill="currentColor"` so they invert with hover/active). Edit them directly in the nav buttons / `.hub-card-ico` spans.
+- Exile Hub resource-card icons come from the `RAW_ICONS` map in JS (search `const RAW_ICONS`) — keys referenced by `HUB_RESOURCES[].icon`; unknown keys fall back to rendering the icon string as text. **Add future icons here.**
+- `data/icon-map.json` + `iconEl()` remain the lookup for currency/menu image icons; currency entries now point to original pixel-art SVGs in `assets/icons/` (`divine-orb.svg`, `exalted-orb.svg`, `chaos-orb.svg`). Missing entries still fall back to emoji.
+- Never copy official PoE2 artwork/icons into the repo — icons must be original interpretations.
 
 ## Documentation Update Rules
 
@@ -139,4 +150,4 @@ Whenever a feature/tab/section is added or changed:
 
 ## Last Updated
 
-2026-07-05
+2026-07-12 (RawBlock redesign)
