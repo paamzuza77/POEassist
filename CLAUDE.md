@@ -18,6 +18,7 @@ Instructions for Claude Code sessions working in this repo.
 - Preserve existing behavior: OCR/paste/drop, `localStorage` save/load, export/import JSON, tab navigation, and the Market Radar scoring pipeline must keep working unless the task is specifically about changing them.
 - After editing, run the smallest reasonable verification (see `EDIT_GUIDE.md` per-recipe notes) — e.g. `node scripts/<script>.mjs` for a script change, open `index.html` in a browser for a UI change.
 - After successful verification, commit and push to GitHub with a concise commit message.
+- Before ending a session, update the docs per `DOC_UPDATE_RULES.md` (typically: `CHANGELOG.md` entry, `TODO.md` status, and `PROJECT_INDEX.md`/`EDIT_GUIDE.md` if anchors or the file map changed).
 - If unsure about a decision (e.g. ambiguous requirement, missing data), leave a short note in the relevant `.md` file instead of guessing.
 
 ## Product/UX conventions
