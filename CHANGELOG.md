@@ -2,6 +2,11 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-12 (3)
+
+- Tracked the active root drafts in git: `SKILL.md` (product rules), `AGENTS.md` (agent rules), `design.md.md` (RawBlock design spec — the planned redesign target), `PROJECT_SETUP_SKILL.md` + `PROMPT_COLLABORATION_SKILL.md` (workflow skills). `Index.md` deliberately left untracked (superseded draft).
+- Updated `PROJECT_INDEX.md` status notes and `TODO.md` (redesign queued as Next; draft-decision item resolved). Docs only, no runtime changes.
+
 ## 2026-07-12 (2)
 
 - Docs reconciliation pass (docs only, no runtime changes).

@@ -134,9 +134,9 @@ Tabs are switched via `TAB_IDS` / `TAB_BTNS` (search `TAB_IDS =`); panels are `<
 - `data/market-radar.json` is large (~16KB) — don't paste its full contents into chat; summarize (item count, top N, `updatedAt`).
 - Root-level `Index.md` and `SKILL.md` are pre-existing untracked drafts with overlapping/more detailed product rules (tab specs, UX rules, scoring wording). Consult `SKILL.md` for product-behavior rules not repeated here.
 
-## Draft / untracked docs (status notes)
+## Other root docs (status notes)
 
-- `Index.md` — earlier draft of this file; superseded by `PROJECT_INDEX.md`. Don't read it for facts; kept pending user decision (see `TODO.md`).
-- `design.md.md` — "RawBlock" brutalist design-system draft; **not** the current UI direction (the app uses the 2026-07-05 Vercel-inspired sidebar shell). Reference only.
-- `PROJECT_SETUP_SKILL.md`, `PROMPT_COLLABORATION_SKILL.md` — general-purpose agent-skill documents, not project docs; ignore for app work.
-- `SKILL.md`, `AGENTS.md` — actively used (product rules / agent rules) but currently untracked in git.
+- `Index.md` — earlier draft of this file; superseded by `PROJECT_INDEX.md`. Don't read it for facts; deliberately left untracked.
+- `design.md.md` — "RawBlock" brutalist design-system spec; **the planned UI redesign target** (as of 2026-07-12). The shipped UI is still the 2026-07-05 Vercel-inspired sidebar shell until the redesign lands.
+- `PROJECT_SETUP_SKILL.md`, `PROMPT_COLLABORATION_SKILL.md` — general-purpose agent-workflow skills the user uses to drive this project; not app docs — ignore for app work.
+- `SKILL.md`, `AGENTS.md` — actively used (product rules / agent rules); tracked in git.

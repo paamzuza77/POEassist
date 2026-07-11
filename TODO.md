@@ -4,11 +4,9 @@ Short, actionable list. Phases live in `ROADMAP.md`; history in `CHANGELOG.md`.
 
 ## Next
 
-- [ ] (none queued — pick from Deferred or ROADMAP Future Candidates when the user asks)
+- [ ] Full RawBlock UI redesign of `index.html` per `design.md.md` (user-requested; preserve all feature behavior, tab navigation, localStorage, OCR).
 
 ## Deferred
-
-- [ ] Decide whether to commit the untracked root drafts (`Index.md`, `design.md.md`, `SKILL.md`, `AGENTS.md`, `PROJECT_SETUP_SKILL.md`, `PROMPT_COLLABORATION_SKILL.md`) — user decision; see notes in `PROJECT_INDEX.md` → "Draft / untracked docs".
 - [ ] Replace placeholder `README.md` (currently just a title) with a short public-facing description + live-site link.
 
 ## Known Issues
@@ -17,5 +15,6 @@ Short, actionable list. Phases live in `ROADMAP.md`; history in `CHANGELOG.md`.
 
 ## Done
 
+- [x] Committed active draft docs (`SKILL.md`, `AGENTS.md`, `design.md.md`, both workflow-skill docs); `Index.md` deliberately left untracked as a superseded draft (2026-07-12).
 - [x] Reconciled `PROJECT_INDEX.md` with `EDIT_GUIDE.md`/code: added the Divine Market tab (6th tab, verified in `index.html` `TAB_IDS`), corrected line count, added line-number drift warning (2026-07-12).
 - [x] Docs foundation pass: added `ROADMAP.md`, `TODO.md`, `CHANGELOG.md`, `DOC_UPDATE_RULES.md`; linked from `PROJECT_INDEX.md` (2026-07-12).
