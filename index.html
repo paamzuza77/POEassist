@@ -1155,6 +1155,16 @@
     text-align: right;
     white-space: nowrap;
   }
+  /* Mirror-equivalent helper — บรรทัดเล็กใต้ยอด Div (คอลัมน์ 2 แถวถัดไปของ grid) */
+  .sg-mirror {
+    grid-column: 2;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .sg-mirror.reach { color: var(--ok); }
 
   .rate-group .rate-line {
     display: flex;
@@ -3285,11 +3295,13 @@
           <span class="sg-label">รวม Min</span>
           <span class="sg-div" id="sumMin">0 Div</span>
           <span class="sg-thb" id="sumMinThb">= 0 ฿</span>
+          <span class="sg-mirror" id="sumMinMirror" hidden></span>
         </div>
         <div class="sg-row">
           <span class="sg-label">รวม Max</span>
           <span class="sg-div" id="sumMax">0 Div</span>
           <span class="sg-thb" id="sumMaxThb">= 0 ฿</span>
+          <span class="sg-mirror" id="sumMaxMirror" hidden></span>
         </div>
       </div>
       <div class="summary-group bought-group">
@@ -5057,6 +5069,42 @@ function rowMatchesSlot(row) {
   return rowSlotId(row) === shopSelectedSlot;
 }
 
+// ---- Mirror-equivalent helper (patch 0.22) ----
+// ราคา Mirror of Kalandra จาก snapshot ตลาด data/market-radar.json (อัปเดตตามรอบ GitHub Actions ไม่ใช่ real-time)
+// โหลดแยกจาก Market Radar เพราะ radarData ประกาศทีหลังในไฟล์ (TDZ) — ไฟล์เดียวกัน ไม่มี API เพิ่ม
+let shopMirrorPriceDiv = null;
+
+function getMirrorPriceDiv() {
+  return shopMirrorPriceDiv;
+}
+
+// คืน '' เมื่อไม่มีราคา Mirror หรือยอดเป็น 0 → ซ่อนบรรทัด helper (ไม่ใช้ราคา fallback เด็ดขาด)
+function formatMirrorEquivalent(totalDiv) {
+  const mirror = getMirrorPriceDiv();
+  if (!(mirror > 0) || !(totalDiv > 0)) return '';
+  if (totalDiv < mirror) return 'Short of 1 Mirror';
+  const mirrors = Math.floor(totalDiv / mirror);
+  const rem = totalDiv - mirrors * mirror;
+  return rem > 0
+    ? fmtNum(mirrors) + ' Mirror + ' + fmtNum(rem) + ' Div'
+    : fmtNum(mirrors) + ' Mirror';
+}
+
+(function loadShopMirrorPrice() {
+  fetch('data/market-radar.json?t=' + Date.now(), { cache: 'no-store' })
+    .then(res => (res.ok ? res.json() : null))
+    .then(data => {
+      const items = (data && Array.isArray(data.marketItems)) ? data.marketItems : [];
+      const m = items.find(it => it && it.name === 'Mirror of Kalandra' &&
+        it.valueCurrency === 'Divine' && typeof it.value === 'number' && it.value > 0);
+      if (m) {
+        shopMirrorPriceDiv = m.value;
+        updateShopSummary(); // เติมบรรทัด Mirror ให้ยอดที่ render ไปแล้ว
+      }
+    })
+    .catch(() => { /* ไม่มีข้อมูล → helper ซ่อนตัวเอง */ });
+})();
+
 function updateShopSummary() {
   // งบที่วางแผน: ใช้ min/max ถ้ามีครบ, ถ้ามีด้านเดียวใช้ด้านนั้นแทนอีกด้าน (กันยอดหายเพราะกรอกไม่ครบ)
   let totalMin = 0, totalMax = 0, totalBought = 0, boughtCount = 0;
@@ -5082,8 +5130,17 @@ function updateShopSummary() {
     document.getElementById(id).textContent = divineRate > 0 ? '= ' + fmtNum(div * divineRate) + ' ฿' : '— ฿';
   };
 
-  set('sumMin', totalMin); setThb('sumMinThb', totalMin);
-  set('sumMax', totalMax); setThb('sumMaxThb', totalMax);
+  // helper เทียบเป็น Mirror ใต้ยอด Div ที่วางแผน — ไม่มีราคา Mirror = ซ่อน, ไม่แตะการคำนวณเดิม
+  const setMirror = (id, div) => {
+    const el = document.getElementById(id);
+    const text = formatMirrorEquivalent(div);
+    el.hidden = !text;
+    el.textContent = text;
+    el.classList.toggle('reach', text !== '' && text !== 'Short of 1 Mirror');
+  };
+
+  set('sumMin', totalMin); setThb('sumMinThb', totalMin); setMirror('sumMinMirror', totalMin);
+  set('sumMax', totalMax); setThb('sumMaxThb', totalMax); setMirror('sumMaxMirror', totalMax);
   set('sumBought', totalBought); setThb('sumBoughtThb', totalBought);
   set('remMin', needMin); setThb('remMinThb', needMin);
   set('remMax', needMax); setThb('remMaxThb', needMax);
@@ -5912,6 +5969,15 @@ document.getElementById('shopSizeReset').addEventListener('click', resetShopSizi
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.22',
+    date: '2026-07-12',
+    notes: [
+      'Gear Planner: ใต้ยอด Div ของ "รวมงบที่วางแผน" (รวม Min / รวม Max) มีบรรทัดเล็กเทียบเป็น Mirror of Kalandra — ต่ำกว่า 1 Mirror ขึ้น "Short of 1 Mirror", ตั้งแต่ 1 Mirror ขึ้นไปขึ้น "X Mirror + Y Div" (สีเขียว)',
+      'ราคา Mirror มาจาก snapshot ตลาดเดิม (data/market-radar.json อัปเดตตามรอบ GitHub Actions ไม่ใช่ real-time) — ถ้า snapshot ไม่มีราคา Mirror บรรทัดนี้จะซ่อนตัวเอง ไม่ใช้ราคาปลอม',
+      'การคำนวณงบ Min/Max/THB เดิมไม่เปลี่ยน — เป็นบรรทัดแสดงผลเพิ่มอย่างเดียว',
+    ],
+  },
   {
     version: '0.21',
     date: '2026-07-12',

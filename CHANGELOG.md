@@ -2,6 +2,13 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-12 (18)
+
+- **Gear Planner: Mirror-equivalent helper under planned-budget Div totals (patch 0.22)** (`index.html`): the "รวมงบที่วางแผน" summary card shows a small helper line **directly under** the รวม Min and รวม Max Div numbers translating them into Mirror of Kalandra terms — `Short of 1 Mirror` (dim) below one Mirror, `X Mirror + Y Div` (green `.sg-mirror.reach`) at/above (`+ Y Div` dropped at exact multiples). Display-only: Min/Max/THB math untouched.
+  - **Data:** Mirror price read from the existing `data/market-radar.json` snapshot (`marketItems`, Divine-valued — Mirror qualifies via the existing ≥1-Div rule, `mjs` script unchanged; 5,228 Div at time of build). Snapshot-based via the hourly Actions refresh, not real-time. The Gear Planner does its own small fetch of the same file (`loadShopMirrorPrice` IIFE — `radarData` is declared later in the script, TDZ) and re-runs `updateShopSummary()` when it lands. **No Mirror in the snapshot / fetch fails → the helper hides itself; no fallback price ever shown.**
+  - **Code:** helpers `getMirrorPriceDiv()` / `formatMirrorEquivalent(totalDiv)` + a `setMirror()` writer inside `updateShopSummary()`; markup adds `#sumMinMirror`/`#sumMaxMirror` spans as a 4th grid cell (`grid-column: 2`) in the existing `.sg-row`, so it lands right-aligned under the Div number, not after the THB value. `.sg-mirror` is plain small mono text (no border/radius) — nothing to register in the Trust theme groups.
+  - Verification: Playwright-core (headless msedge) over a local HTTP server — **27/27** checks: real snapshot (min 100 → `Short of 1 Mirror` dim, max 12,750 → `2 Mirror + 2,294 Div` green, THB values intact, helper geometrically below + right-aligned with the Div number); mocked Mirror 6,000 reproduces the spec example (`2 Mirror + 750 Div`); Mirror removed from snapshot → both helpers hidden, totals/THB unaffected; exact multiple → `2 Mirror`; live price edit re-updates the helper; table renders, search/sort/row-height still work, all 7 tabs cycle; zero console/page errors. Screenshots reviewed (RawBlock light, Trust dark). Harness in scratchpad, deleted after use.
+
 ## 2026-07-12 (17)
 
 - **Content Codex — new boss/content drop knowledge-base tab (patch 0.21)** (`index.html`, new `scripts/update-content-codex.mjs`, new `data/content-codex.json`): a 7th tab (Tools group) that answers "what does this boss/content drop and how do I access it", sourced from poe2wiki.
