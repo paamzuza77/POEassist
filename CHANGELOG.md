@@ -2,6 +2,15 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-12 (7)
+
+- **Shopping List: gear-board coverage states + quick-add + Excel-like table sizing** (`index.html`, patch 0.11):
+  - Gear Plan board now shows a per-slot coverage state so it reads as a build checklist: `empty` (grey), `planned` (has item(s), none bought — black left stripe), `partial` (some bought — green stripe), `complete` (all bought — green border + stripe), plus a `cov-warn` marker (orange count badge + existing `●N` dot) when any unbought row in the slot has no price. Logic added to `updateShopGearPanel()` (toggles `cov-empty`/`cov-planned`/`cov-partial`/`cov-complete`/`cov-warn`); the existing count / `x/y✓` / remaining-Div / missing-dot summary is unchanged.
+  - Quick-add: each slot button (now a `div[role=button]` so a real `<button>` can nest without button-in-button) carries a `+` control → `quickAddToSlot(id)` creates a row assigned to that slot, switches the view to it, resets search/quick-filter so it shows, and focuses the item-name field (`focusShopRowName`). `+` is on every slot incl. Unassigned, not on All. Main "+ Add Row" also focuses the new row's name. An empty selected slot's table shows a direct "+ เพิ่มไอเทมในช่องนี้" button.
+  - Excel-like sizing: table switched to `table-layout: fixed` + a `<colgroup>` with stable `data-col` ids; drag handles (`.col-resize`, pointer events → mouse + touch) on each `<th>` resize columns (clamped min/max), and a toolbar `Row H −/+` stepper sets row height via a `--shop-row-h` CSS var, with a `Reset size` button. Because the Shopping List is one re-rendered table, sizing applies across All/Unassigned/every slot/filtered/sorted views automatically.
+  - New additive localStorage key `poe2ShopList.tableSizing.v1` (`{ colWidths:{<colId>:px}, rowHeight:px|null }`, tolerant load with clamping); `poe2ShopList.rows.v1` untouched. Old rows without `slot` still load as Unassigned.
+  - Verification: Playwright (headless Chromium) interaction harness over a local HTTP server — 25/25 checks passing (old-data→Unassigned, quick-add slot assignment + view switch + focus, all four coverage states + warn, empty-state add button, numpad open/close, column drag-resize + persist, row-height stepper + persist, reload persistence, reset sizing, buy-next, tab switching, zero console errors) + desktop 1440px & mobile 480px screenshots. Harness deleted after use.
+
 ## 2026-07-12 (6)
 
 - **Shopping List: POE2 equipment-slot planner + on-screen numpad** (`index.html`, patch 0.10): left "Gear Plan" board (Weapon/Offhand/Helmet/Body/Gloves/Boots/Belt/Amulet/Ring 1-2/Jewel 1-4/Other + All/Unassigned views) filters the right-side table per slot; per-slot signals (item count, bought x/y, remaining Div using the same min??max rule as "ต้องใช้อีก", orange missing-price dot); new rows inherit the selected slot; rows get a slot dropdown for reassignment.

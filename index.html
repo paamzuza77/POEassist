@@ -889,6 +889,32 @@
   .ocr-btn.danger { color: var(--fire); }
   .ocr-btn.danger:hover { background: var(--fire); color: var(--void); }
 
+  /* ปุ่มปรับความสูงแถว + reset sizing (มุมขวาของ toolbar) */
+  .shop-sizing { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+  .shop-sizing-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .size-btn {
+    border: 2px solid var(--border);
+    background: var(--void);
+    color: var(--text);
+    width: 26px; height: 26px;
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+  }
+  .size-btn:hover { background: var(--text); color: var(--void); }
+  .size-val { font-family: var(--font-mono); font-size: 11px; font-weight: 700; min-width: 40px; text-align: center; }
+  .ocr-btn.size-reset { padding: 6px 12px; font-size: 10px; }
+
   /* ---------- Build Shopping List: table ---------- */
   .shop-table-wrap {
     overflow: auto;
@@ -901,7 +927,30 @@
     width: 100%;
     border-collapse: collapse;
     min-width: 1180px;
+    /* table-layout: fixed ทำให้ความกว้างคอลัมน์ยึดตาม <colgroup> (ปรับเองแบบ Excel ได้) */
+    table-layout: fixed;
   }
+  /* จับขอบขวาของหัวคอลัมน์เพื่อปรับความกว้าง (Excel-like); ไม่ชนกับ sort/filter (คนละที่) */
+  .shop-table th .col-resize {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 9px;
+    height: 100%;
+    cursor: col-resize;
+    user-select: none;
+    touch-action: none; /* ให้ pointer ลากได้บนจอสัมผัสโดยไม่ scroll */
+    z-index: 3;
+  }
+  .shop-table th .col-resize::before {
+    content: '';
+    position: absolute;
+    top: 6px; bottom: 6px; right: 2px;
+    width: 2px;
+    background: var(--border-soft);
+  }
+  .shop-table th .col-resize:hover::before,
+  .shop-table th .col-resize.dragging::before { background: var(--border); top: 0; bottom: 0; }
   .shop-table thead th {
     position: sticky;
     top: 0;
@@ -923,6 +972,8 @@
     border-bottom: 1px solid var(--border);
     vertical-align: middle;
     font-size: 13px;
+    /* ความสูงแถวปรับเองได้ (Excel-like) — ค่าเริ่มต้น auto; ตั้งผ่าน --shop-row-h บน table */
+    height: var(--shop-row-h, auto);
   }
   .shop-table tbody tr:hover { background: var(--panel-sunken); }
   .shop-table tbody tr.bought { background: var(--panel-sunken); }
@@ -1136,6 +1187,7 @@
   .shop-slot-utility { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
   .shop-slot-allwrap { margin-bottom: 6px; }
   .shop-slot {
+    position: relative;
     border: 2px solid var(--border);
     background: var(--void);
     color: var(--text);
@@ -1153,6 +1205,32 @@
   }
   .shop-slot.wide { width: 100%; min-height: 0; }
   .shop-slot-head { display: flex; justify-content: space-between; align-items: baseline; gap: 4px; }
+  .shop-slot-headright { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+  /* ปุ่ม + เพิ่มไอเทมเข้าช่องนี้โดยตรง (คลิกแล้วไม่เลือก slot เพราะ stopPropagation) */
+  .shop-slot-add {
+    width: 16px; height: 16px;
+    border: 2px solid var(--border);
+    background: var(--void);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .shop-slot-add:hover { background: var(--ok); color: var(--void); border-color: var(--ok); }
+
+  /* สถานะรายช่อง (checklist): stripe ซ้าย บอกความคืบหน้าแบบเห็นปราดเดียว
+     planned = ยังไม่ซื้อ (ดำ), partial = ซื้อบางส่วน (เขียว), complete = ครบ (เขียว+ขอบเขียว) */
+  .shop-slot.cov-planned { box-shadow: inset 4px 0 0 var(--text); }
+  .shop-slot.cov-partial { box-shadow: inset 4px 0 0 var(--ok); }
+  .shop-slot.cov-complete { border-color: var(--ok); box-shadow: inset 4px 0 0 var(--ok); }
+  .shop-slot.cov-complete .shop-slot-count { color: var(--ok); }
+  .shop-slot.cov-warn .shop-slot-count { border-color: var(--lightning); color: var(--lightning); }
   .shop-slot-name {
     font-size: 9.5px;
     font-weight: 700;
@@ -2387,6 +2465,13 @@
       <button class="ocr-btn" type="button" id="shopImportBtn">Import JSON</button>
       <input type="file" id="shopImportFile" accept="application/json,.json" hidden>
       <button class="ocr-btn danger" type="button" id="shopClearAllBtn">Clear All Rows</button>
+      <div class="shop-sizing">
+        <span class="shop-sizing-label">Row H</span>
+        <button class="size-btn" type="button" id="shopRowHDec" title="ลดความสูงแถว" aria-label="ลดความสูงแถว">−</button>
+        <span class="size-val" id="shopRowHVal">Auto</span>
+        <button class="size-btn" type="button" id="shopRowHInc" title="เพิ่มความสูงแถว" aria-label="เพิ่มความสูงแถว">+</button>
+        <button class="ocr-btn size-reset" type="button" id="shopSizeReset" title="รีเซ็ตความกว้างคอลัมน์และความสูงแถวกลับค่าเริ่มต้น">Reset size</button>
+      </div>
     </div>
 
     <div class="shop-filters" id="shopQuickFilters">
@@ -2400,18 +2485,21 @@
 
     <div class="shop-table-wrap">
       <table class="shop-table">
+        <colgroup>
+          <col data-col="check"><col data-col="no"><col data-col="item"><col data-col="type"><col data-col="option"><col data-col="min"><col data-col="max"><col data-col="bought"><col data-col="deal"><col data-col="actions">
+        </colgroup>
         <thead>
           <tr>
-            <th class="col-check"></th>
-            <th class="col-no">No.</th>
-            <th class="col-link">Item / Link</th>
-            <th class="col-type">Type</th>
-            <th>Important Option</th>
-            <th class="col-num">Min (Div)</th>
-            <th class="col-num">Max (Div)</th>
-            <th class="col-num">Bought (Div)</th>
-            <th class="col-deal">Link Best Item</th>
-            <th class="col-actions"></th>
+            <th class="col-check" data-col="check"><span class="col-resize" data-col="check"></span></th>
+            <th class="col-no" data-col="no">No.<span class="col-resize" data-col="no"></span></th>
+            <th class="col-link" data-col="item">Item / Link<span class="col-resize" data-col="item"></span></th>
+            <th class="col-type" data-col="type">Type<span class="col-resize" data-col="type"></span></th>
+            <th data-col="option">Important Option<span class="col-resize" data-col="option"></span></th>
+            <th class="col-num" data-col="min">Min (Div)<span class="col-resize" data-col="min"></span></th>
+            <th class="col-num" data-col="max">Max (Div)<span class="col-resize" data-col="max"></span></th>
+            <th class="col-num" data-col="bought">Bought (Div)<span class="col-resize" data-col="bought"></span></th>
+            <th class="col-deal" data-col="deal">Link Best Item<span class="col-resize" data-col="deal"></span></th>
+            <th class="col-actions" data-col="actions"></th>
           </tr>
         </thead>
         <tbody id="shopTbody"></tbody>
@@ -3424,6 +3512,115 @@ const SHOP_SLOT_IDS = new Set(SHOP_SLOTS.map(s => s.id));
 const SHOP_ROWS_KEY = 'poe2ShopList.rows.v1';
 const SHOP_RATE_KEY = 'poe2ShopList.rate.v1';
 
+/* ---- Table sizing (Excel-like column width + row height) ---- */
+// เก็บแยก key (additive) — ไม่ยุ่งกับ poe2ShopList.rows.v1 / ไม่เก็บลงในข้อมูลแถว
+const SHOP_SIZING_KEY = 'poe2ShopList.tableSizing.v1';
+// id = ตรงกับ <col data-col> ในตาราง; def/min/max = px (clamp กันคอลัมน์แคบ/กว้างจนใช้ไม่ได้)
+const SHOP_COLS = [
+  { id: 'check',   def: 40,  min: 30,  max: 90 },
+  { id: 'no',      def: 56,  min: 44,  max: 130 },
+  { id: 'item',    def: 210, min: 120, max: 520 },
+  { id: 'type',    def: 170, min: 90,  max: 360 },
+  { id: 'option',  def: 180, min: 90,  max: 400 },
+  { id: 'min',     def: 96,  min: 60,  max: 200 },
+  { id: 'max',     def: 96,  min: 60,  max: 200 },
+  { id: 'bought',  def: 110, min: 68,  max: 220 },
+  { id: 'deal',    def: 300, min: 180, max: 620 },
+  { id: 'actions', def: 78,  min: 60,  max: 140 },
+];
+const SHOP_ROW_H = { def: 44, min: 30, max: 96, step: 6 };
+
+function clampShopNum(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+
+// โหลดแบบ tolerant — ค่าที่ผิด/หายไปถูกมองข้าม (colWidths ว่าง = ใช้ def, rowHeight null = auto)
+let shopSizing = (function loadShopSizing() {
+  const out = { colWidths: {}, rowHeight: null };
+  try {
+    const raw = JSON.parse(localStorage.getItem(SHOP_SIZING_KEY));
+    if (raw && typeof raw === 'object') {
+      if (raw.colWidths && typeof raw.colWidths === 'object') {
+        SHOP_COLS.forEach(c => {
+          const w = raw.colWidths[c.id];
+          if (typeof w === 'number' && isFinite(w)) out.colWidths[c.id] = clampShopNum(w, c.min, c.max);
+        });
+      }
+      if (typeof raw.rowHeight === 'number' && isFinite(raw.rowHeight)) {
+        out.rowHeight = clampShopNum(raw.rowHeight, SHOP_ROW_H.min, SHOP_ROW_H.max);
+      }
+    }
+  } catch (e) { /* malformed sizing — ใช้ค่า default */ }
+  return out;
+})();
+
+function persistShopSizing() {
+  try { localStorage.setItem(SHOP_SIZING_KEY, JSON.stringify(shopSizing)); } catch (e) { /* storage unavailable */ }
+}
+
+// นำ sizing ไปใช้กับตารางเดียวของ Shopping List — จึงมีผลกับทุกมุมมอง (All/Unassigned/ทุก slot/ค้นหา/เรียง) อัตโนมัติ
+function applyShopSizing() {
+  const table = document.querySelector('.shop-table');
+  if (!table) return;
+  SHOP_COLS.forEach(c => {
+    const col = table.querySelector('col[data-col="' + c.id + '"]');
+    if (col) {
+      const w = shopSizing.colWidths[c.id] != null ? shopSizing.colWidths[c.id] : c.def;
+      col.style.width = w + 'px';
+    }
+  });
+  table.style.setProperty('--shop-row-h', shopSizing.rowHeight != null ? shopSizing.rowHeight + 'px' : 'auto');
+  const lbl = document.getElementById('shopRowHVal');
+  if (lbl) lbl.textContent = shopSizing.rowHeight != null ? shopSizing.rowHeight : 'Auto';
+}
+
+// ลากขอบขวาหัวคอลัมน์เพื่อปรับความกว้าง (pointer = mouse + touch); clamp min/max; persist ตอนปล่อย
+function startShopColResize(e) {
+  const handle = e.currentTarget;
+  const id = handle.dataset.col;
+  const cdef = SHOP_COLS.find(c => c.id === id);
+  if (!cdef) return;
+  e.preventDefault();
+  const table = handle.closest('table');
+  const col = table.querySelector('col[data-col="' + id + '"]');
+  const startX = e.clientX;
+  const startW = shopSizing.colWidths[id] != null ? shopSizing.colWidths[id] : cdef.def;
+  handle.classList.add('dragging');
+  try { handle.setPointerCapture(e.pointerId); } catch (err) { /* older browsers */ }
+  function move(ev) {
+    const w = clampShopNum(Math.round(startW + (ev.clientX - startX)), cdef.min, cdef.max);
+    shopSizing.colWidths[id] = w;
+    if (col) col.style.width = w + 'px';
+  }
+  function up() {
+    handle.removeEventListener('pointermove', move);
+    handle.removeEventListener('pointerup', up);
+    handle.removeEventListener('pointercancel', up);
+    handle.classList.remove('dragging');
+    persistShopSizing();
+  }
+  handle.addEventListener('pointermove', move);
+  handle.addEventListener('pointerup', up);
+  handle.addEventListener('pointercancel', up);
+}
+
+function initShopColResize() {
+  document.querySelectorAll('.shop-table th .col-resize').forEach(h => {
+    h.addEventListener('pointerdown', startShopColResize);
+  });
+}
+
+function stepShopRowHeight(delta) {
+  const cur = shopSizing.rowHeight != null ? shopSizing.rowHeight : SHOP_ROW_H.def;
+  shopSizing.rowHeight = clampShopNum(cur + delta, SHOP_ROW_H.min, SHOP_ROW_H.max);
+  persistShopSizing();
+  applyShopSizing();
+}
+
+function resetShopSizing() {
+  shopSizing = { colWidths: {}, rowHeight: null };
+  persistShopSizing();
+  applyShopSizing();
+}
+
 function newShopRow() {
   // name เป็น field เสริม (เพิ่ม 2026-07-12) — แถวเก่าที่ไม่มีจะ default เป็น '' ผ่าน Object.assign ตอนโหลด
   // slot เป็น field เสริม (เพิ่ม 2026-07-12, slot planner) — แถวเก่า default '' = Unassigned
@@ -3926,9 +4123,21 @@ function renderShopTable() {
     td.colSpan = 10;
     td.className = 'shop-empty';
     const slotOnly = shopSelectedSlot !== 'all' && !shopFilterText.trim() && shopQuickFilter === 'all';
-    td.textContent = slotOnly
-      ? 'ยังไม่มีไอเทมในช่องนี้ — กด "+ Add Row" เพื่อเพิ่มตัวเลือกของช่องนี้ (เพิ่มได้หลายตัวเลือกต่อช่อง)'
-      : 'ไม่มีแถวที่ตรงกับคำค้นหา/ฟิลเตอร์ที่เลือก';
+    if (slotOnly) {
+      // ช่องที่เลือกยังว่าง — ให้ปุ่มเพิ่มไอเทมเข้าช่องนี้โดยตรง
+      const msg = document.createElement('div');
+      msg.textContent = 'ยังไม่มีไอเทมในช่องนี้ (เพิ่มได้หลายตัวเลือกต่อช่อง)';
+      const add = document.createElement('button');
+      add.type = 'button';
+      add.className = 'ocr-btn primary';
+      add.style.marginTop = '10px';
+      add.textContent = '+ เพิ่มไอเทมในช่องนี้';
+      add.addEventListener('click', () => quickAddToSlot(shopSelectedSlot));
+      td.appendChild(msg);
+      td.appendChild(add);
+    } else {
+      td.textContent = 'ไม่มีแถวที่ตรงกับคำค้นหา/ฟิลเตอร์ที่เลือก';
+    }
     tr.appendChild(td);
     tbody.appendChild(tr);
   }
@@ -3943,28 +4152,80 @@ function selectShopSlot(id) {
   renderShopTable(); // ตารางกรองตาม slot; บอร์ดรีเฟรชผ่าน updateShopSummary → updateShopGearPanel
 }
 
+// เคลียร์ค้นหา/quick filter ให้แถวที่เพิ่งเพิ่มโผล่แน่ๆ (ใช้ตอน quick-add)
+function resetShopViewFilters() {
+  shopQuickFilter = 'all';
+  shopFilterText = '';
+  const f = document.getElementById('shopFilter');
+  if (f) f.value = '';
+  document.querySelectorAll('#shopQuickFilters .filter-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === 'all'));
+}
+
+// โฟกัสช่องชื่อไอเทมของแถว index ที่กำหนด (หลัง render เสร็จ) — ฟิลด์ที่มีประโยชน์สุดหลังเพิ่มแถว
+function focusShopRowName(idx) {
+  requestAnimationFrame(() => {
+    const tr = document.querySelector('#shopTbody tr[data-row-no="' + idx + '"]');
+    if (!tr) return;
+    const inp = tr.querySelector('.item-cell input[type="text"]');
+    if (inp) { inp.focus(); tr.scrollIntoView({ block: 'nearest' }); }
+  });
+}
+
+// เพิ่มแถวเข้าช่องที่กด + โดยตรง แล้วสลับมุมมองไปช่องนั้น + โฟกัสช่องชื่อ
+function quickAddToSlot(slotId) {
+  const isUn = slotId === 'unassigned' || !slotId || slotId === 'all';
+  const row = newShopRow();
+  if (!isUn) row.slot = slotId;
+  const idx = shopRows.push(row) - 1;
+  shopSelectedSlot = isUn ? (slotId === 'all' ? 'all' : 'unassigned') : slotId;
+  resetShopViewFilters();
+  persistShopRows();
+  renderShopTable();
+  focusShopRowName(idx);
+}
+
 // สร้างปุ่ม slot หนึ่งปุ่ม (โครงคงที่ — ตัวเลข/สถานะถูกอัปเดตทีหลังใน updateShopGearPanel)
+// เป็น div role=button เพื่อฝังปุ่ม + (quick-add) ได้โดยไม่เป็น button ซ้อน button
 function makeShopSlotBtn(id, shortLabel, fullLabel, wide) {
-  const b = document.createElement('button');
-  b.type = 'button';
+  const b = document.createElement('div');
   b.className = 'shop-slot' + (wide ? ' wide' : '');
   b.dataset.slot = id;
   b.title = fullLabel;
+  b.setAttribute('role', 'button');
+  b.tabIndex = 0;
+  b.setAttribute('aria-label', fullLabel);
   const head = document.createElement('div');
   head.className = 'shop-slot-head';
   const nm = document.createElement('span');
   nm.className = 'shop-slot-name';
   nm.textContent = shortLabel;
+  const right = document.createElement('div');
+  right.className = 'shop-slot-headright';
   const cnt = document.createElement('span');
   cnt.className = 'shop-slot-count';
   cnt.textContent = '0';
+  right.appendChild(cnt);
+  // ปุ่ม + เพิ่มไอเทมเข้าช่องนี้ (ทุกช่องยกเว้น "All Items" ซึ่งไม่ใช่ช่องเฉพาะ)
+  if (id !== 'all') {
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'shop-slot-add';
+    add.textContent = '+';
+    add.title = 'เพิ่มไอเทมในช่องนี้';
+    add.setAttribute('aria-label', 'เพิ่มไอเทมใน ' + fullLabel);
+    add.addEventListener('click', (e) => { e.stopPropagation(); quickAddToSlot(id); });
+    right.appendChild(add);
+  }
   head.appendChild(nm);
-  head.appendChild(cnt);
+  head.appendChild(right);
   const sub = document.createElement('div');
   sub.className = 'shop-slot-sub';
   b.appendChild(head);
   b.appendChild(sub);
   b.addEventListener('click', () => selectShopSlot(id));
+  b.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectShopSlot(id); }
+  });
   return b;
 }
 
@@ -4027,8 +4288,16 @@ function updateShopGearPanel() {
   panel.querySelectorAll('.shop-slot').forEach(btn => {
     const id = btn.dataset.slot;
     const st = stats[id === 'unassigned' ? '' : id] || blank();
+    // สถานะ coverage: empty(ว่าง) / planned(มีแผน ยังไม่ซื้อ) / partial(ซื้อบางส่วน) / complete(ครบ)
+    const empty = st.count === 0 && id !== 'all';
+    const state = st.count === 0 ? 'empty'
+      : (st.bought === st.count ? 'complete' : (st.bought > 0 ? 'partial' : 'planned'));
     btn.classList.toggle('active', shopSelectedSlot === id);
-    btn.classList.toggle('empty', st.count === 0 && id !== 'all');
+    btn.classList.toggle('empty', empty);
+    btn.classList.toggle('cov-planned', state === 'planned');
+    btn.classList.toggle('cov-partial', state === 'partial');
+    btn.classList.toggle('cov-complete', state === 'complete');
+    btn.classList.toggle('cov-warn', st.missing > 0);
     btn.querySelector('.shop-slot-count').textContent = st.count;
     const sub = btn.querySelector('.shop-slot-sub');
     sub.innerHTML = '';
@@ -4152,9 +4421,10 @@ document.getElementById('shopAddRowBtn').addEventListener('click', () => {
   const row = newShopRow();
   // ถ้ากำลังดู slot ใดอยู่ แถวใหม่จะถูกใส่ slot นั้นให้เลย (มุมมอง all/unassigned = ไม่ระบุช่อง)
   if (shopSelectedSlot !== 'all' && shopSelectedSlot !== 'unassigned') row.slot = shopSelectedSlot;
-  shopRows.push(row);
+  const idx = shopRows.push(row) - 1;
   persistShopRows();
   renderShopTable();
+  focusShopRowName(idx);
 });
 
 document.getElementById('shopClearAllBtn').addEventListener('click', () => {
@@ -4230,6 +4500,10 @@ document.getElementById('divineRateInput').addEventListener('input', (e) => {
   updateShopSummary();
 });
 
+document.getElementById('shopRowHDec').addEventListener('click', () => stepShopRowHeight(-SHOP_ROW_H.step));
+document.getElementById('shopRowHInc').addEventListener('click', () => stepShopRowHeight(SHOP_ROW_H.step));
+document.getElementById('shopSizeReset').addEventListener('click', resetShopSizing);
+
 /* ---- Shopping list: init ---- */
 
 (function initShop() {
@@ -4242,11 +4516,22 @@ document.getElementById('divineRateInput').addEventListener('input', (e) => {
   document.getElementById('divineRateInput').value = divineRate || '';
   buildShopGearPanel(); // บอร์ด slot ต้องมีก่อน renderShopTable (summary จะอัปเดตตัวเลขบนบอร์ด)
   renderShopTable();
+  applyShopSizing();    // ปรับความกว้างคอลัมน์/ความสูงแถวจากค่าที่บันทึกไว้ (colgroup เป็น markup คงที่)
+  initShopColResize();  // ผูก handle ลากปรับความกว้างที่หัวคอลัมน์
 })();
 
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.11',
+    date: '2026-07-12',
+    notes: [
+      'Shopping List: บอร์ด Gear Plan บอกสถานะรายช่องแบบเห็นปราดเดียว — ว่าง (เทา), มีแผนยังไม่ซื้อ (แถบดำ), ซื้อบางส่วน (แถบเขียว), ครบแล้ว (ขอบ+แถบเขียว) และจุดส้มเตือนช่องที่มีแถวยังไม่มีราคา ใช้เป็นเช็กลิสต์ของบิลด์ได้เลย',
+      'Shopping List: ปุ่ม + บนแต่ละช่อง (รวม Unassigned) กดเพิ่มไอเทมเข้าช่องนั้นได้ทันที แล้วเด้งไปโฟกัสช่องชื่อไอเทมให้เลย — ช่องที่ยังว่างมีปุ่ม "เพิ่มไอเทมในช่องนี้" ในตารางด้วย (กดที่ตัวช่องยังเลือกดูเหมือนเดิม)',
+      'Shopping List: ปรับขนาดตารางเองแบบ Excel — ลากขอบขวาหัวคอลัมน์เพื่อปรับความกว้าง และปุ่ม Row H −/+ ปรับความสูงแถว (มีปุ่ม Reset size กลับค่าเริ่มต้น) มีผลกับทุกมุมมอง (All/Unassigned/ทุกช่อง/ค้นหา/เรียง) และจำค่าไว้หลังรีโหลด (เก็บแยกใน localStorage — ข้อมูลรายการเดิมไม่กระทบ)',
+    ],
+  },
   {
     version: '0.10',
     date: '2026-07-12',
