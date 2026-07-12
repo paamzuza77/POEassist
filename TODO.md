@@ -12,7 +12,8 @@ Short, actionable list. Phases live in `ROADMAP.md`; history in `CHANGELOG.md`.
 - [ ] Extend Settings further (theme/mode 0.13; startup tab + data overview + export/import + scoped resets 0.15) — remaining candidates: Divine-rate default, sidebar default state, and moving the in-Shop rate/table-sizing controls into Settings for one control center.
 - [ ] Divine Market: optional opt-in persistence for user-added price points (currently session-only by design — needs a product decision + additive key before building).
 - [ ] Market Radar: sortable/limited "Top Rising Items Used" list (sort by value/trend/score, show top-20 + expand) — the list gets long on big snapshots.
-- [ ] Atlas Planner: compact/collapsed card mode (title + status + age only) for faster scanning once card count grows; full editors expand on click.
+- [ ] ~~Atlas Planner: compact/collapsed card mode~~ — superseded by the 0.18 master/detail redesign (left list already is the compact scan view).
+- [ ] Atlas Planner 0.18 follow-ups: persist `farmSelectedId`/Project runs across reloads (additive key, product decision), optional manual Dv↔C↔Ex conversion rates (explicit user-entered only — never hidden), timestamp per Run Tracker row, Div/hour derived from duration + avg result.
 - [ ] Gear Checker: preset naming (rename "ชุดที่ 1/2/3" to user labels) — needs a small additive storage field.
 
 ## Known Issues
@@ -21,6 +22,7 @@ Short, actionable list. Phases live in `ROADMAP.md`; history in `CHANGELOG.md`.
 
 ## Done
 
+- [x] Atlas Farm Planner master/detail redesign — searchable compact list left / full card detail right; additive per-card fields (`durationPerRunMinutes`, `costPerRun`, `costCurrency`, `runTrackerRows`) on the unchanged `poe2FarmPlanner.cards.v1` key; per-card Run Tracker (Run # / Result 2×amount+unit / Note) + actual-runs summary; planning-only "Project runs" projection in the left list; shared numpad extended to Atlas numeric fields; patch 0.18 (2026-07-12).
 - [x] Atlas Farm V.2 — new separate Run Economics tab (Planning group): entry cost / Guaranteed Floor after haircut / Net / ROI / break-even, transparent Farm V.2 Score (7 dimensions), Simulacrum + Boss/Fragment + Trial + Custom templates, market-snapshot price prefill with Manual fallback, Bigdrop Upside Notes excluded from ROI; new additive key `poe2FarmLabV2.runs.v1`; old Atlas Planner untouched; patch 0.17 (2026-07-12).
 - [x] App-wide QoL/UX pass — league "Ends in" countdown (Hub + Divine), Market Radar TOP PICK badge + Enter-to-apply, Divine section reorder + form prefill, Atlas filter counts + last-checked age warnings, Gear preset data dots + res-cap counter, Shopping quick-filter counts + slot-view label; all additive, no storage keys changed; patch 0.16 (2026-07-12).
 - [x] Settings app control center — startup-tab preference (new additive key `poeAssist.startTab.v1`), read-only local-data overview, Export/Import all local data (backup file), and `confirm()`-gated scoped resets (UI-only / Shopping / Atlas / Gear); patch 0.15 (2026-07-12).
