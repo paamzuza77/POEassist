@@ -794,8 +794,8 @@
     border-radius: 0;
     padding: 14px 18px;
   }
-  .summary-group.bought-group { border-width: 5px; }
-  .summary-group.remain-group { border-width: 3px; }
+  .summary-group.bought-group { border-width: 3px; }
+  .summary-group.remain-group { border-width: 5px; }
 
   .sg-title {
     font-family: var(--font-mono);
@@ -931,7 +931,7 @@
 
   .col-check { width: 36px; text-align: center; }
   .col-no { width: 56px; text-align: center; }
-  .col-link { width: 160px; }
+  .col-link { width: 210px; }
   .col-type { width: 170px; }
   .col-num { width: 96px; }
   .col-deal { width: 320px; }
@@ -1029,6 +1029,71 @@
     color: var(--text-dim);
     padding: 28px 10px !important;
   }
+
+  /* ---------- Build Shopping List: dashboard extras (RawBlock) ---------- */
+  .shop-progress {
+    height: 14px;
+    background: var(--void);
+    border: 2px solid var(--border);
+    overflow: hidden;
+    margin: 8px 0 4px;
+  }
+  .shop-progress-fill { height: 100%; width: 0%; background: var(--ok); transition: width 0.2s ease; }
+  .sg-progress-label { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-muted); }
+  .sg-warn { font-family: var(--font-mono); font-size: 10.5px; color: var(--lightning); margin-top: 6px; }
+
+  .shop-buynext {
+    border: 3px solid var(--border);
+    background: var(--void);
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .shop-buynext-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: var(--text);
+    color: var(--void);
+    padding: 4px 10px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .shop-buynext-body { flex: 1; min-width: 200px; font-size: 13px; }
+  .shop-buynext-name { font-weight: 600; }
+  .shop-buynext-est { font-family: var(--font-mono); font-weight: 700; white-space: nowrap; }
+  .shop-buynext-sub { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-dim); margin-top: 2px; }
+  .shop-buynext .ocr-btn { padding: 6px 12px; font-size: 10px; }
+
+  .shop-filters { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  select.shop-sort {
+    background: var(--void);
+    border: 3px solid var(--border);
+    border-radius: 0;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 8px;
+    cursor: pointer;
+  }
+
+  .item-cell { display: flex; flex-direction: column; gap: 4px; }
+
+  /* Row state markers: later rules win (checked < missing-price < bought) */
+  .shop-table tbody tr.missing-price td:first-child { box-shadow: 3px 0 0 var(--lightning) inset; }
+  .shop-table tbody tr.bought td:first-child { box-shadow: 3px 0 0 var(--ok) inset; }
+  .shop-table tbody tr.missing-price td.col-num input { border-color: var(--lightning); }
+  .bought-badge.miss { background: var(--lightning); }
+  .shop-table .deal-cell input.deal-price.good-deal { border-color: var(--ok); color: var(--ok); font-weight: 700; }
+  .shop-table tbody tr.row-target { background: #e8e8e8; outline: 3px solid var(--border); outline-offset: -3px; }
 
   @media (max-width: 480px) {
     .gauge-row { grid-template-columns: 62px 1fr 88px; gap: 8px; }
@@ -2126,14 +2191,11 @@
           <span class="sg-div" id="sumBought">0 Div</span>
           <span class="sg-thb" id="sumBoughtThb">= 0 ฿</span>
         </div>
-        <div class="sg-row">
-          <span class="sg-label">จำนวนที่ซื้อแล้ว</span>
-          <span class="sg-div" id="statusCounts">0 / 0</span>
-          <span class="sg-thb">รายการ</span>
-        </div>
+        <div class="shop-progress"><div class="shop-progress-fill" id="shopProgressFill"></div></div>
+        <div class="sg-progress-label" id="statusCounts">0 / 0 รายการ</div>
       </div>
       <div class="summary-group remain-group">
-        <p class="sg-title">ที่ขาด (เหลือต้องจ่าย)</p>
+        <p class="sg-title">ต้องใช้อีก (ของที่ยังไม่ซื้อ)</p>
         <div class="sg-row">
           <span class="sg-label">ถ้าได้ราคา Min</span>
           <span class="sg-div" id="remMin">0 Div</span>
@@ -2144,16 +2206,35 @@
           <span class="sg-div" id="remMax">0 Div</span>
           <span class="sg-thb" id="remMaxThb">= 0 ฿</span>
         </div>
+        <div class="sg-warn" id="shopMissWarn" hidden></div>
       </div>
     </div>
 
+    <div class="shop-buynext" id="shopBuyNext" hidden></div>
+
     <div class="shop-toolbar">
-      <input type="text" class="shop-filter" id="shopFilter" placeholder="ค้นหา: type / option / link…">
+      <input type="text" class="shop-filter" id="shopFilter" placeholder="ค้นหา: ชื่อ / type / option / link…">
+      <select class="shop-sort" id="shopSort" title="เรียงลำดับการแสดงผล (ไม่เปลี่ยนลำดับที่บันทึกไว้)">
+        <option value="default">เรียง: ตามที่จด</option>
+        <option value="unbought">ยังไม่ซื้อก่อน</option>
+        <option value="expensive">แพงก่อน</option>
+        <option value="cheap">ถูกก่อน</option>
+        <option value="missing">ไม่มีราคาก่อน</option>
+      </select>
       <button class="ocr-btn primary" type="button" id="shopAddRowBtn">+ Add Row</button>
       <button class="ocr-btn" type="button" id="shopExportBtn">Export JSON</button>
       <button class="ocr-btn" type="button" id="shopImportBtn">Import JSON</button>
       <input type="file" id="shopImportFile" accept="application/json,.json" hidden>
       <button class="ocr-btn danger" type="button" id="shopClearAllBtn">Clear All Rows</button>
+    </div>
+
+    <div class="shop-filters" id="shopQuickFilters">
+      <button class="filter-chip active" type="button" data-filter="all">All</button>
+      <button class="filter-chip" type="button" data-filter="need">ยังไม่ซื้อ</button>
+      <button class="filter-chip" type="button" data-filter="bought">ซื้อแล้ว</button>
+      <button class="filter-chip" type="button" data-filter="noprice">ไม่มีราคา</button>
+      <button class="filter-chip" type="button" data-filter="deal">มี Deal</button>
+      <span class="rf-count" id="shopFilterCount"></span>
     </div>
 
     <div class="shop-table-wrap">
@@ -2162,7 +2243,7 @@
           <tr>
             <th class="col-check"></th>
             <th class="col-no">No.</th>
-            <th class="col-link">Link Item</th>
+            <th class="col-link">Item / Link</th>
             <th class="col-type">Type</th>
             <th>Important Option</th>
             <th class="col-num">Min (Div)</th>
@@ -3158,7 +3239,8 @@ const SHOP_ROWS_KEY = 'poe2ShopList.rows.v1';
 const SHOP_RATE_KEY = 'poe2ShopList.rate.v1';
 
 function newShopRow() {
-  return { checked: false, link: '', type: '', option: '', min: null, max: null, bought: null, dealLink: '', dealPrice: null };
+  // name เป็น field เสริม (เพิ่ม 2026-07-12) — แถวเก่าที่ไม่มีจะ default เป็น '' ผ่าน Object.assign ตอนโหลด
+  return { checked: false, name: '', link: '', type: '', option: '', min: null, max: null, bought: null, dealLink: '', dealPrice: null };
 }
 
 let shopRows = (function loadShopRows() {
@@ -3175,6 +3257,8 @@ let divineRate = (function loadRate() {
 })();
 
 let shopFilterText = '';
+let shopQuickFilter = 'all';   // all | need | bought | noprice | deal (in-memory เท่านั้น)
+let shopSortMode = 'default';  // เรียงเฉพาะการแสดงผล — ไม่แตะลำดับจริงใน localStorage
 
 function persistShopRows() {
   try { localStorage.setItem(SHOP_ROWS_KEY, JSON.stringify(shopRows)); } catch (e) { /* storage unavailable */ }
@@ -3191,34 +3275,155 @@ function isBought(row) {
   return typeof row.bought === 'number' && !isNaN(row.bought);
 }
 
-function updateShopSummary() {
-  let totalMin = 0, totalMax = 0, totalBought = 0, boughtCount = 0;
-  shopRows.forEach(r => {
-    totalMin += r.min || 0;
-    totalMax += r.max || 0;
-    if (isBought(r)) { totalBought += r.bought; boughtCount++; }
-  });
-  const remMin = totalMin - totalBought;
-  const remMax = totalMax - totalBought;
+function rowHasPrice(row) {
+  return (typeof row.min === 'number' && !isNaN(row.min)) || (typeof row.max === 'number' && !isNaN(row.max));
+}
 
-  const set = (id, div, isRemaining) => {
-    const el = document.getElementById(id);
-    el.textContent = fmtNum(div) + ' Div';
-    if (isRemaining) el.classList.toggle('neg', div < 0);
-  };
+// ราคาที่คาดว่าจะจ่ายจริงของแถว: deal ที่เซฟไว้ > Min > Max (ใช้กับแถบ "ซื้อต่อไป")
+function rowEstPrice(row) {
+  if (typeof row.dealPrice === 'number' && !isNaN(row.dealPrice)) return row.dealPrice;
+  if (typeof row.min === 'number' && !isNaN(row.min)) return row.min;
+  if (typeof row.max === 'number' && !isNaN(row.max)) return row.max;
+  return null;
+}
+
+function rowDisplayName(row) {
+  return (row.name || '').trim() || (row.type || '').trim() || (row.option || '').trim() ||
+    ('รายการที่ ' + (shopRows.indexOf(row) + 1));
+}
+
+function updateShopSummary() {
+  // งบที่วางแผน: ใช้ min/max ถ้ามีครบ, ถ้ามีด้านเดียวใช้ด้านนั้นแทนอีกด้าน (กันยอดหายเพราะกรอกไม่ครบ)
+  let totalMin = 0, totalMax = 0, totalBought = 0, boughtCount = 0;
+  // "ต้องใช้อีก": รวมเฉพาะแถวที่ยังไม่ซื้อ — ตอบตรงคำถามว่าต้องหาเงินอีกเท่าไหร่
+  let needMin = 0, needMax = 0, missingCount = 0;
+  shopRows.forEach(r => {
+    const hasMin = typeof r.min === 'number' && !isNaN(r.min);
+    const hasMax = typeof r.max === 'number' && !isNaN(r.max);
+    const lo = hasMin ? r.min : (hasMax ? r.max : 0);
+    const hi = hasMax ? r.max : (hasMin ? r.min : 0);
+    totalMin += lo;
+    totalMax += hi;
+    if (isBought(r)) { totalBought += r.bought; boughtCount++; }
+    else {
+      needMin += lo;
+      needMax += hi;
+      if (!hasMin && !hasMax) missingCount++;
+    }
+  });
+
+  const set = (id, div) => { document.getElementById(id).textContent = fmtNum(div) + ' Div'; };
   const setThb = (id, div) => {
-    document.getElementById(id).textContent = '= ' + fmtNum(div * divineRate) + ' ฿';
+    document.getElementById(id).textContent = divineRate > 0 ? '= ' + fmtNum(div * divineRate) + ' ฿' : '— ฿';
   };
 
   set('sumMin', totalMin); setThb('sumMinThb', totalMin);
   set('sumMax', totalMax); setThb('sumMaxThb', totalMax);
   set('sumBought', totalBought); setThb('sumBoughtThb', totalBought);
-  set('remMin', remMin, true); setThb('remMinThb', remMin);
-  set('remMax', remMax, true); setThb('remMaxThb', remMax);
+  set('remMin', needMin); setThb('remMinThb', needMin);
+  set('remMax', needMax); setThb('remMaxThb', needMax);
 
-  document.getElementById('statusCounts').textContent = boughtCount + ' / ' + shopRows.length;
+  const pct = shopRows.length ? Math.round((boughtCount / shopRows.length) * 100) : 0;
+  document.getElementById('shopProgressFill').style.width = pct + '%';
+  document.getElementById('statusCounts').textContent = boughtCount + ' / ' + shopRows.length + ' รายการ (' + pct + '%)';
   document.getElementById('statusTotal').textContent =
-    'ซื้อแล้ว ' + boughtCount + ' จาก ' + shopRows.length + ' รายการ · เหลืออีก ' + (shopRows.length - boughtCount);
+    shopRows.length === 0 ? 'ยังไม่มีรายการ — กด "+ Add Row" เพื่อเริ่ม' :
+    (divineRate > 0
+      ? 'ซื้อแล้ว ' + boughtCount + ' จาก ' + shopRows.length + ' รายการ · เหลืออีก ' + (shopRows.length - boughtCount)
+      : 'ใส่เรท 1 Div = ? บาท เพื่อให้ทุกยอดแสดงเป็นเงินบาทด้วย');
+
+  const warn = document.getElementById('shopMissWarn');
+  if (missingCount > 0) {
+    warn.hidden = false;
+    warn.textContent = '⚠ ' + missingCount + ' รายการยังไม่มีราคา — ยอดที่ต้องใช้จริงอาจสูงกว่านี้';
+  } else {
+    warn.hidden = true;
+  }
+
+  renderShopBuyNext();
+}
+
+// แถบ "ซื้อต่อไป": เลือกจากแถวที่ยังไม่ซื้อ + มีราคา — แถวที่ติ๊กมาร์กไว้ถือว่าสำคัญกว่า จากนั้นเอาถูกสุดก่อน
+function renderShopBuyNext() {
+  const box = document.getElementById('shopBuyNext');
+  box.innerHTML = '';
+  if (shopRows.length === 0) { box.hidden = true; return; }
+  box.hidden = false;
+
+  const tag = document.createElement('span');
+  tag.className = 'shop-buynext-tag';
+  const body = document.createElement('div');
+  body.className = 'shop-buynext-body';
+
+  const unbought = shopRows.filter(r => !isBought(r));
+  if (unbought.length === 0) {
+    tag.textContent = 'ครบแล้ว';
+    body.textContent = 'ซื้อครบทุกรายการแล้ว — เก็บงบที่เหลือไว้ craft/upgrade ต่อได้เลย';
+    box.appendChild(tag); box.appendChild(body);
+    return;
+  }
+
+  tag.textContent = 'ซื้อต่อไป';
+  const candidates = unbought.filter(r => rowEstPrice(r) !== null);
+  if (candidates.length === 0) {
+    body.textContent = 'ยังแนะนำไม่ได้ — ใส่ราคา Min/Max หรือราคา deal ให้รายการที่เหลืออย่างน้อย 1 แถวก่อน';
+    box.appendChild(tag); box.appendChild(body);
+    return;
+  }
+
+  candidates.sort((a, b) => ((b.checked === true) - (a.checked === true)) || (rowEstPrice(a) - rowEstPrice(b)));
+  const pick = candidates[0];
+  const est = rowEstPrice(pick);
+
+  const line = document.createElement('div');
+  const nm = document.createElement('span');
+  nm.className = 'shop-buynext-name';
+  nm.textContent = rowDisplayName(pick);
+  const estEl = document.createElement('span');
+  estEl.className = 'shop-buynext-est';
+  estEl.textContent = ' ~' + fmtNum(est) + ' Div' + (divineRate > 0 ? ' (= ' + fmtNum(est * divineRate) + ' ฿)' : '');
+  line.appendChild(nm);
+  line.appendChild(estEl);
+  const sub = document.createElement('div');
+  sub.className = 'shop-buynext-sub';
+  sub.textContent = (pick.checked ? 'มาร์กไว้เป็นเป้าหมาย' : 'ถูกสุดที่ยังไม่ซื้อ') +
+    (typeof pick.dealPrice === 'number' && !isNaN(pick.dealPrice) ? ' · ใช้ราคา deal ที่เซฟไว้' : '') +
+    ' · ยังไม่ซื้ออีก ' + unbought.length + ' รายการ';
+  body.appendChild(line);
+  body.appendChild(sub);
+  box.appendChild(tag);
+  box.appendChild(body);
+
+  const url = pick.dealLink || pick.link;
+  if (url) {
+    const a = document.createElement('a');
+    a.className = 'link-open';
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.textContent = pick.dealLink ? 'Open Deal' : 'Open Trade';
+    box.appendChild(a);
+  }
+  const go = document.createElement('button');
+  go.type = 'button';
+  go.className = 'ocr-btn';
+  go.textContent = 'ไปที่แถว';
+  go.addEventListener('click', () => goToShopRow(pick));
+  box.appendChild(go);
+}
+
+function goToShopRow(row) {
+  // เคลียร์ filter/ค้นหาก่อน เพื่อให้แถวเป้าหมายแสดงแน่ๆ แล้ว scroll + ไฮไลต์ชั่วคราว
+  shopQuickFilter = 'all';
+  shopFilterText = '';
+  document.getElementById('shopFilter').value = '';
+  document.querySelectorAll('#shopQuickFilters .filter-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === 'all'));
+  renderShopTable();
+  const tr = document.querySelector('#shopTbody tr[data-row-no="' + shopRows.indexOf(row) + '"]');
+  if (!tr) return;
+  tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  tr.classList.add('row-target');
+  setTimeout(() => tr.classList.remove('row-target'), 1600);
 }
 
 function makeIconBtn(symbol, label, onClick, danger) {
@@ -3277,16 +3482,62 @@ function buildLinkCell(row, field, chipText, placeholder) {
 }
 
 function updateRowVisual(tr, row) {
-  tr.classList.toggle('bought', isBought(row));
+  const bought = isBought(row);
+  const missing = !bought && !rowHasPrice(row);
+  tr.classList.toggle('bought', bought);
   tr.classList.toggle('checked', !!row.checked);
+  tr.classList.toggle('missing-price', missing);
   const badge = tr.querySelector('.bought-badge');
-  if (badge) badge.style.display = isBought(row) ? 'inline-block' : 'none';
+  if (badge) {
+    badge.textContent = bought ? 'Bought' : 'No price';
+    badge.classList.toggle('miss', !bought);
+    badge.style.display = (bought || missing) ? 'inline-block' : 'none';
+  }
+  const dp = tr.querySelector('.deal-price');
+  if (dp) {
+    const good = typeof row.dealPrice === 'number' && !isNaN(row.dealPrice) &&
+      typeof row.min === 'number' && !isNaN(row.min) && row.dealPrice < row.min;
+    dp.classList.toggle('good-deal', good);
+    dp.title = good ? 'deal นี้ถูกกว่าราคา Min ที่วางแผนไว้' : 'ราคาของ deal นี้ (Divine)';
+  }
 }
 
 function rowMatchesFilter(row) {
   const q = shopFilterText.trim().toLowerCase();
   if (!q) return true;
-  return [row.type, row.option, row.link, row.dealLink].join(' ').toLowerCase().includes(q);
+  return [row.name, row.type, row.option, row.link, row.dealLink].join(' ').toLowerCase().includes(q);
+}
+
+function rowMatchesQuick(row) {
+  switch (shopQuickFilter) {
+    case 'need': return !isBought(row);
+    case 'bought': return isBought(row);
+    case 'noprice': return !isBought(row) && !rowHasPrice(row);
+    case 'deal': return !!row.dealLink || (typeof row.dealPrice === 'number' && !isNaN(row.dealPrice));
+    default: return true;
+  }
+}
+
+// เรียงเฉพาะ array ที่จะแสดงผล — ห้าม sort shopRows ตรงๆ (ลำดับที่บันทึกไว้ต้องคงเดิม)
+function sortShopRowsForDisplay(list) {
+  if (shopSortMode === 'default') return;
+  const price = r => {
+    if (typeof r.max === 'number' && !isNaN(r.max)) return r.max;
+    if (typeof r.min === 'number' && !isNaN(r.min)) return r.min;
+    if (typeof r.dealPrice === 'number' && !isNaN(r.dealPrice)) return r.dealPrice;
+    return null;
+  };
+  const base = list.slice();
+  const pos = r => base.indexOf(r);
+  if (shopSortMode === 'unbought') {
+    list.sort((a, b) => (isBought(a) - isBought(b)) || (pos(a) - pos(b)));
+  } else if (shopSortMode === 'expensive') {
+    list.sort((a, b) => (((price(b) === null ? -Infinity : price(b)) - (price(a) === null ? -Infinity : price(a))) || (pos(a) - pos(b))));
+  } else if (shopSortMode === 'cheap') {
+    list.sort((a, b) => (((price(a) === null ? Infinity : price(a)) - (price(b) === null ? Infinity : price(b))) || (pos(a) - pos(b))));
+  } else if (shopSortMode === 'missing') {
+    list.sort((a, b) => (rowHasPrice(a) - rowHasPrice(b)) || (pos(a) - pos(b)));
+  }
 }
 
 function renderShopTable() {
@@ -3298,19 +3549,21 @@ function renderShopTable() {
     const td = document.createElement('td');
     td.colSpan = 10;
     td.className = 'shop-empty';
-    td.textContent = 'ยังไม่มีรายการ — กด "+ Add Row" เพื่อเริ่มวางแผนของที่ต้องซื้อ';
+    td.textContent = 'ยังไม่มีรายการ — กด "+ Add Row" เพื่อเริ่มวางแผนของที่ต้องซื้อ (หรือ Import JSON ถ้าเคย Export เก็บไว้)';
     tr.appendChild(td);
     tbody.appendChild(tr);
     updateShopSummary();
     return;
   }
 
-  let anyVisible = false;
-  shopRows.forEach((row, idx) => {
-    if (!rowMatchesFilter(row)) return;
-    anyVisible = true;
+  const visibleRows = shopRows.filter(r => rowMatchesFilter(r) && rowMatchesQuick(r));
+  sortShopRowsForDisplay(visibleRows);
+  document.getElementById('shopFilterCount').textContent =
+    visibleRows.length === shopRows.length ? shopRows.length + ' แถว' : 'แสดง ' + visibleRows.length + ' / ' + shopRows.length + ' แถว';
 
+  visibleRows.forEach((row) => {
     const tr = document.createElement('tr');
+    tr.setAttribute('data-row-no', String(shopRows.indexOf(row)));
 
     // Checkbox
     const tdCheck = document.createElement('td');
@@ -3327,22 +3580,33 @@ function renderShopTable() {
     tdCheck.appendChild(cb);
     tr.appendChild(tdCheck);
 
-    // No. (+ bought badge)
+    // No. (เลขตามลำดับที่บันทึกไว้ ไม่ใช่ลำดับแสดงผล) + state badge (Bought / No price)
     const tdNo = document.createElement('td');
     tdNo.className = 'col-no';
-    tdNo.textContent = idx + 1;
+    tdNo.textContent = shopRows.indexOf(row) + 1;
     const badge = document.createElement('span');
     badge.className = 'bought-badge';
-    badge.textContent = 'Bought';
-    badge.style.display = isBought(row) ? 'inline-block' : 'none';
     tdNo.appendChild(document.createElement('br'));
     tdNo.appendChild(badge);
     tr.appendChild(tdNo);
 
-    // Link Item
+    // Item: ชื่อไอเทม (field เสริม) + link chip ซ้อนกันในคอลัมน์เดียว
     const tdLink = document.createElement('td');
     tdLink.className = 'col-link';
-    tdLink.appendChild(buildLinkCell(row, 'link', '🔗 Trade Link', 'วางลิงก์ไอเทม…'));
+    const itemCell = document.createElement('div');
+    itemCell.className = 'item-cell';
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.placeholder = 'ชื่อไอเทม/ของที่จะซื้อ…';
+    nameInput.value = row.name || '';
+    nameInput.addEventListener('input', () => {
+      row.name = nameInput.value;
+      persistShopRows();
+      renderShopBuyNext(); // ชื่อโชว์ในแถบ "ซื้อต่อไป"
+    });
+    itemCell.appendChild(nameInput);
+    itemCell.appendChild(buildLinkCell(row, 'link', 'Trade Link', 'วางลิงก์ไอเทม…'));
+    tdLink.appendChild(itemCell);
     tr.appendChild(tdLink);
 
     // Type (searchable datalist + free text)
@@ -3399,7 +3663,7 @@ function renderShopTable() {
     tdDeal.className = 'col-deal';
     const dealWrap = document.createElement('div');
     dealWrap.className = 'deal-cell';
-    dealWrap.appendChild(buildLinkCell(row, 'dealLink', '🔗 Deal', 'วางลิงก์ deal…'));
+    dealWrap.appendChild(buildLinkCell(row, 'dealLink', 'Deal', 'วางลิงก์ deal…'));
     const dealPrice = document.createElement('input');
     dealPrice.type = 'number';
     dealPrice.step = '0.1';
@@ -3412,6 +3676,8 @@ function renderShopTable() {
       const v = parseFloat(dealPrice.value);
       row.dealPrice = isNaN(v) ? null : v;
       persistShopRows();
+      updateRowVisual(tr, row); // เช็ค good-deal (deal ถูกกว่า Min)
+      renderShopBuyNext();
     });
     dealWrap.appendChild(dealPrice);
     tdDeal.appendChild(dealWrap);
@@ -3421,12 +3687,14 @@ function renderShopTable() {
     const tdActions = document.createElement('td');
     tdActions.className = 'col-actions';
     tdActions.appendChild(makeIconBtn('⧉', 'คัดลอกแถวนี้', () => {
-      shopRows.splice(idx + 1, 0, JSON.parse(JSON.stringify(row)));
+      const i = shopRows.indexOf(row);
+      shopRows.splice(i + 1, 0, JSON.parse(JSON.stringify(row)));
       persistShopRows();
       renderShopTable();
     }));
     tdActions.appendChild(makeIconBtn('✕', 'ลบแถวนี้', () => {
-      shopRows.splice(idx, 1);
+      const i = shopRows.indexOf(row);
+      if (i !== -1) shopRows.splice(i, 1);
       persistShopRows();
       renderShopTable();
     }, true));
@@ -3436,12 +3704,12 @@ function renderShopTable() {
     tbody.appendChild(tr);
   });
 
-  if (!anyVisible) {
+  if (visibleRows.length === 0) {
     const tr = document.createElement('tr');
     const td = document.createElement('td');
     td.colSpan = 10;
     td.className = 'shop-empty';
-    td.textContent = 'ไม่มีแถวที่ตรงกับคำค้นหา';
+    td.textContent = 'ไม่มีแถวที่ตรงกับคำค้นหา/ฟิลเตอร์ที่เลือก';
     tr.appendChild(td);
     tbody.appendChild(tr);
   }
@@ -3510,6 +3778,19 @@ document.getElementById('shopFilter').addEventListener('input', (e) => {
   renderShopTable();
 });
 
+document.getElementById('shopSort').addEventListener('change', (e) => {
+  shopSortMode = e.target.value;
+  renderShopTable();
+});
+
+document.querySelectorAll('#shopQuickFilters .filter-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    shopQuickFilter = chip.dataset.filter;
+    document.querySelectorAll('#shopQuickFilters .filter-chip').forEach(c => c.classList.toggle('active', c === chip));
+    renderShopTable();
+  });
+});
+
 document.getElementById('divineRateInput').addEventListener('input', (e) => {
   const v = parseFloat(e.target.value);
   divineRate = isNaN(v) || v < 0 ? 0 : v;
@@ -3533,6 +3814,15 @@ document.getElementById('divineRateInput').addEventListener('input', (e) => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.9',
+    date: '2026-07-12',
+    notes: [
+      'Shopping List: เพิ่มแถบ "ซื้อต่อไป" แนะนำไอเทมถัดไปที่ควรซื้อ (ยังไม่ซื้อ + มีราคา — แถวที่ติ๊กมาร์กไว้มาก่อน จากนั้นถูกสุดก่อน) พร้อมปุ่มเปิดลิงก์และกระโดดไปที่แถว',
+      'Shopping List: เพิ่มช่องชื่อไอเทมในคอลัมน์ Item (ข้อมูลเก่าใช้ได้เหมือนเดิม), quick filter (ยังไม่ซื้อ/ซื้อแล้ว/ไม่มีราคา/มี Deal), ตัวเลือกเรียงแสดงผล (ยังไม่ซื้อก่อน/แพงก่อน/ถูกก่อน/ไม่มีราคาก่อน — ไม่เปลี่ยนลำดับที่บันทึก) และ progress bar ความคืบหน้าการซื้อ',
+      'Shopping List: การ์ด "ต้องใช้อีก" คิดจากราคาของที่ยังไม่ซื้อโดยตรง (เดิมเอางบรวมลบยอดจ่ายจริง ซึ่งเพี้ยนเมื่อซื้อแพง/ถูกกว่าแผน), แถวไม่มีราคาจะมีแถบเตือนสีส้ม + badge "No price", ราคา deal ที่ถูกกว่า Min จะขึ้นสีเขียว',
+    ],
+  },
   {
     version: '0.8',
     date: '2026-07-12',

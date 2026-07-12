@@ -112,13 +112,13 @@ Tabs are switched via `TAB_IDS` / `TAB_BTNS` (search `TAB_IDS =`); panels are `<
 - Safe edit notes: do not touch OCR/paste/drop logic unless asked — it's fragile (Tesseract.js loaded from CDN, regex-based stat parsing).
 
 ### Shopping List (`shop`, aka Build Shopping List)
-- Markup: `<div id="pageShop">` line 1865-1942
-- Nav button: `tabBtnShop`, line 1707
-- JS section: `==================== Build Shopping List ====================` starting line 2829
-  - `ITEM_TYPES` 2833, `SHOP_ROWS_KEY`/`SHOP_RATE_KEY` — 2842-2843
-  - `newShopRow()` 2845, `updateShopSummary()` 2879, `buildLinkCell()` 2922 (link-chip rendering), `renderShopTable()` 2977
+- Markup: `<div id="pageShop">` (~2100; summary cards + buy-next strip + toolbar/sort + quick-filter chips + table)
+- Nav button: `tabBtnShop`
+- JS section: `==================== Build Shopping List ====================` (~3145)
+  - `ITEM_TYPES`, `SHOP_ROWS_KEY`/`SHOP_RATE_KEY`
+  - `newShopRow()` (row shape incl. additive `name` field, 2026-07-12), `updateShopSummary()`, `renderShopBuyNext()`, `rowEstPrice()`, `sortShopRowsForDisplay()`, `buildLinkCell()` (link-chip rendering), `renderShopTable()`
 - Data source: none; rows in `localStorage` (`SHOP_ROWS_KEY`).
-- Safe edit notes: link fields must stay chip-style (`buildLinkCell`), not raw URLs.
+- Safe edit notes: link fields must stay chip-style (`buildLinkCell`), not raw URLs. Remaining ("ต้องใช้อีก") sums unbought rows only. Quick filter/sort are display-only — never reorder `shopRows`; handlers use `shopRows.indexOf(row)`. See `EDIT_GUIDE.md` Feature Map row for full notes.
 
 ### Patch Notes
 - JS section: `==================== Patch Notes ====================` starting line 3218

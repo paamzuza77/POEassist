@@ -2,6 +2,12 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-12 (5)
+
+- **Shopping List usability pass** (`index.html`, patch 0.9): added "ซื้อต่อไป" buy-next strip (checked rows first, then cheapest unbought with a price; opens deal/trade link, jumps+highlights the row), optional item-name field (additive — old rows default to `''`, storage key unchanged), quick filters (need/bought/no-price/has-deal), display-only sort (never reorders saved rows), bought-progress bar, and row-state markers (green bought / orange missing-price / green good-deal price).
+- Calculation change: "ต้องใช้อีก" now sums min/max of **unbought rows only** (was planned-total − spent, which skewed when buying above/below plan); planned totals coalesce a missing min/max bound from the other side.
+- Verification: in-browser interaction suite (temp iframe harness, headless Edge) — 28 checks all passing (totals, THB rate, filters, sort-vs-storage, add/edit/delete, chip rendering, persistence, tab switching) + desktop/mobile screenshots; harness deleted after use.
+
 ## 2026-07-12 (4)
 
 - **RawBlock UI redesign shipped** (`index.html`, patch 0.8): full retheme per `design.md.md` — white/black palette, thick square borders, no shadows/gradients/glow, inversion hovers, Archivo Black/Work Sans/Space Mono. CSS var names kept so all inline JS (gauges, chart) works unchanged; feature logic untouched.
