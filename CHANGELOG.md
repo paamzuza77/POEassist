@@ -2,6 +2,15 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-12 (10)
+
+- **Trust Blue Pay theme coverage polish + favicon** (`index.html`, patch 0.14):
+  - **Full-app Trust Blue Pay coverage:** the theme's structural override (in the `Themes & color modes` CSS block) was expanded from a partial curated list to a comprehensive, organized one so **no major surface still reads as "RawBlock with blue paint"** — thin 1px borders + ~10px rounded corners on every panel/card/control/input, **pill radius** on short status chips/badges (`.radar-badge`/`.filter-chip`/`.mech-tag`/`.bought-badge`/`.divine-reco-badge`/`.farm-link-chip`), subtle **navy-tinted shadows** on cards (light) / soft black shadows (dark), a proper level-3 elevation on the modal (`.patch-panel`), navy **brand accents** (score-bar fill, and 2px navy borders on the emphasized `remain-group`/`bought-group`/favorite cards that previously used 5px black borders for hierarchy). Covers Exile Hub, Market Radar (recommendation cards + item rows + filters), Divine Market (metric cards/chart/table), Atlas farm cards, Gear Checker (paperdoll/equip/jewel slots, editor), Shopping List (summary cards, gear board, slots, table wrap, numpad, buy-next), sidebar/topbar, Settings + Patch Notes modals, badges/chips/forms/buttons.
+  - **Dark-mode grey repairs:** hardcoded light greys that didn't survive dark navy (`.farm-card.muted`/`.reco-card.dimmed` `#f5f5f5`, `.shop-slot.empty` `#ccc`/`#999`, the `#e8e8e8` bought/target/filter hovers, and the inverted light `.divine-table th`) are re-pointed to theme tokens **scoped to Trust Blue Pay only** — RawBlock is untouched.
+  - **RawBlock unchanged:** every override stays under `html[data-theme="trust-blue-pay"]` (+ `[data-mode="dark"]` where needed); verified RawBlock light/dark still render square/thick.
+  - **Favicon:** added an original inline-SVG data-URI favicon (an "E" monogram in Trust navy — not POE/POE2 artwork) via `<link rel="icon">` in `<head>`. Browsers now show a tab icon and **no longer request `/favicon.ico`** (the earlier lone 404). Self-contained — no new asset path.
+  - Verification: Playwright (headless msedge) over a local HTTP server — **24/24** checks passing incl. theme/mode switch + topbar↔Settings sync, Trust card radius/border/shadow actually applied, chip pill radius, **RawBlock still square (radius 0) + thick (≥3px)**, Shopping List still has no Type column / 9 cols / slot-select in item cell, all 6 tabs render in all 4 theme/mode combos, mobile no horizontal overflow, **server saw zero 404s (favicon fixed)**, zero console/page errors. Screenshots: Trust light (hub/radar/divine/forge/shop/settings/patch), Trust dark (radar/divine/farm/shop + mobile), RawBlock light sanity. Harness in scratchpad, deleted after use.
+
 ## 2026-07-12 (9)
 
 - **Theme switcher + dark/light mode + Shopping List Type-column cleanup** (`index.html`, patch 0.13):

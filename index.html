@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Exile Assistant</title>
+<!-- favicon: original inline "E" monogram (Exile Assistant), self-contained data URI so /favicon.ico isn't requested. Not POE/POE2 artwork. -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23003087'/%3E%3Crect x='9' y='8' width='14' height='3.4' fill='%23fff'/%3E%3Crect x='9' y='14.3' width='11' height='3.4' fill='%23fff'/%3E%3Crect x='9' y='20.6' width='14' height='3.4' fill='%23fff'/%3E%3Crect x='9' y='8' width='3.4' height='16' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <!-- ตั้ง data-theme / data-mode บน <html> ให้เร็วที่สุด (กัน flash ธีม/โหมดตอนโหลด) — ค่าเริ่มต้น rawblock/light -->
@@ -127,31 +129,71 @@
     --link: #6ea8ff;
   }
 
-  /* ---- Trust Blue Pay structural softening ----
-     RawBlock's thick square borders → thinner, rounded, subtly shadowed
-     "payment/trust" surfaces. Scoped to the theme; colors already come from
-     the tokens above, so only border-width / radius / shadow are set here. */
+  /* ---- Trust Blue Pay structural polish ----
+     Turns RawBlock's thick square borders + hardcoded greys into a soft,
+     rounded, navy-tinted financial-dashboard look. Scoped entirely to the theme
+     (and mode where needed) — RawBlock is untouched. Colors come from the tokens
+     above; here we set border-width / radius / shadow, re-tint a few brand
+     surfaces, and repair hardcoded greys that don't survive dark mode. */
   html[data-theme="trust-blue-pay"] body { font-feature-settings: "tnum"; }
+
+  /* 1 · Thin, rounded borders on every panel / card / control / chip / input */
   html[data-theme="trust-blue-pay"] .sidebar,
   html[data-theme="trust-blue-pay"] .topbar,
   html[data-theme="trust-blue-pay"] .nav-item,
   html[data-theme="trust-blue-pay"] .sidebar-toggle,
+  html[data-theme="trust-blue-pay"] .preset-tab,
+  html[data-theme="trust-blue-pay"] .preset-save-tag,
+  html[data-theme="trust-blue-pay"] .ocr-zone,
+  html[data-theme="trust-blue-pay"] .ocr-btn,
+  html[data-theme="trust-blue-pay"] .ocr-thumb,
+  html[data-theme="trust-blue-pay"] .paperdoll-frame,
+  html[data-theme="trust-blue-pay"] .equip-slot,
+  html[data-theme="trust-blue-pay"] .jewel-slot,
+  html[data-theme="trust-blue-pay"] .item-editor,
+  html[data-theme="trust-blue-pay"] .totals-panel,
+  html[data-theme="trust-blue-pay"] .gauge-track,
   html[data-theme="trust-blue-pay"] .hub-card,
+  html[data-theme="trust-blue-pay"] .link-card,
+  html[data-theme="trust-blue-pay"] .link-open,
+  html[data-theme="trust-blue-pay"] .stash-manual,
   html[data-theme="trust-blue-pay"] .reco-card,
+  html[data-theme="trust-blue-pay"] .score-bar,
+  html[data-theme="trust-blue-pay"] .score-badge,
+  html[data-theme="trust-blue-pay"] .radar-panel,
+  html[data-theme="trust-blue-pay"] .radar-item-card,
+  html[data-theme="trust-blue-pay"] .radar-item-rows-wrap,
   html[data-theme="trust-blue-pay"] .radar-item-row,
   html[data-theme="trust-blue-pay"] .radar-score-info,
   html[data-theme="trust-blue-pay"] .radar-filter,
+  html[data-theme="trust-blue-pay"] .radar-errors,
+  html[data-theme="trust-blue-pay"] .radar-fallback,
+  html[data-theme="trust-blue-pay"] .radar-stale-note,
+  html[data-theme="trust-blue-pay"] .farm-toolbar,
   html[data-theme="trust-blue-pay"] .farm-card,
+  html[data-theme="trust-blue-pay"] .add-link-btn,
   html[data-theme="trust-blue-pay"] .divine-metric-card,
   html[data-theme="trust-blue-pay"] .divine-chart-wrap,
   html[data-theme="trust-blue-pay"] .divine-table-wrap,
+  html[data-theme="trust-blue-pay"] .divine-disclaimer,
+  html[data-theme="trust-blue-pay"] .shop-summary .summary-group,
+  html[data-theme="trust-blue-pay"] .shop-toolbar,
+  html[data-theme="trust-blue-pay"] .shop-filter,
+  html[data-theme="trust-blue-pay"] .size-btn,
+  html[data-theme="trust-blue-pay"] .shop-buynext,
+  html[data-theme="trust-blue-pay"] .shop-progress,
+  html[data-theme="trust-blue-pay"] #shopGearPanel,
+  html[data-theme="trust-blue-pay"] .shop-gear-panel,
+  html[data-theme="trust-blue-pay"] .shop-slot,
+  html[data-theme="trust-blue-pay"] .shop-slot-add,
+  html[data-theme="trust-blue-pay"] .shop-table-wrap,
+  html[data-theme="trust-blue-pay"] .shop-numpad,
+  html[data-theme="trust-blue-pay"] .shop-numpad button,
+  html[data-theme="trust-blue-pay"] .link-cell a,
+  html[data-theme="trust-blue-pay"] .icon-btn,
+  html[data-theme="trust-blue-pay"] button.add-row,
   html[data-theme="trust-blue-pay"] .patch-panel,
   html[data-theme="trust-blue-pay"] .patch-close,
-  html[data-theme="trust-blue-pay"] .shop-summary-card,
-  html[data-theme="trust-blue-pay"] .shop-buynext,
-  html[data-theme="trust-blue-pay"] #shopGearPanel,
-  html[data-theme="trust-blue-pay"] .shop-table-wrap,
-  html[data-theme="trust-blue-pay"] .ocr-btn,
   html[data-theme="trust-blue-pay"] .mode-toggle,
   html[data-theme="trust-blue-pay"] .appearance-seg button,
   html[data-theme="trust-blue-pay"] input,
@@ -160,21 +202,80 @@
     border-width: 1px;
     border-radius: 10px;
   }
+
+  /* 2 · Pill radius on short status chips / badges (financial chip look) */
+  html[data-theme="trust-blue-pay"] .radar-badge,
+  html[data-theme="trust-blue-pay"] .filter-chip,
+  html[data-theme="trust-blue-pay"] .mech-tag,
+  html[data-theme="trust-blue-pay"] .bought-badge,
+  html[data-theme="trust-blue-pay"] .divine-reco-badge,
+  html[data-theme="trust-blue-pay"] .farm-link-chip {
+    border-width: 1px;
+    border-radius: 999px;
+  }
+
+  /* 3 · Modals get a proper elevation; cards/panels a subtle navy-tinted lift */
   html[data-theme="trust-blue-pay"] .hub-card,
+  html[data-theme="trust-blue-pay"] .link-card,
   html[data-theme="trust-blue-pay"] .reco-card,
+  html[data-theme="trust-blue-pay"] .radar-panel,
+  html[data-theme="trust-blue-pay"] .radar-item-card,
   html[data-theme="trust-blue-pay"] .farm-card,
   html[data-theme="trust-blue-pay"] .divine-metric-card,
-  html[data-theme="trust-blue-pay"] .shop-summary-card,
-  html[data-theme="trust-blue-pay"] .patch-panel {
+  html[data-theme="trust-blue-pay"] .shop-summary .summary-group,
+  html[data-theme="trust-blue-pay"] #shopGearPanel {
     box-shadow: 0 1px 4px rgba(0, 48, 135, 0.06);
   }
+  html[data-theme="trust-blue-pay"] .patch-panel {
+    box-shadow: 0 12px 32px rgba(0, 48, 135, 0.14);
+  }
   html[data-theme="trust-blue-pay"][data-mode="dark"] .hub-card,
+  html[data-theme="trust-blue-pay"][data-mode="dark"] .link-card,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .reco-card,
+  html[data-theme="trust-blue-pay"][data-mode="dark"] .radar-panel,
+  html[data-theme="trust-blue-pay"][data-mode="dark"] .radar-item-card,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .farm-card,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .divine-metric-card,
-  html[data-theme="trust-blue-pay"][data-mode="dark"] .shop-summary-card,
+  html[data-theme="trust-blue-pay"][data-mode="dark"] .shop-summary .summary-group,
+  html[data-theme="trust-blue-pay"][data-mode="dark"] #shopGearPanel {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+  }
   html[data-theme="trust-blue-pay"][data-mode="dark"] .patch-panel {
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+  }
+
+  /* 4 · Brand accents — navy fill for meters / emphasized borders (keeps the
+     RawBlock hierarchy that came from 5px borders, but as a navy accent) */
+  html[data-theme="trust-blue-pay"] .score-bar-fill { background: var(--gold); }
+  html[data-theme="trust-blue-pay"] .summary-group.remain-group,
+  html[data-theme="trust-blue-pay"] .summary-group.bought-group,
+  html[data-theme="trust-blue-pay"] .farm-card.favorite {
+    border-width: 2px;
+    border-color: var(--gold);
+  }
+  html[data-theme="trust-blue-pay"] .farm-card.is-active {
+    border-left-width: 4px;
+    border-left-color: var(--gold);
+  }
+  /* dark: the inverted (light-on-dark) table header reads as a stray light bar */
+  html[data-theme="trust-blue-pay"][data-mode="dark"] .divine-table th {
+    background: var(--panel-sunken);
+    color: var(--text);
+  }
+
+  /* 5 · Repair hardcoded light greys so muted/target states survive dark navy */
+  html[data-theme="trust-blue-pay"] .farm-card.muted,
+  html[data-theme="trust-blue-pay"] .reco-card.dimmed {
+    background: var(--panel-sunken);
+  }
+  html[data-theme="trust-blue-pay"] .shop-slot.empty {
+    border-color: var(--border-soft);
+    color: var(--text-dim);
+  }
+  html[data-theme="trust-blue-pay"] .shop-table tbody tr.bought:hover,
+  html[data-theme="trust-blue-pay"] .shop-filter:hover,
+  html[data-theme="trust-blue-pay"] .shop-table tbody tr.row-target {
+    background: var(--panel-sunken);
   }
 
   * { box-sizing: border-box; }
@@ -4948,6 +5049,16 @@ document.getElementById('shopSizeReset').addEventListener('click', resetShopSizi
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.14',
+    date: '2026-07-12',
+    notes: [
+      'ธีม Trust Blue Pay: ปรับให้ดูเป็นแดชบอร์ดการเงินจริงจังทั้งเว็บ — ขอบบางลง มุมโค้ง เงาโทนน้ำเงินอ่อนๆ ชิป/แบดจ์เป็นทรงเม็ดยา แทนที่ลุคขอบหนาเหลี่ยมแบบ RawBlock (ครอบคลุมการ์ด/แถบข้าง/topbar/Settings/Patch Notes/ตาราง Shopping List/บอร์ด Gear Plan/การ์ด Market Radar/กราฟ+ตาราง Divine/การ์ด Atlas/หน้าเกียร์)',
+      'โหมดมืดของ Trust Blue Pay: แก้จุดที่ยังเป็นสีเทาโค้ดไว้ตายตัว (การ์ด muted, หัวตาราง, ช่องว่างบนบอร์ด) ให้เข้ากับพื้นน้ำเงินเข้ม อ่านง่ายขึ้น',
+      'RawBlock ยังเหมือนเดิมทุกอย่าง (ทั้งสว่าง/มืด) — การปรับด้านบนจำกัดเฉพาะธีม Trust Blue Pay',
+      'เพิ่ม favicon (โลโก้ตัว E ของ Exile Assistant) — แท็บเบราว์เซอร์มีไอคอนแล้ว และไม่มี /favicon.ico 404 อีก',
+    ],
+  },
   {
     version: '0.13',
     date: '2026-07-12',

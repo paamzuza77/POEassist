@@ -9,7 +9,6 @@ Short, actionable list. Phases live in `ROADMAP.md`; history in `CHANGELOG.md`.
 ## Deferred
 - [ ] Replace placeholder `README.md` (currently just a title) with a short public-facing description + live-site link.
 - [ ] Extend Settings further (theme + light/dark shipped in patch 0.13) — remaining candidates: Divine rate default, data export/reset, sidebar default state.
-- [ ] Deepen Trust Blue Pay coverage if desired — the theme softens the main surfaces via a scoped class list; a few dense RawBlock-specific components still read fairly brutalist. Add their classes to the `html[data-theme="trust-blue-pay"] …` softening block to refine.
 
 ## Known Issues
 
@@ -17,6 +16,7 @@ Short, actionable list. Phases live in `ROADMAP.md`; history in `CHANGELOG.md`.
 
 ## Done
 
+- [x] Trust Blue Pay coverage polish (comprehensive rounded/soft/navy-accent overrides across all major surfaces, dark-mode grey repairs, RawBlock untouched) + original inline-SVG favicon (resolves the `/favicon.ico` 404); patch 0.14 (2026-07-12).
 - [x] Theme switcher (RawBlock + Trust Blue Pay) + dark/light mode (topbar toggle + Settings, synced) via `data-theme`/`data-mode` token overrides; functional Settings; removed the redundant Shopping List standalone Type column (data model/export unchanged). New additive keys `poeAssist.theme.v1` / `poeAssist.colorMode.v1`; patch 0.13 (2026-07-12).
 - [x] App layout polish: wider content (max-width 1760), collapsible sidebar (new additive key `poeAssist.sidebarCollapsed.v1`), Settings placeholder button/modal above Patch Notes, and readable Gear Plan slots (full labels + original per-slot icons, 2×2 jewels, corner quick-add); patch 0.12 (2026-07-12).
 - [x] Shopping List gear-board coverage states + per-slot quick-add + Excel-like column-width/row-height sizing (new additive key `poe2ShopList.tableSizing.v1`); patch 0.11 (2026-07-12).
