@@ -112,13 +112,15 @@ Tabs are switched via `TAB_IDS` / `TAB_BTNS` (search `TAB_IDS =`); panels are `<
 - Safe edit notes: do not touch OCR/paste/drop logic unless asked — it's fragile (Tesseract.js loaded from CDN, regex-based stat parsing).
 
 ### Shopping List (`shop`, aka Build Shopping List)
-- Markup: `<div id="pageShop">` (~2100; summary cards + buy-next strip + toolbar/sort + quick-filter chips + table)
+- Markup: `<div id="pageShop">` (~2170; summary cards + buy-next strip + `.shop-layout` two-column: left `#shopGearPanel` gear board / right toolbar+sort+quick-filter chips+table)
 - Nav button: `tabBtnShop`
-- JS section: `==================== Build Shopping List ====================` (~3145)
-  - `ITEM_TYPES`, `SHOP_ROWS_KEY`/`SHOP_RATE_KEY`
-  - `newShopRow()` (row shape incl. additive `name` field, 2026-07-12), `updateShopSummary()`, `renderShopBuyNext()`, `rowEstPrice()`, `sortShopRowsForDisplay()`, `buildLinkCell()` (link-chip rendering), `renderShopTable()`
+- JS section: `==================== Build Shopping List ====================` (~3360)
+  - `ITEM_TYPES`, `SHOP_SLOTS` (equipment-slot list — slot ids are persisted in `row.slot`, never rename existing ids), `SHOP_ROWS_KEY`/`SHOP_RATE_KEY`
+  - `newShopRow()` (row shape incl. additive `name` 2026-07-12 and `slot` 2026-07-12 fields), `rowSlotId()`/`rowMatchesSlot()`, `updateShopSummary()`, `renderShopBuyNext()`, `rowEstPrice()`, `sortShopRowsForDisplay()`, `buildLinkCell()` (link-chip rendering), `renderShopTable()`
+  - Gear board: `buildShopGearPanel()` (built once at init), `updateShopGearPanel()` (counts/bought/remaining/missing signals — refreshed from `updateShopSummary()`), `selectShopSlot()`; `shopSelectedSlot` state is `all | unassigned | <slot id>`, in-memory only
+  - Numpad: `shopNumpadEl`/`openShopNumpad()`/`shopNumpadPress()` — on-screen numpad for every `input.num-input` in `#pageShop`; those inputs are `type=text inputmode=decimal` (NOT `type=number` — number inputs reject intermediate values like `3.`)
 - Data source: none; rows in `localStorage` (`SHOP_ROWS_KEY`).
-- Safe edit notes: link fields must stay chip-style (`buildLinkCell`), not raw URLs. Remaining ("ต้องใช้อีก") sums unbought rows only. Quick filter/sort are display-only — never reorder `shopRows`; handlers use `shopRows.indexOf(row)`. See `EDIT_GUIDE.md` Feature Map row for full notes.
+- Safe edit notes: link fields must stay chip-style (`buildLinkCell`), not raw URLs. Remaining ("ต้องใช้อีก") sums unbought rows only; per-slot remaining on the board uses the same min??max rule. Quick filter/sort/slot view are display-only — never reorder `shopRows`; handlers use `shopRows.indexOf(row)`. Old rows without `slot` load as Unassigned (tolerant `Object.assign` read) — storage key unchanged. Buy-next is global across all slots by design. `.shop-layout`'s mobile breakpoint must keep `minmax(0,1fr)` (plain `1fr` overflows via the table's min-width). See `EDIT_GUIDE.md` Feature Map row for full notes.
 
 ### Patch Notes
 - JS section: `==================== Patch Notes ====================` starting line 3218

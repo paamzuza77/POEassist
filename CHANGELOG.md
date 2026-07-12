@@ -2,7 +2,13 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
-## 2026-07-12 (5)
+## 2026-07-12 (6)
+
+- **Shopping List: POE2 equipment-slot planner + on-screen numpad** (`index.html`, patch 0.10): left "Gear Plan" board (Weapon/Offhand/Helmet/Body/Gloves/Boots/Belt/Amulet/Ring 1-2/Jewel 1-4/Other + All/Unassigned views) filters the right-side table per slot; per-slot signals (item count, bought x/y, remaining Div using the same min??max rule as "ต้องใช้อีก", orange missing-price dot); new rows inherit the selected slot; rows get a slot dropdown for reassignment.
+- Data model: additive `slot` field on shopping rows (storage key unchanged, `poe2ShopList.rows.v1`); old rows without `slot` load as Unassigned via the existing `Object.assign(newShopRow(), r)` tolerant read; export/import round-trips it automatically. Buy-next stays **global** (all slots) by design — it answers "what to buy next overall" and jumping to a row resets the slot view.
+- Numpad: all Divine-price inputs (Min/Max/Bought, deal price, THB rate) switched from `type=number` to `type=text inputmode=decimal` + `.num-input` (number inputs reject intermediate values like `3.`); custom RawBlock numpad (0-9 / . / ⌫ / C / Done) opens on focus, positions under/above the field (bottom-pinned on ≤640px), dispatches real `input` events so existing handlers run; keyboard typing unaffected; closes on Done/Esc/outside click.
+- Fixed a latent mobile overflow: `.shop-layout` single-column mode needs `minmax(0,1fr)` or the table's 1180px min-width blows the layout past the viewport.
+- Verification: temp iframe harness in headless Edge — 46 checks passing (old-data load, per-slot filtering, add-into-slot, reassign, numpad digit/decimal/backspace/clear/done/esc/outside-close, keyboard path, rate entry, quick-filter+sort inside slot view, storage order untouched, chips, tab switching, reload persistence); desktop 1440px + mobile 480px screenshots. Harness deleted after use.
 
 - **Shopping List usability pass** (`index.html`, patch 0.9): added "ซื้อต่อไป" buy-next strip (checked rows first, then cheapest unbought with a price; opens deal/trade link, jumps+highlights the row), optional item-name field (additive — old rows default to `''`, storage key unchanged), quick filters (need/bought/no-price/has-deal), display-only sort (never reorders saved rows), bought-progress bar, and row-state markers (green bought / orange missing-price / green good-deal price).
 - Calculation change: "ต้องใช้อีก" now sums min/max of **unbought rows only** (was planned-total − spent, which skewed when buying above/below plan); planned totals coalesce a missing min/max bound from the other side.

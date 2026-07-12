@@ -15,6 +15,7 @@ Short, actionable list. Phases live in `ROADMAP.md`; history in `CHANGELOG.md`.
 
 ## Done
 
+- [x] Shopping List equipment-slot planner — left POE2 gear board filters the table per slot, additive `slot` field (old rows → Unassigned), on-screen numpad for all Divine-price inputs; patch 0.10 (2026-07-12).
 - [x] Shopping List usability pass — buy-next strip, name field (additive), quick filters, display-only sort, progress bar, clearer remaining-cost calc; patch 0.9 (2026-07-12).
 - [x] Full RawBlock UI redesign of `index.html` per `design.md.md` — shipped as patch 0.8; all 6 tabs verified via headless-browser screenshots; original SVG icon set added (2026-07-12).
 - [x] Committed active draft docs (`SKILL.md`, `AGENTS.md`, `design.md.md`, both workflow-skill docs); `Index.md` deliberately left untracked as a superseded draft (2026-07-12).

@@ -969,7 +969,7 @@
     outline: none;
   }
   .shop-table input:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--border); }
-  .shop-table input[type="number"] {
+  .shop-table input.num-input {
     font-family: var(--font-mono);
     text-align: right;
   }
@@ -1094,6 +1094,163 @@
   .bought-badge.miss { background: var(--lightning); }
   .shop-table .deal-cell input.deal-price.good-deal { border-color: var(--ok); color: var(--ok); font-weight: 700; }
   .shop-table tbody tr.row-target { background: #e8e8e8; outline: 3px solid var(--border); outline-offset: -3px; }
+
+  /* ---------- Build Shopping List: gear slot planner (RawBlock) ---------- */
+  .shop-layout {
+    display: grid;
+    grid-template-columns: 264px minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+  }
+  .shop-gear-panel {
+    background: var(--void);
+    border: 3px solid var(--border);
+    padding: 10px;
+    position: sticky;
+    top: 74px; /* ใต้ topbar sticky */
+  }
+  .shop-gear-title {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text);
+    margin: 0 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--border);
+  }
+  .shop-gear-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 6px; }
+  /* จัดผังแบบ paperdoll: หมวกบน, อาวุธ/เกราะ/ออฟแฮนด์กลาง, แหวนขนาบ amulet ล่าง */
+  .shop-gear-board .shop-slot[data-slot="helmet"]  { grid-row: 1; grid-column: 2; }
+  .shop-gear-board .shop-slot[data-slot="weapon"]  { grid-row: 2; grid-column: 1; }
+  .shop-gear-board .shop-slot[data-slot="body"]    { grid-row: 2; grid-column: 2; }
+  .shop-gear-board .shop-slot[data-slot="offhand"] { grid-row: 2; grid-column: 3; }
+  .shop-gear-board .shop-slot[data-slot="gloves"]  { grid-row: 3; grid-column: 1; }
+  .shop-gear-board .shop-slot[data-slot="belt"]    { grid-row: 3; grid-column: 2; }
+  .shop-gear-board .shop-slot[data-slot="boots"]   { grid-row: 3; grid-column: 3; }
+  .shop-gear-board .shop-slot[data-slot="ring1"]   { grid-row: 4; grid-column: 1; }
+  .shop-gear-board .shop-slot[data-slot="amulet"]  { grid-row: 4; grid-column: 2; }
+  .shop-gear-board .shop-slot[data-slot="ring2"]   { grid-row: 4; grid-column: 3; }
+  .shop-jewel-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 6px; }
+  .shop-slot-utility { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .shop-slot-allwrap { margin-bottom: 6px; }
+  .shop-slot {
+    border: 2px solid var(--border);
+    background: var(--void);
+    color: var(--text);
+    border-radius: 0;
+    padding: 5px 6px;
+    min-height: 46px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2px;
+    cursor: pointer;
+    text-align: left;
+    font-family: var(--font-mono);
+    min-width: 0;
+  }
+  .shop-slot.wide { width: 100%; min-height: 0; }
+  .shop-slot-head { display: flex; justify-content: space-between; align-items: baseline; gap: 4px; }
+  .shop-slot-name {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .shop-slot-count {
+    font-size: 9px;
+    font-weight: 700;
+    border: 2px solid currentColor;
+    padding: 0 4px;
+    min-width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .shop-slot-sub {
+    font-size: 8.5px;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .shop-slot-sub .slot-warn { color: var(--lightning); font-weight: 700; }
+  .shop-slot-sub .slot-done { color: var(--ok); font-weight: 700; }
+  .shop-slot.empty { border-color: #ccc; color: #999; }
+  .shop-slot:hover { background: var(--text); color: var(--void); }
+  .shop-slot:hover .shop-slot-sub,
+  .shop-slot:hover .shop-slot-sub .slot-warn,
+  .shop-slot:hover .shop-slot-sub .slot-done { color: var(--void); }
+  .shop-slot.active { background: var(--text); color: var(--void); outline: 2px solid var(--border); outline-offset: 2px; }
+  .shop-slot.active .shop-slot-sub,
+  .shop-slot.active .shop-slot-sub .slot-warn,
+  .shop-slot.active .shop-slot-sub .slot-done { color: var(--void); }
+
+  .shop-table select.slot-select {
+    width: 100%;
+    background: var(--void);
+    border: 2px solid var(--border);
+    border-radius: 0;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 4px;
+    cursor: pointer;
+  }
+
+  @media (max-width: 980px) {
+    /* minmax(0,1fr) จำเป็น — 1fr เฉยๆ จะติด min-content ของตาราง (min-width 1180px) แล้วดันทั้ง layout ล้นจอ */
+    .shop-layout { grid-template-columns: minmax(0, 1fr); }
+    .shop-gear-panel { position: static; }
+  }
+
+  /* ---------- Build Shopping List: on-screen numpad (RawBlock) ---------- */
+  .shop-numpad {
+    position: fixed;
+    z-index: 300;
+    background: var(--void);
+    border: 3px solid var(--border);
+    padding: 6px;
+    width: 188px;
+    display: none;
+  }
+  .shop-numpad.open { display: block; }
+  .shop-numpad-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .shop-numpad button {
+    border: 2px solid var(--border);
+    background: var(--void);
+    color: var(--text);
+    border-radius: 0;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    padding: 8px 0;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .shop-numpad button:hover { background: var(--text); color: var(--void); }
+  .shop-numpad button.np-danger:hover { background: var(--fire); color: var(--void); }
+  .shop-numpad button.np-zero { grid-column: span 4; }
+  .shop-numpad button.np-done {
+    grid-column: span 4;
+    background: var(--text);
+    color: var(--void);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 11px;
+  }
+  .shop-numpad button.np-done:hover { background: var(--void); color: var(--text); }
+  @media (max-width: 640px) {
+    .shop-numpad { left: 8px !important; right: 8px; top: auto !important; bottom: 8px; width: auto; }
+    .shop-numpad button { padding: 11px 0; }
+  }
 
   @media (max-width: 480px) {
     .gauge-row { grid-template-columns: 62px 1fr 88px; gap: 8px; }
@@ -2168,7 +2325,7 @@
     <div class="shop-summary" id="shopSummary">
       <div class="summary-group rate-group">
         <p class="sg-title">เรทเงิน</p>
-        <div class="rate-line">1 Div = <input type="number" id="divineRateInput" step="0.01" min="0" placeholder="0"> ฿</div>
+        <div class="rate-line">1 Div = <input type="text" inputmode="decimal" class="num-input" id="divineRateInput" placeholder="0"> ฿</div>
         <div class="sg-note" id="statusTotal">ซื้อแล้ว 0 จาก 0 รายการ</div>
       </div>
       <div class="summary-group">
@@ -2211,6 +2368,10 @@
     </div>
 
     <div class="shop-buynext" id="shopBuyNext" hidden></div>
+
+    <div class="shop-layout">
+    <aside class="shop-gear-panel" id="shopGearPanel"></aside>
+    <div class="shop-main">
 
     <div class="shop-toolbar">
       <input type="text" class="shop-filter" id="shopFilter" placeholder="ค้นหา: ชื่อ / type / option / link…">
@@ -2256,6 +2417,9 @@
         <tbody id="shopTbody"></tbody>
       </table>
     </div>
+
+    </div><!-- /shop-main -->
+    </div><!-- /shop-layout -->
     <datalist id="itemTypeList"></datalist>
   </div><!-- /pageShop -->
 
@@ -3235,12 +3399,35 @@ const ITEM_TYPES = [
   'Rune', 'Soul Core', 'Waystone', 'Tablet', 'Currency', 'Other',
 ];
 
+// ช่องอุปกรณ์ POE2 บนบอร์ดฝั่งซ้าย — แก้/เพิ่มได้ที่ array นี้ที่เดียว
+// id ถูกเซฟลง row.slot ใน localStorage — "อย่าเปลี่ยน id เดิม" ไม่งั้นแถวเก่าจะกลายเป็น Unassigned
+// group: board = ตารางอุปกรณ์ 3 คอลัมน์ / jewel = แถว jewel 4 ช่อง / utility = แถวล่าง (Other)
+const SHOP_SLOTS = [
+  { id: 'helmet',  label: 'Helmet',           short: 'HELM', group: 'board' },
+  { id: 'weapon',  label: 'Weapon',           short: 'WPN',  group: 'board' },
+  { id: 'body',    label: 'Body Armour',      short: 'BODY', group: 'board' },
+  { id: 'offhand', label: 'Offhand / Shield', short: 'OFF',  group: 'board' },
+  { id: 'gloves',  label: 'Gloves',           short: 'GLV',  group: 'board' },
+  { id: 'belt',    label: 'Belt',             short: 'BELT', group: 'board' },
+  { id: 'boots',   label: 'Boots',            short: 'BOOT', group: 'board' },
+  { id: 'ring1',   label: 'Ring 1',           short: 'R1',   group: 'board' },
+  { id: 'amulet',  label: 'Amulet',           short: 'AMU',  group: 'board' },
+  { id: 'ring2',   label: 'Ring 2',           short: 'R2',   group: 'board' },
+  { id: 'jewel1',  label: 'Jewel 1',          short: 'J1',      group: 'jewel' },
+  { id: 'jewel2',  label: 'Jewel 2',          short: 'J2',      group: 'jewel' },
+  { id: 'jewel3',  label: 'Jewel 3',          short: 'J3',      group: 'jewel' },
+  { id: 'jewel4',  label: 'Jewel 4',          short: 'J4',      group: 'jewel' },
+  { id: 'other',   label: 'Other',            short: 'OTHER',   group: 'utility' },
+];
+const SHOP_SLOT_IDS = new Set(SHOP_SLOTS.map(s => s.id));
+
 const SHOP_ROWS_KEY = 'poe2ShopList.rows.v1';
 const SHOP_RATE_KEY = 'poe2ShopList.rate.v1';
 
 function newShopRow() {
   // name เป็น field เสริม (เพิ่ม 2026-07-12) — แถวเก่าที่ไม่มีจะ default เป็น '' ผ่าน Object.assign ตอนโหลด
-  return { checked: false, name: '', link: '', type: '', option: '', min: null, max: null, bought: null, dealLink: '', dealPrice: null };
+  // slot เป็น field เสริม (เพิ่ม 2026-07-12, slot planner) — แถวเก่า default '' = Unassigned
+  return { checked: false, name: '', link: '', type: '', option: '', min: null, max: null, bought: null, dealLink: '', dealPrice: null, slot: '' };
 }
 
 let shopRows = (function loadShopRows() {
@@ -3259,6 +3446,7 @@ let divineRate = (function loadRate() {
 let shopFilterText = '';
 let shopQuickFilter = 'all';   // all | need | bought | noprice | deal (in-memory เท่านั้น)
 let shopSortMode = 'default';  // เรียงเฉพาะการแสดงผล — ไม่แตะลำดับจริงใน localStorage
+let shopSelectedSlot = 'all';  // all | unassigned | slot id — มุมมองบอร์ดฝั่งซ้าย (in-memory เท่านั้น)
 
 function persistShopRows() {
   try { localStorage.setItem(SHOP_ROWS_KEY, JSON.stringify(shopRows)); } catch (e) { /* storage unavailable */ }
@@ -3290,6 +3478,17 @@ function rowEstPrice(row) {
 function rowDisplayName(row) {
   return (row.name || '').trim() || (row.type || '').trim() || (row.option || '').trim() ||
     ('รายการที่ ' + (shopRows.indexOf(row) + 1));
+}
+
+// slot ของแถวแบบ normalize แล้ว — ค่าที่ไม่รู้จัก/ว่าง นับเป็น '' (Unassigned) เพื่อไม่ให้ข้อมูลเก่าหาย
+function rowSlotId(row) {
+  return SHOP_SLOT_IDS.has(row.slot) ? row.slot : '';
+}
+
+function rowMatchesSlot(row) {
+  if (shopSelectedSlot === 'all') return true;
+  if (shopSelectedSlot === 'unassigned') return rowSlotId(row) === '';
+  return rowSlotId(row) === shopSelectedSlot;
 }
 
 function updateShopSummary() {
@@ -3341,9 +3540,11 @@ function updateShopSummary() {
   }
 
   renderShopBuyNext();
+  updateShopGearPanel();
 }
 
 // แถบ "ซื้อต่อไป": เลือกจากแถวที่ยังไม่ซื้อ + มีราคา — แถวที่ติ๊กมาร์กไว้ถือว่าสำคัญกว่า จากนั้นเอาถูกสุดก่อน
+// หมายเหตุ: แนะนำจาก "ทุก slot" เสมอ (ตอบคำถามว่าควรซื้ออะไรต่อในภาพรวม — ไม่ตาม slot ที่เลือกอยู่)
 function renderShopBuyNext() {
   const box = document.getElementById('shopBuyNext');
   box.innerHTML = '';
@@ -3413,7 +3614,8 @@ function renderShopBuyNext() {
 }
 
 function goToShopRow(row) {
-  // เคลียร์ filter/ค้นหาก่อน เพื่อให้แถวเป้าหมายแสดงแน่ๆ แล้ว scroll + ไฮไลต์ชั่วคราว
+  // เคลียร์ filter/ค้นหา/slot ก่อน เพื่อให้แถวเป้าหมายแสดงแน่ๆ แล้ว scroll + ไฮไลต์ชั่วคราว
+  shopSelectedSlot = 'all';
   shopQuickFilter = 'all';
   shopFilterText = '';
   document.getElementById('shopFilter').value = '';
@@ -3505,7 +3707,8 @@ function updateRowVisual(tr, row) {
 function rowMatchesFilter(row) {
   const q = shopFilterText.trim().toLowerCase();
   if (!q) return true;
-  return [row.name, row.type, row.option, row.link, row.dealLink].join(' ').toLowerCase().includes(q);
+  const slotDef = SHOP_SLOTS.find(s => s.id === rowSlotId(row));
+  return [row.name, row.type, row.option, row.link, row.dealLink, slotDef ? slotDef.label : ''].join(' ').toLowerCase().includes(q);
 }
 
 function rowMatchesQuick(row) {
@@ -3556,7 +3759,7 @@ function renderShopTable() {
     return;
   }
 
-  const visibleRows = shopRows.filter(r => rowMatchesFilter(r) && rowMatchesQuick(r));
+  const visibleRows = shopRows.filter(r => rowMatchesSlot(r) && rowMatchesFilter(r) && rowMatchesQuick(r));
   sortShopRowsForDisplay(visibleRows);
   document.getElementById('shopFilterCount').textContent =
     visibleRows.length === shopRows.length ? shopRows.length + ' แถว' : 'แสดง ' + visibleRows.length + ' / ' + shopRows.length + ' แถว';
@@ -3606,6 +3809,19 @@ function renderShopTable() {
     });
     itemCell.appendChild(nameInput);
     itemCell.appendChild(buildLinkCell(row, 'link', 'Trade Link', 'วางลิงก์ไอเทม…'));
+    // slot ของแถว — เปลี่ยนได้เสมอ (แถวเก่าที่ไม่มี slot จะเป็น "ไม่ระบุช่อง" ให้เลือกทีหลัง)
+    const slotSel = document.createElement('select');
+    slotSel.className = 'slot-select';
+    slotSel.title = 'ช่องอุปกรณ์ของไอเทมนี้ (โยงกับบอร์ดฝั่งซ้าย)';
+    slotSel.appendChild(new Option('— ช่อง: ไม่ระบุ —', ''));
+    SHOP_SLOTS.forEach(s => slotSel.appendChild(new Option(s.label, s.id)));
+    slotSel.value = rowSlotId(row);
+    slotSel.addEventListener('change', () => {
+      row.slot = slotSel.value;
+      persistShopRows();
+      renderShopTable(); // แถวอาจย้ายออกจากมุมมองปัจจุบัน + อัปเดตตัวเลขบนบอร์ดซ้าย
+    });
+    itemCell.appendChild(slotSel);
     tdLink.appendChild(itemCell);
     tr.appendChild(tdLink);
 
@@ -3641,10 +3857,11 @@ function renderShopTable() {
     [['min', 'Min'], ['max', 'Max'], ['bought', 'ราคาที่ซื้อ']].forEach(([field, ph]) => {
       const td = document.createElement('td');
       td.className = 'col-num';
+      // type=text + inputmode=decimal (ไม่ใช่ number) เพื่อให้ numpad พิมพ์ค่าระหว่างทางอย่าง "3." ได้
       const input = document.createElement('input');
-      input.type = 'number';
-      input.step = '0.1';
-      input.min = '0';
+      input.type = 'text';
+      input.inputMode = 'decimal';
+      input.className = 'num-input';
       input.placeholder = ph;
       input.value = row[field] === null || row[field] === undefined ? '' : row[field];
       input.addEventListener('input', () => {
@@ -3665,10 +3882,9 @@ function renderShopTable() {
     dealWrap.className = 'deal-cell';
     dealWrap.appendChild(buildLinkCell(row, 'dealLink', 'Deal', 'วางลิงก์ deal…'));
     const dealPrice = document.createElement('input');
-    dealPrice.type = 'number';
-    dealPrice.step = '0.1';
-    dealPrice.min = '0';
-    dealPrice.className = 'deal-price';
+    dealPrice.type = 'text';
+    dealPrice.inputMode = 'decimal';
+    dealPrice.className = 'deal-price num-input';
     dealPrice.placeholder = 'Div';
     dealPrice.title = 'ราคาของ deal นี้ (Divine)';
     dealPrice.value = row.dealPrice === null || row.dealPrice === undefined ? '' : row.dealPrice;
@@ -3709,7 +3925,10 @@ function renderShopTable() {
     const td = document.createElement('td');
     td.colSpan = 10;
     td.className = 'shop-empty';
-    td.textContent = 'ไม่มีแถวที่ตรงกับคำค้นหา/ฟิลเตอร์ที่เลือก';
+    const slotOnly = shopSelectedSlot !== 'all' && !shopFilterText.trim() && shopQuickFilter === 'all';
+    td.textContent = slotOnly
+      ? 'ยังไม่มีไอเทมในช่องนี้ — กด "+ Add Row" เพื่อเพิ่มตัวเลือกของช่องนี้ (เพิ่มได้หลายตัวเลือกต่อช่อง)'
+      : 'ไม่มีแถวที่ตรงกับคำค้นหา/ฟิลเตอร์ที่เลือก';
     tr.appendChild(td);
     tbody.appendChild(tr);
   }
@@ -3717,10 +3936,223 @@ function renderShopTable() {
   updateShopSummary();
 }
 
+/* ---- Shopping list: gear slot planner (บอร์ดช่องอุปกรณ์ฝั่งซ้าย) ---- */
+
+function selectShopSlot(id) {
+  shopSelectedSlot = id;
+  renderShopTable(); // ตารางกรองตาม slot; บอร์ดรีเฟรชผ่าน updateShopSummary → updateShopGearPanel
+}
+
+// สร้างปุ่ม slot หนึ่งปุ่ม (โครงคงที่ — ตัวเลข/สถานะถูกอัปเดตทีหลังใน updateShopGearPanel)
+function makeShopSlotBtn(id, shortLabel, fullLabel, wide) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'shop-slot' + (wide ? ' wide' : '');
+  b.dataset.slot = id;
+  b.title = fullLabel;
+  const head = document.createElement('div');
+  head.className = 'shop-slot-head';
+  const nm = document.createElement('span');
+  nm.className = 'shop-slot-name';
+  nm.textContent = shortLabel;
+  const cnt = document.createElement('span');
+  cnt.className = 'shop-slot-count';
+  cnt.textContent = '0';
+  head.appendChild(nm);
+  head.appendChild(cnt);
+  const sub = document.createElement('div');
+  sub.className = 'shop-slot-sub';
+  b.appendChild(head);
+  b.appendChild(sub);
+  b.addEventListener('click', () => selectShopSlot(id));
+  return b;
+}
+
+// สร้างบอร์ดครั้งเดียวตอน init — ALL ด้านบน, ตารางอุปกรณ์ 3 คอลัมน์, แถว jewel, แถวล่าง Other/Unassigned
+function buildShopGearPanel() {
+  const panel = document.getElementById('shopGearPanel');
+  panel.innerHTML = '';
+  const title = document.createElement('p');
+  title.className = 'shop-gear-title';
+  title.textContent = 'Gear Plan';
+  panel.appendChild(title);
+
+  const allWrap = document.createElement('div');
+  allWrap.className = 'shop-slot-allwrap';
+  allWrap.appendChild(makeShopSlotBtn('all', 'All Items', 'ดูทุกรายการ (ทุก slot รวมที่ยังไม่ระบุช่อง)', true));
+  panel.appendChild(allWrap);
+
+  const board = document.createElement('div');
+  board.className = 'shop-gear-board';
+  SHOP_SLOTS.filter(s => s.group === 'board').forEach(s => board.appendChild(makeShopSlotBtn(s.id, s.short, s.label)));
+  panel.appendChild(board);
+
+  const jewels = document.createElement('div');
+  jewels.className = 'shop-jewel-row';
+  SHOP_SLOTS.filter(s => s.group === 'jewel').forEach(s => jewels.appendChild(makeShopSlotBtn(s.id, s.short, s.label)));
+  panel.appendChild(jewels);
+
+  const util = document.createElement('div');
+  util.className = 'shop-slot-utility';
+  SHOP_SLOTS.filter(s => s.group === 'utility').forEach(s => util.appendChild(makeShopSlotBtn(s.id, s.short, s.label)));
+  util.appendChild(makeShopSlotBtn('unassigned', 'Unassigned', 'แถวที่ยังไม่ระบุช่อง (รวมข้อมูลเก่าก่อนมีระบบ slot)'));
+  panel.appendChild(util);
+
+  updateShopGearPanel();
+}
+
+// อัปเดตตัวเลข/สถานะบนบอร์ด: จำนวนไอเทม, ซื้อแล้วกี่ชิ้น, งบที่เหลือของช่อง (min ?? max ของแถวที่ยังไม่ซื้อ
+// — สูตรเดียวกับการ์ด "ต้องใช้อีก"), จุดเตือนช่องที่มีแถวไม่มีราคา
+function updateShopGearPanel() {
+  const panel = document.getElementById('shopGearPanel');
+  if (!panel || !panel.firstChild) return; // ยังไม่ build (เรียกจาก updateShopSummary ระหว่าง init ได้)
+  const stats = {}; // key: slot id | '' (unassigned) | 'all'
+  const blank = () => ({ count: 0, bought: 0, missing: 0, remain: 0 });
+  stats.all = blank();
+  stats[''] = blank();
+  SHOP_SLOTS.forEach(s => { stats[s.id] = blank(); });
+  shopRows.forEach(r => {
+    const bucket = stats[rowSlotId(r)];
+    [bucket, stats.all].forEach(st => {
+      st.count++;
+      if (isBought(r)) st.bought++;
+      else {
+        const hasMin = typeof r.min === 'number' && !isNaN(r.min);
+        const hasMax = typeof r.max === 'number' && !isNaN(r.max);
+        st.remain += hasMin ? r.min : (hasMax ? r.max : 0);
+        if (!hasMin && !hasMax) st.missing++;
+      }
+    });
+  });
+  panel.querySelectorAll('.shop-slot').forEach(btn => {
+    const id = btn.dataset.slot;
+    const st = stats[id === 'unassigned' ? '' : id] || blank();
+    btn.classList.toggle('active', shopSelectedSlot === id);
+    btn.classList.toggle('empty', st.count === 0 && id !== 'all');
+    btn.querySelector('.shop-slot-count').textContent = st.count;
+    const sub = btn.querySelector('.shop-slot-sub');
+    sub.innerHTML = '';
+    if (st.count === 0) { sub.textContent = 'ว่าง'; return; }
+    const done = document.createElement('span');
+    done.className = st.bought === st.count ? 'slot-done' : '';
+    done.textContent = st.bought + '/' + st.count + '✓';
+    sub.appendChild(done);
+    if (st.remain > 0) sub.appendChild(document.createTextNode(' ~' + fmtNum(st.remain) + 'D'));
+    if (st.missing > 0) {
+      const w = document.createElement('span');
+      w.className = 'slot-warn';
+      w.textContent = ' ●' + st.missing; // แถวที่ยังไม่มีราคาในช่องนี้
+      w.title = st.missing + ' แถวในช่องนี้ยังไม่มีราคา';
+      sub.appendChild(w);
+    }
+  });
+}
+
+/* ---- Shopping list: on-screen numpad (ไม่มี dependency — ใช้กับ input.num-input ทุกช่องในแท็บนี้) ---- */
+
+let shopNumpadTarget = null;
+
+const shopNumpadEl = (function buildShopNumpad() {
+  const pad = document.createElement('div');
+  pad.className = 'shop-numpad';
+  pad.id = 'shopNumpad';
+  const grid = document.createElement('div');
+  grid.className = 'shop-numpad-grid';
+  const keys = [
+    ['7', '7'], ['8', '8'], ['9', '9'], ['⌫', 'back'],
+    ['4', '4'], ['5', '5'], ['6', '6'], ['C', 'clear'],
+    ['1', '1'], ['2', '2'], ['3', '3'], ['.', '.'],
+    ['0', '0'],
+    ['Done', 'done'],
+  ];
+  keys.forEach(([txt, key]) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = txt;
+    b.dataset.key = key;
+    if (key === '0') b.className = 'np-zero';
+    if (key === 'done') b.className = 'np-done';
+    if (key === 'back' || key === 'clear') b.classList.add('np-danger');
+    grid.appendChild(b);
+  });
+  pad.appendChild(grid);
+  document.body.appendChild(pad);
+  return pad;
+})();
+
+function positionShopNumpad() {
+  if (!shopNumpadTarget) return;
+  if (window.innerWidth <= 640) return; // จอแคบ: CSS ตรึงไว้ล่างจอแทน (!important ชนะ inline style)
+  const r = shopNumpadTarget.getBoundingClientRect();
+  const w = shopNumpadEl.offsetWidth, h = shopNumpadEl.offsetHeight;
+  const left = Math.min(Math.max(8, r.left), window.innerWidth - w - 8);
+  let top = r.bottom + 6; // วางใต้ช่องก่อน — ไม่บังช่องที่กำลังพิมพ์
+  if (top + h > window.innerHeight - 8) top = r.top - h - 6; // ที่ไม่พอ → ย้ายไปด้านบน
+  if (top < 8) top = 8;
+  shopNumpadEl.style.left = left + 'px';
+  shopNumpadEl.style.top = top + 'px';
+}
+
+function openShopNumpad(input) {
+  shopNumpadTarget = input;
+  shopNumpadEl.classList.add('open');
+  positionShopNumpad();
+  if (window.innerWidth <= 640) input.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function closeShopNumpad() {
+  shopNumpadTarget = null;
+  shopNumpadEl.classList.remove('open');
+}
+
+function shopNumpadPress(key) {
+  const input = shopNumpadTarget;
+  if (!input) return;
+  let v = String(input.value);
+  if (key === 'back') v = v.slice(0, -1);
+  else if (key === 'clear') v = '';
+  else if (key === '.') { if (!v.includes('.')) v = (v === '' ? '0.' : v + '.'); }
+  else v += key;
+  input.value = v;
+  // ยิง input event เพื่อให้ listener เดิมของช่องนั้น (parseFloat → persist → summary) ทำงานเหมือนพิมพ์เอง
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+// pointerdown + preventDefault: กดปุ่ม numpad โดยไม่ดึงโฟกัสออกจาก input (พิมพ์คีย์บอร์ดสลับกันได้)
+shopNumpadEl.addEventListener('pointerdown', (e) => {
+  e.preventDefault();
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  if (btn.dataset.key === 'done') { closeShopNumpad(); return; }
+  shopNumpadPress(btn.dataset.key);
+});
+
+document.addEventListener('focusin', (e) => {
+  if (e.target.matches && e.target.matches('#pageShop input.num-input')) openShopNumpad(e.target);
+  else if (shopNumpadTarget && !shopNumpadEl.contains(e.target)) closeShopNumpad();
+});
+// เผื่อ input โฟกัสอยู่แล้วแต่ numpad ถูกปิดไป (เช่นกด Esc) — คลิกซ้ำที่ช่องเดิมเพื่อเปิดใหม่
+document.addEventListener('click', (e) => {
+  if (e.target.matches && e.target.matches('#pageShop input.num-input') && !shopNumpadEl.classList.contains('open')) {
+    openShopNumpad(e.target);
+  }
+});
+document.addEventListener('pointerdown', (e) => {
+  if (shopNumpadTarget && !shopNumpadEl.contains(e.target) && e.target !== shopNumpadTarget) closeShopNumpad();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && shopNumpadTarget) closeShopNumpad();
+});
+window.addEventListener('resize', positionShopNumpad);
+document.addEventListener('scroll', positionShopNumpad, true); // ตาราง/หน้าเลื่อน → เกาะตามช่องเดิม
+
 /* ---- Shopping list: toolbar wiring ---- */
 
 document.getElementById('shopAddRowBtn').addEventListener('click', () => {
-  shopRows.push(newShopRow());
+  const row = newShopRow();
+  // ถ้ากำลังดู slot ใดอยู่ แถวใหม่จะถูกใส่ slot นั้นให้เลย (มุมมอง all/unassigned = ไม่ระบุช่อง)
+  if (shopSelectedSlot !== 'all' && shopSelectedSlot !== 'unassigned') row.slot = shopSelectedSlot;
+  shopRows.push(row);
   persistShopRows();
   renderShopTable();
 });
@@ -3808,12 +4240,22 @@ document.getElementById('divineRateInput').addEventListener('input', (e) => {
     dl.appendChild(opt);
   });
   document.getElementById('divineRateInput').value = divineRate || '';
+  buildShopGearPanel(); // บอร์ด slot ต้องมีก่อน renderShopTable (summary จะอัปเดตตัวเลขบนบอร์ด)
   renderShopTable();
 })();
 
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.10',
+    date: '2026-07-12',
+    notes: [
+      'Shopping List: เพิ่มบอร์ดช่องอุปกรณ์ POE2 ฝั่งซ้าย (Weapon/Offhand/Helmet/Body/Gloves/Boots/Belt/Amulet/Ring 1-2/Jewel 1-4/Other) — คลิกช่องเพื่อดูตารางเฉพาะไอเทมของช่องนั้น เพิ่มได้หลายตัวเลือกต่อช่อง แถวใหม่ใส่ช่องที่เลือกอยู่ให้อัตโนมัติ พร้อมมุมมอง All / Unassigned (ข้อมูลเก่าไม่หาย — โผล่ใน Unassigned แล้วเลือกช่องให้ทีหลังได้จาก dropdown ในแถว)',
+      'Shopping List: บอร์ดซ้ายโชว์สถานะรายช่อง — จำนวนไอเทม, ซื้อแล้วกี่ชิ้น, งบที่ยังต้องใช้ของช่องนั้น และจุดส้มเตือนแถวที่ยังไม่มีราคา',
+      'Shopping List: ช่องตัวเลขทั้งหมด (Min/Max/Bought, ราคา deal, เรทบาท) แตะแล้วมี numpad บนจอให้จิ้ม (0-9, จุดทศนิยม, ลบ, เคลียร์, Done) — พิมพ์คีย์บอร์ดปกติได้เหมือนเดิม ปิดด้วย Done / Esc / คลิกข้างนอก',
+    ],
+  },
   {
     version: '0.9',
     date: '2026-07-12',
