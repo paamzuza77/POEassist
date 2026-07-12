@@ -172,7 +172,8 @@
   }
   .topbar-crumb { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); }
 
-  .content { flex: 1; width: 100%; max-width: 1400px; padding: 22px 28px 60px; }
+  /* max-width กว้างขึ้นเพื่อใช้พื้นที่จอกว้างให้คุ้ม (เดิม 1400 เหลือช่องว่างขวาเยอะ); margin auto กันจอ ultra-wide ชิดซ้าย */
+  .content { flex: 1; width: 100%; max-width: 1760px; margin: 0 auto; padding: 22px 32px 60px; }
 
   @media (max-width: 860px) {
     .app-shell { flex-direction: column; }
@@ -198,6 +199,50 @@
     .sidebar-status { display: none; }
     .content { padding: 16px; }
     .topbar { padding: 12px 16px; }
+  }
+
+  /* ---------- Sidebar collapse toggle ---------- */
+  .sidebar-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: var(--void);
+    border: 2px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 7px 10px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    border-radius: 0;
+  }
+  .sidebar-toggle:hover { background: var(--text); color: var(--void); }
+  .sidebar-toggle:focus-visible { outline: 2px solid var(--border); outline-offset: 1px; }
+  .sidebar-toggle .tab-ico { line-height: 0; flex-shrink: 0; }
+  .sidebar-toggle .tab-ico svg { width: 16px; height: 16px; display: block; }
+  /* จอแคบ: เมนูเป็นแถบแนวนอนอยู่แล้ว — ซ่อนปุ่มย่อ (วางหลัง base rule เพื่อให้ชนะลำดับ) */
+  @media (max-width: 860px) { .sidebar-toggle { display: none; } }
+
+  /* คอลลาปส์เฉพาะจอกว้าง (จอแคบเมนูเป็นแถวแนวนอน — กฎย่อไม่มีผล) */
+  @media (min-width: 861px) {
+    .app-shell.collapsed .sidebar { width: 60px; padding: 18px 8px; }
+    .app-shell.collapsed .sidebar-brand,
+    .app-shell.collapsed .nav-group-label,
+    .app-shell.collapsed .sidebar-status,
+    .app-shell.collapsed .sidebar-toggle-label { display: none; }
+    .app-shell.collapsed .sidebar-toggle { justify-content: center; gap: 0; padding: 7px 0; }
+    .app-shell.collapsed .nav-item {
+      justify-content: center;
+      gap: 0;
+      font-size: 0;          /* ซ่อนข้อความ label แต่ไอคอน svg ยังกว้าง 16px คงเดิม */
+      padding: 9px 0;
+      letter-spacing: 0;
+    }
+    .app-shell.collapsed .nav-group { margin-bottom: 10px; }
   }
 
   /* ---------- Fixed penalty readout ---------- */
@@ -1149,7 +1194,7 @@
   /* ---------- Build Shopping List: gear slot planner (RawBlock) ---------- */
   .shop-layout {
     display: grid;
-    grid-template-columns: 264px minmax(0, 1fr);
+    grid-template-columns: 320px minmax(0, 1fr);
     gap: 16px;
     align-items: start;
   }
@@ -1183,7 +1228,8 @@
   .shop-gear-board .shop-slot[data-slot="ring1"]   { grid-row: 4; grid-column: 1; }
   .shop-gear-board .shop-slot[data-slot="amulet"]  { grid-row: 4; grid-column: 2; }
   .shop-gear-board .shop-slot[data-slot="ring2"]   { grid-row: 4; grid-column: 3; }
-  .shop-jewel-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 6px; }
+  /* jewel 2 คอลัมน์ (2×2) — กว้างพอให้ "Jewel 1" อ่านครบ ไม่ตัดกลางคำ */
+  .shop-jewel-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
   .shop-slot-utility { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
   .shop-slot-allwrap { margin-bottom: 6px; }
   .shop-slot {
@@ -1192,28 +1238,33 @@
     background: var(--void);
     color: var(--text);
     border-radius: 0;
-    padding: 5px 6px;
-    min-height: 46px;
+    padding: 6px 7px;
+    min-height: 56px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 2px;
+    justify-content: flex-start;
+    gap: 4px;
     cursor: pointer;
     text-align: left;
     font-family: var(--font-mono);
     min-width: 0;
   }
-  .shop-slot.wide { width: 100%; min-height: 0; }
-  .shop-slot-head { display: flex; justify-content: space-between; align-items: baseline; gap: 4px; }
-  .shop-slot-headright { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
-  /* ปุ่ม + เพิ่มไอเทมเข้าช่องนี้โดยตรง (คลิกแล้วไม่เลือก slot เพราะ stopPropagation) */
+  .shop-slot.wide { width: 100%; min-height: 0; flex-direction: row; align-items: center; }
+  .shop-slot.wide .shop-slot-head { flex: 1; }
+  .shop-slot-head { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .shop-slot-ico { line-height: 0; flex-shrink: 0; }
+  .shop-slot-ico svg { width: 15px; height: 15px; display: block; }
+  /* ปุ่ม + เพิ่มไอเทมเข้าช่องนี้ — มุมล่างขวาของช่อง (แยกจากคลิกเลือกช่องชัดเจน; stopPropagation กันไปเลือกช่อง) */
   .shop-slot-add {
-    width: 16px; height: 16px;
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    width: 18px; height: 18px;
     border: 2px solid var(--border);
     background: var(--void);
     color: var(--text);
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     line-height: 1;
     padding: 0;
@@ -1229,42 +1280,42 @@
   .shop-slot.cov-planned { box-shadow: inset 4px 0 0 var(--text); }
   .shop-slot.cov-partial { box-shadow: inset 4px 0 0 var(--ok); }
   .shop-slot.cov-complete { border-color: var(--ok); box-shadow: inset 4px 0 0 var(--ok); }
-  .shop-slot.cov-complete .shop-slot-count { color: var(--ok); }
-  .shop-slot.cov-warn .shop-slot-count { border-color: var(--lightning); color: var(--lightning); }
+  .shop-slot.cov-complete .shop-slot-name { color: var(--ok); }
   .shop-slot-name {
-    font-size: 9.5px;
+    flex: 1;
+    min-width: 0;
+    font-size: 10.5px;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.03em;
     text-transform: uppercase;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .shop-slot-count {
-    font-size: 9px;
-    font-weight: 700;
-    border: 2px solid currentColor;
-    padding: 0 4px;
-    min-width: 16px;
-    text-align: center;
-    flex-shrink: 0;
+    line-height: 1.15;
+    /* ตัดเฉพาะที่ช่องว่าง (ไม่ตัดกลางคำ) เพื่อให้ชื่ออ่านครบ — Part D */
+    overflow-wrap: normal;
+    word-break: normal;
   }
   .shop-slot-sub {
-    font-size: 8.5px;
+    font-size: 9px;
     color: var(--text-dim);
+    padding-right: 20px; /* กันชนปุ่ม + ที่มุมล่างขวา */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  .shop-slot-sub .slot-cnt { color: var(--text); font-weight: 700; }
+  .shop-slot.wide .shop-slot-sub { padding-right: 0; }
   .shop-slot-sub .slot-warn { color: var(--lightning); font-weight: 700; }
   .shop-slot-sub .slot-done { color: var(--ok); font-weight: 700; }
   .shop-slot.empty { border-color: #ccc; color: #999; }
   .shop-slot:hover { background: var(--text); color: var(--void); }
   .shop-slot:hover .shop-slot-sub,
+  .shop-slot:hover .shop-slot-name,
+  .shop-slot:hover .shop-slot-sub .slot-cnt,
   .shop-slot:hover .shop-slot-sub .slot-warn,
   .shop-slot:hover .shop-slot-sub .slot-done { color: var(--void); }
   .shop-slot.active { background: var(--text); color: var(--void); outline: 2px solid var(--border); outline-offset: 2px; }
   .shop-slot.active .shop-slot-sub,
+  .shop-slot.active .shop-slot-name,
+  .shop-slot.active .shop-slot-sub .slot-cnt,
   .shop-slot.active .shop-slot-sub .slot-warn,
   .shop-slot.active .shop-slot-sub .slot-done { color: var(--void); }
 
@@ -2109,6 +2160,21 @@
   .patch-entry ul { margin: 6px 0 0; padding-left: 18px; font-size: 12.5px; color: var(--text-muted); }
   .patch-entry li { margin-bottom: 3px; }
 
+  .settings-panel { max-width: 420px; }
+  .settings-soon {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--lightning);
+    border: 2px solid var(--lightning);
+    padding: 3px 10px;
+    margin-bottom: 12px;
+  }
+  .settings-body p { font-size: 12.5px; color: var(--text-muted); line-height: 1.6; margin: 0; }
+
   /* ---------- Divine Market ---------- */
   .divine-disclaimer {
     font-size: 11.5px;
@@ -2204,6 +2270,10 @@
 <body>
 <div class="app-shell">
   <aside class="sidebar">
+    <button class="sidebar-toggle" type="button" id="sidebarToggle" title="ย่อ/ขยายเมนู" aria-label="ย่อ/ขยายเมนู" aria-pressed="false">
+      <span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1 2h14v2H1zM1 7h14v2H1zM1 12h14v2H1z"/></svg></span>
+      <span class="sidebar-toggle-label">ย่อเมนู</span>
+    </button>
     <div class="sidebar-brand">
       <div class="sidebar-brand-eyebrow">Path of Exile 2</div>
       <div class="sidebar-brand-name">Exile Assistant</div>
@@ -2231,6 +2301,7 @@
     <div class="sidebar-footer">
       <div class="nav-group">
         <div class="nav-group-label">System</div>
+        <button class="nav-item nav-item-ghost" type="button" id="settingsBtn" title="Settings"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M6 1h4v2H6zM6 13h4v2H6zM1 6h2v4H1zM13 6h2v4h-2zM3 3l1.4-1.4 2.8 2.8-1.4 1.4zM9.8 9.8l1.4-1.4 2.8 2.8-1.4 1.4zM11.2 3l1.4 1.4-2.8 2.8-1.4-1.4zM4.4 9.8l1.4 1.4-2.8 2.8-1.4-1.4zM8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm0 2a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg></span>Settings</button>
         <button class="nav-item nav-item-ghost" type="button" id="patchNotesBtn"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3 1h7l4 4v10H3zM10 2v3h3z" fill-rule="evenodd"/></svg></span>Patch Notes</button>
       </div>
       <div class="sidebar-status">Static build · GitHub Pages</div>
@@ -3471,8 +3542,68 @@ function switchTab(tab) {
 }
 Object.keys(TAB_BTNS).forEach(k => {
   document.getElementById(TAB_BTNS[k]).addEventListener('click', () => switchTab(k));
+  // title = ชื่อแท็บ เพื่อเป็น tooltip ตอนย่อ sidebar เหลือไอคอน
+  document.getElementById(TAB_BTNS[k]).title = TAB_TITLES[k] || k;
 });
 switchTab(activeTab);
+
+/* ==================== Sidebar collapse ==================== */
+// จำสถานะย่อ/ขยาย sidebar (additive key — ไม่กระทบข้อมูลอื่น); จอแคบ CSS ปิดการย่ออยู่แล้ว
+const SIDEBAR_KEY = 'poeAssist.sidebarCollapsed.v1';
+(function initSidebarCollapse() {
+  const shell = document.querySelector('.app-shell');
+  const toggle = document.getElementById('sidebarToggle');
+  const label = toggle.querySelector('.sidebar-toggle-label');
+  let collapsed = false;
+  try { collapsed = localStorage.getItem(SIDEBAR_KEY) === '1'; } catch (e) { /* storage unavailable */ }
+  const apply = () => {
+    shell.classList.toggle('collapsed', collapsed);
+    toggle.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
+    toggle.title = collapsed ? 'ขยายเมนู' : 'ย่อเมนู';
+    if (label) label.textContent = collapsed ? 'ขยายเมนู' : 'ย่อเมนู';
+  };
+  apply();
+  toggle.addEventListener('click', () => {
+    collapsed = !collapsed;
+    try { localStorage.setItem(SIDEBAR_KEY, collapsed ? '1' : '0'); } catch (e) { /* storage unavailable */ }
+    apply();
+  });
+})();
+
+/* ==================== Settings (placeholder) ==================== */
+// ยังไม่ทำระบบตั้งค่าจริง — เปิด modal RawBlock บอกว่า "coming soon" ไปก่อน
+(function initSettings() {
+  const btn = document.getElementById('settingsBtn');
+  const overlay = document.createElement('div');
+  overlay.className = 'patch-overlay';
+  overlay.hidden = true;
+  const panel = document.createElement('div');
+  panel.className = 'patch-panel settings-panel';
+  const h = document.createElement('h2');
+  h.textContent = 'Settings';
+  const close = document.createElement('button');
+  close.className = 'patch-close';
+  close.type = 'button';
+  close.textContent = '✕ ปิด';
+  h.appendChild(close);
+  panel.appendChild(h);
+  const body = document.createElement('div');
+  body.className = 'settings-body';
+  const tag = document.createElement('div');
+  tag.className = 'settings-soon';
+  tag.textContent = 'ยังไม่เปิดใช้งาน';
+  const desc = document.createElement('p');
+  desc.textContent = 'ส่วนตั้งค่ากำลังจะมา — ตอนนี้ยังเป็นตัวอย่าง (placeholder) การตั้งค่าปัจจุบัน (เรทเงิน, รายการซื้อ, พรีเซ็ตเกียร์, ขนาดตาราง, ย่อเมนู) ถูกบันทึกในเบราว์เซอร์อัตโนมัติอยู่แล้ว';
+  body.appendChild(tag);
+  body.appendChild(desc);
+  panel.appendChild(body);
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+  btn.addEventListener('click', () => { overlay.hidden = false; });
+  close.addEventListener('click', () => { overlay.hidden = true; });
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.hidden = true; });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') overlay.hidden = true; });
+})();
 
 /* ==================== Build Shopping List ==================== */
 
@@ -3493,8 +3624,8 @@ const ITEM_TYPES = [
 const SHOP_SLOTS = [
   { id: 'helmet',  label: 'Helmet',           short: 'HELM', group: 'board' },
   { id: 'weapon',  label: 'Weapon',           short: 'WPN',  group: 'board' },
-  { id: 'body',    label: 'Body Armour',      short: 'BODY', group: 'board' },
-  { id: 'offhand', label: 'Offhand / Shield', short: 'OFF',  group: 'board' },
+  { id: 'body',    label: 'Body Armour',      short: 'BODY', board: 'Body',    group: 'board' },
+  { id: 'offhand', label: 'Offhand / Shield', short: 'OFF',  board: 'Offhand', group: 'board' },
   { id: 'gloves',  label: 'Gloves',           short: 'GLV',  group: 'board' },
   { id: 'belt',    label: 'Belt',             short: 'BELT', group: 'board' },
   { id: 'boots',   label: 'Boots',            short: 'BOOT', group: 'board' },
@@ -3508,6 +3639,28 @@ const SHOP_SLOTS = [
   { id: 'other',   label: 'Other',            short: 'OTHER',   group: 'utility' },
 ];
 const SHOP_SLOT_IDS = new Set(SHOP_SLOTS.map(s => s.id));
+
+// ไอคอน inline ต้นฉบับ (สไตล์บล็อก RawBlock, currentColor — invert ตาม hover/active) ช่วยให้ดูช่องออกเร็วขึ้น
+// ไม่ใช่ artwork ทางการของ POE2 — เป็นภาพเรียบๆ วาดเอง
+const SHOP_SLOT_ICONS = {
+  helmet:  '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3 12 4.5 4h7L13 12z"/><path d="M2 12h12v2H2z"/></svg>',
+  weapon:  '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M11.5 1.5 14 4l-6 6-2.5-2.5zM4 9l3 3-1.5 1.5-1-1-2 2-1-1 2-2-1-1z"/></svg>',
+  body:    '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3 3l5 1.5L13 3v6a5 5 0 0 1-10 0z"/></svg>',
+  offhand: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1 14 3v5c0 4-6 7-6 7S2 12 2 8V3z"/></svg>',
+  gloves:  '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 5V3h5v2h1a2 2 0 0 1 0 4v3H4z"/></svg>',
+  belt:    '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M1 5h14v6H1zm5 1v4h4V6z"/></svg>',
+  boots:   '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 1h4v8h4v3H4z"/></svg>',
+  ring1:   '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M6 3h4l-1 2H7zM8 5a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 2.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/></svg>',
+  ring2:   '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M6 3h4l-1 2H7zM8 5a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 2.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/></svg>',
+  amulet:  '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M3 2q5 4 10 0v1.5q-5 4-10 0zM8 7a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zm0 2a.5.5 0 1 1 0 1 .5.5 0 0 1 0-1z"/></svg>',
+  jewel1:  '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 2h8l2.5 4L8 15 1.5 6z"/></svg>',
+  jewel2:  '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 2h8l2.5 4L8 15 1.5 6z"/></svg>',
+  jewel3:  '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 2h8l2.5 4L8 15 1.5 6z"/></svg>',
+  jewel4:  '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 2h8l2.5 4L8 15 1.5 6z"/></svg>',
+  other:   '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M2 3h12v3H2zm0 4h12v7H2z"/></svg>',
+  all:     '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 2h5v5H2zM9 2h5v5H9zM2 9h5v5H2zM9 9h5v5H9z"/></svg>',
+  unassigned: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M2 2h12v12H2zm2 2v8h8V4z"/></svg>',
+};
 
 const SHOP_ROWS_KEY = 'poe2ShopList.rows.v1';
 const SHOP_RATE_KEY = 'poe2ShopList.rate.v1';
@@ -4186,7 +4339,7 @@ function quickAddToSlot(slotId) {
 
 // สร้างปุ่ม slot หนึ่งปุ่ม (โครงคงที่ — ตัวเลข/สถานะถูกอัปเดตทีหลังใน updateShopGearPanel)
 // เป็น div role=button เพื่อฝังปุ่ม + (quick-add) ได้โดยไม่เป็น button ซ้อน button
-function makeShopSlotBtn(id, shortLabel, fullLabel, wide) {
+function makeShopSlotBtn(id, label, fullLabel, wide, iconSvg) {
   const b = document.createElement('div');
   b.className = 'shop-slot' + (wide ? ' wide' : '');
   b.dataset.slot = id;
@@ -4196,16 +4349,22 @@ function makeShopSlotBtn(id, shortLabel, fullLabel, wide) {
   b.setAttribute('aria-label', fullLabel);
   const head = document.createElement('div');
   head.className = 'shop-slot-head';
+  if (iconSvg) {
+    const ico = document.createElement('span');
+    ico.className = 'shop-slot-ico';
+    ico.innerHTML = iconSvg; // สตริง SVG ต้นฉบับที่เรากำหนดเอง (ไม่ใช่ข้อมูลจากผู้ใช้)
+    head.appendChild(ico);
+  }
   const nm = document.createElement('span');
   nm.className = 'shop-slot-name';
-  nm.textContent = shortLabel;
-  const right = document.createElement('div');
-  right.className = 'shop-slot-headright';
-  const cnt = document.createElement('span');
-  cnt.className = 'shop-slot-count';
-  cnt.textContent = '0';
-  right.appendChild(cnt);
-  // ปุ่ม + เพิ่มไอเทมเข้าช่องนี้ (ทุกช่องยกเว้น "All Items" ซึ่งไม่ใช่ช่องเฉพาะ)
+  nm.textContent = label; // ชื่อเต็มอ่านง่าย (ไม่ใช่ตัวย่อ) — Part D
+  head.appendChild(nm);
+  // จำนวน/สถานะย้ายไปบรรทัด sub (updateShopGearPanel) เพื่อให้ชื่อช่องมีที่พอในเซลล์แคบ
+  const sub = document.createElement('div');
+  sub.className = 'shop-slot-sub';
+  b.appendChild(head);
+  b.appendChild(sub);
+  // ปุ่ม + เพิ่มไอเทมเข้าช่องนี้ — วางมุมล่างขวา (แยกจากการคลิกเลือกช่องชัดเจน; stopPropagation กันไปเลือกช่อง)
   if (id !== 'all') {
     const add = document.createElement('button');
     add.type = 'button';
@@ -4214,14 +4373,8 @@ function makeShopSlotBtn(id, shortLabel, fullLabel, wide) {
     add.title = 'เพิ่มไอเทมในช่องนี้';
     add.setAttribute('aria-label', 'เพิ่มไอเทมใน ' + fullLabel);
     add.addEventListener('click', (e) => { e.stopPropagation(); quickAddToSlot(id); });
-    right.appendChild(add);
+    b.appendChild(add);
   }
-  head.appendChild(nm);
-  head.appendChild(right);
-  const sub = document.createElement('div');
-  sub.className = 'shop-slot-sub';
-  b.appendChild(head);
-  b.appendChild(sub);
   b.addEventListener('click', () => selectShopSlot(id));
   b.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectShopSlot(id); }
@@ -4240,23 +4393,23 @@ function buildShopGearPanel() {
 
   const allWrap = document.createElement('div');
   allWrap.className = 'shop-slot-allwrap';
-  allWrap.appendChild(makeShopSlotBtn('all', 'All Items', 'ดูทุกรายการ (ทุก slot รวมที่ยังไม่ระบุช่อง)', true));
+  allWrap.appendChild(makeShopSlotBtn('all', 'All Items', 'ดูทุกรายการ (ทุก slot รวมที่ยังไม่ระบุช่อง)', true, SHOP_SLOT_ICONS.all));
   panel.appendChild(allWrap);
 
   const board = document.createElement('div');
   board.className = 'shop-gear-board';
-  SHOP_SLOTS.filter(s => s.group === 'board').forEach(s => board.appendChild(makeShopSlotBtn(s.id, s.short, s.label)));
+  SHOP_SLOTS.filter(s => s.group === 'board').forEach(s => board.appendChild(makeShopSlotBtn(s.id, s.board || s.label, s.label, false, SHOP_SLOT_ICONS[s.id])));
   panel.appendChild(board);
 
   const jewels = document.createElement('div');
   jewels.className = 'shop-jewel-row';
-  SHOP_SLOTS.filter(s => s.group === 'jewel').forEach(s => jewels.appendChild(makeShopSlotBtn(s.id, s.short, s.label)));
+  SHOP_SLOTS.filter(s => s.group === 'jewel').forEach(s => jewels.appendChild(makeShopSlotBtn(s.id, s.board || s.label, s.label, false, SHOP_SLOT_ICONS[s.id])));
   panel.appendChild(jewels);
 
   const util = document.createElement('div');
   util.className = 'shop-slot-utility';
-  SHOP_SLOTS.filter(s => s.group === 'utility').forEach(s => util.appendChild(makeShopSlotBtn(s.id, s.short, s.label)));
-  util.appendChild(makeShopSlotBtn('unassigned', 'Unassigned', 'แถวที่ยังไม่ระบุช่อง (รวมข้อมูลเก่าก่อนมีระบบ slot)'));
+  SHOP_SLOTS.filter(s => s.group === 'utility').forEach(s => util.appendChild(makeShopSlotBtn(s.id, s.board || s.label, s.label, false, SHOP_SLOT_ICONS[s.id])));
+  util.appendChild(makeShopSlotBtn('unassigned', 'Unassigned', 'แถวที่ยังไม่ระบุช่อง (รวมข้อมูลเก่าก่อนมีระบบ slot)', false, SHOP_SLOT_ICONS.unassigned));
   panel.appendChild(util);
 
   updateShopGearPanel();
@@ -4298,13 +4451,17 @@ function updateShopGearPanel() {
     btn.classList.toggle('cov-partial', state === 'partial');
     btn.classList.toggle('cov-complete', state === 'complete');
     btn.classList.toggle('cov-warn', st.missing > 0);
-    btn.querySelector('.shop-slot-count').textContent = st.count;
     const sub = btn.querySelector('.shop-slot-sub');
     sub.innerHTML = '';
-    if (st.count === 0) { sub.textContent = 'ว่าง'; return; }
+    if (st.count === 0) { sub.textContent = id === 'all' ? '0 รายการ' : 'ว่าง'; return; }
+    // นับจำนวน + ซื้อแล้วกี่ชิ้น + งบที่เหลือ + จุดเตือนไม่มีราคา (ย่อให้พอในบรรทัดเดียว)
+    const cnt = document.createElement('span');
+    cnt.className = 'slot-cnt';
+    cnt.textContent = st.count + '×';
+    sub.appendChild(cnt);
     const done = document.createElement('span');
     done.className = st.bought === st.count ? 'slot-done' : '';
-    done.textContent = st.bought + '/' + st.count + '✓';
+    done.textContent = ' ' + st.bought + '/' + st.count + '✓';
     sub.appendChild(done);
     if (st.remain > 0) sub.appendChild(document.createTextNode(' ~' + fmtNum(st.remain) + 'D'));
     if (st.missing > 0) {
@@ -4523,6 +4680,16 @@ document.getElementById('shopSizeReset').addEventListener('click', resetShopSizi
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.12',
+    date: '2026-07-12',
+    notes: [
+      'เลย์เอาต์: เนื้อหาใช้ความกว้างจอมากขึ้น (เดิมจำกัด 1400px เหลือช่องว่างขวาเยอะ) — จอกว้างดูสบายตาขึ้น จอแคบ/มือถือยังไม่ล้น',
+      'Sidebar: เพิ่มปุ่มย่อ/ขยายเมนู (บนสุดของ sidebar) — ย่อแล้วเหลือไอคอนล้วน (เลื่อนเมาส์ดู tooltip ได้) เพิ่มพื้นที่เนื้อหา; จำสถานะไว้หลังรีโหลด; จอแคบเมนูยังเป็นแถบแนวนอนเหมือนเดิม',
+      'เพิ่มปุ่ม Settings ที่มุมล่างซ้าย (เหนือ Patch Notes) — ตอนนี้เป็น placeholder (ยังไม่เปิดใช้งาน) เปิด modal บอกสถานะไว้ก่อน',
+      'Shopping List: ปรับบอร์ด Gear Plan ให้อ่านง่ายขึ้นมาก — ใช้ชื่อช่องเต็ม (Helmet/Weapon/Body/Offhand/Gloves/Belt/Boots/Ring 1-2/Amulet/Jewel 1-4/Other/Unassigned) พร้อมไอคอนวาดเองแต่ละช่อง เซลล์ใหญ่ขึ้น jewel เป็นตาราง 2×2 ปุ่ม + อยู่มุมล่างขวาแยกจากการเลือกช่องชัดเจน (สถานะช่องและ quick-add เดิมยังทำงานครบ)',
+    ],
+  },
   {
     version: '0.11',
     date: '2026-07-12',

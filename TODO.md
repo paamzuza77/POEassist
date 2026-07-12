@@ -8,6 +8,7 @@ Short, actionable list. Phases live in `ROADMAP.md`; history in `CHANGELOG.md`.
 
 ## Deferred
 - [ ] Replace placeholder `README.md` (currently just a title) with a short public-facing description + live-site link.
+- [ ] Build a real Settings panel (the `#settingsBtn` in the sidebar is a coming-soon placeholder as of patch 0.12) — candidates: Divine rate default, theme, data export/reset, sidebar default state.
 
 ## Known Issues
 
@@ -15,6 +16,7 @@ Short, actionable list. Phases live in `ROADMAP.md`; history in `CHANGELOG.md`.
 
 ## Done
 
+- [x] App layout polish: wider content (max-width 1760), collapsible sidebar (new additive key `poeAssist.sidebarCollapsed.v1`), Settings placeholder button/modal above Patch Notes, and readable Gear Plan slots (full labels + original per-slot icons, 2×2 jewels, corner quick-add); patch 0.12 (2026-07-12).
 - [x] Shopping List gear-board coverage states + per-slot quick-add + Excel-like column-width/row-height sizing (new additive key `poe2ShopList.tableSizing.v1`); patch 0.11 (2026-07-12).
 - [x] Shopping List equipment-slot planner — left POE2 gear board filters the table per slot, additive `slot` field (old rows → Unassigned), on-screen numpad for all Divine-price inputs; patch 0.10 (2026-07-12).
 - [x] Shopping List usability pass — buy-next strip, name field (additive), quick filters, display-only sort, progress bar, clearer remaining-cost calc; patch 0.9 (2026-07-12).

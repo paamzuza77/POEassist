@@ -2,6 +2,15 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-12 (8)
+
+- **App layout polish: wider content, collapsible sidebar, Settings placeholder, readable Gear Plan** (`index.html`, patch 0.12):
+  - **Width:** `.content` max-width raised 1400 → 1760px (+ `margin: 0 auto` for ultra-wide) and padding widened slightly — desktop uses horizontal space far better; the topbar/content stay left-aligned and mobile is unaffected.
+  - **Collapsible sidebar:** new `.sidebar-toggle` button at the top of `<aside class="sidebar">` toggles `.app-shell.collapsed`; collapsed = 60px icon-only rail (labels/brand/group-labels/status hidden via `font-size:0` on `.nav-item` + `display:none`), with `title` tooltips added to every nav button in JS. State persists in **new additive key `poeAssist.sidebarCollapsed.v1`**. All collapse CSS is guarded by `@media (min-width: 861px)` so the narrow-screen horizontal nav row is untouched (toggle hidden ≤860px). Tab switching/active state unchanged.
+  - **Settings placeholder:** new `#settingsBtn` (original inline cog SVG) in the System group **above Patch Notes**; opens a RawBlock modal (reuses `.patch-overlay`/`.patch-panel`, `.settings-panel`) with a "ยังไม่เปิดใช้งาน / coming-soon" state. No real settings system built. Appears in collapsed mode too.
+  - **Gear Plan readability:** slots now show full readable labels (Helmet/Weapon/Body/Offhand/Gloves/Belt/Boots/Ring 1-2/Amulet/Jewel 1-4/Other/Unassigned — via an additive `board` label on `body`/`offhand`, ids unchanged) + an original per-slot inline icon (`SHOP_SLOT_ICONS`). Cells are larger, the item count moved from the head into the sub line (`.slot-cnt`) so labels get full width and wrap on whole words (not mid-word), the jewel row is now a 2×2 grid, and the `+` quick-add moved to the bottom-right corner (clearly separate from slot selection). Coverage states (empty/planned/partial/complete/warn) and quick-add preserved.
+  - Verification: Playwright (headless Chromium) harness over a local HTTP server — **30/30** at 1920 incl. collapse+reload persistence, tab-switch while collapsed, collapsed tooltips, Settings open/close + DOM order above Patch Notes, Patch Notes still opens, full Gear Plan labels + icons, quick-add + coverage state, slot-body selection, numpad, column resize, row-height stepper, buy-next, all other tabs render, Market Radar "Farm Score" wording intact, zero console errors. Screenshots at 1920 / 1440 / collapsed / 480px. Caught + fixed a CSS source-order bug (mobile toggle-hide rule was overridden by the later base rule). Harness deleted after use.
+
 ## 2026-07-12 (7)
 
 - **Shopping List: gear-board coverage states + quick-add + Excel-like table sizing** (`index.html`, patch 0.11):
