@@ -175,11 +175,9 @@
   html[data-theme="trust-blue-pay"] .farm-list-item,
   html[data-theme="trust-blue-pay"] .farm-run-summary,
   html[data-theme="trust-blue-pay"] .farm-econ,
+  html[data-theme="trust-blue-pay"] .farm-econ-field,
   html[data-theme="trust-blue-pay"] .farm-tracker,
   html[data-theme="trust-blue-pay"] .frs-cell,
-  html[data-theme="trust-blue-pay"] .fv2-run-item,
-  html[data-theme="trust-blue-pay"] .fv2-editor,
-  html[data-theme="trust-blue-pay"] .fv2-empty,
   html[data-theme="trust-blue-pay"] .add-link-btn,
   html[data-theme="trust-blue-pay"] .divine-metric-card,
   html[data-theme="trust-blue-pay"] .divine-chart-wrap,
@@ -219,9 +217,6 @@
   html[data-theme="trust-blue-pay"] .bought-badge,
   html[data-theme="trust-blue-pay"] .divine-reco-badge,
   html[data-theme="trust-blue-pay"] .reco-top-badge,
-  html[data-theme="trust-blue-pay"] .fv2-dev-badge,
-  html[data-theme="trust-blue-pay"] .fv2-price-badge,
-  html[data-theme="trust-blue-pay"] .fv2-chip,
   html[data-theme="trust-blue-pay"] .farm-link-chip {
     border-width: 1px;
     border-radius: 999px;
@@ -241,8 +236,6 @@
   html[data-theme="trust-blue-pay"] .farm-run-summary,
   html[data-theme="trust-blue-pay"] .farm-econ,
   html[data-theme="trust-blue-pay"] .farm-tracker,
-  html[data-theme="trust-blue-pay"] .fv2-run-item,
-  html[data-theme="trust-blue-pay"] .fv2-editor,
   html[data-theme="trust-blue-pay"] .divine-metric-card,
   html[data-theme="trust-blue-pay"] .shop-summary .summary-group,
   html[data-theme="trust-blue-pay"] #shopGearPanel {
@@ -261,8 +254,6 @@
   html[data-theme="trust-blue-pay"][data-mode="dark"] .farm-run-summary,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .farm-econ,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .farm-tracker,
-  html[data-theme="trust-blue-pay"][data-mode="dark"] .fv2-run-item,
-  html[data-theme="trust-blue-pay"][data-mode="dark"] .fv2-editor,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .divine-metric-card,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .shop-summary .summary-group,
   html[data-theme="trust-blue-pay"][data-mode="dark"] #shopGearPanel {
@@ -278,7 +269,6 @@
   html[data-theme="trust-blue-pay"] .summary-group.remain-group,
   html[data-theme="trust-blue-pay"] .summary-group.bought-group,
   html[data-theme="trust-blue-pay"] .reco-card.top-pick,
-  html[data-theme="trust-blue-pay"] .fv2-run-item.selected,
   html[data-theme="trust-blue-pay"] .farm-list-item.selected,
   html[data-theme="trust-blue-pay"] .farm-card.favorite {
     border-width: 2px;
@@ -2642,104 +2632,6 @@
   @media (max-width: 640px) {
     .farm-grid { grid-template-columns: 1fr; }
   }
-  /* ==================== Atlas Farm V.2 (Run Economics) ==================== */
-  .fv2-head h2 { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .fv2-dev-badge {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border: 2px solid var(--lightning);
-    color: var(--lightning);
-    padding: 2px 8px;
-    white-space: nowrap;
-  }
-  .fv2-toolbar { margin: 14px 0 10px; }
-  .fv2-market-status { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); margin-left: auto; }
-  .fv2-layout {
-    display: grid;
-    grid-template-columns: minmax(260px, 330px) minmax(0, 1fr);
-    gap: 14px;
-    align-items: start;
-  }
-  .fv2-list { display: flex; flex-direction: column; gap: 8px; }
-  .fv2-run-item {
-    border: 2px solid var(--border);
-    background: var(--panel);
-    padding: 10px 12px;
-    cursor: pointer;
-  }
-  .fv2-run-item:hover { background: var(--panel-sunken); }
-  .fv2-run-item.selected { border-width: 5px; }
-  .fv2-run-item.is-active { border-left: 6px solid var(--ok); }
-  .fv2-run-head { display: flex; align-items: center; gap: 8px; }
-  .fv2-fav { background: none; border: none; cursor: pointer; font-size: 15px; color: var(--text); padding: 0; }
-  .fv2-fav.on { color: var(--lightning); }
-  .fv2-run-name { font-weight: 700; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .fv2-run-score { font-family: var(--font-mono); font-size: 12px; }
-  .fv2-run-sub { display: flex; gap: 10px; margin-top: 4px; font-family: var(--font-mono); font-size: 11px; flex-wrap: wrap; }
-  .fv2-run-meta { color: var(--text-dim); }
-  .fv2-empty {
-    border: 2px dashed var(--border-soft);
-    color: var(--text-dim);
-    padding: 18px;
-    text-align: center;
-    font-size: 13px;
-  }
-  .fv2-editor { border: 3px solid var(--border); background: var(--panel); padding: 14px; }
-  .fv2-editor + .fv2-editor { margin-top: 14px; }
-  .fv2-editor-head { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
-  .fv2-name-input { flex: 1; min-width: 180px; font-size: 15px; font-weight: 700; }
-  .fv2-editor-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-  .fv2-section-title {
-    font-family: var(--font-head);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 13px;
-    margin: 16px 0 8px;
-    border-bottom: 2px solid var(--border);
-    padding-bottom: 4px;
-  }
-  .fv2-form-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-start; margin-top: 8px; }
-  .fv2-field { display: flex; flex-direction: column; gap: 4px; font-size: 12px; min-width: 0; }
-  .fv2-field-label { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
-  .fv2-hint { font-size: 11px; color: var(--text-dim); }
-  .fv2-items { display: flex; flex-direction: column; gap: 8px; }
-  .fv2-item-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-  .fv2-item-name { flex: 1 1 160px; min-width: 120px; }
-  .fv2-item-qty { width: 64px; }
-  .fv2-item-price { width: 90px; }
-  .fv2-mkt-toggle { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; white-space: nowrap; cursor: pointer; }
-  .fv2-ready { display: flex; flex-direction: column; gap: 4px; }
-  .fv2-price-badge {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border: 2px solid var(--border);
-    padding: 2px 6px;
-    white-space: nowrap;
-  }
-  .fv2-price-badge.market { border-color: var(--ok); color: var(--ok); }
-  .fv2-price-badge.missing { border-color: var(--lightning); color: var(--lightning); }
-  .fv2-add-item { align-self: flex-start; }
-  .fv2-summary { margin-top: 12px; }
-  .fv2-sum-label { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); }
-  .fv2-sum-value { font-family: var(--font-mono); font-size: 19px; font-weight: 700; margin: 4px 0 2px; overflow-wrap: anywhere; }
-  .fv2-sum-sub { font-size: 11px; color: var(--text-dim); }
-  .fv2-chips { display: flex; gap: 6px; flex-wrap: wrap; }
-  .fv2-chip {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    border: 2px solid var(--chaos);
-    color: var(--chaos);
-    padding: 3px 8px;
-  }
-  .fv2-score-bar { margin-bottom: 10px; }
-  .fv2-result-grid { margin-top: 4px; }
-  @media (max-width: 900px) {
-    .fv2-layout { grid-template-columns: minmax(0, 1fr); }
-  }
 
   /* ==================== Atlas Planner master/detail (patch 0.18) ==================== */
   /* ลิสต์ย่อซ้าย + detail ขวา — การ์ดเดิม (.farm-card) ถูก render อยู่ใน detail ขวา สไตล์เดิมไม่แตะ */
@@ -2815,6 +2707,10 @@
   .fl-cost { color: var(--lightning); font-weight: 700; }      /* ต้นทุน = ส้ม เด่นแยกจากกำไร */
   .fl-result { color: var(--ok); font-weight: 700; }           /* ผลลัพธ์/กำไร = เขียว */
   .fl-missing { color: var(--text-dim); font-weight: 400; }    /* ไม่ระบุ/ยังไม่มีข้อมูล = จาง */
+  .fl-profit { font-weight: 700; white-space: nowrap; }        /* กำไรสุทธิคาดการณ์ในวงเล็บ */
+  .fl-profit-pos { color: var(--ok); }
+  .fl-profit-neg { color: var(--fire); }
+  .fl-profit-neutral { color: var(--text-dim); font-weight: 400; }
   .fl-proj {
     margin-top: 5px;
     padding-top: 5px;
@@ -2874,15 +2770,25 @@
   .frs-insight-need, .frs-insight-flat { color: var(--text-dim); }
   .frs-note { margin-top: 8px; font-size: 10.5px; color: var(--text-dim); }
 
+  /* header เศรษฐศาสตร์: Duration/run และ Cost/run เป็นกล่องขนาดเท่ากัน จัดเรียงสวย (patch 0.20) */
   .farm-econ {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 14px;
-    flex-wrap: wrap;
+    align-items: stretch;
     border: 3px solid var(--border);
     background: var(--panel);
     padding: 12px 14px;
   }
-  .farm-econ-field { display: flex; flex-direction: column; gap: 3px; min-width: 150px; }
+  .farm-econ-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+    border: 2px solid var(--border-soft);
+    padding: 9px 10px;
+  }
+  .farm-econ-cost { border-color: var(--lightning); }   /* cost เด่นกว่า duration */
   .farm-econ input, .farm-econ select {
     background: var(--panel-sunken);
     border: 2px solid var(--border);
@@ -2894,15 +2800,25 @@
     outline: none;
   }
   .farm-econ input:focus-visible, .farm-econ select:focus-visible { box-shadow: inset 0 0 0 2px var(--border); }
+  /* Duration H / M / S — ช่องเล็กกว้างเท่ากัน กรอกไว (รันสั้นๆ เน้น M/S) */
+  .farm-dur-row { display: flex; gap: 6px; align-items: center; }
+  .farm-dur-part { display: flex; align-items: center; gap: 4px; flex: 1; min-width: 0; }
+  .farm-dur-input { width: 100%; min-width: 0; text-align: center; }
+  .farm-dur-unit { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--text-dim); }
+  /* Cost — เด่น: ตัวเลขใหญ่ สีส้ม, กล่องสูงเท่า duration */
   .farm-cost-row { display: flex; gap: 6px; align-items: stretch; }
   .farm-cost-input {
-    width: 110px;
+    flex: 1;
+    min-width: 0;
     font-size: 19px !important;
     font-weight: 700;
     color: var(--lightning) !important;
     border-width: 3px !important;
   }
   .farm-cost-cur { font-weight: 700; }
+  @media (max-width: 560px) {
+    .farm-econ { grid-template-columns: 1fr; }
+  }
 
   .farm-tracker {
     border: 3px solid var(--border);
@@ -2971,13 +2887,12 @@
       </div>
       <div class="nav-group">
         <div class="nav-group-label">Planning</div>
-        <button class="nav-item" type="button" id="tabBtnFarm" role="tab"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><rect x="1" y="2" width="4" height="12"/><rect x="6" y="1" width="4" height="12"/><rect x="11" y="2" width="4" height="12"/></svg></span>Atlas Planner</button>
-        <button class="nav-item" type="button" id="tabBtnShop" role="tab"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1 2h2l1 2h11l-2 6H5zM5 12h2v2H5zM11 12h2v2h-2z"/></svg></span>Shopping List</button>
-        <button class="nav-item" type="button" id="tabBtnFarmV2" role="tab"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6 1h4v2H9v3.2l4.6 7.3-.9 1.5H3.3l-.9-1.5L7 6.2V3H6zM8 8l-3 5h6z" fill-rule="evenodd"/></svg></span>Atlas V.2</button>
+        <button class="nav-item" type="button" id="tabBtnFarm" role="tab"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><rect x="1" y="2" width="4" height="12"/><rect x="6" y="1" width="4" height="12"/><rect x="11" y="2" width="4" height="12"/></svg></span>Farm Planner</button>
+        <button class="nav-item" type="button" id="tabBtnShop" role="tab"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1 2h2l1 2h11l-2 6H5zM5 12h2v2H5zM11 12h2v2h-2z"/></svg></span>Gear Planner</button>
       </div>
       <div class="nav-group">
         <div class="nav-group-label">Tools</div>
-        <button class="nav-item" type="button" id="tabBtnForge" role="tab"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 2h12v6l-6 6-6-6z"/></svg></span>Gear Checker</button>
+        <button class="nav-item" type="button" id="tabBtnForge" role="tab"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 2h12v6l-6 6-6-6z"/></svg></span>Resistance Checker</button>
       </div>
     </nav>
 
@@ -3107,32 +3022,6 @@
       <div class="farm-detail-col" id="farmDetail"></div>
     </div>
   </div><!-- /pageFarm -->
-
-  <div id="pageFarmV2" hidden>
-    <!-- ===== Atlas Farm V.2 — Run Economics Lab (In Development) =====
-         วิเคราะห์คอนเทนต์แบบมีค่าเข้า (Simulacrum / boss key / trial ฯลฯ) ว่าคุ้มรันไหม
-         จาก entry cost + Guaranteed Floor + Guaranteed ROI + Farm V.2 Score
-         Bigdrop = Upside Notes เท่านั้น ไม่ถูกคิดใน Guaranteed ROI
-         เก็บข้อมูลใน localStorage คีย์ใหม่ (poe2FarmLabV2.runs.v1) — ไม่แตะข้อมูล Atlas Planner เดิม -->
-    <div class="fv2-head">
-      <h2 class="radar-title">Atlas Farm V.2 <span class="fv2-dev-badge">V.2 / In Development</span></h2>
-      <p class="radar-sub">Run Economics — วิเคราะห์ว่าคอนเทนต์ที่มีค่าเข้าคุ้มรันไหม จาก Entry Cost, Guaranteed Floor,
-        Guaranteed ROI, Expected ROI (ถ้ากรอกค่าประเมินเอง) และ Farm V.2 Score แบบโปร่งใส
-        — Bigdrop / Upside Notes เป็นบันทึกโอกาสลุ้นเท่านั้น <strong>ไม่ถูกนำมาคิดใน Guaranteed ROI</strong></p>
-    </div>
-    <div class="divine-metrics-grid fv2-summary" id="fv2Summary"></div>
-    <div class="farm-toolbar fv2-toolbar">
-      <button class="ocr-btn primary" type="button" id="fv2AddSimBtn">+ Add Simulacrum template</button>
-      <button class="ocr-btn" type="button" id="fv2AddBossBtn">+ Boss / Fragment run</button>
-      <button class="ocr-btn" type="button" id="fv2AddTrialBtn">+ Trial / Soul Core run</button>
-      <button class="ocr-btn" type="button" id="fv2AddCustomBtn">+ Custom keyed content</button>
-      <span class="fv2-market-status" id="fv2MarketStatus"></span>
-    </div>
-    <div class="fv2-layout">
-      <div class="fv2-list" id="fv2List"></div>
-      <div class="fv2-editor-col" id="fv2EditorCol"></div>
-    </div>
-  </div><!-- /pageFarmV2 -->
 
   <div id="pageForge">
   <p class="penalty-readout">บทลงโทษต้านทานธาตุ (fixed): <strong>−40%</strong></p>
@@ -4268,10 +4157,11 @@ addCorners(document.querySelector('.totals-panel'));
 /* ==================== Tabs ==================== */
 
 const TAB_KEY = 'poeAssist.activeTab.v1';
-const TAB_IDS = { home: 'pageHome', radar: 'pageRadar', farm: 'pageFarm', farmv2: 'pageFarmV2', forge: 'pageForge', shop: 'pageShop', divine: 'pageDivine' };
-const TAB_BTNS = { home: 'tabBtnHome', radar: 'tabBtnRadar', farm: 'tabBtnFarm', farmv2: 'tabBtnFarmV2', forge: 'tabBtnForge', shop: 'tabBtnShop', divine: 'tabBtnDivine' };
-const TAB_TITLES = { home: 'Exile Hub', radar: 'Market Radar', farm: 'Atlas Planner', farmv2: 'Atlas Farm V.2', forge: 'Gear Checker', shop: 'Shopping List', divine: 'Divine Market' };
-const TAB_GROUPS = { home: 'Main', radar: 'Main', divine: 'Main', farm: 'Planning', shop: 'Planning', farmv2: 'Planning', forge: 'Tools' };
+// หมายเหตุ: internal id ยังเป็น farm/shop/forge เหมือนเดิม (ผูกกับ storage/startup tab) — เปลี่ยนแค่ชื่อที่แสดง
+const TAB_IDS = { home: 'pageHome', radar: 'pageRadar', farm: 'pageFarm', forge: 'pageForge', shop: 'pageShop', divine: 'pageDivine' };
+const TAB_BTNS = { home: 'tabBtnHome', radar: 'tabBtnRadar', farm: 'tabBtnFarm', forge: 'tabBtnForge', shop: 'tabBtnShop', divine: 'tabBtnDivine' };
+const TAB_TITLES = { home: 'Exile Hub', radar: 'Market Radar', farm: 'Farm Planner', forge: 'Resistance Checker', shop: 'Gear Planner', divine: 'Divine Market' };
+const TAB_GROUPS = { home: 'Main', radar: 'Main', divine: 'Main', farm: 'Planning', shop: 'Planning', forge: 'Tools' };
 
 // แท็บเริ่มต้นตอนเปิดเว็บ (additive key) — 'last' = ใช้แท็บล่าสุดเหมือนเดิม, หรือ id แท็บที่ตายตัว
 const START_TAB_KEY = 'poeAssist.startTab.v1';
@@ -4419,7 +4309,7 @@ const APP_DATA_KEYS = [
   'poe2FarmPlanner.cards.v1',
   'poe2FarmPlanner.filter.v1',
   'poe2FarmPlanner.view.v1',
-  'poe2FarmLabV2.runs.v1',
+  'poe2FarmLabV2.runs.v1', // แท็บ Atlas V.2 ถูกถอดออกแล้ว — คงคีย์ไว้ให้ backup เก็บข้อมูลเดิมของผู้ใช้ไว้ได้
   'poeAssist.radarFilter.v1',
   'poeAssist.radarRates.v1',
   'poeAssist.stashSale.manual.v1',
@@ -5807,6 +5697,18 @@ document.getElementById('shopSizeReset').addEventListener('click', resetShopSizi
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.20',
+    date: '2026-07-12',
+    notes: [
+      'เปลี่ยนชื่อแท็บให้ชัดขึ้น: Atlas Planner → Farm Planner, Shopping List → Gear Planner, Gear Checker → Resistance Checker (id ภายใน farm/shop/forge และคีย์บันทึกทั้งหมดเหมือนเดิม — ข้อมูลเก่าใช้ได้ปกติ)',
+      'ถอดแท็บ Atlas V.2 (Run Economics Lab, In Development) ออกจากเมนู/หน้า/โค้ด — ข้อมูลเดิมในคีย์ poe2FarmLabV2.runs.v1 ยังถูกเก็บใน backup อยู่',
+      'Farm Planner: ช่อง Duration/run เปลี่ยนเป็น H / M / S แยกช่อง กรอกรันสั้นๆ ได้ไว รองรับวินาที (numpad ใช้ได้) — ค่าเดิมยังโหลดได้ (เก็บใน durationPerRunMinutes เหมือนเดิม)',
+      'แสดงเวลาแบบเดียวกันทุกที่: "01 H 15 M 23 S" (ถ้าไม่มีชั่วโมงเป็น "05 M 20 S") — ทั้งลิสต์ซ้ายและสรุปเวลารวม/เฉลี่ยใน Run Tracker',
+      'ลิสต์ซ้าย: บรรทัดคาดการณ์ Project runs เพิ่มกำไรสุทธิในวงเล็บ เช่น (Profit +23 Dv) เขียว / (Profit -100 Dv) แดง — ถ้าหน่วยผสม/ข้อมูลไม่พอจะขึ้นโน้ตกลางๆ ไม่เดาค่า',
+      'จัดหัวการ์ดฝั่งขวาให้กล่อง Duration/run กับ Cost/run ขนาดเท่ากันเรียงสวย (Cost ยังเด่น) รองรับจอแคบ',
+    ],
+  },
+  {
     version: '0.19',
     date: '2026-07-12',
     notes: [
@@ -6171,6 +6073,19 @@ function farmFmtDuration(minutes) {
   const total = Math.round(minutes);
   const h = Math.floor(total / 60), mm = total % 60;
   return h + ':' + String(mm).padStart(2, '0');
+}
+/* ---- เวลาแบบ H/M/S (patch 0.20) — เก็บใน durationPerRunMinutes เหมือนเดิม (นาที, อาจมีเศษ) เพื่อ backward-compat ---- */
+// นาที (อาจเป็นเศษ) → วินาทีรวม (null ถ้าไม่มีค่า) — durationPerRunMinutes ยังเป็น field หลักที่เก็บ/ export
+function farmCardSeconds(card) {
+  return card.durationPerRunMinutes == null ? null : Math.round(card.durationPerRunMinutes * 60);
+}
+// วินาทีรวม → "01 H 15 M 23 S" (ตัด H ทิ้งเมื่อชั่วโมง = 0 → "05 M 20 S") — รูปแบบเดียวใช้ทุกที่
+function farmFmtHMS(totalSeconds) {
+  if (!Number.isFinite(totalSeconds) || totalSeconds < 0) return '–';
+  const t = Math.round(totalSeconds);
+  const h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60;
+  const pad = x => String(x).padStart(2, '0');
+  return (h > 0 ? pad(h) + ' H ' : '') + pad(m) + ' M ' + pad(s) + ' S';
 }
 function farmFmtNum(n) {
   if (!Number.isFinite(n)) return '—';
@@ -6637,7 +6552,7 @@ function buildFarmListItem(card) {
   item.setAttribute('role', 'button');
   item.tabIndex = 0;
 
-  // แถว 1: ดาว + ชื่อ + เวลา [H:MM]
+  // แถว 1: ดาว + ชื่อ + เวลา H/M/S
   const row1 = document.createElement('div');
   row1.className = 'fl-row1';
   const nm = document.createElement('span');
@@ -6645,9 +6560,10 @@ function buildFarmListItem(card) {
   nm.textContent = (card.favorite ? '★ ' : '') + (card.name || 'ไม่มีชื่อ');
   nm.title = card.name || 'ไม่มีชื่อ';
   row1.appendChild(nm);
+  const cardSec = farmCardSeconds(card);
   const dur = document.createElement('span');
-  dur.className = 'fl-dur' + (card.durationPerRunMinutes == null ? ' fl-missing' : '');
-  dur.textContent = '[' + (card.durationPerRunMinutes == null ? '–:––' : farmFmtDuration(card.durationPerRunMinutes)) + ']';
+  dur.className = 'fl-dur' + (cardSec == null ? ' fl-missing' : '');
+  dur.textContent = '[' + (cardSec == null ? '–' : farmFmtHMS(cardSec)) + ']';
   dur.title = 'เวลาโดยประมาณต่อรัน';
   row1.appendChild(dur);
   item.appendChild(row1);
@@ -6683,14 +6599,32 @@ function buildFarmListItem(card) {
     const proj = document.createElement('div');
     proj.className = 'fl-proj';
     const parts = ['×' + n];
-    if (card.durationPerRunMinutes != null) parts.push('เวลา ' + farmFmtDuration(card.durationPerRunMinutes * n));
+    if (cardSec != null) parts.push('เวลา ' + farmFmtHMS(cardSec * n));
     if (hasCost) parts.push('ทุนรวม ' + farmFmtNum(parseFloat(card.costPerRun) * n) + ' ' + card.costCurrency);
     if (nRuns > 0 && Object.keys(gross).length) {
       const projGross = {};
       Object.keys(gross).forEach(u => { projGross[u] = (gross[u] / nRuns) * n; });
       parts.push('คาดผล ' + farmFmtGross(projGross));
     }
-    proj.textContent = parts.join(' · ');
+    proj.textContent = parts.join(' · ') + ' ';
+
+    // กำไรสุทธิคาดการณ์ในวงเล็บ (เขียว/แดง) — คิดได้เฉพาะเมื่อหน่วยเข้ากันได้ ไม่งั้นโน้ตกลางๆ (ไม่เดา)
+    const a = computeFarmRunAnalytics(card);
+    const profit = document.createElement('span');
+    if (a.netCompatible) {
+      const p = a.avgNet * n;
+      profit.className = 'fl-profit ' + (p >= 0 ? 'fl-profit-pos' : 'fl-profit-neg');
+      profit.textContent = '(Profit ' + (p > 0 ? '+' : '') + farmFmtNum(p) + ' ' + card.costCurrency + ')';
+      profit.title = 'กำไรสุทธิคาดการณ์ = Net เฉลี่ย/รัน × Project runs (' + n + ')';
+    } else {
+      profit.className = 'fl-profit fl-profit-neutral';
+      profit.textContent = !hasCost ? '(กำไรสุทธิ: ยังไม่ใส่ทุน)'
+        : a.mixed ? '(กำไรสุทธิ: หน่วยผสม)'
+        : nRuns === 0 ? '(กำไรสุทธิ: ยังไม่มีผลรันจริง)'
+        : '(กำไรสุทธิ: หน่วยผลไม่ตรงทุน)';
+      profit.title = 'คิดกำไรสุทธิไม่ได้ — ไม่เดาค่าให้';
+    }
+    proj.appendChild(profit);
     proj.title = 'คาดการณ์จากค่าเฉลี่ยต่อรัน × Project runs (' + n + ') — เป็นแผน ไม่ใช่รันจริง';
     item.appendChild(proj);
   }
@@ -6740,6 +6674,7 @@ function computeFarmRunAnalytics(card) {
   const hasCost = Number.isFinite(costNum);
   const dur = card.durationPerRunMinutes;
   const hasDur = Number.isFinite(dur) && dur > 0;   // ต้อง > 0 เพื่อหารเป็น "ต่อชั่วโมง"
+  const durSec = dur == null ? null : Math.round(dur * 60);   // เวลาเป็นวินาที สำหรับแสดง H/M/S
   const costUnit = card.costCurrency;
 
   // ยอดต่อรัน แยกหน่วย (ใช้หา best/worst + net รายรัน)
@@ -6758,7 +6693,7 @@ function computeFarmRunAnalytics(card) {
   const netCompatible = n > 0 && hasCost && !mixed && (grossUnits.length === 0 || singleUnit === costUnit);
 
   const out = {
-    n, gross, grossUnits, hasCost, costNum, costUnit, dur, hasDur, mixed, singleUnit, netCompatible,
+    n, gross, grossUnits, hasCost, costNum, costUnit, dur, hasDur, durSec, mixed, singleUnit, netCompatible,
     avgGross: null, grossPerHour: null,
     perRunNet: null, totalNet: null, avgNet: null, netPerHour: null,
     best: null, worst: null, profitable: null, winRate: null, recovered: null, trend: null,
@@ -6867,8 +6802,8 @@ function updateFarmRunSummary(card, box) {
   if (a.netCompatible) cell('Net เฉลี่ย/รัน', sign(a.avgNet) + farmFmtNum(a.avgNet) + ' ' + a.costUnit, a.avgNet >= 0 ? 'frs-pos' : 'frs-neg');
   else cell('Net เฉลี่ย/รัน', '—', 'frs-miss');
 
-  cell('เวลารวม', a.dur != null && n ? farmFmtDuration(a.dur * n) : '—', a.dur != null ? '' : 'frs-miss');
-  cell('เวลาเฉลี่ย/รัน', a.dur != null ? farmFmtDuration(a.dur) : '—', a.dur != null ? '' : 'frs-miss');
+  cell('เวลารวม', a.durSec != null && n ? farmFmtHMS(a.durSec * n) : '—', a.durSec != null ? '' : 'frs-miss');
+  cell('เวลาเฉลี่ย/รัน', a.durSec != null ? farmFmtHMS(a.durSec) : '—', a.durSec != null ? '' : 'frs-miss');
 
   // ผลเฉลี่ย/รัน (gross)
   if (a.avgGross) cell('ผลเฉลี่ย/รัน', farmFmtGross(a.avgGross), 'frs-pos');
@@ -6919,21 +6854,56 @@ function buildFarmEconPanel(card, onChange) {
   box.className = 'farm-econ';
 
   const durWrap = document.createElement('div');
-  durWrap.className = 'farm-econ-field';
+  durWrap.className = 'farm-econ-field farm-econ-dur';
   const durLabel = document.createElement('span');
   durLabel.className = 'farm-field-label';
-  durLabel.textContent = 'Duration / run [HH:MM]';
-  const durInput = document.createElement('input');
-  durInput.type = 'text';
-  durInput.placeholder = 'เช่น 0:12 หรือ 12 (นาที)';
-  durInput.value = card.durationPerRunMinutes == null ? '' : farmFmtDuration(card.durationPerRunMinutes);
-  durInput.addEventListener('input', () => {
-    card.durationPerRunMinutes = farmParseDuration(durInput.value);
+  durLabel.textContent = 'Duration / run (H : M : S)';
+  const durRow = document.createElement('div');
+  durRow.className = 'farm-dur-row';
+
+  // แยกช่อง H / M / S — รันสั้นๆ กรอก M/S ได้เร็ว, เก็บกลับเป็นนาที (durationPerRunMinutes) เพื่อความเข้ากันได้
+  const totalSec = farmCardSeconds(card);
+  const init = totalSec == null
+    ? { h: '', m: '', s: '' }
+    : { h: String(Math.floor(totalSec / 3600)), m: String(Math.floor((totalSec % 3600) / 60)), s: String(totalSec % 60) };
+  const durParts = {};
+  function makeDurPart(key, unitLabel) {
+    const part = document.createElement('div');
+    part.className = 'farm-dur-part';
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.inputMode = 'numeric';
+    inp.className = 'num-input farm-dur-input';   // .num-input → numpad รองรับ (NUMPAD_INPUT_SELECTOR)
+    inp.placeholder = '0';
+    inp.value = init[key];
+    inp.setAttribute('aria-label', 'Duration ' + unitLabel);
+    inp.addEventListener('input', recomputeDur);
+    const u = document.createElement('span');
+    u.className = 'farm-dur-unit';
+    u.textContent = unitLabel;
+    part.appendChild(inp);
+    part.appendChild(u);
+    durParts[key] = inp;
+    durRow.appendChild(part);
+  }
+  function recomputeDur() {
+    const hv = durParts.h.value.trim(), mv = durParts.m.value.trim(), sv = durParts.s.value.trim();
+    if (hv === '' && mv === '' && sv === '') {
+      card.durationPerRunMinutes = null;         // ทั้งสามว่าง = ไม่ระบุเวลา
+    } else {
+      const h = Math.max(0, parseInt(hv, 10) || 0);
+      const m = Math.max(0, parseInt(mv, 10) || 0);
+      const s = Math.max(0, parseInt(sv, 10) || 0);
+      card.durationPerRunMinutes = (h * 3600 + m * 60 + s) / 60;   // เก็บเป็นนาที (อาจมีเศษ) — field เดิม
+    }
     persistFarmCards();
     onChange();
-  });
+  }
+  makeDurPart('h', 'H');
+  makeDurPart('m', 'M');
+  makeDurPart('s', 'S');
   durWrap.appendChild(durLabel);
-  durWrap.appendChild(durInput);
+  durWrap.appendChild(durRow);
   box.appendChild(durWrap);
 
   const costWrap = document.createElement('div');
@@ -7240,768 +7210,6 @@ document.getElementById('farmImportFile').addEventListener('change', (e) => {
 document.getElementById('farmProjectRuns').value = String(farmProjectRuns);
 renderFarmFilters();
 renderFarmGrid();
-
-/* ==================== Atlas Farm V.2 — Run Economics Lab ====================
-   หน้าใหม่แยกจาก Atlas Farm Planner เดิม (ไม่แตะ poe2FarmPlanner.cards.v1)
-   โมเดล: entry cost → Guaranteed Floor (หลังหัก sell haircut) → Net / ROI / Break-even
-   + Farm V.2 Score 0-100 แบบโปร่งใส (โชว์คะแนนรายมิติเสมอ)
-   Bigdrop / Upside Notes = ตัวหนังสือเท่านั้น ไม่คิดใน Guaranteed ROI
-   ราคา: ดึงจาก snapshot ตลาด (data/market-radar.json, same-origin) ถ้าชื่อตรง
-   ไม่ตรง/ไม่มี → กรอกเอง (Manual) — ห้ามอ้าง/เดาอัตราดรอปของเกมทุกกรณี */
-
-const FV2_RUNS_KEY = 'poe2FarmLabV2.runs.v1'; // คีย์ใหม่ additive — ไม่ยุ่งกับของ Planner เดิม
-const FV2_CONTENT_TYPES = ['Simulacrum', 'Boss / Fragment', 'Trial / Soul Core', 'Keyed Content', 'Other'];
-const FV2_STATUSES = ['Testing', 'Good', 'Budget', 'Expensive', 'Later', 'Skipped'];
-const FV2_STALE_DAYS = 14; // เกินนี้ = ข้อมูลราคาเก่า ควรเช็คใหม่
-
-function newFv2Item() {
-  return { name: '', qty: 1, priceDiv: null, marketLinked: false };
-}
-function newFv2Run() {
-  return {
-    id: 'v2' + Date.now() + Math.random().toString(36).slice(2, 7),
-    name: '',
-    contentType: 'Keyed Content',
-    status: 'Testing',
-    favorite: false,
-    active: false,
-    entryItems: [],          // { name, qty, priceDiv, marketLinked }
-    setupCostDiv: null,      // ค่าเตรียมของเพิ่มเติมต่อรัน (Div)
-    guaranteedDrops: [],     // ของที่ได้แน่ๆ ต่อรัน { name, qty, priceDiv, marketLinked }
-    sellHaircutPct: 10,      // % ส่วนลดตอนขายจริง (ขายไว/ค่าธรรมเนียมเทรด)
-    manualExpectedReturnDiv: null, // ค่าประเมิน drop ทั่วไปต่อรัน — ผู้ใช้กรอกเองเท่านั้น
-    bigdropNotes: '',        // ตัวหนังสือ คั่นด้วย , — ไม่คิดใน ROI
-    sourceConfidence: 'medium', // high | medium | low
-    readyBuild: false,       // เช็คลิสต์ความพร้อม (Setup Readiness)
-    readyStock: false,
-    readyPlan: false,
-    riskLevel: 'low',        // none | low | medium | high → Risk Penalty
-    riskNotes: '',
-    lastChecked: '',
-    notes: '',
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  };
-}
-// อ่านแบบ tolerant — ฟิลด์หาย/ข้อมูลเสียต้องไม่ทำให้หน้าเจ๊ง
-function fv2NormalizeItems(list) {
-  if (!Array.isArray(list)) return [];
-  return list.map(r => Object.assign(newFv2Item(), r));
-}
-let fv2Runs = (function loadFv2Runs() {
-  try {
-    const raw = JSON.parse(localStorage.getItem(FV2_RUNS_KEY));
-    if (Array.isArray(raw)) return raw.map(r => {
-      const run = Object.assign(newFv2Run(), r);
-      run.entryItems = fv2NormalizeItems(run.entryItems);
-      run.guaranteedDrops = fv2NormalizeItems(run.guaranteedDrops);
-      return run;
-    });
-  } catch (e) { /* malformed storage */ }
-  return [];
-})();
-let fv2SelectedId = fv2Runs.length ? fv2Runs[0].id : null;
-
-function persistFv2Runs() {
-  try { localStorage.setItem(FV2_RUNS_KEY, JSON.stringify(fv2Runs)); } catch (e) { /* storage unavailable */ }
-}
-function fv2SelectedRun() { return fv2Runs.find(r => r.id === fv2SelectedId) || null; }
-
-/* ---- ราคา: market snapshot (same-origin) หรือ Manual ---- */
-// โหลด snapshot แยกของตัวเอง (ไม่พึ่งตัวแปรของแท็บ Radar) — หน้าใช้งานได้แม้ตลาดโหลดไม่ขึ้น
-let fv2Market = { status: 'loading', items: [], updatedAt: null };
-function fv2LoadMarket() {
-  fetch('data/market-radar.json?t=' + Date.now(), { cache: 'no-store' })
-    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-    .then(data => {
-      fv2Market = {
-        status: 'ok',
-        items: Array.isArray(data.marketItems) ? data.marketItems : [],
-        updatedAt: data.updatedAt || null,
-      };
-      renderFv2();
-    })
-    .catch(() => { fv2Market = { status: 'missing', items: [], updatedAt: null }; renderFv2(); });
-}
-// หา item ในตลาดจากชื่อ (ตรงตัว ไม่สนตัวพิมพ์) — ไม่เดาชื่อใกล้เคียงเพื่อกันจับผิดไอเทม
-function findMarketItemByName(name) {
-  const q = String(name || '').trim().toLowerCase();
-  if (!q) return null;
-  return fv2Market.items.find(i => String(i.name || '').toLowerCase() === q) || null;
-}
-function marketPriceFor(name) {
-  const m = findMarketItemByName(name);
-  return (m && m.valueCurrency === 'Divine' && isFinite(+m.value)) ? +m.value : null;
-}
-// ราคาที่ใช้จริงของแถวไอเทม: Market snapshot > Manual > Missing
-function fv2ItemPrice(it) {
-  if (it.marketLinked) {
-    const p = marketPriceFor(it.name);
-    if (p !== null) return { price: p, src: 'market' };
-  }
-  const manual = parseFloat(it.priceDiv);
-  if (isFinite(manual) && manual >= 0) return { price: manual, src: 'manual' };
-  return { price: 0, src: 'missing' };
-}
-
-/* ---- Run Economics (ตัวเลขทั้งหมดเป็น Divine ต่อ 1 รัน) ---- */
-function computeFv2Econ(run) {
-  let entryCost = 0, missingPrices = 0;
-  run.entryItems.forEach(it => {
-    const p = fv2ItemPrice(it);
-    if (p.src === 'missing' && String(it.name).trim()) missingPrices++;
-    entryCost += p.price * (parseFloat(it.qty) || 0);
-  });
-  const setup = parseFloat(run.setupCostDiv);
-  if (isFinite(setup) && setup > 0) entryCost += setup;
-
-  const haircutPct = Math.min(Math.max(parseFloat(run.sellHaircutPct) || 0, 0), 95);
-  const haircut = (100 - haircutPct) / 100;
-
-  let guaranteedRaw = 0;
-  run.guaranteedDrops.forEach(it => {
-    const p = fv2ItemPrice(it);
-    if (p.src === 'missing' && String(it.name).trim()) missingPrices++;
-    guaranteedRaw += p.price * (parseFloat(it.qty) || 0);
-  });
-  const guaranteedReturn = guaranteedRaw * haircut;
-  const guaranteedNet = guaranteedReturn - entryCost;
-  const guaranteedRoi = entryCost > 0 ? (guaranteedNet / entryCost) * 100 : null;
-
-  const manualExp = parseFloat(run.manualExpectedReturnDiv);
-  const hasManualExp = isFinite(manualExp) && manualExp > 0;
-  const expectedNet = guaranteedReturn + (hasManualExp ? manualExp : 0) - entryCost;
-  const expectedRoi = entryCost > 0 ? (expectedNet / entryCost) * 100 : null;
-
-  const breakEven = haircut > 0 ? entryCost / haircut : null; // มูลค่าดิบที่ต้องได้ต่อรันถึงเท่าทุน
-
-  return { entryCost, haircutPct, haircut, guaranteedRaw, guaranteedReturn, guaranteedNet, guaranteedRoi, hasManualExp, manualExp: hasManualExp ? manualExp : 0, expectedNet, expectedRoi, breakEven, missingPrices };
-}
-
-function fv2DaysSinceChecked(run) {
-  if (!run.lastChecked) return null;
-  const d = new Date(run.lastChecked + 'T00:00:00');
-  if (isNaN(d)) return null;
-  return Math.max(0, Math.floor((Date.now() - d.getTime()) / 86400000));
-}
-
-/* ---- Farm V.2 Score 0-100 (โปร่งใส — โชว์คะแนน+เหตุผลรายมิติเสมอ) ----
-   Guaranteed Floor 0-35 · Cost Efficiency 0-20 · Market Momentum 0-10
-   Setup Readiness 0-15 · Freshness 0-10 · Source Confidence 0-10 · Risk Penalty 0..-20
-   Bigdrop Notes = แสดงอย่างเดียว ไม่มีคะแนน */
-function computeFv2Score(run, econ) {
-  const parts = [];
-  // 1) Guaranteed Floor — จาก Guaranteed ROI (ของแน่นอนหลังหักทุน)
-  let floorPts = 0, floorWhy;
-  const roi = econ.guaranteedRoi;
-  if (econ.entryCost <= 0) {
-    floorPts = econ.guaranteedReturn > 0 ? 35 : 0;
-    floorWhy = econ.guaranteedReturn > 0 ? 'ไม่มีค่าเข้า แต่มีของการันตี' : 'ยังไม่มีทั้งค่าเข้าและของการันตี';
-  } else if (roi >= 100) { floorPts = 35; floorWhy = 'Guaranteed ROI ≥ +100%'; }
-  else if (roi >= 50) { floorPts = 30; floorWhy = 'Guaranteed ROI ≥ +50%'; }
-  else if (roi >= 20) { floorPts = 24; floorWhy = 'Guaranteed ROI ≥ +20%'; }
-  else if (roi >= 0) { floorPts = 18; floorWhy = 'Guaranteed ROI ≥ 0% (ของการันตีคุ้มทุน)'; }
-  else if (roi >= -25) { floorPts = 10; floorWhy = 'Guaranteed ROI ติดลบเล็กน้อย — พึ่ง drop อื่นช่วย'; }
-  else if (roi >= -50) { floorPts = 5; floorWhy = 'Guaranteed ROI ติดลบมาก'; }
-  else { floorPts = 0; floorWhy = 'ของการันตีคืนทุนน้อยกว่าครึ่ง'; }
-  parts.push({ label: 'Guaranteed Floor', pts: floorPts, max: 35, why: floorWhy });
-  // 2) Cost Efficiency — ค่าเข้าถูก = เริ่ม/สเกลง่าย เสี่ยงน้อย
-  let costPts, costWhy;
-  const ec = econ.entryCost;
-  if (ec <= 1) { costPts = 20; costWhy = 'ค่าเข้า ≤ 1 Div ต่อรัน'; }
-  else if (ec <= 3) { costPts = 16; costWhy = 'ค่าเข้า ≤ 3 Div'; }
-  else if (ec <= 5) { costPts = 12; costWhy = 'ค่าเข้า ≤ 5 Div'; }
-  else if (ec <= 10) { costPts = 8; costWhy = 'ค่าเข้า ≤ 10 Div'; }
-  else if (ec <= 20) { costPts = 4; costWhy = 'ค่าเข้า ≤ 20 Div'; }
-  else { costPts = 2; costWhy = 'ค่าเข้าสูงมาก (> 20 Div)'; }
-  parts.push({ label: 'Cost Efficiency', pts: costPts, max: 20, why: costWhy });
-  // 3) Market Momentum — เทรนด์ 7 วันของไอเทมที่ลิงก์ตลาดไว้ (ไม่มีลิงก์ = กลางๆ)
-  const trends = [];
-  run.entryItems.concat(run.guaranteedDrops).forEach(it => {
-    if (!it.marketLinked) return;
-    const m = findMarketItemByName(it.name);
-    if (m && isFinite(+m.trend7d)) trends.push(+m.trend7d);
-  });
-  let momPts = 5, momWhy = 'ไม่มีไอเทมลิงก์ตลาด — ให้กลางๆ';
-  if (trends.length) {
-    const avg = trends.reduce((a, b) => a + b, 0) / trends.length;
-    if (avg >= 20) { momPts = 10; momWhy = 'เทรนด์ 7 วันเฉลี่ย +' + avg.toFixed(0) + '%'; }
-    else if (avg >= 5) { momPts = 7; momWhy = 'เทรนด์ 7 วันเฉลี่ย +' + avg.toFixed(0) + '%'; }
-    else if (avg >= 0) { momPts = 5; momWhy = 'เทรนด์ 7 วันทรงตัว (' + avg.toFixed(0) + '%)'; }
-    else if (avg >= -10) { momPts = 3; momWhy = 'เทรนด์ 7 วันเฉลี่ย ' + avg.toFixed(0) + '%'; }
-    else { momPts = 0; momWhy = 'เทรนด์ 7 วันร่วงแรง (' + avg.toFixed(0) + '%)'; }
-  }
-  parts.push({ label: 'Market Momentum', pts: momPts, max: 10, why: momWhy });
-  // 4) Setup Readiness — เช็คลิสต์ 3 ข้อ ข้อละ 5
-  const readyCount = [run.readyBuild, run.readyStock, run.readyPlan].filter(Boolean).length;
-  parts.push({ label: 'Setup Readiness', pts: readyCount * 5, max: 15, why: 'เช็คลิสต์พร้อม ' + readyCount + '/3 ข้อ' });
-  // 5) Freshness — เช็คราคาล่าสุดเมื่อไหร่
-  const days = fv2DaysSinceChecked(run);
-  let freshPts = 0, freshWhy = 'ยังไม่เคยเช็คราคา';
-  if (days !== null) {
-    if (days <= 3) { freshPts = 10; freshWhy = 'เช็คล่าสุด ≤ 3 วันก่อน'; }
-    else if (days <= 7) { freshPts = 7; freshWhy = 'เช็คล่าสุด ≤ 7 วันก่อน'; }
-    else if (days <= FV2_STALE_DAYS) { freshPts = 4; freshWhy = 'เช็คล่าสุด ≤ ' + FV2_STALE_DAYS + ' วันก่อน'; }
-    else { freshPts = 0; freshWhy = 'เกิน ' + FV2_STALE_DAYS + ' วัน — ราคาอาจเก่าแล้ว'; }
-  }
-  parts.push({ label: 'Freshness / Last Checked', pts: freshPts, max: 10, why: freshWhy });
-  // 6) Source Confidence
-  const confMap = { high: [10, 'แหล่งข้อมูลมั่นใจสูง (ทดสอบเอง/หลายแหล่ง)'], medium: [6, 'แหล่งข้อมูลมั่นใจปานกลาง'], low: [2, 'แหล่งข้อมูลมั่นใจต่ำ / ยังไม่ยืนยัน'] };
-  const conf = confMap[run.sourceConfidence] || confMap.medium;
-  parts.push({ label: 'Source Confidence', pts: conf[0], max: 10, why: conf[1] });
-  // 7) Risk Penalty (ติดลบ)
-  const riskMap = { none: [0, 'ไม่มีความเสี่ยงพิเศษ'], low: [-5, 'เสี่ยงต่ำ'], medium: [-12, 'เสี่ยงปานกลาง (เช่น ราคาผันผวน/รันยาก)'], high: [-20, 'เสี่ยงสูง (ตายง่าย/ราคาอาจร่วงแรง)'] };
-  const risk = riskMap[run.riskLevel] || riskMap.low;
-  parts.push({ label: 'Risk Penalty', pts: risk[0], max: 0, why: risk[1] + (run.riskNotes ? ' — ' + run.riskNotes : '') });
-
-  const total = Math.max(0, Math.min(100, parts.reduce((a, p) => a + p.pts, 0)));
-  return { total, parts, missingPrices: econ.missingPrices };
-}
-
-/* ---- เทมเพลตเริ่มต้น (ไม่มีตัวเลขอัตราดรอปใดๆ — ราคาผู้ใช้กรอก/ตลาดเท่านั้น) ---- */
-const FV2_TEMPLATES = {
-  simulacrum: {
-    name: 'Simulacrum',
-    contentType: 'Simulacrum',
-    entryItems: [{ name: 'Simulacrum', qty: 1, priceDiv: null, marketLinked: true }],
-    guaranteedDrops: [{ name: "Raven's Reflection", qty: 1, priceDiv: null, marketLinked: false }],
-    bigdropNotes: 'Voices, Sapphire, Megalomaniac, rare Delirium jewels, high-value uniques',
-    notes: "ราคา Raven's Reflection ไม่มีใน snapshot ตลาด — กรอกราคาเองจากหน้าเทรด แล้วอัปเดต Last Checked",
-  },
-  boss: {
-    name: 'Boss / Fragment run',
-    contentType: 'Boss / Fragment',
-    entryItems: [{ name: 'Boss key / fragment set', qty: 1, priceDiv: null, marketLinked: false }],
-    guaranteedDrops: [],
-    bigdropNotes: '',
-    notes: 'กรอกชื่อ/ราคา key จริงของบอสที่จะรัน — ของการันตี (ถ้ามี) ใส่ใน Guaranteed drops',
-  },
-  trial: {
-    name: 'Trial / Soul Core run',
-    contentType: 'Trial / Soul Core',
-    entryItems: [{ name: 'Trial key / entry', qty: 1, priceDiv: null, marketLinked: false }],
-    guaranteedDrops: [],
-    bigdropNotes: '',
-    notes: 'ของรางวัล Trial ส่วนใหญ่ไม่การันตี — ใช้ช่องค่าประเมิน (manual) หรือจดใน Upside Notes',
-  },
-  custom: { name: '', contentType: 'Keyed Content' },
-};
-function addFv2Template(key) {
-  const t = FV2_TEMPLATES[key] || {};
-  const run = Object.assign(newFv2Run(), JSON.parse(JSON.stringify(t)));
-  run.entryItems = fv2NormalizeItems(run.entryItems);
-  run.guaranteedDrops = fv2NormalizeItems(run.guaranteedDrops);
-  fv2Runs.unshift(run);
-  fv2SelectedId = run.id;
-  persistFv2Runs();
-  renderFv2();
-}
-
-/* ---- helpers ---- */
-function fv2Fmt(n, digits) {
-  if (n === null || n === undefined || !isFinite(n)) return '—';
-  const d = digits === undefined ? 2 : digits;
-  let s = (+n).toFixed(d);
-  // ตัดศูนย์ท้ายเฉพาะหลังจุดทศนิยม (ห้ามตัดของจำนวนเต็ม เช่น 10 ต้องไม่กลายเป็น 1)
-  if (s.indexOf('.') >= 0) s = s.replace(/0+$/, '').replace(/\.$/, '');
-  return s;
-}
-function fv2ProfitClass(net, entryCost) {
-  // เขียว = กำไร, ส้ม = ใกล้เท่าทุน (±10% ของค่าเข้า), แดง = ขาดทุน
-  if (!isFinite(net)) return '';
-  const nearBand = entryCost > 0 ? entryCost * 0.1 : 0.1;
-  if (Math.abs(net) <= nearBand) return 'divine-warn';
-  return net > 0 ? 'divine-up' : 'divine-down';
-}
-function fv2Touch(run) { run.updatedAt = Date.now(); persistFv2Runs(); }
-
-/* ---- render: สรุปบนสุด ---- */
-function renderFv2Summary() {
-  const wrap = document.getElementById('fv2Summary');
-  if (!wrap) return;
-  wrap.innerHTML = '';
-  let best = null, bestScore = -1, profitable = 0, stale = 0;
-  fv2Runs.forEach(run => {
-    const econ = computeFv2Econ(run);
-    const score = computeFv2Score(run, econ);
-    if (econ.guaranteedNet > 0) profitable++;
-    const days = fv2DaysSinceChecked(run);
-    if (days === null || days > FV2_STALE_DAYS) stale++;
-    if (score.total > bestScore) { bestScore = score.total; best = run; }
-  });
-  const tiles = [
-    ['Best Run Now', best ? ((best.name || best.contentType) + ' · ' + bestScore + '/100') : '—', best ? 'Farm V.2 Score สูงสุดตอนนี้' : 'ยังไม่มีรัน — เพิ่มเทมเพลตก่อน'],
-    ['Saved runs', String(fv2Runs.length), 'เทมเพลตรันที่บันทึกไว้'],
-    ['Profitable (Guaranteed)', String(profitable), 'รันที่ Guaranteed Net > 0 (ไม่รวม Bigdrop)'],
-    ['Stale / not checked', String(stale), 'เกิน ' + FV2_STALE_DAYS + ' วัน หรือยังไม่เคยเช็คราคา'],
-  ];
-  tiles.forEach(([label, value, sub]) => {
-    const card = document.createElement('div');
-    card.className = 'divine-metric-card fv2-summary-card';
-    const l = document.createElement('div'); l.className = 'fv2-sum-label'; l.textContent = label;
-    const v = document.createElement('div'); v.className = 'fv2-sum-value'; v.textContent = value;
-    const s = document.createElement('div'); s.className = 'fv2-sum-sub'; s.textContent = sub;
-    card.append(l, v, s);
-    wrap.appendChild(card);
-  });
-  // สถานะ snapshot ตลาด
-  const st = document.getElementById('fv2MarketStatus');
-  if (st) {
-    st.textContent = fv2Market.status === 'ok'
-      ? ('Market snapshot: ' + (fv2Market.updatedAt ? new Date(fv2Market.updatedAt).toLocaleString() : 'loaded'))
-      : (fv2Market.status === 'loading' ? 'กำลังโหลด market snapshot…' : 'ไม่มี market snapshot — ใช้ราคา Manual ได้ตามปกติ');
-  }
-}
-
-/* ---- render: รายการรันด้านซ้าย ---- */
-function renderFv2List() {
-  const wrap = document.getElementById('fv2List');
-  if (!wrap) return;
-  wrap.innerHTML = '';
-  if (!fv2Runs.length) {
-    const empty = document.createElement('div');
-    empty.className = 'fv2-empty';
-    empty.textContent = 'ยังไม่มีรัน — เริ่มจากปุ่ม "+ Add Simulacrum template" ด้านบน';
-    wrap.appendChild(empty);
-    return;
-  }
-  const sorted = fv2Runs.slice().sort((a, b) => (b.favorite - a.favorite) || (b.updatedAt - a.updatedAt));
-  sorted.forEach(run => {
-    const econ = computeFv2Econ(run);
-    const score = computeFv2Score(run, econ);
-    const row = document.createElement('div');
-    row.className = 'fv2-run-item' + (run.id === fv2SelectedId ? ' selected' : '') + (run.active ? ' is-active' : '');
-    row.setAttribute('role', 'button');
-    row.tabIndex = 0;
-
-    const head = document.createElement('div');
-    head.className = 'fv2-run-head';
-    const fav = document.createElement('button');
-    fav.type = 'button';
-    fav.className = 'fv2-fav' + (run.favorite ? ' on' : '');
-    fav.textContent = run.favorite ? '★' : '☆';
-    fav.title = 'Favorite';
-    fav.addEventListener('click', (e) => { e.stopPropagation(); run.favorite = !run.favorite; fv2Touch(run); renderFv2(); });
-    const name = document.createElement('span');
-    name.className = 'fv2-run-name';
-    name.textContent = run.name || run.contentType || '(ไม่มีชื่อ)';
-    const sc = document.createElement('span');
-    sc.className = 'fv2-run-score';
-    sc.textContent = score.total + '/100';
-    head.append(fav, name, sc);
-
-    const sub = document.createElement('div');
-    sub.className = 'fv2-run-sub';
-    const net = document.createElement('span');
-    net.className = fv2ProfitClass(econ.guaranteedNet, econ.entryCost);
-    net.textContent = 'Net ' + (econ.guaranteedNet >= 0 ? '+' : '') + fv2Fmt(econ.guaranteedNet) + ' Div';
-    const days = fv2DaysSinceChecked(run);
-    const meta = document.createElement('span');
-    meta.className = 'fv2-run-meta' + ((days === null || days > FV2_STALE_DAYS) ? ' divine-warn' : '');
-    meta.textContent = run.contentType + ' · ' + (days === null ? 'ยังไม่เช็คราคา' : (days === 0 ? 'เช็ควันนี้' : days + ' วันก่อน'));
-    sub.append(net, meta);
-
-    row.append(head, sub);
-    const select = () => { fv2SelectedId = run.id; renderFv2(); };
-    row.addEventListener('click', select);
-    row.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(); } });
-    wrap.appendChild(row);
-  });
-}
-
-/* ---- render: editor + result ด้านขวา ---- */
-// สร้าง label+input แถวเดียว (Work แบบเดียวกับ .radar-filter แต่คุมเองเพื่อ escape ข้อมูลผู้ใช้)
-function fv2Field(labelText, inputEl, hint) {
-  const label = document.createElement('label');
-  label.className = 'fv2-field';
-  const span = document.createElement('span');
-  span.className = 'fv2-field-label';
-  span.textContent = labelText;
-  label.append(span, inputEl);
-  if (hint) {
-    const h = document.createElement('span');
-    h.className = 'fv2-hint';
-    h.textContent = hint;
-    label.appendChild(h);
-  }
-  return label;
-}
-function fv2Input(type, value, onInput) {
-  const el = document.createElement('input');
-  el.type = type;
-  if (value !== null && value !== undefined) el.value = value;
-  el.addEventListener('input', onInput);
-  return el;
-}
-function fv2NumInput(value, onInput) {
-  const el = document.createElement('input');
-  el.type = 'number';
-  el.min = '0';
-  el.step = '0.01';
-  if (value !== null && value !== undefined && value !== '') el.value = value;
-  el.addEventListener('input', onInput);
-  return el;
-}
-
-// แถวไอเทม (entry / guaranteed): ชื่อ, จำนวน, ใช้ราคาตลาด?, ราคา Manual, ป้ายที่มาราคา, ลบ
-function fv2ItemRowEl(run, list, it, onStructureChange) {
-  const row = document.createElement('div');
-  row.className = 'fv2-item-row';
-
-  const nameIn = fv2Input('text', it.name, () => { it.name = nameIn.value; fv2Touch(run); updateBadge(); renderFv2ResultOnly(); });
-  nameIn.placeholder = 'ชื่อไอเทม';
-  nameIn.className = 'fv2-item-name';
-
-  const qtyIn = fv2NumInput(it.qty, () => { it.qty = qtyIn.value; fv2Touch(run); renderFv2ResultOnly(); });
-  qtyIn.className = 'fv2-item-qty';
-  qtyIn.title = 'จำนวนต่อรัน';
-  qtyIn.step = '1';
-
-  const linkWrap = document.createElement('label');
-  linkWrap.className = 'fv2-mkt-toggle';
-  const linkCb = document.createElement('input');
-  linkCb.type = 'checkbox';
-  linkCb.checked = !!it.marketLinked;
-  linkCb.addEventListener('change', () => { it.marketLinked = linkCb.checked; fv2Touch(run); renderFv2Editor(); });
-  linkWrap.append(linkCb, document.createTextNode('ตลาด'));
-  linkWrap.title = 'ใช้ราคาจาก market snapshot ถ้าชื่อตรง';
-
-  const priceIn = fv2NumInput(it.priceDiv, () => { it.priceDiv = priceIn.value === '' ? null : priceIn.value; fv2Touch(run); updateBadge(); renderFv2ResultOnly(); });
-  priceIn.className = 'fv2-item-price';
-  priceIn.placeholder = 'Div';
-
-  const badge = document.createElement('span');
-  // ป้ายที่มาราคา — อัปเดตสดตอนพิมพ์ราคา/เปลี่ยนชื่อ ไม่ต้องรอ rebuild ฟอร์ม
-  function updateBadge() {
-    const p = fv2ItemPrice(it);
-    badge.className = 'fv2-price-badge ' + p.src;
-    if (p.src === 'market') {
-      badge.textContent = 'Market ' + fv2Fmt(p.price) + ' Div';
-      priceIn.disabled = true;
-      priceIn.placeholder = fv2Fmt(p.price);
-    } else {
-      priceIn.disabled = false;
-      priceIn.placeholder = 'Div';
-      if (p.src === 'manual') badge.textContent = it.marketLinked ? 'Manual (ไม่พบในตลาด)' : 'Manual';
-      else badge.textContent = 'Missing price';
-    }
-  }
-  updateBadge();
-
-  const del = document.createElement('button');
-  del.type = 'button';
-  del.className = 'icon-btn fv2-item-del';
-  del.textContent = '✕';
-  del.title = 'ลบแถวนี้';
-  del.addEventListener('click', () => {
-    const i = list.indexOf(it);
-    if (i >= 0) list.splice(i, 1);
-    fv2Touch(run);
-    onStructureChange();
-  });
-
-  row.append(nameIn, qtyIn, linkWrap, priceIn, badge, del);
-  return row;
-}
-
-function fv2SectionTitleEl(text) {
-  const el = document.createElement('div');
-  el.className = 'fv2-section-title';
-  el.textContent = text;
-  return el;
-}
-
-function renderFv2Editor() {
-  const col = document.getElementById('fv2EditorCol');
-  if (!col) return;
-  col.innerHTML = '';
-  const run = fv2SelectedRun();
-  if (!run) {
-    const empty = document.createElement('div');
-    empty.className = 'fv2-empty';
-    empty.textContent = 'เลือกรันจากรายการด้านซ้าย หรือเพิ่มเทมเพลตใหม่';
-    col.appendChild(empty);
-    return;
-  }
-  const rebuild = () => renderFv2();
-
-  const panel = document.createElement('div');
-  panel.className = 'fv2-editor';
-
-  /* หัว: ชื่อ + ปุ่มการ์ด */
-  const head = document.createElement('div');
-  head.className = 'fv2-editor-head';
-  const nameIn = fv2Input('text', run.name, () => { run.name = nameIn.value; fv2Touch(run); renderFv2List(); });
-  nameIn.placeholder = 'ชื่อรัน เช่น Simulacrum';
-  nameIn.className = 'fv2-name-input';
-  const actions = document.createElement('div');
-  actions.className = 'fv2-editor-actions';
-  const activeWrap = document.createElement('label');
-  activeWrap.className = 'fv2-mkt-toggle';
-  const activeCb = document.createElement('input');
-  activeCb.type = 'checkbox';
-  activeCb.checked = !!run.active;
-  activeCb.addEventListener('change', () => { run.active = activeCb.checked; fv2Touch(run); renderFv2List(); });
-  activeWrap.append(activeCb, document.createTextNode('Active'));
-  const dupBtn = document.createElement('button');
-  dupBtn.type = 'button'; dupBtn.className = 'ocr-btn'; dupBtn.textContent = 'Duplicate';
-  dupBtn.addEventListener('click', () => {
-    const copy = JSON.parse(JSON.stringify(run));
-    copy.id = 'v2' + Date.now() + Math.random().toString(36).slice(2, 7);
-    copy.name = (run.name || run.contentType) + ' (copy)';
-    copy.createdAt = Date.now(); copy.updatedAt = Date.now();
-    fv2Runs.unshift(copy);
-    fv2SelectedId = copy.id;
-    persistFv2Runs();
-    renderFv2();
-  });
-  const delBtn = document.createElement('button');
-  delBtn.type = 'button'; delBtn.className = 'ocr-btn danger'; delBtn.textContent = 'Delete';
-  delBtn.addEventListener('click', () => {
-    if (!confirm('ลบรัน "' + (run.name || run.contentType) + '" ?')) return;
-    fv2Runs = fv2Runs.filter(r => r.id !== run.id);
-    fv2SelectedId = fv2Runs.length ? fv2Runs[0].id : null;
-    persistFv2Runs();
-    renderFv2();
-  });
-  actions.append(activeWrap, dupBtn, delBtn);
-  head.append(nameIn, actions);
-  panel.appendChild(head);
-
-  /* แถวข้อมูลทั่วไป */
-  const metaRow = document.createElement('div');
-  metaRow.className = 'fv2-form-row';
-  const typeSel = document.createElement('select');
-  FV2_CONTENT_TYPES.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; typeSel.appendChild(o); });
-  typeSel.value = FV2_CONTENT_TYPES.includes(run.contentType) ? run.contentType : 'Other';
-  typeSel.addEventListener('change', () => { run.contentType = typeSel.value; fv2Touch(run); renderFv2List(); });
-  const statusSel = document.createElement('select');
-  FV2_STATUSES.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; statusSel.appendChild(o); });
-  statusSel.value = FV2_STATUSES.includes(run.status) ? run.status : 'Testing';
-  statusSel.addEventListener('change', () => { run.status = statusSel.value; fv2Touch(run); });
-  const checkedIn = fv2Input('date', run.lastChecked, () => { run.lastChecked = checkedIn.value; fv2Touch(run); renderFv2ResultOnly(); renderFv2List(); renderFv2Summary(); });
-  metaRow.append(
-    fv2Field('Content type', typeSel),
-    fv2Field('Status', statusSel),
-    fv2Field('Last Checked', checkedIn, 'เกิน ' + FV2_STALE_DAYS + ' วัน = stale'),
-  );
-  panel.appendChild(metaRow);
-
-  /* Entry Cost */
-  panel.appendChild(fv2SectionTitleEl('Entry Cost — ค่าเข้าต่อ 1 รัน'));
-  const entryWrap = document.createElement('div');
-  entryWrap.className = 'fv2-items';
-  run.entryItems.forEach(it => entryWrap.appendChild(fv2ItemRowEl(run, run.entryItems, it, rebuild)));
-  const addEntry = document.createElement('button');
-  addEntry.type = 'button'; addEntry.className = 'ocr-btn fv2-add-item'; addEntry.textContent = '+ เพิ่ม entry item';
-  addEntry.addEventListener('click', () => { run.entryItems.push(newFv2Item()); fv2Touch(run); rebuild(); });
-  const setupRow = document.createElement('div');
-  setupRow.className = 'fv2-form-row';
-  const setupIn = fv2NumInput(run.setupCostDiv, () => { run.setupCostDiv = setupIn.value === '' ? null : setupIn.value; fv2Touch(run); renderFv2ResultOnly(); });
-  setupRow.appendChild(fv2Field('Setup cost (Div/รัน)', setupIn, 'ค่าเตรียมของเพิ่มเติม เช่น waystone/tablet — ไม่บังคับ'));
-  entryWrap.append(addEntry, setupRow);
-  panel.appendChild(entryWrap);
-
-  /* Guaranteed / Floor Return */
-  panel.appendChild(fv2SectionTitleEl('Guaranteed Floor — ของที่ได้แน่นอนต่อรัน'));
-  const gWrap = document.createElement('div');
-  gWrap.className = 'fv2-items';
-  run.guaranteedDrops.forEach(it => gWrap.appendChild(fv2ItemRowEl(run, run.guaranteedDrops, it, rebuild)));
-  const addG = document.createElement('button');
-  addG.type = 'button'; addG.className = 'ocr-btn fv2-add-item'; addG.textContent = '+ เพิ่ม guaranteed drop';
-  addG.addEventListener('click', () => { run.guaranteedDrops.push(newFv2Item()); fv2Touch(run); rebuild(); });
-  const sellRow = document.createElement('div');
-  sellRow.className = 'fv2-form-row';
-  const haircutIn = fv2NumInput(run.sellHaircutPct, () => { run.sellHaircutPct = haircutIn.value; fv2Touch(run); renderFv2ResultOnly(); });
-  haircutIn.max = '95'; haircutIn.step = '1';
-  const expIn = fv2NumInput(run.manualExpectedReturnDiv, () => { run.manualExpectedReturnDiv = expIn.value === '' ? null : expIn.value; fv2Touch(run); renderFv2ResultOnly(); });
-  sellRow.append(
-    fv2Field('Sell haircut (%)', haircutIn, 'ส่วนลดตอนขายจริง/ขายไว'),
-    fv2Field('Common return — ค่าประเมินเอง (Div/รัน)', expIn, 'Manual estimate เท่านั้น — เว้นว่างถ้าไม่แน่ใจ'),
-  );
-  gWrap.append(addG, sellRow);
-  panel.appendChild(gWrap);
-
-  /* Bigdrop / Upside Notes */
-  panel.appendChild(fv2SectionTitleEl('Bigdrop / Upside Notes — ไม่ถูกคิดใน Guaranteed ROI'));
-  const bigWrap = document.createElement('div');
-  bigWrap.className = 'fv2-items';
-  const bigIn = fv2Input('text', run.bigdropNotes, () => { run.bigdropNotes = bigIn.value; fv2Touch(run); renderFv2ResultOnly(); });
-  bigIn.placeholder = 'เช่น Voices, Sapphire, Megalomaniac (คั่นด้วย ,)';
-  bigWrap.appendChild(fv2Field('Upside Notes', bigIn, 'บันทึกของลุ้นเป็นตัวหนังสือเท่านั้น — Not included in guaranteed ROI'));
-  panel.appendChild(bigWrap);
-
-  /* Readiness / Confidence / Risk */
-  panel.appendChild(fv2SectionTitleEl('Readiness · Confidence · Risk'));
-  const rrWrap = document.createElement('div');
-  rrWrap.className = 'fv2-form-row';
-  const readyBox = document.createElement('div');
-  readyBox.className = 'fv2-ready';
-  [['readyBuild', 'บิลด์พร้อมรันคอนเทนต์นี้'], ['readyStock', 'มี key/ของเข้าในสต็อกแล้ว'], ['readyPlan', 'เข้าใจวิธีรัน/กลยุทธ์แล้ว']].forEach(([key, label]) => {
-    const w = document.createElement('label');
-    w.className = 'fv2-mkt-toggle';
-    const cb = document.createElement('input');
-    cb.type = 'checkbox';
-    cb.checked = !!run[key];
-    cb.addEventListener('change', () => { run[key] = cb.checked; fv2Touch(run); renderFv2ResultOnly(); });
-    w.append(cb, document.createTextNode(label));
-    readyBox.appendChild(w);
-  });
-  const confSel = document.createElement('select');
-  [['high', 'High'], ['medium', 'Medium'], ['low', 'Low']].forEach(([v, l]) => { const o = document.createElement('option'); o.value = v; o.textContent = l; confSel.appendChild(o); });
-  confSel.value = ['high', 'medium', 'low'].includes(run.sourceConfidence) ? run.sourceConfidence : 'medium';
-  confSel.addEventListener('change', () => { run.sourceConfidence = confSel.value; fv2Touch(run); renderFv2ResultOnly(); });
-  const riskSel = document.createElement('select');
-  [['none', 'None (0)'], ['low', 'Low (-5)'], ['medium', 'Medium (-12)'], ['high', 'High (-20)']].forEach(([v, l]) => { const o = document.createElement('option'); o.value = v; o.textContent = l; riskSel.appendChild(o); });
-  riskSel.value = ['none', 'low', 'medium', 'high'].includes(run.riskLevel) ? run.riskLevel : 'low';
-  riskSel.addEventListener('change', () => { run.riskLevel = riskSel.value; fv2Touch(run); renderFv2ResultOnly(); });
-  const riskIn = fv2Input('text', run.riskNotes, () => { run.riskNotes = riskIn.value; fv2Touch(run); renderFv2ResultOnly(); });
-  riskIn.placeholder = 'โน้ตความเสี่ยง เช่น ราคาคีย์ผันผวน';
-  rrWrap.append(
-    fv2Field('Setup Readiness', readyBox),
-    fv2Field('Source Confidence', confSel),
-    fv2Field('Risk level', riskSel),
-    fv2Field('Risk notes', riskIn),
-  );
-  panel.appendChild(rrWrap);
-
-  /* Notes */
-  const notesIn = document.createElement('textarea');
-  notesIn.rows = 2;
-  notesIn.value = run.notes || '';
-  notesIn.placeholder = 'โน้ตอื่นๆ';
-  notesIn.addEventListener('input', () => { run.notes = notesIn.value; fv2Touch(run); });
-  panel.appendChild(fv2Field('Notes', notesIn));
-
-  col.appendChild(panel);
-
-  /* Result card แยกใต้ฟอร์ม — อัปเดตสดตอนพิมพ์โดยไม่ rebuild ฟอร์ม */
-  const result = document.createElement('div');
-  result.className = 'fv2-editor fv2-result';
-  result.id = 'fv2Result';
-  col.appendChild(result);
-  renderFv2ResultOnly();
-}
-
-// คำนวณ + วาดเฉพาะการ์ดผลลัพธ์/คะแนน (เรียกถี่ได้ตอนผู้ใช้พิมพ์)
-function renderFv2ResultOnly() {
-  const box = document.getElementById('fv2Result');
-  const run = fv2SelectedRun();
-  if (!box || !run) return;
-  box.innerHTML = '';
-  const econ = computeFv2Econ(run);
-  const score = computeFv2Score(run, econ);
-
-  box.appendChild(fv2SectionTitleEl('Run Economics — ผลต่อ 1 รัน (Div)'));
-  if (econ.missingPrices > 0) {
-    const warn = document.createElement('div');
-    warn.className = 'fv2-hint divine-warn';
-    warn.textContent = '⚠ มี ' + econ.missingPrices + ' รายการที่ยังไม่มีราคา (Missing price) — ตัวเลขด้านล่างยังไม่ครบ';
-    box.appendChild(warn);
-  }
-  const grid = document.createElement('div');
-  grid.className = 'divine-metrics-grid fv2-result-grid';
-  const netCls = fv2ProfitClass(econ.guaranteedNet, econ.entryCost);
-  const tiles = [
-    ['Entry Cost', fv2Fmt(econ.entryCost) + ' Div', 'รวม setup cost', ''],
-    ['Guaranteed Return', fv2Fmt(econ.guaranteedReturn) + ' Div', 'หลังหัก haircut ' + fv2Fmt(econ.haircutPct, 0) + '% (ดิบ ' + fv2Fmt(econ.guaranteedRaw) + ')', ''],
-    ['Guaranteed Net', (econ.guaranteedNet >= 0 ? '+' : '') + fv2Fmt(econ.guaranteedNet) + ' Div', 'จากของการันตีเท่านั้น', netCls],
-    ['Guaranteed ROI', econ.guaranteedRoi === null ? '—' : (econ.guaranteedRoi >= 0 ? '+' : '') + fv2Fmt(econ.guaranteedRoi, 1) + '%', econ.guaranteedRoi === null ? 'ยังไม่มีค่าเข้า' : 'Guaranteed Net ÷ Entry Cost', netCls],
-    ['Break-even Guaranteed Value', econ.breakEven === null ? '—' : fv2Fmt(econ.breakEven) + ' Div', 'มูลค่าดิบที่ต้องได้ต่อรันถึงเท่าทุน (คิด haircut แล้ว)', ''],
-  ];
-  if (econ.hasManualExp) {
-    const expCls = fv2ProfitClass(econ.expectedNet, econ.entryCost);
-    tiles.push(['Expected Net (manual)', (econ.expectedNet >= 0 ? '+' : '') + fv2Fmt(econ.expectedNet) + ' Div', 'รวมค่าประเมิน common return ที่กรอกเอง ' + fv2Fmt(econ.manualExp) + ' Div', expCls]);
-    tiles.push(['Expected ROI (manual)', econ.expectedRoi === null ? '—' : (econ.expectedRoi >= 0 ? '+' : '') + fv2Fmt(econ.expectedRoi, 1) + '%', 'Manual estimate — ไม่ใช่ตัวเลขการันตี', expCls]);
-  }
-  tiles.forEach(([label, value, sub, cls]) => {
-    const card = document.createElement('div');
-    card.className = 'divine-metric-card fv2-summary-card';
-    const l = document.createElement('div'); l.className = 'fv2-sum-label'; l.textContent = label;
-    const v = document.createElement('div'); v.className = 'fv2-sum-value' + (cls ? ' ' + cls : ''); v.textContent = value;
-    const s = document.createElement('div'); s.className = 'fv2-sum-sub'; s.textContent = sub;
-    card.append(l, v, s);
-    grid.appendChild(card);
-  });
-  box.appendChild(grid);
-
-  /* Bigdrop chips */
-  const bigs = String(run.bigdropNotes || '').split(',').map(s => s.trim()).filter(Boolean);
-  if (bigs.length) {
-    const bt = fv2SectionTitleEl('Upside Notes');
-    box.appendChild(bt);
-    const chipWrap = document.createElement('div');
-    chipWrap.className = 'fv2-chips';
-    bigs.forEach(b => {
-      const c = document.createElement('span');
-      c.className = 'fv2-chip';
-      c.textContent = b;
-      chipWrap.appendChild(c);
-    });
-    box.appendChild(chipWrap);
-    const note = document.createElement('div');
-    note.className = 'fv2-hint';
-    note.textContent = 'Bigdrops are listed as upside only and are not included in guaranteed ROI. — ของลุ้นเหล่านี้ไม่ถูกคิดในตัวเลขด้านบน จนกว่าจะกรอกค่าประเมินเองในช่อง Common return';
-    box.appendChild(note);
-  }
-
-  /* Score breakdown */
-  box.appendChild(fv2SectionTitleEl('Farm V.2 Score — ' + score.total + '/100'));
-  const barWrap = document.createElement('div');
-  barWrap.className = 'score-bar fv2-score-bar';
-  const barFill = document.createElement('div');
-  barFill.className = 'score-bar-fill';
-  barFill.style.width = score.total + '%';
-  barWrap.appendChild(barFill);
-  box.appendChild(barWrap);
-  const twrap = document.createElement('div');
-  twrap.className = 'divine-table-wrap';
-  const table = document.createElement('table');
-  table.className = 'divine-table';
-  const thead = document.createElement('thead');
-  const hr = document.createElement('tr');
-  ['มิติ', 'คะแนน', 'เต็ม', 'เหตุผล'].forEach(h => { const th = document.createElement('th'); th.textContent = h; hr.appendChild(th); });
-  thead.appendChild(hr);
-  const tbody = document.createElement('tbody');
-  score.parts.forEach(p => {
-    const tr = document.createElement('tr');
-    const tds = [p.label, String(p.pts), p.max === 0 ? '0 ถึง -20' : String(p.max), p.why];
-    tds.forEach((t, i) => {
-      const td = document.createElement('td');
-      td.textContent = t;
-      if (i === 1 && p.pts < 0) td.className = 'divine-down';
-      tr.appendChild(td);
-    });
-    tbody.appendChild(tr);
-  });
-  table.append(thead, tbody);
-  twrap.appendChild(table);
-  box.appendChild(twrap);
-  const scoreNote = document.createElement('div');
-  scoreNote.className = 'fv2-hint';
-  scoreNote.textContent = 'Farm V.2 Score คิดจากตัวเลขที่กรอก + market snapshot เท่านั้น — ไม่มีการเดาอัตราดรอปใดๆ และ Bigdrop Notes ไม่มีผลต่อคะแนน';
-  box.appendChild(scoreNote);
-
-  // ตัวเลขสรุปบนสุด + ป้ายในลิสต์เปลี่ยนตามได้เลย (ถูกและกันงง)
-  renderFv2Summary();
-}
-
-function renderFv2() {
-  renderFv2Summary();
-  renderFv2List();
-  renderFv2Editor();
-}
-
-(function initFv2() {
-  const page = document.getElementById('pageFarmV2');
-  if (!page) return;
-  document.getElementById('fv2AddSimBtn').addEventListener('click', () => addFv2Template('simulacrum'));
-  document.getElementById('fv2AddBossBtn').addEventListener('click', () => addFv2Template('boss'));
-  document.getElementById('fv2AddTrialBtn').addEventListener('click', () => addFv2Template('trial'));
-  document.getElementById('fv2AddCustomBtn').addEventListener('click', () => addFv2Template('custom'));
-  renderFv2();
-  fv2LoadMarket();
-})();
 
 /* ==================== Market Farm Radar ==================== */
 // อ่านไฟล์ static ที่ GitHub Actions สร้างไว้เท่านั้น — ห้าม fetch poe.ninja ตรงจากเบราว์เซอร์
@@ -8612,7 +7820,7 @@ fetch('data/icon-map.json')
   .catch(() => { /* ไม่มีไฟล์ก็ใช้ emoji fallback */ });
 
 // ถ้า mapping ของเมนูมีไฟล์รูปจริง (field icon) ให้สลับ emoji เป็นรูปขนาด 18px
-const MENU_ICON_LABELS = { home: 'Exile Hub', radar: 'Market Radar', farm: 'Atlas Planner', forge: 'Gear Checker', shop: 'Shopping List' };
+const MENU_ICON_LABELS = { home: 'Exile Hub', radar: 'Market Radar', farm: 'Farm Planner', forge: 'Resistance Checker', shop: 'Gear Planner' };
 function applyMenuIcons() {
   Object.keys(MENU_ICON_LABELS).forEach(k => {
     const label = MENU_ICON_LABELS[k];
