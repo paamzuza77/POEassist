@@ -2,6 +2,16 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-12 (9)
+
+- **Theme switcher + dark/light mode + Shopping List Type-column cleanup** (`index.html`, patch 0.13):
+  - **Themes:** two selectable themes — **RawBlock** (existing white/black brutalist, default) and **Trust Blue Pay** (navy/clean-white financial-dashboard feel per `trust-blue-pay-DESIGN.md`, Inter/JetBrains Mono fonts, softer 1px rounded borders + subtle navy shadows). Fully token-based: base `:root` = RawBlock light; overrides live in `:root[data-theme=...][data-mode=...]` blocks so **every tab re-themes globally with no per-tab JS**. Trust structural softening is scoped under `html[data-theme="trust-blue-pay"] .<class>` (border-width/radius/shadow only — colors come from tokens).
+  - **Dark/light mode:** compact sun/moon toggle at the **top-right of the topbar** (`#modeToggle`) plus a Light/Dark control in Settings — the two stay in sync via `syncAppearanceControls()`. RawBlock dark is an inverted-but-readable variant; Trust Blue Pay dark is a tasteful dark-navy variant. Defaults to light when no preference is stored; a tiny `<head>` script applies `data-theme`/`data-mode` on `<html>` before paint to avoid FOUC.
+  - **Settings:** the former coming-soon placeholder is now functional — Theme + Mode segmented controls (`initSettings` rebuilt). Other settings (Divine rate, shopping rows, table sizing, sidebar collapse, gear presets) still autosave as before.
+  - **New additive localStorage keys:** `poeAssist.theme.v1` (`rawblock`|`trust-blue-pay`) and `poeAssist.colorMode.v1` (`light`|`dark`), tolerant reads; no existing keys changed.
+  - **Shopping List:** removed the standalone **Type** table column (header + `<colgroup>` col + row cell + `SHOP_COLS` entry; table `min-width` 1180→1010; colSpans 10→9). Slot/context is chosen via the existing **slot-select inside the Item / Link column** (unchanged). `row.type` is **retained in the data model** (still in `newShopRow`, storage, export/import) so no saved data is lost — it's just no longer shown as a redundant column. A stale `type` width in `poe2ShopList.tableSizing.v1` is ignored safely (loader iterates `SHOP_COLS`).
+  - Verification: Playwright (headless msedge) harness over a local HTTP server — **42/43** app checks passing (default theme/mode, topbar toggle→dark/light, Settings theme+mode switch, topbar↔Settings sync, Trust light/dark + RawBlock dark bg colors, reload persistence, Type column gone / 9 cols, kept slot-select assigns slot, name/link-chip edit, numpad, column resize, row-height stepper, row+slot+`type` persistence, all 6 tabs render in all 4 theme/mode combos, mobile toggle + no h-overflow). The 43rd "fail" is a benign `favicon.ico` 404 (no favicon in repo, pre-existing, unrelated). Screenshots at 1920 (Trust light/dark, RawBlock dark) + 480px mobile. Zero app console/page errors. Harness in scratchpad, deleted after use.
+
 ## 2026-07-12 (8)
 
 - **App layout polish: wider content, collapsible sidebar, Settings placeholder, readable Gear Plan** (`index.html`, patch 0.12):

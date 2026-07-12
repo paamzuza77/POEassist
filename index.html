@@ -5,7 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Exile Assistant</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- ตั้ง data-theme / data-mode บน <html> ให้เร็วที่สุด (กัน flash ธีม/โหมดตอนโหลด) — ค่าเริ่มต้น rawblock/light -->
+<script>
+(function () {
+  try {
+    var t = localStorage.getItem('poeAssist.theme.v1');
+    var m = localStorage.getItem('poeAssist.colorMode.v1');
+    document.documentElement.setAttribute('data-theme', t === 'trust-blue-pay' ? 'trust-blue-pay' : 'rawblock');
+    document.documentElement.setAttribute('data-mode', m === 'dark' ? 'dark' : 'light');
+  } catch (e) {
+    document.documentElement.setAttribute('data-theme', 'rawblock');
+    document.documentElement.setAttribute('data-mode', 'light');
+  }
+})();
+</script>
 <style>
   /* ==================== RawBlock design tokens ====================
      Brutalist system per design.md.md — black/white, thick square borders,
@@ -42,6 +56,125 @@
     --font-head: 'Archivo Black', 'Work Sans', sans-serif;
     --font-body: 'Work Sans', sans-serif;
     --font-mono: 'Space Mono', monospace;
+  }
+
+  /* ==================== Themes & color modes ====================
+     Applied via data-theme (rawblock|trust-blue-pay) + data-mode (light|dark)
+     on <html>. Base :root above = RawBlock light (default, no attribute needed).
+     Everything is token-based so all tabs re-theme globally with no per-tab JS.
+     Persisted in poeAssist.theme.v1 / poeAssist.colorMode.v1. */
+
+  /* ---- RawBlock · Dark (inverted brutalist, still readable) ---- */
+  :root[data-theme="rawblock"][data-mode="dark"] {
+    --void: #0a0a0a;
+    --panel: #0a0a0a;
+    --panel-raised: #141414;
+    --panel-sunken: #1c1c1c;
+    --border: #ffffff;
+    --border-soft: #444444;
+    --text: #ffffff;
+    --text-muted: #d0d0d0;
+    --text-dim: #9a9a9a;
+    --fire: #ff5a5a; --fire-glow: #ff5a5a;
+    --cold: #6ea8ff; --cold-glow: #6ea8ff;
+    --lightning: #ffb84d; --lightning-glow: #ffb84d;
+    --chaos: #c07be0; --chaos-glow: #c07be0;
+    --gold: #ffffff; --gold-glow: #ffffff; --gold-dim: #ffffff;
+    --ok: #35c46a;
+    --link: #6ea8ff;
+  }
+
+  /* ---- Trust Blue Pay · Light (financial dashboard: navy + clean whites) ---- */
+  :root[data-theme="trust-blue-pay"] {
+    --void: #f5f7fa;
+    --panel: #ffffff;
+    --panel-raised: #ffffff;
+    --panel-sunken: #eef2f7;
+    --border: #cbd2d6;
+    --border-soft: #e3e8ee;
+    --text: #1a1a2e;
+    --text-muted: #3d4457;
+    --text-dim: #687173;
+    --fire: #d20000; --fire-glow: #d20000;
+    --cold: #009cde; --cold-glow: #009cde;
+    --lightning: #f5ba2e; --lightning-glow: #f5ba2e;
+    --chaos: #6a3f9e; --chaos-glow: #6a3f9e;
+    --gold: #003087; --gold-glow: #003087; --gold-dim: #00246b;
+    --ok: #019c34;
+    --link: #003087;
+    --font-head: 'Inter', 'Work Sans', sans-serif;
+    --font-body: 'Inter', 'Work Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Space Mono', monospace;
+  }
+
+  /* ---- Trust Blue Pay · Dark (tasteful dark navy, preserves contrast) ---- */
+  :root[data-theme="trust-blue-pay"][data-mode="dark"] {
+    --void: #0b1220;
+    --panel: #131c2e;
+    --panel-raised: #17233a;
+    --panel-sunken: #1c2942;
+    --border: #2c3a52;
+    --border-soft: #223047;
+    --text: #e8eef7;
+    --text-muted: #b9c4d6;
+    --text-dim: #8592a8;
+    --fire: #ff6b6b; --fire-glow: #ff6b6b;
+    --cold: #38b6ff; --cold-glow: #38b6ff;
+    --lightning: #ffcb52; --lightning-glow: #ffcb52;
+    --chaos: #b18ce0; --chaos-glow: #b18ce0;
+    --gold: #5b9dff; --gold-glow: #5b9dff; --gold-dim: #4d90fe;
+    --ok: #2ecc71;
+    --link: #6ea8ff;
+  }
+
+  /* ---- Trust Blue Pay structural softening ----
+     RawBlock's thick square borders → thinner, rounded, subtly shadowed
+     "payment/trust" surfaces. Scoped to the theme; colors already come from
+     the tokens above, so only border-width / radius / shadow are set here. */
+  html[data-theme="trust-blue-pay"] body { font-feature-settings: "tnum"; }
+  html[data-theme="trust-blue-pay"] .sidebar,
+  html[data-theme="trust-blue-pay"] .topbar,
+  html[data-theme="trust-blue-pay"] .nav-item,
+  html[data-theme="trust-blue-pay"] .sidebar-toggle,
+  html[data-theme="trust-blue-pay"] .hub-card,
+  html[data-theme="trust-blue-pay"] .reco-card,
+  html[data-theme="trust-blue-pay"] .radar-item-row,
+  html[data-theme="trust-blue-pay"] .radar-score-info,
+  html[data-theme="trust-blue-pay"] .radar-filter,
+  html[data-theme="trust-blue-pay"] .farm-card,
+  html[data-theme="trust-blue-pay"] .divine-metric-card,
+  html[data-theme="trust-blue-pay"] .divine-chart-wrap,
+  html[data-theme="trust-blue-pay"] .divine-table-wrap,
+  html[data-theme="trust-blue-pay"] .patch-panel,
+  html[data-theme="trust-blue-pay"] .patch-close,
+  html[data-theme="trust-blue-pay"] .shop-summary-card,
+  html[data-theme="trust-blue-pay"] .shop-buynext,
+  html[data-theme="trust-blue-pay"] #shopGearPanel,
+  html[data-theme="trust-blue-pay"] .shop-table-wrap,
+  html[data-theme="trust-blue-pay"] .ocr-btn,
+  html[data-theme="trust-blue-pay"] .mode-toggle,
+  html[data-theme="trust-blue-pay"] .appearance-seg button,
+  html[data-theme="trust-blue-pay"] input,
+  html[data-theme="trust-blue-pay"] select,
+  html[data-theme="trust-blue-pay"] textarea {
+    border-width: 1px;
+    border-radius: 10px;
+  }
+  html[data-theme="trust-blue-pay"] .hub-card,
+  html[data-theme="trust-blue-pay"] .reco-card,
+  html[data-theme="trust-blue-pay"] .farm-card,
+  html[data-theme="trust-blue-pay"] .divine-metric-card,
+  html[data-theme="trust-blue-pay"] .shop-summary-card,
+  html[data-theme="trust-blue-pay"] .patch-panel {
+    box-shadow: 0 1px 4px rgba(0, 48, 135, 0.06);
+  }
+  html[data-theme="trust-blue-pay"][data-mode="dark"] .hub-card,
+  html[data-theme="trust-blue-pay"][data-mode="dark"] .reco-card,
+  html[data-theme="trust-blue-pay"][data-mode="dark"] .farm-card,
+  html[data-theme="trust-blue-pay"][data-mode="dark"] .divine-metric-card,
+  html[data-theme="trust-blue-pay"][data-mode="dark"] .shop-summary-card,
+  html[data-theme="trust-blue-pay"][data-mode="dark"] .patch-panel {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
   }
 
   * { box-sizing: border-box; }
@@ -971,7 +1104,7 @@
   table.shop-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 1180px;
+    min-width: 1010px;
     /* table-layout: fixed ทำให้ความกว้างคอลัมน์ยึดตาม <colgroup> (ปรับเองแบบ Excel ได้) */
     table-layout: fixed;
   }
@@ -1028,7 +1161,6 @@
   .col-check { width: 36px; text-align: center; }
   .col-no { width: 56px; text-align: center; }
   .col-link { width: 210px; }
-  .col-type { width: 170px; }
   .col-num { width: 96px; }
   .col-deal { width: 320px; }
   .col-actions { width: 78px; text-align: center; }
@@ -2175,6 +2307,52 @@
   }
   .settings-body p { font-size: 12.5px; color: var(--text-muted); line-height: 1.6; margin: 0; }
 
+  /* ---- Appearance controls (topbar mode toggle + Settings theme/mode) ---- */
+  .topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; align-self: center; }
+  .mode-toggle {
+    display: flex; align-items: center; justify-content: center;
+    width: 34px; height: 34px;
+    background: var(--void);
+    border: 2px solid var(--border);
+    color: var(--text);
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+  }
+  .mode-toggle:hover { background: var(--text); color: var(--void); }
+  .mode-toggle:focus-visible { outline: 2px solid var(--border); outline-offset: 1px; }
+  .mode-toggle svg { width: 16px; height: 16px; display: block; }
+  @media (max-width: 860px) { .mode-toggle { width: 30px; height: 30px; } }
+
+  .appearance-group { margin-bottom: 16px; }
+  .appearance-group-label {
+    font-family: var(--font-head);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .appearance-seg { display: flex; gap: 8px; flex-wrap: wrap; }
+  .appearance-seg button {
+    flex: 1 1 auto;
+    min-width: 120px;
+    background: var(--void);
+    border: 2px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 9px 12px;
+    cursor: pointer;
+    text-align: center;
+  }
+  .appearance-seg button:hover { background: var(--text); color: var(--void); }
+  .appearance-seg button.active { background: var(--text); color: var(--void); border-color: var(--border); }
+  .appearance-note { font-size: 11.5px; color: var(--text-dim); line-height: 1.6; margin: 4px 0 0; }
+
   /* ---------- Divine Market ---------- */
   .divine-disclaimer {
     font-size: 11.5px;
@@ -2312,6 +2490,9 @@
     <header class="topbar">
       <span class="topbar-title" id="topbarTitle">Exile Hub</span>
       <span class="topbar-crumb" id="topbarCrumb">Main</span>
+      <div class="topbar-actions">
+        <button class="mode-toggle" type="button" id="modeToggle" title="สลับโหมดสว่าง/มืด" aria-label="สลับโหมดสว่าง/มืด" aria-pressed="false"></button>
+      </div>
     </header>
 
     <main class="content">
@@ -2557,14 +2738,13 @@
     <div class="shop-table-wrap">
       <table class="shop-table">
         <colgroup>
-          <col data-col="check"><col data-col="no"><col data-col="item"><col data-col="type"><col data-col="option"><col data-col="min"><col data-col="max"><col data-col="bought"><col data-col="deal"><col data-col="actions">
+          <col data-col="check"><col data-col="no"><col data-col="item"><col data-col="option"><col data-col="min"><col data-col="max"><col data-col="bought"><col data-col="deal"><col data-col="actions">
         </colgroup>
         <thead>
           <tr>
             <th class="col-check" data-col="check"><span class="col-resize" data-col="check"></span></th>
             <th class="col-no" data-col="no">No.<span class="col-resize" data-col="no"></span></th>
             <th class="col-link" data-col="item">Item / Link<span class="col-resize" data-col="item"></span></th>
-            <th class="col-type" data-col="type">Type<span class="col-resize" data-col="type"></span></th>
             <th data-col="option">Important Option<span class="col-resize" data-col="option"></span></th>
             <th class="col-num" data-col="min">Min (Div)<span class="col-resize" data-col="min"></span></th>
             <th class="col-num" data-col="max">Max (Div)<span class="col-resize" data-col="max"></span></th>
@@ -3570,8 +3750,77 @@ const SIDEBAR_KEY = 'poeAssist.sidebarCollapsed.v1';
   });
 })();
 
-/* ==================== Settings (placeholder) ==================== */
-// ยังไม่ทำระบบตั้งค่าจริง — เปิด modal RawBlock บอกว่า "coming soon" ไปก่อน
+/* ==================== Appearance: theme + color mode ====================
+   ธีมทั้งเว็บคุมด้วย data-theme (rawblock|trust-blue-pay) + data-mode (light|dark)
+   บน <html> — ตั้งค่าเร็วสุดใน <head> แล้ว (กัน flash). ที่นี่คุมการสลับ/บันทึก/ซิงก์
+   ปุ่มบน topbar กับใน Settings ให้ตรงกันเสมอ. เก็บใน key เพิ่มใหม่ (additive). */
+const THEME_KEY = 'poeAssist.theme.v1';
+const MODE_KEY = 'poeAssist.colorMode.v1';
+const APP_THEMES = [
+  { id: 'rawblock', label: 'RawBlock' },
+  { id: 'trust-blue-pay', label: 'Trust Blue Pay' },
+];
+
+function loadThemePreference() {
+  try { return localStorage.getItem(THEME_KEY) === 'trust-blue-pay' ? 'trust-blue-pay' : 'rawblock'; }
+  catch (e) { return 'rawblock'; }
+}
+function loadColorModePreference() {
+  try { return localStorage.getItem(MODE_KEY) === 'dark' ? 'dark' : 'light'; }
+  catch (e) { return 'light'; }
+}
+let appTheme = loadThemePreference();
+let appMode = loadColorModePreference();
+
+const SUN_SVG = '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM7 0h2v3H7zM7 13h2v3H7zM0 7h3v2H0zM13 7h3v2h-3zM2.2 3.6 3.6 2.2l2.1 2.1-1.4 1.4zM10.3 11.7l1.4-1.4 2.1 2.1-1.4 1.4zM11.7 5.7 10.3 4.3l2.1-2.1 1.4 1.4zM3.6 13.8 2.2 12.4l2.1-2.1 1.4 1.4z"/></svg>';
+const MOON_SVG = '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6 1a7 7 0 1 0 9 9A5.5 5.5 0 0 1 6 1z"/></svg>';
+
+function applyThemePreference() { document.documentElement.setAttribute('data-theme', appTheme); }
+function applyColorModePreference() { document.documentElement.setAttribute('data-mode', appMode); }
+
+function syncAppearanceControls() {
+  // ปุ่มสลับโหมดบน topbar (แสดงไอคอนของ "โหมดที่จะสลับไป")
+  const mt = document.getElementById('modeToggle');
+  if (mt) {
+    mt.innerHTML = appMode === 'dark' ? SUN_SVG : MOON_SVG;
+    mt.setAttribute('aria-pressed', appMode === 'dark' ? 'true' : 'false');
+    mt.title = appMode === 'dark' ? 'สลับเป็นโหมดสว่าง' : 'สลับเป็นโหมดมืด';
+  }
+  // ปุ่มใน Settings (ถ้า modal ถูกสร้างแล้ว)
+  document.querySelectorAll('#appearanceThemeSeg button').forEach(b => {
+    b.classList.toggle('active', b.dataset.theme === appTheme);
+  });
+  document.querySelectorAll('#appearanceModeSeg button').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === appMode);
+  });
+}
+
+function setAppTheme(t) {
+  appTheme = APP_THEMES.some(x => x.id === t) ? t : 'rawblock';
+  try { localStorage.setItem(THEME_KEY, appTheme); } catch (e) { /* storage unavailable */ }
+  applyThemePreference();
+  syncAppearanceControls();
+}
+function setAppColorMode(m) {
+  appMode = m === 'dark' ? 'dark' : 'light';
+  try { localStorage.setItem(MODE_KEY, appMode); } catch (e) { /* storage unavailable */ }
+  applyColorModePreference();
+  syncAppearanceControls();
+}
+
+// เผื่อ head script ไม่ได้รัน (เช่นถูกบล็อก) — ยืนยัน attribute อีกครั้ง
+applyThemePreference();
+applyColorModePreference();
+
+(function initModeToggle() {
+  const mt = document.getElementById('modeToggle');
+  if (mt) mt.addEventListener('click', () => setAppColorMode(appMode === 'dark' ? 'light' : 'dark'));
+  syncAppearanceControls();
+})();
+
+/* ==================== Settings ==================== */
+// ธีม + โหมดสว่าง/มืด (ปุ่มใน Settings ซิงก์กับปุ่มบน topbar); การตั้งค่าอื่นๆ
+// (เรทเงิน, รายการซื้อ, ขนาดตาราง, ย่อเมนู, พรีเซ็ตเกียร์) ยังบันทึกอัตโนมัติในเบราว์เซอร์
 (function initSettings() {
   const btn = document.getElementById('settingsBtn');
   const overlay = document.createElement('div');
@@ -3587,19 +3836,50 @@ const SIDEBAR_KEY = 'poeAssist.sidebarCollapsed.v1';
   close.textContent = '✕ ปิด';
   h.appendChild(close);
   panel.appendChild(h);
+
   const body = document.createElement('div');
   body.className = 'settings-body';
-  const tag = document.createElement('div');
-  tag.className = 'settings-soon';
-  tag.textContent = 'ยังไม่เปิดใช้งาน';
-  const desc = document.createElement('p');
-  desc.textContent = 'ส่วนตั้งค่ากำลังจะมา — ตอนนี้ยังเป็นตัวอย่าง (placeholder) การตั้งค่าปัจจุบัน (เรทเงิน, รายการซื้อ, พรีเซ็ตเกียร์, ขนาดตาราง, ย่อเมนู) ถูกบันทึกในเบราว์เซอร์อัตโนมัติอยู่แล้ว';
-  body.appendChild(tag);
-  body.appendChild(desc);
+
+  // helper: สร้างกลุ่ม segmented control
+  function makeGroup(labelText, segId, options, currentGetter, onPick, keyName) {
+    const group = document.createElement('div');
+    group.className = 'appearance-group';
+    const lab = document.createElement('div');
+    lab.className = 'appearance-group-label';
+    lab.textContent = labelText;
+    const seg = document.createElement('div');
+    seg.className = 'appearance-seg';
+    seg.id = segId;
+    options.forEach(opt => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = opt.label;
+      b.dataset[keyName] = opt.id;
+      b.classList.toggle('active', opt.id === currentGetter());
+      b.addEventListener('click', () => onPick(opt.id));
+      seg.appendChild(b);
+    });
+    group.appendChild(lab);
+    group.appendChild(seg);
+    return group;
+  }
+
+  body.appendChild(makeGroup('ธีม / Theme', 'appearanceThemeSeg', APP_THEMES,
+    () => appTheme, setAppTheme, 'theme'));
+  body.appendChild(makeGroup('โหมด / Mode',
+    'appearanceModeSeg',
+    [{ id: 'light', label: 'Light' }, { id: 'dark', label: 'Dark' }],
+    () => appMode, setAppColorMode, 'mode'));
+
+  const note = document.createElement('p');
+  note.className = 'appearance-note';
+  note.textContent = 'ธีมและโหมดถูกจำไว้หลังรีโหลด และสลับได้จากปุ่มมุมขวาบนด้วย. การตั้งค่าอื่นๆ (เรทเงิน, รายการซื้อ, ขนาดตาราง, ย่อเมนู, พรีเซ็ตเกียร์) ถูกบันทึกในเบราว์เซอร์อัตโนมัติอยู่แล้ว';
+  body.appendChild(note);
+
   panel.appendChild(body);
   overlay.appendChild(panel);
   document.body.appendChild(overlay);
-  btn.addEventListener('click', () => { overlay.hidden = false; });
+  btn.addEventListener('click', () => { overlay.hidden = false; syncAppearanceControls(); });
   close.addEventListener('click', () => { overlay.hidden = true; });
   overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.hidden = true; });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') overlay.hidden = true; });
@@ -3673,7 +3953,6 @@ const SHOP_COLS = [
   { id: 'check',   def: 40,  min: 30,  max: 90 },
   { id: 'no',      def: 56,  min: 44,  max: 130 },
   { id: 'item',    def: 210, min: 120, max: 520 },
-  { id: 'type',    def: 170, min: 90,  max: 360 },
   { id: 'option',  def: 180, min: 90,  max: 400 },
   { id: 'min',     def: 96,  min: 60,  max: 200 },
   { id: 'max',     def: 96,  min: 60,  max: 200 },
@@ -4100,7 +4379,7 @@ function renderShopTable() {
   if (shopRows.length === 0) {
     const tr = document.createElement('tr');
     const td = document.createElement('td');
-    td.colSpan = 10;
+    td.colSpan = 9;
     td.className = 'shop-empty';
     td.textContent = 'ยังไม่มีรายการ — กด "+ Add Row" เพื่อเริ่มวางแผนของที่ต้องซื้อ (หรือ Import JSON ถ้าเคย Export เก็บไว้)';
     tr.appendChild(td);
@@ -4175,20 +4454,9 @@ function renderShopTable() {
     tdLink.appendChild(itemCell);
     tr.appendChild(tdLink);
 
-    // Type (searchable datalist + free text)
-    const tdType = document.createElement('td');
-    tdType.className = 'col-type';
-    const typeInput = document.createElement('input');
-    typeInput.type = 'text';
-    typeInput.setAttribute('list', 'itemTypeList');
-    typeInput.placeholder = 'เลือก/พิมพ์ type…';
-    typeInput.value = row.type || '';
-    typeInput.addEventListener('input', () => {
-      row.type = typeInput.value;
-      persistShopRows();
-    });
-    tdType.appendChild(typeInput);
-    tr.appendChild(tdType);
+    // หมายเหตุ: คอลัมน์ "Type" แยกถูกถอดออก (patch 0.13) — การเลือกช่อง/ประเภททำผ่าน
+    // slot-select ในคอลัมน์ Item/Link แล้ว. ฟิลด์ row.type ยังคงอยู่ในข้อมูล/เก็บ/นำเข้า-ส่งออก
+    // เพื่อไม่ให้ข้อมูลเดิมหาย เพียงแต่ไม่แสดงเป็นคอลัมน์ซ้ำซ้อนอีกต่อไป
 
     // Important Option
     const tdOpt = document.createElement('td');
@@ -4273,7 +4541,7 @@ function renderShopTable() {
   if (visibleRows.length === 0) {
     const tr = document.createElement('tr');
     const td = document.createElement('td');
-    td.colSpan = 10;
+    td.colSpan = 9;
     td.className = 'shop-empty';
     const slotOnly = shopSelectedSlot !== 'all' && !shopFilterText.trim() && shopQuickFilter === 'all';
     if (slotOnly) {
@@ -4680,6 +4948,16 @@ document.getElementById('shopSizeReset').addEventListener('click', resetShopSizi
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.13',
+    date: '2026-07-12',
+    notes: [
+      'ธีมเว็บ: เพิ่มให้เลือกได้ 2 ธีม — RawBlock (ขาว-ดำ brutalist เดิม) และ Trust Blue Pay (โทนน้ำเงินกรมท่า/ขาวสะอาด สไตล์แดชบอร์ดการเงิน) เลือกได้ใน Settings; มีผลทั้งเว็บทุกแท็บ',
+      'โหมดสว่าง/มืด: เพิ่มปุ่มสลับ Light/Dark ที่มุมขวาบน (topbar) และใน Settings — สองที่ซิงก์กัน; ค่าเริ่มต้นเป็นโหมดสว่าง; จำธีมและโหมดไว้หลังรีโหลด',
+      'Settings: เปลี่ยนจาก placeholder เป็นใช้งานจริง — ตั้งธีมและโหมดได้ในนั้น (การตั้งค่าอื่นๆ เช่น เรทเงิน/รายการซื้อ/ขนาดตาราง/ย่อเมนู ยังบันทึกอัตโนมัติเหมือนเดิม)',
+      'Shopping List: เอาคอลัมน์ "Type" ที่แยกออกมาต่างหากออก (ซ้ำซ้อน) — เลือกช่อง/ประเภทของไอเทมทำผ่านตัวเลือกในคอลัมน์ Item / Link ได้อยู่แล้ว ตารางสะอาดขึ้น (ข้อมูล type เดิมยังถูกเก็บ/นำเข้า-ส่งออกครบ ไม่หาย และปรับขนาดคอลัมน์ที่เหลือได้ปกติ)',
+    ],
+  },
   {
     version: '0.12',
     date: '2026-07-12',
