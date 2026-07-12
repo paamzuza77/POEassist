@@ -151,6 +151,9 @@
   html[data-theme="trust-blue-pay"] .equip-slot,
   html[data-theme="trust-blue-pay"] .jewel-slot,
   html[data-theme="trust-blue-pay"] .item-editor,
+  html[data-theme="trust-blue-pay"] .stat-radar,
+  html[data-theme="trust-blue-pay"] .sr-score-box,
+  html[data-theme="trust-blue-pay"] .sr-bar,
   html[data-theme="trust-blue-pay"] .totals-panel,
   html[data-theme="trust-blue-pay"] .gauge-track,
   html[data-theme="trust-blue-pay"] .hub-card,
@@ -228,6 +231,7 @@
   html[data-theme="trust-blue-pay"] .codex-rate-chip,
   html[data-theme="trust-blue-pay"] .codex-link-chip,
   html[data-theme="trust-blue-pay"] .codex-mob-chip,
+  html[data-theme="trust-blue-pay"] .sr-status,
   html[data-theme="trust-blue-pay"] .farm-link-chip {
     border-width: 1px;
     border-radius: 999px;
@@ -246,6 +250,7 @@
   html[data-theme="trust-blue-pay"] .farm-list-item,
   html[data-theme="trust-blue-pay"] .farm-run-summary,
   html[data-theme="trust-blue-pay"] .farm-econ,
+  html[data-theme="trust-blue-pay"] .stat-radar,
   html[data-theme="trust-blue-pay"] .farm-tracker,
   html[data-theme="trust-blue-pay"] .divine-metric-card,
   html[data-theme="trust-blue-pay"] .codex-list-item,
@@ -708,13 +713,18 @@
   .corner.bl { bottom: -3px; left: -3px; }
   .corner.br { bottom: -3px; right: -3px; }
 
-  /* ---------- Layout: paperdoll + editor side by side ---------- */
+  /* ---------- Layout: paperdoll + editor + stat radar side by side ---------- */
   .gear-layout {
     display: grid;
-    grid-template-columns: minmax(300px, 380px) 1fr;
+    grid-template-columns: minmax(280px, 350px) minmax(280px, 1fr) minmax(280px, 400px);
     gap: 24px;
     align-items: start;
     margin-bottom: 32px;
+  }
+  /* จอกลาง: radar ลงมาเต็มแถวใต้ paperdoll+editor */
+  @media (max-width: 1180px) {
+    .gear-layout { grid-template-columns: minmax(280px, 350px) minmax(0, 1fr); }
+    .stat-radar { grid-column: 1 / -1; }
   }
   @media (max-width: 760px) {
     .gear-layout { grid-template-columns: 1fr; }
@@ -3063,6 +3073,155 @@
     .codex-layout { grid-template-columns: minmax(0, 1fr); }
     .codex-detail-grid { grid-template-columns: minmax(0, 1fr); }
   }
+
+  /* ==================== Missing Stat Radar (patch 0.23) ====================
+     แผงขวาของ Item Editor ในแท็บ Resistance Checker: readiness score + missing stats + คำแนะนำ */
+  .stat-radar {
+    background: var(--void);
+    border: 3px solid var(--border);
+    border-radius: 0;
+    padding: 18px 18px 14px;
+    position: relative;
+  }
+  .sr-title {
+    font-family: var(--font-head);
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 14px;
+  }
+  .sr-score-box {
+    border: 2px solid var(--border);
+    padding: 12px;
+    margin-bottom: 14px;
+  }
+  .sr-score-line {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .sr-score-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .sr-score {
+    font-family: var(--font-head);
+    font-size: 30px;
+    line-height: 1;
+  }
+  .sr-score.sr-good { color: var(--ok); }
+  .sr-score.sr-mid { color: var(--lightning); }
+  .sr-score.sr-low { color: var(--fire); }
+  .sr-bar {
+    height: 10px;
+    border: 2px solid var(--border);
+    margin: 10px 0;
+    background: var(--panel-sunken);
+  }
+  .sr-bar-fill { height: 100%; width: 0; }
+  .sr-bar-fill.sr-good { background: var(--ok); }
+  .sr-bar-fill.sr-mid { background: var(--lightning); }
+  .sr-bar-fill.sr-low { background: var(--fire); }
+  .sr-breakdown {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 14px;
+  }
+  .sr-part {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--text-muted);
+  }
+  .sr-part b { color: var(--text); }
+  .sr-stat-list { margin-bottom: 12px; }
+  .sr-row {
+    display: grid;
+    grid-template-columns: minmax(58px, auto) 1fr auto;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border-soft);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+  }
+  .sr-row:last-child { border-bottom: none; }
+  .sr-name { font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .sr-name.fire { color: var(--fire); }
+  .sr-name.cold { color: var(--cold); }
+  .sr-name.lightning { color: var(--lightning); }
+  .sr-name.chaos { color: var(--chaos); }
+  .sr-vals { color: var(--text-muted); text-align: right; white-space: nowrap; }
+  .sr-status {
+    border: 2px solid var(--border);
+    padding: 1px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+  .sr-status.sr-ready { border-color: var(--ok); color: var(--ok); }
+  .sr-status.sr-short { border-color: var(--lightning); color: var(--lightning); }
+  .sr-status.sr-opt { border-color: var(--border-soft); color: var(--text-dim); }
+  .sr-reco {
+    list-style: none;
+    margin: 0 0 14px;
+    padding: 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .sr-reco li { padding: 2px 0 2px 14px; position: relative; }
+  .sr-reco li::before { content: '→'; position: absolute; left: 0; }
+  .sr-reco li.sr-ready { color: var(--ok); padding-left: 0; }
+  .sr-reco li.sr-ready::before { content: ''; }
+  .sr-reco li.sr-short { color: var(--text); }
+  .sr-reco li.sr-opt { color: var(--text-dim); }
+  .sr-targets { border-top: 2px solid var(--border); padding-top: 10px; }
+  .sr-targets-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+  }
+  .sr-target-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .sr-target-row label {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex: 1 1 70px;
+  }
+  .sr-target-input {
+    width: 100%;
+    background: var(--panel-sunken);
+    border: 2px solid var(--border);
+    border-radius: 0;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    padding: 5px 7px;
+    color: var(--text);
+  }
+  .sr-target-input:focus { border-width: 3px; outline: none; padding: 4px 6px; }
+  .sr-footnote {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    margin: 10px 0 0;
+    line-height: 1.5;
+  }
 </style>
 </head>
 <body>
@@ -3266,6 +3425,34 @@
       </div>
       <div class="rows-container" id="editorRows"></div>
       <button class="add-row" type="button" id="addRowBtn">+ เพิ่มค่าสเตตัส</button>
+    </div>
+
+    <div class="stat-radar ornate" id="statRadar">
+      <h2 class="sr-title">Missing Stat Radar</h2>
+
+      <div class="sr-score-box">
+        <div class="sr-score-line">
+          <span class="sr-score-label">Readiness Score</span>
+          <span class="sr-score" id="readinessScore">–</span>
+        </div>
+        <div class="sr-bar"><div class="sr-bar-fill" id="readinessBarFill"></div></div>
+        <div class="sr-breakdown" id="readinessBreakdown"></div>
+      </div>
+
+      <div class="sr-stat-list" id="srStatList"></div>
+
+      <ul class="sr-reco" id="srReco"></ul>
+
+      <div class="sr-targets">
+        <p class="sr-targets-title">เป้าหมาย (แก้ได้ · บันทึกอัตโนมัติ)</p>
+        <div class="sr-target-row">
+          <label>Elemental <input type="number" id="srTargetElemental" class="sr-target-input"></label>
+          <label>Chaos <input type="number" id="srTargetChaos" class="sr-target-input"></label>
+          <label>Rarity <input type="number" id="srTargetRarity" class="sr-target-input"></label>
+        </div>
+      </div>
+
+      <p class="sr-footnote">คะแนนนี้เป็น checklist ความพร้อมด้านต้านทาน/rarity/ช่องอุปกรณ์เท่านั้น — ไม่ใช่คะแนนความแรงหรือ DPS ของบิลด์</p>
     </div>
   </div>
 
@@ -3994,7 +4181,172 @@ function recalc() {
     valueEl.classList.remove('mf-zero', 'mf-positive');
     valueEl.classList.add(total > 0 ? 'mf-positive' : 'mf-zero');
   });
+
+  updateForgeRadar(totals);
 }
+
+/* ---------- Missing Stat Radar + Readiness Score (patch 0.23) ----------
+   แผงข้าง Item Editor: บอกว่าเพรเซ็ตนี้ยังขาดค่าอะไร เท่าไหร่ + คะแนนความพร้อม 0-100 แบบ checklist
+   ใช้ totals จาก recalc() ตรงๆ (รวม penalty แล้ว เหมือนที่เกจแสดง) — ไม่มีสูตรต้านทานใหม่
+   เป้าหมายแก้ไขได้ เก็บในคีย์ additive ใหม่ — ไม่แตะคีย์ preset เดิม */
+
+const FORGE_TARGETS_KEY = 'poe2ResForge.targets.v1'; // additive: { elemental, chaos, rarity }
+// ค่าเริ่มต้น: elemental = cap 75; chaos = 0 (เกณฑ์ conservative — ไม่ติดลบถือว่าผ่านก่อน);
+// rarity = 150 (จุด diminishing returns เดิมที่เกจ MF มาร์กไว้อยู่แล้ว) — เป้า rarity เป็น optional เสมอ
+const FORGE_TARGET_DEFAULTS = { elemental: CAP, chaos: 0, rarity: 150 };
+
+function loadForgeTargets() {
+  const t = Object.assign({}, FORGE_TARGET_DEFAULTS);
+  try {
+    const raw = JSON.parse(localStorage.getItem(FORGE_TARGETS_KEY));
+    if (raw && typeof raw === 'object') {
+      ['elemental', 'chaos', 'rarity'].forEach(k => {
+        const v = parseFloat(raw[k]);
+        if (!isNaN(v)) t[k] = v;
+      });
+    }
+  } catch (e) { /* malformed → defaults */ }
+  return t;
+}
+let forgeTargets = loadForgeTargets();
+
+function persistForgeTargets() {
+  try { localStorage.setItem(FORGE_TARGETS_KEY, JSON.stringify(forgeTargets)); } catch (e) { /* storage unavailable */ }
+}
+
+function forgeTargetFor(statKey) {
+  if (statKey === 'chaos') return forgeTargets.chaos;
+  if (statKey === 'rarity') return forgeTargets.rarity;
+  return forgeTargets.elemental;
+}
+
+// ความคืบหน้า 0..1 จาก floor → target (กัน target <= floor)
+function forgeProgress(current, floor, target) {
+  if (target <= floor) return current >= target ? 1 : 0;
+  return Math.max(0, Math.min(1, (current - floor) / (target - floor)));
+}
+
+// สถานะรายค่า: ready/capped (เขียว) · short +X (ส้ม) · optional (จาง สำหรับ rarity)
+function computeForgeMissing(totals) {
+  return STATS.map(s => {
+    const target = forgeTargetFor(s.key);
+    const current = totals[s.key];
+    const shortBy = Math.max(0, Math.ceil(target - current));
+    let status, cls;
+    if (s.key === 'rarity') {
+      if (target <= 0) { status = 'tracking only'; cls = 'opt'; }
+      else if (current >= target) { status = 'ready'; cls = 'ready'; }
+      else { status = '+' + shortBy + ' to target'; cls = 'opt'; }
+    } else if (current >= target) {
+      status = current >= CAP ? 'capped' : 'ready';
+      cls = 'ready';
+    } else {
+      status = 'short +' + shortBy;
+      cls = 'short';
+    }
+    return { key: s.key, label: s.label, group: s.group, current, target, shortBy, status, cls };
+  });
+}
+
+// Readiness Score 0-100 (สูตรโปร่งใส): Elemental 45 (ธาตุละ 15, วัดจาก penalty → เป้า)
+// + Chaos 20 + Rarity 15 (เป้า ≤ 0 = tracking only ให้เต็ม) + ช่องอุปกรณ์ที่มีข้อมูล 20 (10 ช่องหลัก)
+function computeForgeReadiness(totals) {
+  let elem = 0;
+  ['fire', 'cold', 'lightning'].forEach(k => {
+    elem += 15 * forgeProgress(totals[k], PENALTY, forgeTargets.elemental);
+  });
+  const chaosT = forgeTargets.chaos;
+  const chaos = 20 * (chaosT <= 0 ? (totals.chaos >= chaosT ? 1 : 0) : forgeProgress(totals.chaos, 0, chaosT));
+  const rarT = forgeTargets.rarity;
+  const rarity = 15 * (rarT <= 0 ? 1 : forgeProgress(totals.rarity, 0, rarT));
+  const filled = EQUIP_SLOTS.filter(sl => slotHasAnyData(sl.key)).length;
+  const gear = 20 * (filled / EQUIP_SLOTS.length);
+  return {
+    score: Math.max(0, Math.min(100, Math.round(elem + chaos + rarity + gear))),
+    filled,
+    parts: [
+      { label: 'Elemental', pts: Math.round(elem), max: 45 },
+      { label: 'Chaos', pts: Math.round(chaos), max: 20 },
+      { label: 'Rarity', pts: Math.round(rarity), max: 15 },
+      { label: 'Gear Filled', pts: Math.round(gear), max: 20 },
+    ],
+  };
+}
+
+// คำแนะนำสั้นๆ: ธาตุที่ขาดมากสุดก่อน → chaos → rarity → ช่องว่าง; ครบหมด = ข้อความพร้อมใช้
+function buildForgeRecos(missing, readiness) {
+  const recos = [];
+  const elemShort = missing.filter(m =>
+    (m.key === 'fire' || m.key === 'cold' || m.key === 'lightning') && m.current < m.target);
+  if (elemShort.length) {
+    const worst = elemShort.reduce((a, b) => (b.shortBy > a.shortBy ? b : a));
+    recos.push({ cls: 'short', text: 'เติม ' + worst.label.replace(' Resistance', '') + ' ก่อน — ขาดอีก +' + worst.shortBy + '%' });
+    const rest = elemShort.filter(m => m !== worst);
+    if (rest.length) {
+      recos.push({ cls: 'short', text: 'ธาตุอื่นที่ยังขาด: ' + rest.map(m => m.label.replace(' Resistance', '') + ' +' + m.shortBy + '%').join(' · ') });
+    }
+  }
+  const chaos = missing.find(m => m.key === 'chaos');
+  if (chaos && chaos.current < chaos.target) {
+    recos.push({ cls: 'short', text: 'Chaos ยังขาด +' + chaos.shortBy + '% (เป้า ' + chaos.target + '%)' });
+  }
+  const rar = missing.find(m => m.key === 'rarity');
+  if (rar && rar.target > 0 && rar.current < rar.target) {
+    recos.push({ cls: 'opt', text: 'Rarity อีก +' + rar.shortBy + '% ถึงเป้า ' + rar.target + '% (nice to have)' });
+  }
+  if (!recos.length) recos.push({ cls: 'ready', text: '✓ เป้าหมายหลักครบแล้ว — ชุดนี้พร้อมใช้งาน' });
+  if (readiness.filled < EQUIP_SLOTS.length) {
+    recos.push({ cls: 'opt', text: 'ช่องอุปกรณ์ที่ยังไม่มีข้อมูล: ' + (EQUIP_SLOTS.length - readiness.filled) + '/' + EQUIP_SLOTS.length + ' ช่อง' });
+  }
+  return recos;
+}
+
+// อัปเดตแผงทั้งหมด — เรียกจากท้าย recalc() ทุกครั้งที่ค่าเปลี่ยน (ทุกสตริงเป็น internal ไม่มี user HTML)
+function updateForgeRadar(totals) {
+  const scoreEl = document.getElementById('readinessScore');
+  if (!scoreEl) return;
+  const missing = computeForgeMissing(totals);
+  const readiness = computeForgeReadiness(totals);
+  const stateCls = readiness.score >= 80 ? 'sr-good' : readiness.score >= 50 ? 'sr-mid' : 'sr-low';
+
+  scoreEl.textContent = readiness.score;
+  scoreEl.className = 'sr-score ' + stateCls;
+  const fill = document.getElementById('readinessBarFill');
+  fill.style.width = readiness.score + '%';
+  fill.className = 'sr-bar-fill ' + stateCls;
+
+  document.getElementById('readinessBreakdown').innerHTML = readiness.parts.map(p =>
+    '<div class="sr-part"><span>' + p.label + '</span><b>' + p.pts + '/' + p.max + '</b></div>').join('');
+
+  document.getElementById('srStatList').innerHTML = missing.map(m => {
+    const name = m.label.replace(' Resistance', '').replace('Item ', '');
+    const cur = m.group === 'res' ? formatResValue(m.current) : (m.current > 0 ? '+' : '') + m.current + '%';
+    return '<div class="sr-row">' +
+      '<span class="sr-name ' + m.key + '">' + name + '</span>' +
+      '<span class="sr-vals">' + cur + ' → ' + m.target + '%</span>' +
+      '<span class="sr-status sr-' + m.cls + '">' + m.status + '</span>' +
+      '</div>';
+  }).join('');
+
+  document.getElementById('srReco').innerHTML = buildForgeRecos(missing, readiness).map(r =>
+    '<li class="sr-' + r.cls + '">' + r.text + '</li>').join('');
+}
+
+// ผูกช่องแก้เป้าหมาย (ครั้งเดียวตอนโหลด) — แก้แล้วบันทึก + คำนวณใหม่ทันที
+(function initForgeTargets() {
+  const map = { srTargetElemental: 'elemental', srTargetChaos: 'chaos', srTargetRarity: 'rarity' };
+  Object.keys(map).forEach(id => {
+    const input = document.getElementById(id);
+    if (!input) return;
+    input.value = forgeTargets[map[id]];
+    input.addEventListener('input', () => {
+      const v = parseFloat(input.value);
+      forgeTargets[map[id]] = isNaN(v) ? FORGE_TARGET_DEFAULTS[map[id]] : v;
+      persistForgeTargets();
+      recalc();
+    });
+  });
+})();
 
 /* ---------- OCR: paste a screenshot of an item, auto-fill stats ----------
    Fully client-side via Tesseract.js (loaded lazily from CDN on first use).
@@ -4379,6 +4731,7 @@ recalc();
 
 addCorners(document.querySelector('.paperdoll-frame'));
 addCorners(document.querySelector('.item-editor'));
+addCorners(document.querySelector('.stat-radar'));
 addCorners(document.querySelector('.totals-panel'));
 
 /* ==================== Tabs ==================== */
@@ -4525,6 +4878,7 @@ applyColorModePreference();
 const APP_DATA_KEYS = [
   'poe2ResForge.presets.v2',
   'poe2ResForge.activePreset.v2',
+  'poe2ResForge.targets.v1',
   'poeAssist.activeTab.v1',
   'poeAssist.theme.v1',
   'poeAssist.colorMode.v1',
@@ -5969,6 +6323,16 @@ document.getElementById('shopSizeReset').addEventListener('click', resetShopSizi
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.23',
+    date: '2026-07-13',
+    notes: [
+      'Resistance Checker: แผงใหม่ "Missing Stat Radar" ข้างๆ Item Editor — สรุปรายค่า Fire/Cold/Lightning/Chaos/Rarity ว่าตอนนี้ได้เท่าไหร่ เป้าเท่าไหร่ ขาดอีกเท่าไหร่ (ready / capped / short +X / optional)',
+      'Readiness Score 0-100 แบบ checklist โปร่งใส: Elemental 45 (ธาตุละ 15) + Chaos 20 + Rarity 15 + ช่องอุปกรณ์ที่มีข้อมูล 20 — พร้อม breakdown รายส่วนและคำแนะนำสั้นๆ ว่าควรเติมอะไรก่อน (ไม่ใช่คะแนนความแรง/DPS ของบิลด์)',
+      'เป้าหมายแก้ไขได้ในแผง (Elemental / Chaos / Rarity — ค่าเริ่มต้น 75 / 0 / 150) บันทึกในเบราว์เซอร์ด้วยคีย์ใหม่ poe2ResForge.targets.v1 (additive — preset เดิมไม่ถูกแตะ, รวมใน backup แล้ว)',
+      'เลย์เอาต์: Item Editor แคบลงเพื่อให้แผงใหม่อยู่ขวามือบนจอกว้าง; จอกลางแผงลงมาเต็มแถวใต้ editor; จอแคบเรียงเป็นคอลัมน์เดียว — เกจ/OCR/preset เดิมทำงานเหมือนเดิมทุกอย่าง',
+    ],
+  },
   {
     version: '0.22',
     date: '2026-07-12',
