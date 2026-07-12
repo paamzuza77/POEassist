@@ -209,10 +209,14 @@
   html[data-theme="trust-blue-pay"] .mech-tag,
   html[data-theme="trust-blue-pay"] .bought-badge,
   html[data-theme="trust-blue-pay"] .divine-reco-badge,
+  html[data-theme="trust-blue-pay"] .reco-top-badge,
   html[data-theme="trust-blue-pay"] .farm-link-chip {
     border-width: 1px;
     border-radius: 999px;
   }
+  html[data-theme="trust-blue-pay"] .reco-top-badge { background: var(--gold); color: #ffffff; border-color: var(--gold); }
+  /* dark: --gold เป็นฟ้าอ่อน — ตัวอักษรเข้มอ่านชัดกว่าขาว */
+  html[data-theme="trust-blue-pay"][data-mode="dark"] .reco-top-badge { color: #0b1220; }
 
   /* 3 · Modals get a proper elevation; cards/panels a subtle navy-tinted lift */
   html[data-theme="trust-blue-pay"] .hub-card,
@@ -249,6 +253,7 @@
   html[data-theme="trust-blue-pay"] .score-bar-fill { background: var(--gold); }
   html[data-theme="trust-blue-pay"] .summary-group.remain-group,
   html[data-theme="trust-blue-pay"] .summary-group.bought-group,
+  html[data-theme="trust-blue-pay"] .reco-card.top-pick,
   html[data-theme="trust-blue-pay"] .farm-card.favorite {
     border-width: 2px;
     border-color: var(--gold);
@@ -540,6 +545,9 @@
     color: var(--text-dim);
     margin-left: 6px;
   }
+  /* จุดบอกพรีเซ็ตที่มีข้อมูล — เขียวบนพื้นขาว, กลับสีเองไม่ได้เพราะ hover เป็น invert จึงคง currentColor ไว้ */
+  .preset-dot { color: var(--ok); }
+  .preset-tab.active .preset-dot, .preset-tab:hover .preset-dot { color: inherit; }
 
   /* ---------- OCR paste zone ---------- */
   .ocr-zone {
@@ -965,6 +973,9 @@
     margin: 0 0 18px;
   }
   .totals-title.mf-title { margin-top: 22px; }
+  /* ตัวนับธาตุที่ถึง cap ข้างหัวข้อ Total Resistance — ครบ 4/4 = เขียว */
+  .totals-cap-count { font-size: 10px; letter-spacing: 0.1em; color: var(--text-dim); margin-left: 8px; }
+  .totals-cap-count.all-capped { color: var(--ok); }
 
   .gauge-row {
     display: grid;
@@ -1883,6 +1894,20 @@
     color: var(--text-dim);
   }
   .reco-risk { font-size: 11px; color: var(--lightning); margin-bottom: 6px; }
+  /* การ์ดคำแนะนำอันดับ 1 — ขอบหนาสุดตามลำดับชั้น RawBlock + ป้าย TOP PICK */
+  .reco-card.top-pick { border-width: 5px; }
+  .reco-top-badge {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--text);
+    color: var(--void);
+    border: 2px solid var(--border);
+    padding: 2px 7px;
+    white-space: nowrap;
+  }
 
   /* ---------- Farm planner toolbar & filter chips ---------- */
   .farm-toolbar {
@@ -2094,8 +2119,10 @@
     padding-top: 10px;
     border-top: 2px solid var(--border);
   }
-  .farm-date-wrap { flex: 1; display: flex; align-items: center; gap: 6px; }
+  .farm-date-wrap { flex: 1; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .farm-date-wrap input { width: auto; }
+  /* ป้ายอายุการเช็คล่าสุดของการ์ดฟาร์ม — สีเตือนมาจาก utility class .divine-warn */
+  .farm-checked-age { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-dim); white-space: nowrap; }
   .farm-empty {
     grid-column: 1 / -1;
     text-align: center;
@@ -2785,7 +2812,7 @@
   </div>
 
   <div class="totals-panel ornate">
-    <p class="totals-title">Total Resistance</p>
+    <p class="totals-title">Total Resistance <span class="totals-cap-count" id="resCapCount" title="จำนวนธาตุที่ถึง cap 75% แล้ว"></span></p>
     <div id="gaugesRes"></div>
     <p class="totals-title mf-title">Magic Find</p>
     <div id="gaugesMf"></div>
@@ -2944,6 +2971,13 @@
     <h2 class="hub-section-title">Divine Price Chart (THB)</h2>
     <div class="divine-chart-wrap" id="divineChartWrap"></div>
 
+    <h2 class="hub-section-title">Market Recommendation</h2>
+    <div class="reco-card divine-reco-card" id="divineRecoCard"></div>
+
+    <h2 class="hub-section-title">What Changed Today?</h2>
+    <div id="divineWhatChanged" class="hub-missing"></div>
+
+    <!-- ฟอร์มกรอกราคาย้ายมาไว้หลังส่วนวิเคราะห์ — ดูข้อสรุปก่อน แล้วค่อยเพิ่มข้อมูลวันใหม่ -->
     <h2 class="hub-section-title">Add / Update Price Point</h2>
     <form class="radar-filter" id="divineForm">
       <label>Date
@@ -2957,14 +2991,8 @@
       </label>
       <button class="ocr-btn primary" type="submit">Save Price</button>
       <span class="divine-form-error" id="divineFormError"></span>
-      <p class="rf-note">ข้อมูลที่เพิ่มในหน้านี้เป็นข้อมูลชั่วคราวใน session นี้ ยังไม่ได้บันทึกลงฐานข้อมูล</p>
+      <p class="rf-note">วันที่และ League Day ถูกเติมให้อัตโนมัติ (แก้ได้) — ข้อมูลที่เพิ่มในหน้านี้เป็นข้อมูลชั่วคราวใน session นี้ ยังไม่ได้บันทึกลงฐานข้อมูล</p>
     </form>
-
-    <h2 class="hub-section-title">Market Recommendation</h2>
-    <div class="reco-card divine-reco-card" id="divineRecoCard"></div>
-
-    <h2 class="hub-section-title">What Changed Today?</h2>
-    <div id="divineWhatChanged" class="hub-missing"></div>
 
     <h2 class="hub-section-title">Market Phase Timeline</h2>
     <div class="divine-table-wrap">
@@ -3094,6 +3122,26 @@ function renderPresetBar() {
   tag.className = 'preset-save-tag';
   tag.textContent = '(บันทึกอัตโนมัติ)';
   bar.appendChild(tag);
+  updatePresetDots();
+}
+
+// จุด ● บนแท็บพรีเซ็ตที่มีข้อมูล — เห็นได้ทันทีว่าชุดไหนมีของ ไม่ต้องกดสลับไปดู
+// เรียกซ้ำจาก recalc() เพื่อให้จุดตามข้อมูลล่าสุดเสมอ (ไม่ rebuild ปุ่ม — ไม่รบกวนโฟกัส)
+function updatePresetDots() {
+  const tabs = document.querySelectorAll('#presetBar .preset-tab');
+  tabs.forEach((btn, i) => {
+    const hasData = presets[i] && ALL_SLOTS.some(sl => (presets[i][sl.key] || []).some(r => (r.value || 0) !== 0));
+    let dot = btn.querySelector('.preset-dot');
+    if (hasData && !dot) {
+      dot = document.createElement('span');
+      dot.className = 'preset-dot';
+      dot.textContent = ' ●';
+      dot.title = 'พรีเซ็ตนี้มีข้อมูลบันทึกไว้';
+      btn.appendChild(dot);
+    } else if (!hasData && dot) {
+      dot.remove();
+    }
+  });
 }
 
 function slotHasStat(slotKey, statKey) {
@@ -3436,6 +3484,15 @@ function recalc() {
     else if (total >= CAP) valueEl.classList.add('capped');
     else valueEl.classList.add('under');
   });
+
+  // สรุปหัวข้อ: ถึง cap แล้วกี่ธาตุจาก 4 — ครบ = เขียว
+  const capEl = document.getElementById('resCapCount');
+  if (capEl) {
+    const cappedCount = RES_STATS.filter(el => totals[el.key] >= CAP).length;
+    capEl.textContent = cappedCount + '/' + RES_STATS.length + ' ถึง cap';
+    capEl.classList.toggle('all-capped', cappedCount === RES_STATS.length);
+  }
+  updatePresetDots();
 
   MF_STATS.forEach(el => {
     const total = totals[el.key];
@@ -4753,6 +4810,23 @@ function rowMatchesQuick(row) {
   }
 }
 
+// ป้ายชิป quick filter (ฐาน — ตัวเลขนับต่อท้ายตอน render) + ตัวนับต่อชิป
+const SHOP_QUICK_LABELS = { all: 'All', need: 'ยังไม่ซื้อ', bought: 'ซื้อแล้ว', noprice: 'ไม่มีราคา', deal: 'มี Deal' };
+// นับจากแถวใน "มุมมองปัจจุบัน" (slot + คำค้นหา) — เห็นก่อนกดเลยว่าชิปไหนมีของกี่แถว
+function updateShopQuickFilterCounts(baseRows) {
+  const counts = {
+    all: baseRows.length,
+    need: baseRows.filter(r => !isBought(r)).length,
+    bought: baseRows.filter(r => isBought(r)).length,
+    noprice: baseRows.filter(r => !isBought(r) && !rowHasPrice(r)).length,
+    deal: baseRows.filter(r => !!r.dealLink || (typeof r.dealPrice === 'number' && !isNaN(r.dealPrice))).length,
+  };
+  document.querySelectorAll('#shopQuickFilters .filter-chip').forEach(c => {
+    const k = c.dataset.filter;
+    c.textContent = (SHOP_QUICK_LABELS[k] || k) + ' (' + (counts[k] || 0) + ')';
+  });
+}
+
 // เรียงเฉพาะ array ที่จะแสดงผล — ห้าม sort shopRows ตรงๆ (ลำดับที่บันทึกไว้ต้องคงเดิม)
 function sortShopRowsForDisplay(list) {
   if (shopSortMode === 'default') return;
@@ -4787,14 +4861,22 @@ function renderShopTable() {
     td.textContent = 'ยังไม่มีรายการ — กด "+ Add Row" เพื่อเริ่มวางแผนของที่ต้องซื้อ (หรือ Import JSON ถ้าเคย Export เก็บไว้)';
     tr.appendChild(td);
     tbody.appendChild(tr);
+    updateShopQuickFilterCounts([]);
+    document.getElementById('shopFilterCount').textContent = '';
     updateShopSummary();
     return;
   }
 
-  const visibleRows = shopRows.filter(r => rowMatchesSlot(r) && rowMatchesFilter(r) && rowMatchesQuick(r));
+  const baseRows = shopRows.filter(r => rowMatchesSlot(r) && rowMatchesFilter(r));
+  const visibleRows = baseRows.filter(r => rowMatchesQuick(r));
   sortShopRowsForDisplay(visibleRows);
+  updateShopQuickFilterCounts(baseRows);
+  // บอกด้วยว่ากำลังดูช่องไหนอยู่ — ตัวเลขบนชิป/จำนวนแถวจะได้ไม่งงว่านับจากอะไร
+  const slotDefView = SHOP_SLOTS.find(s => s.id === shopSelectedSlot);
+  const viewName = shopSelectedSlot === 'all' ? '' : (shopSelectedSlot === 'unassigned' ? 'Unassigned' : (slotDefView ? slotDefView.label : ''));
   document.getElementById('shopFilterCount').textContent =
-    visibleRows.length === shopRows.length ? shopRows.length + ' แถว' : 'แสดง ' + visibleRows.length + ' / ' + shopRows.length + ' แถว';
+    (viewName ? 'ช่อง ' + viewName + ' · ' : '') +
+    (visibleRows.length === shopRows.length ? shopRows.length + ' แถว' : 'แสดง ' + visibleRows.length + ' / ' + shopRows.length + ' แถว');
 
   visibleRows.forEach((row) => {
     const tr = document.createElement('tr');
@@ -5352,6 +5434,18 @@ document.getElementById('shopSizeReset').addEventListener('click', resetShopSizi
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.16',
+    date: '2026-07-12',
+    notes: [
+      'Exile Hub / Divine Market: การ์ด League Status เพิ่มตัวนับถอยหลัง "Ends in" จนจบลีก (เดินสดทุกวินาที เหลือน้อยกว่า 7 วันขึ้นสีเตือนส้ม)',
+      'Market Radar: การ์ดคำแนะนำอันดับ 1 ติดป้าย ★ TOP PICK พร้อมขอบเน้น — เห็นคำตอบทันทีว่าควรฟาร์มอะไรตอนนี้ และกด Enter ในช่องฟิลเตอร์เพื่อ Apply ได้เลยไม่ต้องคลิกปุ่ม',
+      'Divine Market: ย้ายฟอร์มกรอกราคาไปไว้หลังส่วนคำแนะนำ/What Changed (อ่านข้อสรุปก่อน ค่อยเพิ่มข้อมูล) และฟอร์มเติมวันที่วันนี้ + เดา League Day ให้อัตโนมัติจากจุดข้อมูลล่าสุด (แก้ทับได้เสมอ)',
+      'Atlas Planner: ชิป filter โชว์จำนวนการ์ดของแต่ละหมวด และการ์ดแต่ละใบบอกอายุ "เช็คล่าสุดกี่วันก่อน" — เกิน 14 วันขึ้นเตือนส้มว่าควรเช็คราคา/สูตรใหม่',
+      'Gear Checker: แท็บพรีเซ็ตมีจุด ● เขียวบอกชุดที่มีข้อมูล และหัวข้อ Total Resistance สรุปว่าถึง cap แล้วกี่ธาตุจาก 4 (ครบ = เขียว)',
+      'Shopping List: ชิป quick filter โชว์จำนวนแถวตามมุมมองปัจจุบัน (ช่อง + คำค้นหา) และบรรทัดนับแถวบอกชื่อช่องที่กำลังดูอยู่ — ไม่งงว่าตัวเลขนับจากอะไร',
+    ],
+  },
+  {
     version: '0.15',
     date: '2026-07-12',
     notes: [
@@ -5589,6 +5683,8 @@ let farmSearchText = '';
 
 function persistFarmCards() {
   try { localStorage.setItem(FARM_CARDS_KEY, JSON.stringify(farmCards)); } catch (e) { /* storage unavailable */ }
+  // ทุกการแก้การ์ดผ่านจุดนี้ — อัปเดตตัวเลขบนชิป filter ให้ตรงเสมอ (เรียกก่อน init เสร็จจะไม่ทำอะไร)
+  if (typeof updateFarmFilterCounts === 'function') updateFarmFilterCounts();
 }
 function persistFarmFilter() {
   try { localStorage.setItem(FARM_FILTER_KEY, farmFilter); } catch (e) { /* storage unavailable */ }
@@ -5631,6 +5727,7 @@ function renderFarmFilters() {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'filter-chip' + (farmFilter === f.label ? ' active' : '');
+    b.dataset.farmFilter = f.label;
     b.textContent = f.label;
     b.addEventListener('click', () => {
       farmFilter = f.label;
@@ -5639,6 +5736,19 @@ function renderFarmFilters() {
       renderFarmGrid();
     });
     wrap.appendChild(b);
+  });
+  updateFarmFilterCounts();
+}
+
+// อัปเดตจำนวนการ์ดต่อ filter บนชิป (นับจากการ์ดทั้งหมด ไม่สนคำค้นหา) — เรียกซ้ำได้ถูกๆ ทุกครั้งที่การ์ดเปลี่ยน
+function updateFarmFilterCounts() {
+  const wrap = document.getElementById('farmFilters');
+  if (!wrap) return;
+  FARM_FILTERS.forEach(f => {
+    const b = wrap.querySelector('button[data-farm-filter="' + f.label + '"]');
+    if (!b) return;
+    const n = farmCards.filter(c => f.test(c)).length;
+    b.textContent = f.label + (n > 0 ? ' (' + n + ')' : '');
   });
 }
 
@@ -5946,12 +6056,30 @@ function buildFarmCard(card) {
   const dateInput = document.createElement('input');
   dateInput.type = 'date';
   dateInput.value = card.lastChecked || '';
+  // ป้ายบอกความสดของการ์ด — เกิน 14 วัน = เตือนส้มว่าสูตร/ราคาอาจเก่าแล้ว
+  const ageNote = document.createElement('span');
+  ageNote.className = 'farm-checked-age';
+  function updateAgeNote() {
+    const d = card.lastChecked ? parseIso(card.lastChecked) : null;
+    if (!d) { ageNote.textContent = 'ยังไม่เคยเช็ค'; ageNote.classList.remove('divine-warn'); return; }
+    const days = Math.max(0, Math.floor((Date.now() - d.getTime()) / 86400000));
+    if (days >= 14) {
+      ageNote.textContent = '⚠ เช็คล่าสุด ' + days + ' วันก่อน — ควรเช็คราคา/สูตรใหม่';
+      ageNote.classList.add('divine-warn');
+    } else {
+      ageNote.textContent = days === 0 ? 'เช็ควันนี้' : 'เช็คล่าสุด ' + days + ' วันก่อน';
+      ageNote.classList.remove('divine-warn');
+    }
+  }
+  updateAgeNote();
   dateInput.addEventListener('input', () => {
     card.lastChecked = dateInput.value;
     persistFarmCards();
+    updateAgeNote();
   });
   dateWrap.appendChild(dateLabel);
   dateWrap.appendChild(dateInput);
+  dateWrap.appendChild(ageNote);
   foot.appendChild(dateWrap);
 
   foot.appendChild(makeIconBtn('⧉', 'คัดลอกการ์ดนี้', () => {
@@ -6337,9 +6465,12 @@ function renderRadar(data) {
   } else {
     const grid = document.createElement('div');
     grid.className = 'reco-grid';
+    // การ์ดอันดับ 1 (ที่มี evidence + คะแนน > 0) ติดป้าย TOP PICK ให้เห็นคำตอบทันทีว่าควรฟาร์มอะไร
+    const topKey = recos[0] && recos[0].hasEvidence && recos[0].score > 0 ? recos[0].contentKey : null;
     recos.forEach(rc => {
       const cardEl = document.createElement('div');
-      cardEl.className = 'reco-card' + (rc.hasEvidence === false ? ' dimmed' : '');
+      cardEl.className = 'reco-card' + (rc.hasEvidence === false ? ' dimmed' : '')
+        + (topKey !== null && rc.contentKey === topKey ? ' top-pick' : '');
 
       const headEl = document.createElement('div');
       headEl.className = 'reco-head';
@@ -6347,6 +6478,12 @@ function renderRadar(data) {
       nm.className = 'reco-name';
       nm.textContent = rc.content || '?';
       headEl.appendChild(nm);
+      if (topKey !== null && rc.contentKey === topKey) {
+        const tp = document.createElement('span');
+        tp.className = 'reco-top-badge';
+        tp.textContent = '★ TOP PICK';
+        headEl.appendChild(tp);
+      }
       const score = document.createElement('span');
       score.className = 'score-badge';
       const sVal = typeof rc.score === 'number' ? Math.round(rc.score) : null;
@@ -6622,6 +6759,11 @@ loadRadar();
 
   unitSelect.addEventListener('change', syncRateUi);
 
+  // กด Enter ในช่องกรอกฟิลเตอร์ = Apply ทันที (ไม่ต้องเอื้อมไปคลิกปุ่ม)
+  [minInput, rateInput].forEach(inp => inp.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('rfApplyBtn').click(); }
+  }));
+
   document.getElementById('rfApplyBtn').addEventListener('click', () => {
     const min = parseFloat(minInput.value);
     radarFilter.min = isNaN(min) || min < 0 ? 0 : min;
@@ -6860,7 +7002,16 @@ function renderLeagueCard(bodyId, badgeId, runningId) {
     bodyEl.appendChild(hubLine('Started at', 'Missing'));
   }
   const end = parseIso(lg.endAt);
-  if (end) bodyEl.appendChild(hubLine('Ends at', end.toLocaleString()));
+  if (end) {
+    bodyEl.appendChild(hubLine('Ends at', end.toLocaleString()));
+    // นับถอยหลังจนจบลีก — ticker อัปเดตค่านี้ทุกวินาที (เหลือ <7 วัน = เตือนส้ม)
+    const remainMs = end.getTime() - Date.now();
+    const endLine = hubLine('Ends in',
+      remainMs > 0 ? fmtDuration(remainMs) : 'Ended',
+      'hub-big' + (remainMs > 0 && remainMs < 7 * 86400000 ? ' divine-warn' : ''));
+    endLine.querySelector('strong').id = runningId + 'Ends';
+    bodyEl.appendChild(endLine);
+  }
   if (lg.source) bodyEl.appendChild(hubLine('Source', lg.source));
 }
 
@@ -7009,6 +7160,12 @@ function startHubTicker() {
     if (leagueStart) {
       const runEl = document.getElementById(activeTab === 'home' ? 'leagueRunningVal' : 'divineLeagueRunningVal');
       if (runEl) runEl.textContent = fmtDuration(now - leagueStart.getTime());
+    }
+    // League: Ends in = league.endAt - เวลาปัจจุบัน (บรรทัดนี้มีเฉพาะเมื่อ endAt มีค่า)
+    const leagueEnd = lg && parseIso(lg.endAt);
+    if (leagueEnd) {
+      const endEl = document.getElementById((activeTab === 'home' ? 'leagueRunningVal' : 'divineLeagueRunningVal') + 'Ends');
+      if (endEl) endEl.textContent = leagueEnd.getTime() > now ? fmtDuration(leagueEnd.getTime() - now) : 'Ended';
     }
 
     if (activeTab !== 'home') return; // Stash Sale Watch มีเฉพาะในแท็บ Exile Hub
@@ -7503,11 +7660,34 @@ function renderDivineMarket() {
 (function initDivineForm() {
   const form = document.getElementById('divineForm');
   if (!form) return;
+  const dateInput = document.getElementById('divineInputDate');
+  const dayInput = document.getElementById('divineInputDay');
+  const priceInput = document.getElementById('divineInputPrice');
+
+  // เดา League Day จากวันที่ที่เลือก เทียบกับจุดข้อมูลล่าสุด (ผู้ใช้แก้ทับได้เสมอ)
+  function suggestDivineDay(dateStr) {
+    const pts = divineSortedPoints();
+    const last = pts[pts.length - 1];
+    if (!last) return 1;
+    const d = parseIso(dateStr);
+    const lastDate = parseIso(last.date);
+    if (!d || !lastDate) return last.leagueDay + 1;
+    const diffDays = Math.round((d.getTime() - lastDate.getTime()) / 86400000);
+    return Math.max(1, last.leagueDay + diffDays);
+  }
+  function prefillDivineForm() {
+    const pad = n => String(n).padStart(2, '0');
+    const t = new Date();
+    dateInput.value = t.getFullYear() + '-' + pad(t.getMonth() + 1) + '-' + pad(t.getDate());
+    dayInput.value = suggestDivineDay(dateInput.value);
+  }
+  dateInput.addEventListener('change', () => {
+    if (dateInput.value) dayInput.value = suggestDivineDay(dateInput.value);
+  });
+  prefillDivineForm();
+
   form.addEventListener('submit', e => {
     e.preventDefault();
-    const dateInput = document.getElementById('divineInputDate');
-    const dayInput = document.getElementById('divineInputDay');
-    const priceInput = document.getElementById('divineInputPrice');
     const errEl = document.getElementById('divineFormError');
     const dateVal = dateInput.value;
     const dayVal = Number(dayInput.value);

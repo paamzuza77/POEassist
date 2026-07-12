@@ -2,6 +2,18 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-12 (12)
+
+- **App-wide QoL/UX pass** (`index.html`, patch 0.16) — one focused improvement set per page, all additive, no storage keys changed:
+  - **Exile Hub + Divine Market:** League Status card shows a live **"Ends in"** countdown when `league.endAt` exists (ticker-updated every second; orange warn under 7 days; shows nothing when `endAt` is null as in current live data). Element id = `<runningId>Ends`, updated in `startHubTicker`.
+  - **Market Radar:** #1 recommendation card (has evidence + score > 0) gets a **★ TOP PICK** badge (`.reco-top-badge`) + emphasized border (`.reco-card.top-pick`: 5px RawBlock / 2px navy Trust); Enter in the min/rate filter inputs now applies filters.
+  - **Divine Market:** section order now puts **Market Recommendation + What Changed above the Add/Update Price form** (read conclusions first, then enter data); the form **prefills today's date and a suggested League Day** derived from the latest point (`suggestDivineDay`, recomputed on date change, always editable). Mock/session-memory behavior unchanged.
+  - **Atlas Planner:** filter chips show **live card counts** (refreshed via `updateFarmFilterCounts()` hooked into `persistFarmCards()`); each card's foot shows **last-checked age** (`.farm-checked-age`: "เช็ควันนี้"/"N วันก่อน", ⚠ orange via `.divine-warn` when ≥14 days, "ยังไม่เคยเช็ค" when unset).
+  - **Gear Checker:** preset tabs show a green **● data dot** for presets with saved values (`updatePresetDots()`, called from `recalc()`, no button rebuild); Total Resistance title shows **"x/4 ถึง cap"** (`#resCapCount`, green when 4/4).
+  - **Shopping List:** quick-filter chips show **live counts scoped to the current view** (slot + search, `updateShopQuickFilterCounts`); the row-count line names the active slot view ("ช่อง Helmet · …").
+  - **Themes:** new classes registered in the Trust Blue Pay pill/accent groups (+ dark-mode text fix for the badge); RawBlock untouched elsewhere.
+  - Verification: Playwright-core (headless msedge) over a local HTTP server — **51/51** checks passing (one initial harness locator false-positive re-verified): Ends-in renders + ticks (mocked `endAt`), TOP PICK exactly one + Enter-apply, Divine section order/prefill/day-suggestion/submit, farm filter counts + age-warn transitions + cleanup, preset dot + cap counter live updates, shop chip counts per view + numpad + buy-next, patch modal shows 0.16, all 6 tabs render in all 4 theme/mode combos, RawBlock stays square/5px vs Trust pill/2px, mobile 480px no overflow, zero console/page errors. Screenshots reviewed (hub, radar, divine mobile). Harness in scratchpad, deleted after use.
+
 ## 2026-07-12 (11)
 
 - **Settings → app control center: startup tab, data overview, backup/restore, scoped resets** (`index.html`, patch 0.15):
