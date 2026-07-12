@@ -2858,6 +2858,20 @@
   .frs-value.frs-neg { color: var(--fire); }
   .frs-value.frs-cost { color: var(--lightning); }
   .frs-value.frs-miss { color: var(--text-dim); font-weight: 400; }
+  /* insight/trend บรรทัดเดียว (patch 0.19) */
+  .frs-insight {
+    margin-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    border: 2px solid var(--border-soft);
+    padding: 5px 8px;
+    overflow-wrap: anywhere;
+  }
+  .frs-insight-up { color: var(--ok); border-color: var(--ok); }
+  .frs-insight-down { color: var(--fire); border-color: var(--fire); }
+  .frs-insight-warn { color: var(--lightning); border-color: var(--lightning); }
+  .frs-insight-need, .frs-insight-flat { color: var(--text-dim); }
   .frs-note { margin-top: 8px; font-size: 10.5px; color: var(--text-dim); }
 
   .farm-econ {
@@ -2896,7 +2910,7 @@
     padding: 12px 14px;
   }
   .farm-tracker-wrap { overflow-x: auto; margin-bottom: 10px; }
-  .farm-tracker-table { border-collapse: collapse; width: 100%; min-width: 480px; }
+  .farm-tracker-table { border-collapse: collapse; width: 100%; min-width: 560px; }
   .farm-tracker-table th {
     font-family: var(--font-mono);
     font-size: 10px;
@@ -2922,6 +2936,8 @@
   .farm-tracker input:focus-visible, .farm-tracker select:focus-visible { box-shadow: inset 0 0 0 2px var(--border); }
   .ftr-amt { width: 62px; text-align: right; }  /* ~4 หลัก */
   .ftr-unit { width: 54px; }
+  .ftr-date-cell { width: 138px; }
+  .ftr-date { width: 100%; font-family: var(--font-mono) !important; font-size: 11.5px !important; }
   .ftr-note-cell { min-width: 160px; }
   .ftr-note { width: 100%; font-family: var(--font-body) !important; }
   .ftr-del { width: 34px; text-align: right; }
@@ -4402,6 +4418,7 @@ const APP_DATA_KEYS = [
   'poe2ShopList.tableSizing.v1',
   'poe2FarmPlanner.cards.v1',
   'poe2FarmPlanner.filter.v1',
+  'poe2FarmPlanner.view.v1',
   'poe2FarmLabV2.runs.v1',
   'poeAssist.radarFilter.v1',
   'poeAssist.radarRates.v1',
@@ -4414,6 +4431,7 @@ const UI_PREF_KEYS = [
   'poeAssist.sidebarCollapsed.v1',
   'poeAssist.startTab.v1',
   'poe2ShopList.tableSizing.v1',
+  'poe2FarmPlanner.view.v1',
 ];
 const BACKUP_KIND = 'exile-assistant-backup';
 
@@ -5789,6 +5807,17 @@ document.getElementById('shopSizeReset').addEventListener('click', resetShopSizi
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.19',
+    date: '2026-07-12',
+    notes: [
+      'Atlas Planner: สรุปรันจริงเพิ่มการวิเคราะห์ให้ตัดสินใจง่ายขึ้น — Net เฉลี่ย/รัน, Net หรือผลลัพธ์ต่อชั่วโมง (Dv/hr), Best run / Worst run, win rate (จำนวนรันที่กำไร + %) และสถานะ "คืนทุนแล้ว/ยังไม่คืนทุน"',
+      'insight แนวโน้มบรรทัดเดียวแบบโปร่งใส: "รันล่าสุดสูง/ต่ำกว่าค่าเฉลี่ย", "3 รันล่าสุดดีขึ้น/แย่ลง" หรือ "ต้องมีรันมากขึ้น" — ไม่โอเวอร์เคลม',
+      'คิด Net/ต่อชั่วโมง เฉพาะเมื่อหน่วยเข้ากันได้ (ใช้ Dv เป็นหลัก) — ถ้าหน่วยผสมจะโชว์ยอดแยกกลุ่มพร้อมโน้ต "หน่วยผสม: เทียบต่อชั่วโมงไม่ได้" ไม่มีการแปลง C/Ex→Dv แอบแฝง',
+      'Run Tracker เพิ่มคอลัมน์ Date ต่อรัน (default วันนี้ แก้ได้) — additive และทนข้อมูลเก่า',
+      'จำการ์ดที่เลือก + Project runs ข้ามการรีโหลด (คีย์ใหม่ additive poe2FarmPlanner.view.v1) — การ์ดที่ถูกลบไปแล้วจะ fallback ไปการ์ดแรกอย่างปลอดภัย; poe2FarmPlanner.cards.v1 ไม่ถูกแตะ',
+    ],
+  },
+  {
     version: '0.18',
     date: '2026-07-12',
     notes: [
@@ -6057,10 +6086,17 @@ function newFarmCard() {
   };
 }
 
+// วันที่วันนี้แบบ ISO (YYYY-MM-DD) สำหรับ default ของแถว Run Tracker
+function farmTodayISO() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
 function newFarmRunRow() {
   return {
     id: 'r' + Date.now() + Math.random().toString(36).slice(2, 7),
     runNo: 0,
+    date: farmTodayISO(),   // patch 0.19 (additive): วันที่รัน — default วันนี้ แก้ได้; การ์ดเก่าไม่มีจะ default วันนี้
     amount1: null, unit1: 'Dv',
     amount2: null, unit2: 'Dv',
     note: '',
@@ -6091,9 +6127,34 @@ let farmCards = (function loadFarmCards() {
 })();
 
 let farmFilter = localStorage.getItem(FARM_FILTER_KEY) || 'All';
-let farmSearchText = '';
-let farmSelectedId = null;   // การ์ดที่เลือกดูรายละเอียด (in-memory เท่านั้น)
-let farmProjectRuns = 1;     // ตัวคูณ "Project runs" — ใช้กับสรุปคาดการณ์ในลิสต์ซ้ายเท่านั้น ไม่แตะข้อมูลการ์ด
+let farmSearchText = '';   // ไม่ persist โดยตั้งใจ — เปิดหน้ามาเริ่มค้นหาใหม่เสมอ
+
+// view state (patch 0.19, additive): จำการ์ดที่เลือก + Project runs ข้ามการรีโหลด
+// คีย์แยกจาก cards/filter — ไม่แตะ poe2FarmPlanner.cards.v1 เลย
+const FARM_VIEW_KEY = 'poe2FarmPlanner.view.v1';
+const farmViewState = (function loadFarmView() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(FARM_VIEW_KEY));
+    if (raw && typeof raw === 'object') return raw;
+  } catch (e) { /* malformed storage */ }
+  return {};
+})();
+// การ์ดที่เลือก: คืนค่าเฉพาะถ้ายังมีอยู่จริง (renderFarmGrid จะ fallback เป็นใบแรกถ้าไม่พบ)
+let farmSelectedId = (typeof farmViewState.selectedId === 'string'
+  && farmCards.some(c => c.id === farmViewState.selectedId))
+  ? farmViewState.selectedId : null;
+// Project runs (แผน): คืนค่าแบบปลอดภัย (จำนวนเต็ม >= 1) — ใช้กับสรุปคาดการณ์ในลิสต์ซ้ายเท่านั้น ไม่แตะข้อมูลการ์ด
+let farmProjectRuns = (function () {
+  const v = parseFloat(farmViewState.projectRuns);
+  return Number.isFinite(v) && v >= 1 ? Math.floor(v) : 1;
+})();
+
+// เขียน view state (เรียกทุกครั้งที่เปลี่ยนการ์ดที่เลือก/Project runs)
+function persistFarmView() {
+  try {
+    localStorage.setItem(FARM_VIEW_KEY, JSON.stringify({ selectedId: farmSelectedId, projectRuns: farmProjectRuns }));
+  } catch (e) { /* storage unavailable */ }
+}
 
 /* ---- ตัวช่วยเวลา/ตัวเลข (patch 0.18) ---- */
 // รับ "HH:MM" หรือจำนวนนาทีล้วน → นาที (null ถ้าอ่านไม่ออก/ว่าง)
@@ -6667,6 +6728,97 @@ function renderFarmList() {
   visible.forEach(card => list.appendChild(buildFarmListItem(card)));
 }
 
+// วิเคราะห์รันจริงของการ์ด (patch 0.19) — คืน object เดียวใช้ทั้งสรุปและ insight
+// กติกาหน่วย: คิด Net / ต่อชั่วโมง ได้เฉพาะเมื่อหน่วยผลลัพธ์เข้ากันได้ (หน่วยเดียว/ตรงกับหน่วยทุน)
+// — ไม่แปลง C/Ex→Dv ให้เอง ถ้าหน่วยผสมจะโชว์ยอดแยกกลุ่ม + โน้ตว่าเทียบต่อชั่วโมงไม่ได้
+function computeFarmRunAnalytics(card) {
+  const rows = card.runTrackerRows || [];
+  const n = rows.length;
+  const gross = farmTrackerGross(card);
+  const grossUnits = Object.keys(gross).filter(u => gross[u]);
+  const costNum = parseFloat(card.costPerRun);
+  const hasCost = Number.isFinite(costNum);
+  const dur = card.durationPerRunMinutes;
+  const hasDur = Number.isFinite(dur) && dur > 0;   // ต้อง > 0 เพื่อหารเป็น "ต่อชั่วโมง"
+  const costUnit = card.costCurrency;
+
+  // ยอดต่อรัน แยกหน่วย (ใช้หา best/worst + net รายรัน)
+  const perRunGross = rows.map(r => {
+    const g = {};
+    [[r.amount1, r.unit1], [r.amount2, r.unit2]].forEach(([amt, unit]) => {
+      const v = parseFloat(amt);
+      if (Number.isFinite(v) && v !== 0) g[unit] = (g[unit] || 0) + v;
+    });
+    return g;
+  });
+
+  const mixed = grossUnits.length > 1;                         // ผลลัพธ์มีหลายหน่วย
+  const singleUnit = grossUnits.length === 1 ? grossUnits[0] : null;
+  // net คิดได้เมื่อ: มีทุน + ไม่ผสมหน่วย + (ไม่มีผลลัพธ์เลย = ขาดทุนล้วน | ผลหน่วยเดียวตรงกับหน่วยทุน)
+  const netCompatible = n > 0 && hasCost && !mixed && (grossUnits.length === 0 || singleUnit === costUnit);
+
+  const out = {
+    n, gross, grossUnits, hasCost, costNum, costUnit, dur, hasDur, mixed, singleUnit, netCompatible,
+    avgGross: null, grossPerHour: null,
+    perRunNet: null, totalNet: null, avgNet: null, netPerHour: null,
+    best: null, worst: null, profitable: null, winRate: null, recovered: null, trend: null,
+  };
+
+  if (n && grossUnits.length) {
+    const avg = {};
+    grossUnits.forEach(u => { avg[u] = gross[u] / n; });
+    out.avgGross = avg;
+  }
+  if (singleUnit && hasDur && n) {
+    out.grossPerHour = { unit: singleUnit, value: (gross[singleUnit] / n) / (dur / 60) };
+  }
+
+  if (netCompatible) {
+    const perRunNet = perRunGross.map(g => (g[costUnit] || 0) - costNum);
+    out.perRunNet = perRunNet;
+    out.totalNet = perRunNet.reduce((a, b) => a + b, 0);
+    out.avgNet = out.totalNet / n;
+    out.profitable = perRunNet.filter(v => v > 0).length;
+    out.winRate = out.profitable / n;
+    out.recovered = out.totalNet >= 0;
+    if (hasDur) out.netPerHour = out.avgNet / (dur / 60);
+  }
+
+  // best/worst + trend: ใช้ net ถ้าคิดได้ ไม่งั้น gross หน่วยเดียว (หน่วยผสม = ทำไม่ได้)
+  let series = null, seriesUnit = null, seriesIsNet = false;
+  if (netCompatible) { series = out.perRunNet; seriesUnit = costUnit; seriesIsNet = true; }
+  else if (singleUnit && n) { series = perRunGross.map(g => g[singleUnit] || 0); seriesUnit = singleUnit; }
+
+  if (series && n) {
+    let bi = 0, wi = 0;
+    series.forEach((v, i) => { if (v > series[bi]) bi = i; if (v < series[wi]) wi = i; });
+    out.best = { runNo: bi + 1, value: series[bi], unit: seriesUnit, isNet: seriesIsNet };
+    out.worst = { runNo: wi + 1, value: series[wi], unit: seriesUnit, isNet: seriesIsNet };
+
+    const avgAll = series.reduce((a, b) => a + b, 0) / n;
+    const last = series[n - 1];
+    if (n < 3) {
+      out.trend = { kind: 'need', text: 'ต้องมีรันมากขึ้น (≥3) เพื่อดูแนวโน้ม' };
+    } else {
+      const label = seriesIsNet ? 'Net' : 'ผลลัพธ์';
+      let kind, msg;
+      if (last > avgAll * 1.05) { kind = 'up'; msg = 'รันล่าสุดสูงกว่าค่าเฉลี่ย'; }
+      else if (last < avgAll * 0.95) { kind = 'down'; msg = 'รันล่าสุดต่ำกว่าค่าเฉลี่ย'; }
+      else { kind = 'flat'; msg = 'รันล่าสุดใกล้เคียงค่าเฉลี่ย'; }
+      const last3 = series.slice(-3);
+      const last3Avg = last3.reduce((a, b) => a + b, 0) / last3.length;
+      let tail = '';
+      if (last3Avg > avgAll * 1.05) tail = ' · 3 รันล่าสุดดีขึ้น';
+      else if (last3Avg < avgAll * 0.95) tail = ' · 3 รันล่าสุดแย่ลง';
+      out.trend = { kind, text: label + ': ' + msg + tail };
+    }
+  } else if (mixed) {
+    out.trend = { kind: 'warn', text: 'หน่วยผสม: เทียบต่อชั่วโมง/แนวโน้มไม่ได้ (Mixed units: per-hour conversion unavailable)' };
+  }
+
+  return out;
+}
+
 // สรุปรันจริงของ "การ์ดนี้เท่านั้น" — คำนวณจาก Run Tracker ของการ์ด ไม่รวมการ์ดอื่น ไม่ใช้ Project runs
 function updateFarmRunSummary(card, box) {
   box.innerHTML = '';
@@ -6675,17 +6827,12 @@ function updateFarmRunSummary(card, box) {
   title.textContent = 'สรุปรันจริง (Run Tracker ของการ์ดนี้)';
   box.appendChild(title);
 
-  const rows = card.runTrackerRows || [];
-  const n = rows.length;
-  const gross = farmTrackerGross(card);
-  const grossUnits = Object.keys(gross);
-  const costNum = parseFloat(card.costPerRun);
-  const hasCost = Number.isFinite(costNum);
-  const dur = card.durationPerRunMinutes;
+  const a = computeFarmRunAnalytics(card);
+  const n = a.n;
 
   const grid = document.createElement('div');
   grid.className = 'frs-grid';
-  function cell(label, valueText, cls) {
+  function cell(label, valueText, cls, titleText) {
     const c = document.createElement('div');
     c.className = 'frs-cell';
     const l = document.createElement('div');
@@ -6694,36 +6841,71 @@ function updateFarmRunSummary(card, box) {
     const v = document.createElement('div');
     v.className = 'frs-value' + (cls ? ' ' + cls : '');
     v.textContent = valueText;
+    if (titleText) c.title = titleText;
     c.appendChild(l); c.appendChild(v);
     grid.appendChild(c);
   }
+  const sign = x => (x > 0 ? '+' : '');
 
+  // ---- ตัวเลขหลัก ----
   cell('รันที่บันทึก', String(n));
-  cell('ผลรวม (gross)', n ? farmFmtGross(gross) : '—', grossUnits.length ? 'frs-pos' : '');
-  cell('ทุนรวม', hasCost && n ? (farmFmtNum(costNum * n) + ' ' + card.costCurrency) : (hasCost ? '0 ' + card.costCurrency : 'ไม่ระบุทุน'), hasCost ? 'frs-cost' : 'frs-miss');
+  cell('ผลรวม (gross)', n ? farmFmtGross(a.gross) : '—', a.grossUnits.length ? 'frs-pos' : '');
+  cell('ทุนรวม', a.hasCost && n ? (farmFmtNum(a.costNum * n) + ' ' + a.costUnit) : (a.hasCost ? '0 ' + a.costUnit : 'ไม่ระบุทุน'), a.hasCost ? 'frs-cost' : 'frs-miss');
 
-  // Net: คิดเฉพาะเมื่อผลลัพธ์ทุกหน่วยตรงกับหน่วยทุน — ไม่มีอัตราแลกเปลี่ยนแอบแฝง
-  if (!n || !hasCost) {
-    cell('Net หลังหักทุน', '—', 'frs-miss');
-  } else if (grossUnits.length === 0) {
-    cell('Net หลังหักทุน', farmFmtNum(-costNum * n) + ' ' + card.costCurrency, 'frs-neg');
-  } else if (grossUnits.length === 1 && grossUnits[0] === card.costCurrency) {
-    const net = gross[card.costCurrency] - costNum * n;
-    cell('Net หลังหักทุน', (net > 0 ? '+' : '') + farmFmtNum(net) + ' ' + card.costCurrency, net >= 0 ? 'frs-pos' : 'frs-neg');
+  // Net รวม หลังหักทุน
+  if (!n || !a.hasCost) {
+    cell('Net หลังหักทุน', '—', 'frs-miss', 'ต้องมีทุน/รัน + รันอย่างน้อย 1');
+  } else if (a.mixed) {
+    cell('Net หลังหักทุน', 'หน่วยผสม — คิดตรงๆ ไม่ได้', 'frs-miss', 'ผลลัพธ์มีหลายหน่วย ไม่แปลงข้ามหน่วยให้');
+  } else if (a.netCompatible) {
+    cell('Net หลังหักทุน', sign(a.totalNet) + farmFmtNum(a.totalNet) + ' ' + a.costUnit, a.totalNet >= 0 ? 'frs-pos' : 'frs-neg');
   } else {
-    cell('Net หลังหักทุน', 'หน่วยผสม — คิดตรงๆ ไม่ได้', 'frs-miss');
+    cell('Net หลังหักทุน', 'หน่วยไม่ตรงทุน', 'frs-miss', 'ผลลัพธ์เป็น ' + (a.singleUnit || '—') + ' แต่ทุนเป็น ' + a.costUnit);
   }
 
-  cell('เวลารวม', dur != null && n ? farmFmtDuration(dur * n) : '—', dur != null ? '' : 'frs-miss');
-  cell('เวลาเฉลี่ย/รัน', dur != null ? farmFmtDuration(dur) : '—', dur != null ? '' : 'frs-miss');
-  if (n && grossUnits.length) {
-    const avg = {};
-    grossUnits.forEach(u => { avg[u] = gross[u] / n; });
-    cell('ผลเฉลี่ย/รัน', farmFmtGross(avg), 'frs-pos');
+  // Net เฉลี่ย/รัน
+  if (a.netCompatible) cell('Net เฉลี่ย/รัน', sign(a.avgNet) + farmFmtNum(a.avgNet) + ' ' + a.costUnit, a.avgNet >= 0 ? 'frs-pos' : 'frs-neg');
+  else cell('Net เฉลี่ย/รัน', '—', 'frs-miss');
+
+  cell('เวลารวม', a.dur != null && n ? farmFmtDuration(a.dur * n) : '—', a.dur != null ? '' : 'frs-miss');
+  cell('เวลาเฉลี่ย/รัน', a.dur != null ? farmFmtDuration(a.dur) : '—', a.dur != null ? '' : 'frs-miss');
+
+  // ผลเฉลี่ย/รัน (gross)
+  if (a.avgGross) cell('ผลเฉลี่ย/รัน', farmFmtGross(a.avgGross), 'frs-pos');
+  else cell('ผลเฉลี่ย/รัน', '—', 'frs-miss');
+
+  // ต่อชั่วโมง: Net/ชม. ถ้าคิดได้ ไม่งั้น gross/ชม. หน่วยเดียว
+  if (a.netPerHour != null) {
+    cell('Net / ชม.', sign(a.netPerHour) + farmFmtNum(a.netPerHour) + ' ' + a.costUnit + '/ชม.', a.netPerHour >= 0 ? 'frs-pos' : 'frs-neg', 'Net เฉลี่ย/รัน ÷ เวลา/รัน');
+  } else if (a.grossPerHour) {
+    cell('ผล / ชม.', farmFmtNum(a.grossPerHour.value) + ' ' + a.grossPerHour.unit + '/ชม.', 'frs-pos', 'ผลเฉลี่ย/รัน ÷ เวลา/รัน (ยังไม่หักทุน)');
   } else {
-    cell('ผลเฉลี่ย/รัน', '—');
+    cell('ต่อ ชม.', a.mixed ? 'หน่วยผสม' : '—', 'frs-miss', a.mixed ? 'หน่วยผสม: คิดต่อชั่วโมงไม่ได้' : 'ต้องมีเวลา/รัน + ผลหน่วยเดียว');
   }
+
+  // Best / Worst run
+  if (a.best) {
+    cell('Best run', 'รัน ' + a.best.runNo + ' · ' + sign(a.best.value) + farmFmtNum(a.best.value) + ' ' + a.best.unit, 'frs-pos', a.best.isNet ? 'รันที่ Net สูงสุด' : 'รันที่ผลลัพธ์สูงสุด (ยังไม่หักทุน)');
+    cell('Worst run', 'รัน ' + a.worst.runNo + ' · ' + sign(a.worst.value) + farmFmtNum(a.worst.value) + ' ' + a.worst.unit, a.worst.isNet && a.worst.value < 0 ? 'frs-neg' : '', a.worst.isNet ? 'รันที่ Net ต่ำสุด' : 'รันที่ผลลัพธ์ต่ำสุด (ยังไม่หักทุน)');
+  } else {
+    cell('Best / Worst', a.mixed ? 'หน่วยผสม' : '—', 'frs-miss');
+  }
+
+  // Win rate + คืนทุน — เฉพาะเมื่อ net คิดได้
+  if (a.netCompatible) {
+    cell('กำไร (win rate)', a.profitable + '/' + n + ' · ' + Math.round(a.winRate * 100) + '%', a.winRate >= 0.5 ? 'frs-pos' : 'frs-neg', 'จำนวนรันที่ Net > 0');
+    cell('คืนทุนแล้ว?', a.recovered ? 'คืนทุนแล้ว ✓' : 'ยังไม่คืนทุน', a.recovered ? 'frs-pos' : 'frs-neg', 'ผลรวมทั้งหมดครอบคลุมทุนรวมหรือยัง');
+  }
+
   box.appendChild(grid);
+
+  // insight บรรทัดเดียว (โปร่งใส ไม่โอเวอร์เคลม)
+  if (a.trend) {
+    const ins = document.createElement('div');
+    ins.className = 'frs-insight frs-insight-' + a.trend.kind;
+    ins.textContent = '↪ ' + a.trend.text;
+    box.appendChild(ins);
+  }
 
   const note = document.createElement('div');
   note.className = 'frs-note';
@@ -6855,7 +7037,7 @@ function buildFarmRunTracker(card, onChange) {
     table.className = 'farm-tracker-table';
     const thead = document.createElement('thead');
     const hr = document.createElement('tr');
-    ['Run #', 'Result', 'Note', ''].forEach(h => {
+    ['Run #', 'Date', 'Result', 'Note', ''].forEach(h => {
       const th = document.createElement('th');
       th.textContent = h;
       hr.appendChild(th);
@@ -6872,6 +7054,20 @@ function buildFarmRunTracker(card, onChange) {
       tdNo.className = 'ftr-no';
       tdNo.textContent = String(row.runNo);
       tr.appendChild(tdNo);
+
+      const tdDate = document.createElement('td');
+      tdDate.className = 'ftr-date-cell';
+      const dateInp = document.createElement('input');
+      dateInp.type = 'date';
+      dateInp.className = 'ftr-date';
+      dateInp.value = row.date || '';
+      dateInp.title = 'วันที่รัน (default วันนี้ — แก้ได้)';
+      dateInp.addEventListener('input', () => {
+        row.date = dateInp.value;
+        persistFarmCards();
+      });
+      tdDate.appendChild(dateInp);
+      tr.appendChild(tdDate);
 
       const tdRes = document.createElement('td');
       const resWrap = document.createElement('div');
@@ -6969,6 +7165,7 @@ function renderFarmGrid() {
   if (!selectedFarmCard() || !visible.some(c => c.id === farmSelectedId)) {
     farmSelectedId = visible.length ? visible[0].id : null;
   }
+  persistFarmView(); // จำการ์ดที่เลือกล่าสุด (รวมกรณี fallback อัตโนมัติ) ข้ามรีโหลด
   renderFarmList();
   renderFarmDetail();
 }
@@ -6992,6 +7189,7 @@ document.getElementById('farmSearch').addEventListener('input', (e) => {
 document.getElementById('farmProjectRuns').addEventListener('input', (e) => {
   const v = parseFloat(e.target.value);
   farmProjectRuns = Number.isFinite(v) && v >= 1 ? Math.floor(v) : 1;
+  persistFarmView(); // จำ Project runs ข้ามรีโหลด (view state เท่านั้น — ไม่แตะการ์ด)
   renderFarmList();
 });
 
@@ -7038,6 +7236,8 @@ document.getElementById('farmImportFile').addEventListener('change', (e) => {
   reader.readAsText(file);
 });
 
+// คืนค่า Project runs ที่จำไว้ลงช่อง input ก่อน render รอบแรก
+document.getElementById('farmProjectRuns').value = String(farmProjectRuns);
 renderFarmFilters();
 renderFarmGrid();
 
