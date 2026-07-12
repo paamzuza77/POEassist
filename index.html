@@ -152,6 +152,8 @@
   html[data-theme="trust-blue-pay"] .jewel-slot,
   html[data-theme="trust-blue-pay"] .item-editor,
   html[data-theme="trust-blue-pay"] .stat-radar,
+  html[data-theme="trust-blue-pay"] .aug-calc,
+  html[data-theme="trust-blue-pay"] .res-row-ghost .ghost-box,
   html[data-theme="trust-blue-pay"] .sr-score-box,
   html[data-theme="trust-blue-pay"] .sr-bar,
   html[data-theme="trust-blue-pay"] .totals-panel,
@@ -251,6 +253,7 @@
   html[data-theme="trust-blue-pay"] .farm-run-summary,
   html[data-theme="trust-blue-pay"] .farm-econ,
   html[data-theme="trust-blue-pay"] .stat-radar,
+  html[data-theme="trust-blue-pay"] .aug-calc,
   html[data-theme="trust-blue-pay"] .farm-tracker,
   html[data-theme="trust-blue-pay"] .divine-metric-card,
   html[data-theme="trust-blue-pay"] .codex-list-item,
@@ -904,16 +907,6 @@
   button.clear-slot:disabled:hover { color: var(--border-soft); border-color: var(--border-soft); background: #f5f5f5; }
 
   .rows-container { display: flex; flex-direction: column; gap: 8px; min-height: 4px; }
-
-  .empty-state {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--text-dim);
-    padding: 18px 4px;
-    text-align: center;
-    border: 2px dashed var(--border);
-    border-radius: 0;
-  }
 
   .res-row {
     display: grid;
@@ -3222,6 +3215,113 @@
     margin: 10px 0 0;
     line-height: 1.5;
   }
+
+  /* ==================== Augment Calc + editor ghost rows (patch 0.24) ====================
+     คอลัมน์กลางของ .gear-layout: Item Editor (5 แถวขั้นต่ำ) + แผง Augment Calc ซ้อนใต้กัน */
+  .editor-col {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+  }
+
+  /* แถว ghost ใน Item Editor — โชว์พื้นที่ 5 แถวเสมอ, คลิกเพื่อเพิ่มแถวจริง */
+  .res-row-ghost { cursor: pointer; }
+  .res-row-ghost .ghost-box {
+    border: 2px dashed var(--border-soft);
+    border-radius: 0;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 7px 8px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    pointer-events: none; /* ให้คลิกไปลงที่ .res-row-ghost เสมอ */
+  }
+  .res-row-ghost:hover .ghost-box { border-color: var(--border); color: var(--text); }
+
+  .aug-calc {
+    background: var(--void);
+    border: 3px solid var(--border);
+    border-radius: 0;
+    padding: 18px 18px 14px;
+    position: relative;
+  }
+  .ac-title {
+    font-family: var(--font-head);
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 12px;
+  }
+  .ac-section + .ac-section {
+    margin-top: 14px;
+    border-top: 2px solid var(--border);
+    padding-top: 12px;
+  }
+  .ac-sec-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .ac-sec-note {
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--text-dim);
+  }
+  .ac-table-wrap { overflow-x: auto; } /* จอแคบ: ตารางเลื่อนในกรอบตัวเอง ไม่ดันหน้า */
+  .ac-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .ac-table th {
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border);
+    padding: 4px;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .ac-table td {
+    padding: 4px;
+    border-bottom: 1px solid var(--border-soft);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .ac-table tr:last-child td { border-bottom: none; }
+  .ac-table th:first-child, .ac-table td:first-child { text-align: left; }
+  .ac-el { font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .ac-el.fire { color: var(--fire); }
+  .ac-el.cold { color: var(--cold); }
+  .ac-el.lightning { color: var(--lightning); }
+  .ac-el.chaos { color: var(--chaos); }
+  .ac-ready { color: var(--ok); font-weight: 700; }
+  .ac-short { color: var(--lightning); font-weight: 700; }
+  .ac-need { color: var(--text); }
+  .ac-raw { color: var(--text-dim); font-size: 9.5px; font-weight: 400; }
+  .ac-footnote {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    margin: 8px 0 0;
+    line-height: 1.5;
+  }
 </style>
 </head>
 <body>
@@ -3417,14 +3517,41 @@
       <p class="paperdoll-hint">คลิกช่องอุปกรณ์หรือ jewel เพื่อแก้ไขค่าของชิ้นนั้น</p>
     </div>
 
-    <div class="item-editor ornate">
-      <div class="item-editor-header">
-        <span class="slot-icon-svg" id="editorIcon"></span>
-        <h2 id="editorTitle">Helmet</h2>
-        <button class="clear-slot" type="button" id="clearSlotBtn" aria-label="ล้างค่าทั้งหมดในช่องนี้">✕ ล้างช่องนี้</button>
+    <div class="editor-col">
+      <div class="item-editor ornate">
+        <div class="item-editor-header">
+          <span class="slot-icon-svg" id="editorIcon"></span>
+          <h2 id="editorTitle">Helmet</h2>
+          <button class="clear-slot" type="button" id="clearSlotBtn" aria-label="ล้างค่าทั้งหมดในช่องนี้">✕ ล้างช่องนี้</button>
+        </div>
+        <div class="rows-container" id="editorRows"></div>
+        <button class="add-row" type="button" id="addRowBtn">+ เพิ่มค่าสเตตัส</button>
       </div>
-      <div class="rows-container" id="editorRows"></div>
-      <button class="add-row" type="button" id="addRowBtn">+ เพิ่มค่าสเตตัส</button>
+
+      <div class="aug-calc ornate" id="augCalc">
+        <h2 class="ac-title">Augment Calc</h2>
+
+        <div class="ac-section">
+          <p class="ac-sec-title">Augment Result <span class="ac-sec-note">ธาตุ +22% · Chaos +11% ต่อ 1 Augment</span></p>
+          <div class="ac-table-wrap">
+            <table class="ac-table">
+              <thead><tr><th>Element</th><th>Current</th><th>Need</th><th>+1</th><th>+2</th><th>+3</th></tr></thead>
+              <tbody id="acAugBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="ac-section">
+          <p class="ac-sec-title">Items Needed Estimate <span class="ac-sec-note">roll ตัวอย่าง ธาตุ 40/45% · Chaos 25/20% → จำนวนชิ้น (ปัดขึ้น)</span></p>
+          <div class="ac-table-wrap">
+            <table class="ac-table">
+              <thead><tr><th>Element</th><th>Missing</th><th>Roll #1</th><th>Roll #2</th></tr></thead>
+              <tbody id="acItemBody"></tbody>
+            </table>
+          </div>
+          <p class="ac-footnote">คำนวณจากค่ารวมหลัง penalty ชุดเดียวกับเกจ/Missing Stat Radar และใช้เป้าหมายชุดเดียวกัน — จำนวนชิ้นปัดขึ้นเสมอ (ตัวเลขในวงเล็บคือค่าดิบก่อนปัด)</p>
+        </div>
+      </div>
     </div>
 
     <div class="stat-radar ornate" id="statRadar">
@@ -3921,13 +4048,6 @@ function renderEditor() {
   const container = document.getElementById('editorRows');
   container.innerHTML = '';
 
-  if (state[slot.key].length === 0) {
-    const empty = document.createElement('div');
-    empty.className = 'empty-state';
-    empty.textContent = 'ยังไม่มีค่าจากไอเทมชิ้นนี้ — กด "+ เพิ่มค่าสเตตัส" ด้านล่าง';
-    container.appendChild(empty);
-  }
-
   state[slot.key].forEach((row, idx) => {
     const rowEl = document.createElement('div');
     rowEl.className = 'res-row';
@@ -4005,6 +4125,25 @@ function renderEditor() {
     rowEl.appendChild(removeBtn);
     container.appendChild(rowEl);
   });
+
+  // patch 0.24: โชว์พื้นที่ขั้นต่ำ 5 แถวเสมอ — แถวจริง + แถว ghost (render อย่างเดียว ไม่แตะข้อมูล preset)
+  // คลิกแถว ghost = เพิ่มแถวจริง (พฤติกรรมเดียวกับปุ่ม "+ เพิ่มค่าสเตตัส")
+  const MIN_EDITOR_ROWS = 5;
+  for (let i = state[slot.key].length; i < MIN_EDITOR_ROWS; i++) {
+    const ghost = document.createElement('div');
+    ghost.className = 'res-row res-row-ghost';
+    ghost.title = 'คลิกเพื่อเพิ่มค่าสเตตัส';
+    ghost.innerHTML = '<div class="ghost-box">+ เพิ่มค่าสเตตัส</div><div class="ghost-box">— %</div><div></div>';
+    ghost.addEventListener('click', () => {
+      state[slot.key].push({ stat: 'fire', value: 0 });
+      persistPresets();
+      renderEditor();
+      renderPaperdoll();
+      renderJewelRow();
+      recalc();
+    });
+    container.appendChild(ghost);
+  }
 }
 
 document.getElementById('clearSlotBtn').addEventListener('click', () => {
@@ -4330,6 +4469,67 @@ function updateForgeRadar(totals) {
 
   document.getElementById('srReco').innerHTML = buildForgeRecos(missing, readiness).map(r =>
     '<li class="sr-' + r.cls + '">' + r.text + '</li>').join('');
+
+  updateForgeAugCalc(totals);
+}
+
+/* ---------- Augment Calc (patch 0.24) ----------
+   แผงใต้ Item Editor: (1) เพิ่ม Augment 1/2/3 ลูกแล้วค่า res ไปถึงเท่าไหร่
+   (2) ต้องหาไอเทมประมาณกี่ชิ้นถ้าแต่ละชิ้นให้ roll ระดับทั่วไป
+   ใช้ totals หลัง penalty ชุดเดียวกับเกจ/Missing Stat Radar + เป้าหมายชุดเดียวกัน (forgeTargets)
+   ค่าคงที่รอบนี้ (fixed): Augment ธาตุ +22 / Chaos +11 · roll ตัวอย่าง ธาตุ 40/45% · Chaos 25/20%
+   ไม่รวม Rarity/IRR โดยตั้งใจ — ทุกสตริงเป็น internal ไม่มี user HTML */
+
+const AUG_CALC_ROWS = [
+  { key: 'fire', label: 'Fire', aug: 22, rolls: [40, 45] },
+  { key: 'cold', label: 'Cold', aug: 22, rolls: [40, 45] },
+  { key: 'lightning', label: 'Light', aug: 22, rolls: [40, 45] }, // ย่อจาก Lightning ให้ตารางพอดีคอลัมน์กลาง — สี/คีย์เดิม
+  { key: 'chaos', label: 'Chaos', aug: 11, rolls: [25, 20] },
+];
+
+// จัดรูปตัวเลข: ปัดทศนิยม 2 ตำแหน่ง ตัดศูนย์ท้าย (ค่าจริงส่วนใหญ่เป็นจำนวนเต็มอยู่แล้ว)
+function acNum(v) { return String(Math.round(v * 100) / 100); }
+function acPct(v) { const r = Math.round(v * 100) / 100; return (r > 0 ? '+' : '') + r + '%'; }
+
+function updateForgeAugCalc(totals) {
+  const augBody = document.getElementById('acAugBody');
+  const itemBody = document.getElementById('acItemBody');
+  if (!augBody || !itemBody) return;
+
+  // SECTION 1: Augment Result — result = current + (augmentValue × count); เขียว = ถึงเป้า, ส้ม = ยังขาด
+  augBody.innerHTML = AUG_CALC_ROWS.map(el => {
+    const target = forgeTargetFor(el.key);
+    const current = totals[el.key];
+    const need = Math.max(0, Math.ceil(target - current));
+    const augCells = [1, 2, 3].map(n => {
+      const result = current + el.aug * n;
+      return '<td class="' + (result >= target ? 'ac-ready' : 'ac-short') + '">' + acPct(result) + '</td>';
+    }).join('');
+    return '<tr>' +
+      '<td class="ac-el ' + el.key + '">' + el.label + '</td>' +
+      '<td>' + acPct(current) + '</td>' +
+      '<td class="' + (need === 0 ? 'ac-ready' : 'ac-need') + '">' + (need === 0 ? '✓ 0' : need) + '</td>' +
+      augCells + '</tr>';
+  }).join('');
+
+  // SECTION 2: Items Needed Estimate — missing / roll → ปัดขึ้น; missing ≤ 0 = Ready / 0 ชิ้น
+  itemBody.innerHTML = AUG_CALC_ROWS.map(el => {
+    const target = forgeTargetFor(el.key);
+    const current = totals[el.key];
+    const missing = target - current;
+    const ready = missing <= 0;
+    const cells = ready
+      ? '<td class="ac-ready" colspan="2">✓ Ready — 0 ชิ้น</td>'
+      : el.rolls.map(roll => {
+          const raw = missing / roll;
+          // "ชิ้น" อยู่ในหัวข้อ section แล้ว — ตัดออกจาก cell ให้ตารางพอดีคอลัมน์กลางบนจอ ~1440px
+          return '<td>' + roll + '%→<b>' + Math.ceil(raw) + '</b> <span class="ac-raw">(' + acNum(raw) + ')</span></td>';
+        }).join('');
+    return '<tr>' +
+      '<td class="ac-el ' + el.key + '">' + el.label + '</td>' +
+      '<td class="' + (ready ? 'ac-ready' : 'ac-need') + '">' + (ready ? '0' : acNum(missing)) + '</td>' +
+      cells + '</tr>';
+  }).join('');
 }
 
 // ผูกช่องแก้เป้าหมาย (ครั้งเดียวตอนโหลด) — แก้แล้วบันทึก + คำนวณใหม่ทันที
@@ -4731,6 +4931,7 @@ recalc();
 
 addCorners(document.querySelector('.paperdoll-frame'));
 addCorners(document.querySelector('.item-editor'));
+addCorners(document.querySelector('.aug-calc'));
 addCorners(document.querySelector('.stat-radar'));
 addCorners(document.querySelector('.totals-panel'));
 
@@ -6115,9 +6316,11 @@ function updateShopGearPanel() {
   });
 }
 
-/* ---- Shopping list: on-screen numpad (ไม่มี dependency — ใช้กับ input.num-input ทุกช่องในแท็บนี้) ---- */
+/* ---- On-screen numpad (ไม่มี dependency) — patch 0.24: ใช้ทั่วทั้งแอปกับทุกช่องตัวเลข ---- */
 
 let shopNumpadTarget = null;
+// input[type=number] ไม่รับค่าระหว่างทางอย่าง "3." (browser จะล้างเป็น '') — จำจุดไว้จนกว่าจะกดเลขตัวถัดไป
+let shopNumpadPendingDot = false;
 
 const shopNumpadEl = (function buildShopNumpad() {
   const pad = document.createElement('div');
@@ -6162,6 +6365,7 @@ function positionShopNumpad() {
 
 function openShopNumpad(input) {
   shopNumpadTarget = input;
+  shopNumpadPendingDot = false;
   shopNumpadEl.classList.add('open');
   positionShopNumpad();
   if (window.innerWidth <= 640) input.scrollIntoView({ block: 'center', behavior: 'smooth' });
@@ -6169,6 +6373,7 @@ function openShopNumpad(input) {
 
 function closeShopNumpad() {
   shopNumpadTarget = null;
+  shopNumpadPendingDot = false;
   shopNumpadEl.classList.remove('open');
 }
 
@@ -6176,10 +6381,18 @@ function shopNumpadPress(key) {
   const input = shopNumpadTarget;
   if (!input) return;
   let v = String(input.value);
-  if (key === 'back') v = v.slice(0, -1);
-  else if (key === 'clear') v = '';
-  else if (key === '.') { if (!v.includes('.')) v = (v === '' ? '0.' : v + '.'); }
-  else v += key;
+  if (key === 'back') { v = v.slice(0, -1); shopNumpadPendingDot = false; }
+  else if (key === 'clear') { v = ''; shopNumpadPendingDot = false; }
+  else if (key === '.') {
+    if (v.includes('.')) return;
+    // type=number: set ค่า "3." ไม่ได้ — เก็บจุดไว้ก่อน รอเลขตัวถัดไปค่อยใส่พร้อมกัน
+    if (input.type === 'number') { shopNumpadPendingDot = true; return; }
+    v = (v === '' ? '0.' : v + '.');
+  } else {
+    if (shopNumpadPendingDot && !v.includes('.')) v = (v === '' ? '0' : v) + '.' + key;
+    else v += key;
+    shopNumpadPendingDot = false;
+  }
   input.value = v;
   // ยิง input event เพื่อให้ listener เดิมของช่องนั้น (parseFloat → persist → summary) ทำงานเหมือนพิมพ์เอง
   input.dispatchEvent(new Event('input', { bubbles: true }));
@@ -6194,8 +6407,9 @@ shopNumpadEl.addEventListener('pointerdown', (e) => {
   shopNumpadPress(btn.dataset.key);
 });
 
-// numpad ใช้ร่วมกันระหว่าง Shopping List และ Atlas Planner (patch 0.18) — ทุก input.num-input ในสองแท็บนี้
-const NUMPAD_INPUT_SELECTOR = '#pageShop input.num-input, #pageFarm input.num-input';
+// patch 0.24: numpad เป็น global — ทุกช่องตัวเลขในทุกแท็บ (.num-input เดิม + type=number + inputmode numeric/decimal)
+// เดิม (0.18) จำกัดแค่ #pageShop/#pageFarm input.num-input — พฤติกรรมสองแท็บนั้นเหมือนเดิมทุกอย่าง
+const NUMPAD_INPUT_SELECTOR = 'input.num-input, input[type="number"], input[inputmode="numeric"], input[inputmode="decimal"]';
 document.addEventListener('focusin', (e) => {
   if (e.target.matches && e.target.matches(NUMPAD_INPUT_SELECTOR)) openShopNumpad(e.target);
   else if (shopNumpadTarget && !shopNumpadEl.contains(e.target)) closeShopNumpad();
@@ -6323,6 +6537,16 @@ document.getElementById('shopSizeReset').addEventListener('click', resetShopSizi
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.24',
+    date: '2026-07-13',
+    notes: [
+      'Resistance Checker: แผงใหม่ "Augment Calc" ใต้ Item Editor — ตาราง Augment Result (Fire/Cold/Lightning/Chaos: ค่าปัจจุบัน, ขาดอีกเท่าไหร่, และถ้าเพิ่ม Augment 1/2/3 ลูกจะไปถึงเท่าไหร่ — ธาตุ +22%/ลูก, Chaos +11%/ลูก; เขียว = ถึงเป้า, ส้ม = ยังขาด)',
+      'Augment Calc ส่วนที่สอง "Items Needed Estimate" — ประมาณจำนวนไอเทมที่ต้องหา ถ้าแต่ละชิ้นให้ roll ทั่วไป (ธาตุ 40/45%, Chaos 25/20%) ปัดขึ้นเสมอ พร้อมค่าดิบก่อนปัด — ใช้ค่ารวมหลัง penalty + เป้าหมายชุดเดียวกับ Missing Stat Radar อัปเดตสดเมื่อแก้ของ/เป้า (ไม่รวม Rarity โดยตั้งใจ)',
+      'Item Editor โชว์พื้นที่ขั้นต่ำ 5 แถวเสมอ — แถวที่ยังว่างเป็นแถว ghost เส้นประ คลิกเพื่อเพิ่มแถวจริงได้เลย (ข้อมูล preset เดิมไม่ถูกแตะ)',
+      'Numpad บนจอใช้ได้ทุกช่องตัวเลขทั่วทั้งเว็บแล้ว (เดิมมีแค่ Gear Planner/Farm Planner) — รวมช่องค่าสเตตัส/เป้าหมายใน Resistance Checker, ตัวกรอง Market Radar, ฟอร์ม Divine Market; พิมพ์คีย์บอร์ดเองได้เหมือนเดิม, Done/Esc/คลิกข้างนอกปิดเหมือนเดิม',
+    ],
+  },
   {
     version: '0.23',
     date: '2026-07-13',
