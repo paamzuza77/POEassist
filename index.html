@@ -2454,6 +2454,51 @@
   .appearance-seg button.active { background: var(--text); color: var(--void); border-color: var(--border); }
   .appearance-note { font-size: 11.5px; color: var(--text-dim); line-height: 1.6; margin: 4px 0 0; }
 
+  /* ---------- Settings: extra sections (startup / data / danger) ---------- */
+  .settings-section-title {
+    font-family: var(--font-head);
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text);
+    margin: 18px 0 10px;
+    padding-top: 12px;
+    border-top: 2px solid var(--border);
+  }
+  .settings-body > .settings-section-title:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+  .settings-select {
+    width: 100%;
+    background: var(--panel-sunken);
+    border: 3px solid var(--border);
+    border-radius: 0;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 9px 10px;
+    cursor: pointer;
+  }
+  .settings-select:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--border); }
+  .settings-overview {
+    border: 2px solid var(--border);
+    padding: 4px 12px;
+    margin-bottom: 4px;
+  }
+  .settings-ov-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .settings-ov-row:last-child { border-bottom: none; }
+  .settings-ov-key { font-size: 12px; color: var(--text-muted); }
+  .settings-ov-val { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--text); text-align: right; }
+  .settings-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .settings-actions .ocr-btn { flex: 1 1 auto; min-width: 150px; }
+  .settings-danger { display: flex; flex-direction: column; gap: 8px; }
+  .settings-danger .ocr-btn.danger { text-align: left; }
+
   /* ---------- Divine Market ---------- */
   .divine-disclaimer {
     font-size: 11.5px;
@@ -3802,8 +3847,21 @@ const TAB_IDS = { home: 'pageHome', radar: 'pageRadar', farm: 'pageFarm', forge:
 const TAB_BTNS = { home: 'tabBtnHome', radar: 'tabBtnRadar', farm: 'tabBtnFarm', forge: 'tabBtnForge', shop: 'tabBtnShop', divine: 'tabBtnDivine' };
 const TAB_TITLES = { home: 'Exile Hub', radar: 'Market Radar', farm: 'Atlas Planner', forge: 'Gear Checker', shop: 'Shopping List', divine: 'Divine Market' };
 const TAB_GROUPS = { home: 'Main', radar: 'Main', divine: 'Main', farm: 'Planning', shop: 'Planning', forge: 'Tools' };
+
+// แท็บเริ่มต้นตอนเปิดเว็บ (additive key) — 'last' = ใช้แท็บล่าสุดเหมือนเดิม, หรือ id แท็บที่ตายตัว
+const START_TAB_KEY = 'poeAssist.startTab.v1';
+function loadStartTabPreference() {
+  try {
+    const v = localStorage.getItem(START_TAB_KEY);
+    return (v === 'last' || TAB_IDS[v]) ? v : 'last';
+  } catch (e) { return 'last'; }
+}
+
 let activeTab = localStorage.getItem(TAB_KEY);
 if (!TAB_IDS[activeTab]) activeTab = 'home';
+// ถ้าตั้งแท็บเริ่มต้นแบบตายตัวไว้ ใช้แท็บนั้นตอนโหลด (ไม่งั้นคงพฤติกรรมเดิม = แท็บล่าสุด)
+const startTabPref = loadStartTabPreference();
+if (startTabPref !== 'last' && TAB_IDS[startTabPref]) activeTab = startTabPref;
 
 function switchTab(tab) {
   activeTab = tab;
@@ -3919,9 +3977,100 @@ applyColorModePreference();
   syncAppearanceControls();
 })();
 
+/* ==================== Local data backup / reset ==================== */
+// ทุกคีย์ที่เป็น "ข้อมูลผู้ใช้/การตั้งค่า" ในเบราว์เซอร์ (ไม่รวมไฟล์ JSON ที่ generate มา)
+// ใช้ทั้งใน Export/Import ทั้งชุด — เก็บเป็น string ดิบตามที่อยู่ใน localStorage (lossless)
+const APP_DATA_KEYS = [
+  'poe2ResForge.presets.v2',
+  'poe2ResForge.activePreset.v2',
+  'poeAssist.activeTab.v1',
+  'poeAssist.theme.v1',
+  'poeAssist.colorMode.v1',
+  'poeAssist.sidebarCollapsed.v1',
+  'poeAssist.startTab.v1',
+  'poe2ShopList.rows.v1',
+  'poe2ShopList.rate.v1',
+  'poe2ShopList.tableSizing.v1',
+  'poe2FarmPlanner.cards.v1',
+  'poe2FarmPlanner.filter.v1',
+  'poeAssist.radarFilter.v1',
+  'poeAssist.radarRates.v1',
+  'poeAssist.stashSale.manual.v1',
+];
+// คีย์ที่ถือเป็น "การตั้งค่า UI" เท่านั้น (Reset UI แตะเฉพาะกลุ่มนี้ — ไม่แตะ rows/cards/presets)
+const UI_PREF_KEYS = [
+  'poeAssist.theme.v1',
+  'poeAssist.colorMode.v1',
+  'poeAssist.sidebarCollapsed.v1',
+  'poeAssist.startTab.v1',
+  'poe2ShopList.tableSizing.v1',
+];
+const BACKUP_KIND = 'exile-assistant-backup';
+
+// นับจำนวนแบบ tolerant (ข้อมูลเสีย/หาย = 0) โดยไม่ทำให้ทั้งหน้าเจ๊ง
+function countLocalArray(key) {
+  try {
+    const v = JSON.parse(localStorage.getItem(key));
+    return Array.isArray(v) ? v.length : 0;
+  } catch (e) { return 0; }
+}
+function countGearPresetsWithData() {
+  try {
+    const arr = JSON.parse(localStorage.getItem('poe2ResForge.presets.v2'));
+    if (!Array.isArray(arr)) return 0;
+    return arr.filter(p => p && typeof p === 'object'
+      && Object.values(p).some(v => Array.isArray(v) && v.length > 0)).length;
+  } catch (e) { return 0; }
+}
+
+function exportAppData() {
+  const data = {};
+  APP_DATA_KEYS.forEach(k => {
+    const v = localStorage.getItem(k);
+    if (v !== null) data[k] = v; // เก็บ string ดิบ — ไม่ parse/re-serialize เพื่อกันข้อมูลเพี้ยน
+  });
+  const payload = {
+    app: 'Exile Assistant',
+    kind: BACKUP_KIND,
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    data,
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+  a.href = url;
+  a.download = 'exile-assistant-backup-' + stamp + '.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// ตรวจ shape ให้พอกันไฟล์มั่ว แล้วคืนเฉพาะคีย์ที่รู้จัก (ยังไม่เขียนลง storage — ให้ caller ยืนยันก่อน)
+function parseBackup(text) {
+  let obj;
+  try { obj = JSON.parse(text); }
+  catch (e) { throw new Error('ไฟล์ไม่ใช่ JSON ที่อ่านได้'); }
+  if (!obj || typeof obj !== 'object' || typeof obj.data !== 'object' || obj.data === null)
+    throw new Error('ไม่ใช่ไฟล์สำรองของ Exile Assistant (ไม่มีส่วน data)');
+  if (obj.kind && obj.kind !== BACKUP_KIND)
+    throw new Error('ชนิดไฟล์สำรองไม่ตรง (kind ≠ ' + BACKUP_KIND + ')');
+  const incoming = {};
+  APP_DATA_KEYS.forEach(k => {
+    if (Object.prototype.hasOwnProperty.call(obj.data, k) && typeof obj.data[k] === 'string')
+      incoming[k] = obj.data[k];
+  });
+  if (Object.keys(incoming).length === 0)
+    throw new Error('ไม่พบข้อมูลที่รู้จักในไฟล์นี้');
+  return incoming;
+}
+
 /* ==================== Settings ==================== */
-// ธีม + โหมดสว่าง/มืด (ปุ่มใน Settings ซิงก์กับปุ่มบน topbar); การตั้งค่าอื่นๆ
-// (เรทเงิน, รายการซื้อ, ขนาดตาราง, ย่อเมนู, พรีเซ็ตเกียร์) ยังบันทึกอัตโนมัติในเบราว์เซอร์
+// ศูนย์ควบคุมของแอป: Appearance (ธีม/โหมด ซิงก์กับ topbar), Startup (แท็บเริ่มต้น),
+// Data overview (นับจำนวนแบบ read-only), Data backup (Export/Import ทั้งชุด),
+// Danger zone (reset UI / ล้างเฉพาะกลุ่ม — มี confirm ทุกปุ่ม). คีย์ storage ไม่ถูกเปลี่ยนรูป
 (function initSettings() {
   const btn = document.getElementById('settingsBtn');
   const overlay = document.createElement('div');
@@ -3941,7 +4090,14 @@ applyColorModePreference();
   const body = document.createElement('div');
   body.className = 'settings-body';
 
-  // helper: สร้างกลุ่ม segmented control
+  // ---- helper: หัวข้อ section ----
+  function sectionTitle(text) {
+    const t = document.createElement('div');
+    t.className = 'settings-section-title';
+    t.textContent = text;
+    return t;
+  }
+  // ---- helper: segmented control (ธีม/โหมด) ----
   function makeGroup(labelText, segId, options, currentGetter, onPick, keyName) {
     const group = document.createElement('div');
     group.className = 'appearance-group';
@@ -3965,22 +4121,168 @@ applyColorModePreference();
     return group;
   }
 
+  // ===== 1 · Appearance =====
+  body.appendChild(sectionTitle('Appearance'));
   body.appendChild(makeGroup('ธีม / Theme', 'appearanceThemeSeg', APP_THEMES,
     () => appTheme, setAppTheme, 'theme'));
   body.appendChild(makeGroup('โหมด / Mode',
     'appearanceModeSeg',
     [{ id: 'light', label: 'Light' }, { id: 'dark', label: 'Dark' }],
     () => appMode, setAppColorMode, 'mode'));
+  const apNote = document.createElement('p');
+  apNote.className = 'appearance-note';
+  apNote.textContent = 'ธีมและโหมดจำไว้หลังรีโหลด และสลับได้จากปุ่มมุมขวาบนด้วย.';
+  body.appendChild(apNote);
 
-  const note = document.createElement('p');
-  note.className = 'appearance-note';
-  note.textContent = 'ธีมและโหมดถูกจำไว้หลังรีโหลด และสลับได้จากปุ่มมุมขวาบนด้วย. การตั้งค่าอื่นๆ (เรทเงิน, รายการซื้อ, ขนาดตาราง, ย่อเมนู, พรีเซ็ตเกียร์) ถูกบันทึกในเบราว์เซอร์อัตโนมัติอยู่แล้ว';
-  body.appendChild(note);
+  // ===== 2 · Startup =====
+  body.appendChild(sectionTitle('Startup'));
+  const startGroup = document.createElement('div');
+  startGroup.className = 'appearance-group';
+  const startLab = document.createElement('div');
+  startLab.className = 'appearance-group-label';
+  startLab.textContent = 'แท็บเริ่มต้นตอนเปิดเว็บ / Start tab';
+  const startSel = document.createElement('select');
+  startSel.className = 'settings-select';
+  startSel.id = 'settingsStartTab';
+  const startOptions = [{ id: 'last', label: 'แท็บล่าสุด (Last used)' }]
+    .concat(Object.keys(TAB_TITLES).map(k => ({ id: k, label: TAB_TITLES[k] })));
+  startOptions.forEach(o => startSel.appendChild(new Option(o.label, o.id)));
+  startSel.value = loadStartTabPreference();
+  startSel.addEventListener('change', () => {
+    try { localStorage.setItem(START_TAB_KEY, startSel.value); } catch (e) { /* storage unavailable */ }
+  });
+  startGroup.appendChild(startLab);
+  startGroup.appendChild(startSel);
+  const startNote = document.createElement('p');
+  startNote.className = 'appearance-note';
+  startNote.textContent = 'มีผลตอนเปิด/รีโหลดเว็บครั้งถัดไป. "แท็บล่าสุด" = พฤติกรรมเดิม.';
+  startGroup.appendChild(startNote);
+  body.appendChild(startGroup);
+
+  // ===== 3 · Data overview (read-only) =====
+  body.appendChild(sectionTitle('Local data'));
+  const overview = document.createElement('div');
+  overview.className = 'settings-overview';
+  body.appendChild(overview);
+  function refreshOverview() {
+    const rows = [
+      ['รายการ Shopping List', countLocalArray('poe2ShopList.rows.v1') + ' แถว'],
+      ['การ์ด Atlas Planner', countLocalArray('poe2FarmPlanner.cards.v1') + ' การ์ด'],
+      ['พรีเซ็ตเกียร์ที่มีข้อมูล', countGearPresetsWithData() + ' / 3'],
+      ['ธีม / โหมด', appTheme + ' · ' + appMode],
+      ['แท็บที่ใช้อยู่', TAB_TITLES[activeTab] || activeTab],
+    ];
+    overview.innerHTML = '';
+    rows.forEach(([k, v]) => {
+      const r = document.createElement('div');
+      r.className = 'settings-ov-row';
+      const kk = document.createElement('span');
+      kk.className = 'settings-ov-key';
+      kk.textContent = k;
+      const vv = document.createElement('span');
+      vv.className = 'settings-ov-val';
+      vv.textContent = v;
+      r.appendChild(kk);
+      r.appendChild(vv);
+      overview.appendChild(r);
+    });
+  }
+
+  // ===== 4 · Data backup =====
+  body.appendChild(sectionTitle('Data backup'));
+  const backupRow = document.createElement('div');
+  backupRow.className = 'settings-actions';
+  const exportBtn = document.createElement('button');
+  exportBtn.className = 'ocr-btn';
+  exportBtn.type = 'button';
+  exportBtn.textContent = '⭳ Export all data';
+  exportBtn.addEventListener('click', exportAppData);
+  const importBtn = document.createElement('button');
+  importBtn.className = 'ocr-btn';
+  importBtn.type = 'button';
+  importBtn.textContent = '⭱ Import backup';
+  const importInput = document.createElement('input');
+  importInput.type = 'file';
+  importInput.accept = 'application/json,.json';
+  importInput.style.display = 'none';
+  importBtn.addEventListener('click', () => importInput.click());
+  importInput.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      let incoming;
+      try { incoming = parseBackup(String(reader.result)); }
+      catch (err) { alert('นำเข้าไม่สำเร็จ: ' + err.message); return; }
+      const n = Object.keys(incoming).length;
+      if (!confirm('นำเข้าไฟล์สำรองนี้จะเขียนทับข้อมูลปัจจุบัน ' + n + ' รายการคีย์ที่รู้จัก แล้วรีโหลดหน้า.\nแนะนำ Export เก็บของเดิมไว้ก่อนถ้าไม่แน่ใจ. ดำเนินการต่อ?')) return;
+      try {
+        Object.keys(incoming).forEach(k => localStorage.setItem(k, incoming[k]));
+      } catch (err) { alert('เขียนข้อมูลไม่สำเร็จ: ' + err.message); return; }
+      location.reload();
+    };
+    reader.onerror = () => alert('อ่านไฟล์ไม่สำเร็จ');
+    reader.readAsText(file);
+  });
+  backupRow.appendChild(exportBtn);
+  backupRow.appendChild(importBtn);
+  backupRow.appendChild(importInput);
+  body.appendChild(backupRow);
+  const backupNote = document.createElement('p');
+  backupNote.className = 'appearance-note';
+  backupNote.textContent = 'สำรอง/กู้คืนเฉพาะข้อมูลในเบราว์เซอร์ (การตั้งค่า + รายการซื้อ + การ์ดฟาร์ม + พรีเซ็ตเกียร์). ไม่รวมข้อมูลตลาดที่ generate อัตโนมัติ.';
+  body.appendChild(backupNote);
+
+  // ===== 5 · Danger zone =====
+  body.appendChild(sectionTitle('Danger zone'));
+  const danger = document.createElement('div');
+  danger.className = 'settings-danger';
+  function dangerBtn(label, onClick) {
+    const b = document.createElement('button');
+    b.className = 'ocr-btn danger';
+    b.type = 'button';
+    b.textContent = label;
+    b.addEventListener('click', onClick);
+    return b;
+  }
+  danger.appendChild(dangerBtn('รีเซ็ตการตั้งค่า UI (ธีม/โหมด/ย่อเมนู/แท็บเริ่มต้น/ขนาดตาราง)', () => {
+    if (!confirm('รีเซ็ตเฉพาะการตั้งค่า UI กลับเป็นค่าเริ่มต้น?\n(ไม่ลบรายการซื้อ/การ์ดฟาร์ม/พรีเซ็ตเกียร์) แล้วรีโหลดหน้า.')) return;
+    UI_PREF_KEYS.forEach(k => { try { localStorage.removeItem(k); } catch (e) { /* ignore */ } });
+    location.reload();
+  }));
+  danger.appendChild(dangerBtn('ล้างรายการ Shopping List ทั้งหมด', () => {
+    const n = countLocalArray('poe2ShopList.rows.v1');
+    if (!confirm('ลบรายการ Shopping List ทั้งหมด (' + n + ' แถว)?\nย้อนกลับไม่ได้ — แนะนำ Export ก่อน. แล้วรีโหลดหน้า.')) return;
+    try { localStorage.removeItem('poe2ShopList.rows.v1'); } catch (e) { /* ignore */ }
+    location.reload();
+  }));
+  danger.appendChild(dangerBtn('ล้างการ์ด Atlas Planner ทั้งหมด', () => {
+    const n = countLocalArray('poe2FarmPlanner.cards.v1');
+    if (!confirm('ลบการ์ด Atlas Planner ทั้งหมด (' + n + ' การ์ด)?\nย้อนกลับไม่ได้ — แนะนำ Export ก่อน. แล้วรีโหลดหน้า.')) return;
+    try { localStorage.removeItem('poe2FarmPlanner.cards.v1'); } catch (e) { /* ignore */ }
+    location.reload();
+  }));
+  danger.appendChild(dangerBtn('ล้างพรีเซ็ตเกียร์ (Gear Checker)', () => {
+    const n = countGearPresetsWithData();
+    if (!confirm('ล้างพรีเซ็ตเกียร์ทั้งหมด (มีข้อมูล ' + n + ' / 3 พรีเซ็ต)?\nย้อนกลับไม่ได้ — แนะนำ Export ก่อน. แล้วรีโหลดหน้า.')) return;
+    try {
+      localStorage.removeItem('poe2ResForge.presets.v2');
+      localStorage.removeItem('poe2ResForge.activePreset.v2');
+    } catch (e) { /* ignore */ }
+    location.reload();
+  }));
+  body.appendChild(danger);
 
   panel.appendChild(body);
   overlay.appendChild(panel);
   document.body.appendChild(overlay);
-  btn.addEventListener('click', () => { overlay.hidden = false; syncAppearanceControls(); });
+  btn.addEventListener('click', () => {
+    overlay.hidden = false;
+    syncAppearanceControls();
+    startSel.value = loadStartTabPreference();
+    refreshOverview();
+  });
   close.addEventListener('click', () => { overlay.hidden = true; });
   overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.hidden = true; });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') overlay.hidden = true; });
@@ -5049,6 +5351,17 @@ document.getElementById('shopSizeReset').addEventListener('click', resetShopSizi
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.15',
+    date: '2026-07-12',
+    notes: [
+      'Settings เป็นศูนย์ควบคุมมากขึ้น — เพิ่มส่วน Startup (เลือกแท็บเริ่มต้นตอนเปิดเว็บ: แท็บล่าสุด หรือแท็บใดแท็บหนึ่ง จำไว้หลังรีโหลด)',
+      'Settings › Local data: แสดงจำนวนข้อมูลในเครื่องแบบอ่านอย่างเดียว (รายการซื้อ, การ์ดฟาร์ม, พรีเซ็ตเกียร์, ธีม/โหมด, แท็บที่ใช้อยู่) ทนข้อมูลเสีย/หาย',
+      'Settings › Data backup: ปุ่ม Export ทั้งหมดเป็นไฟล์ JSON (มี timestamp) และ Import กู้คืนไฟล์สำรอง — ตรวจไฟล์ก่อน เขียนเฉพาะคีย์ที่รู้จัก และยืนยันก่อนทับข้อมูล',
+      'Settings › Danger zone: รีเซ็ตเฉพาะการตั้งค่า UI (ไม่แตะรายการซื้อ/การ์ด/พรีเซ็ต) และปุ่มล้างแยกกันสำหรับ Shopping List / Atlas / พรีเซ็ตเกียร์ — ทุกปุ่มถามยืนยันก่อน ไม่มีการลบเงียบ',
+      'คีย์ใหม่ (additive): poeAssist.startTab.v1 — คีย์อื่นทั้งหมดคงเดิม',
+    ],
+  },
   {
     version: '0.14',
     date: '2026-07-12',

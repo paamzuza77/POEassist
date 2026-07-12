@@ -2,6 +2,16 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-12 (11)
+
+- **Settings → app control center: startup tab, data overview, backup/restore, scoped resets** (`index.html`, patch 0.15):
+  - **Startup tab** (new additive key `poeAssist.startTab.v1`): a select in Settings picks the tab to open on load — `last` (= existing `poeAssist.activeTab.v1` behavior, default) or a fixed tab. Applied at init in the Tabs section via `loadStartTabPreference()` (adjusts `activeTab` before the initial `switchTab`); `switchTab` itself is unchanged.
+  - **Local data overview** (read-only, tolerant): shows Shopping rows / Atlas cards counts, gear presets-with-data (`N/3`), and current theme·mode·active tab. Helpers `countLocalArray()` / `countGearPresetsWithData()` swallow malformed JSON → 0. Refreshed each time Settings opens.
+  - **Export / Import all local data:** `exportAppData()` downloads a timestamped JSON (`{app,kind:'exile-assistant-backup',version,exportedAt,data}`) containing the raw string values of the known `APP_DATA_KEYS` (no generated market/data JSON). `parseBackup()` validates shape (must have `data`, matching `kind`, ≥1 known key), returns only known keys; import **confirms before overwriting**, writes only known keys, then reloads. Invalid files show a clear alert and change nothing.
+  - **Danger zone** (each `confirm()`-gated, then reload): reset **UI preferences only** (`UI_PREF_KEYS` = theme/mode/sidebar/startTab/tableSizing — leaves rows/cards/presets), clear Shopping rows, clear Atlas cards, clear Gear presets. No single "wipe everything" button.
+  - **No storage keys changed** except the additive `poeAssist.startTab.v1`; existing Appearance (theme/mode) controls + topbar toggle sync unchanged. New CSS: `.settings-section-title`/`.settings-select`/`.settings-overview`/`.settings-actions`/`.settings-danger` (both themes; danger buttons reuse `.ocr-btn.danger`).
+  - Verification: Playwright (headless msedge) over a local HTTP server — **35/35** passing: sections render; overview counts (seeded 2 rows / 3 cards / 1-of-3 presets); startup fixed-tab opens on reload + `last` honors activeTab; export downloads valid timestamped JSON with known keys and no market data; **invalid import rejected (data unchanged)**; valid import restores a changed key + keeps rows; **reset-UI clears only UI keys and keeps rows/cards/presets**; each clear affects only its target; theme/mode/topbar sync still work; all tabs switch; mobile Settings visible + no horizontal overflow; zero console/page errors. Screenshots: Settings in Trust light + RawBlock dark + mobile. Harness in scratchpad, deleted after use.
+
 ## 2026-07-12 (10)
 
 - **Trust Blue Pay theme coverage polish + favicon** (`index.html`, patch 0.14):

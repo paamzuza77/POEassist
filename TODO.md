@@ -8,7 +8,7 @@ Short, actionable list. Phases live in `ROADMAP.md`; history in `CHANGELOG.md`.
 
 ## Deferred
 - [ ] Replace placeholder `README.md` (currently just a title) with a short public-facing description + live-site link.
-- [ ] Extend Settings further (theme + light/dark shipped in patch 0.13) — remaining candidates: Divine rate default, data export/reset, sidebar default state.
+- [ ] Extend Settings further (theme/mode 0.13; startup tab + data overview + export/import + scoped resets 0.15) — remaining candidates: Divine-rate default, sidebar default state, and moving the in-Shop rate/table-sizing controls into Settings for one control center.
 
 ## Known Issues
 
@@ -16,6 +16,7 @@ Short, actionable list. Phases live in `ROADMAP.md`; history in `CHANGELOG.md`.
 
 ## Done
 
+- [x] Settings app control center — startup-tab preference (new additive key `poeAssist.startTab.v1`), read-only local-data overview, Export/Import all local data (backup file), and `confirm()`-gated scoped resets (UI-only / Shopping / Atlas / Gear); patch 0.15 (2026-07-12).
 - [x] Trust Blue Pay coverage polish (comprehensive rounded/soft/navy-accent overrides across all major surfaces, dark-mode grey repairs, RawBlock untouched) + original inline-SVG favicon (resolves the `/favicon.ico` 404); patch 0.14 (2026-07-12).
 - [x] Theme switcher (RawBlock + Trust Blue Pay) + dark/light mode (topbar toggle + Settings, synced) via `data-theme`/`data-mode` token overrides; functional Settings; removed the redundant Shopping List standalone Type column (data model/export unchanged). New additive keys `poeAssist.theme.v1` / `poeAssist.colorMode.v1`; patch 0.13 (2026-07-12).
 - [x] App layout polish: wider content (max-width 1760), collapsible sidebar (new additive key `poeAssist.sidebarCollapsed.v1`), Settings placeholder button/modal above Patch Notes, and readable Gear Plan slots (full labels + original per-slot icons, 2×2 jewels, corner quick-add); patch 0.12 (2026-07-12).
