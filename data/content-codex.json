@@ -1,0 +1,4436 @@
+{
+  "version": 1,
+  "updatedAt": "2026-07-12T06:42:32.431Z",
+  "startedAt": "2026-07-12T06:42:04.172Z",
+  "source": {
+    "name": "poe2wiki",
+    "license": "CC BY-NC 3.0 unless otherwise noted",
+    "licenseNote": "Content is available under Creative Commons Attribution-NonCommercial 3.0 (CC BY-NC 3.0) unless otherwise noted.",
+    "rootUrl": "https://www.poe2wiki.net",
+    "discovery": [
+      "Category:Encounters",
+      "Category:Pinnacle bosses",
+      "seed:Simulacrum",
+      "seed:The Burning Monolith",
+      "seed:Twisted Domain",
+      "seed:Crux of Nothingness"
+    ]
+  },
+  "entries": [
+    {
+      "id": "abyss",
+      "name": "Abyss",
+      "type": "League mechanic",
+      "tags": [
+        "Abyss",
+        "Encounter",
+        "League mechanic"
+      ],
+      "status": "Parsed",
+      "summary": "Abyss is a type of encounter introduced in Rise of the Abyssal league that can be encountered in acts and maps. It is first encounterable in Mastodon Badlands or Valley of the Titans.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Abyss",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Abyss&action=edit",
+      "fetchedAt": "2026-07-12T06:42:06.260Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [
+        "Fissures can be found randomly in areas near packs of monsters. Defeating monsters nearby will cause the fissures to close, causing Abyssal monsters to spawn. Closing several clustered fissures will cause a pit to open, releasing larger and more dangerous monsters. Monsters spawned by the pit absorb the monster rarity…",
+        "Abyssal Troves are magic or rare rarity chests containing random rewards and preserved bones that can also come in other variants with specific rewards:",
+        "Abyssal Armoury: Contains only armour items and rib preserved bones",
+        "Abyssal Arsenal: Contains only weapon items and jawbone preserved bones",
+        "Abyssal Coffer: Contains only currency",
+        "If a map has the modifier Area is overrun by the Abyssal desecrated modifier, it will cause all natural inhabitants of the map to spawn near Abysses.",
+        "If a map has the modifier Abysses lead to an Abyssal Boss desecrated modifier, it will cause the final Abyssal Pit to lead to either Lightless Void or Dark Domain.",
+        "In the campaign, repeatable Abyss encounters can be found in Mastodon Badlands, Valley of the Titans, and The Venom Crypts.",
+        "— Interactions with other encounters —",
+        "Other encounters and mechanics can interact with abysses. These effects only occur if the encounters naturally spawned near the abyss. Bringing a distant monster to an abyss before killing it will not cause it to have these extra mechanics.",
+        "… (ดูรายละเอียดเต็มบนหน้า wiki)"
+      ],
+      "monsters": [],
+      "bosses": [
+        {
+          "name": "Vessel of Kulemak",
+          "url": "https://www.poe2wiki.net/wiki/Vessel_of_Kulemak",
+          "note": "Pinnacle boss (จากหน้า Pinnacle encounter)"
+        }
+      ],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.4.0e",
+          "changes": [
+            "(Hotfix 2) Fixed Amanamu's Void monster modifier dropping multiple additional Omens, instead of just 1."
+          ]
+        },
+        {
+          "version": "0.4.0c",
+          "changes": [
+            "(Hotfix 1) Reduced the damage of the ground degen pools the Abyss monster Shepherd of the Pit creates.",
+            "(Hotfix 1) Fixed a bug where Soulflame Geysers stolen by the player could trap the player inside of them.",
+            "(Hotfix 4) Fixed an Issue where player stolen Soulflame Geysers would trap the player.",
+            "(Hotfix 4) Reduced the damage over time from pools the Abyss monster Shepherd of the Pit creates. Reduced the damage over time from the following Rare Monster modifiers: Soulflame Geysers, Trail of Fire, Shade Walker."
+          ]
+        },
+        {
+          "version": "0.4.0",
+          "changes": [
+            "Abyss has been added to the core game. You can find Abyss encounters in specific campaign areas, starting in Act 2. Abyss encounters have been added to the Endgame, as well as Abyss Tablets and related modifiers.",
+            "Added an Atlas Passive Tree for the Rise of the Abyssal Content.",
+            "Preserved Vertebrae no longer drop.",
+            "Updated The Well of Souls quest to account for the fact that Abysses no longer spawn in all campaign areas.",
+            "The Amanamu's Tithe lineage support gem has been drop enabled in Abyssal Depths.(undocumented)"
+          ]
+        },
+        {
+          "version": "0.3.0c",
+          "changes": [
+            "Improved the performance of some Abyssal Monster skill effects.",
+            "Improved audio telegraphing for some Abyssal Monster skills.",
+            "Improved the performance of some Abyssal Monster modifiers"
+          ]
+        },
+        {
+          "version": "0.3.0b",
+          "changes": [
+            "Abyssal Monsters can now be bound as Spectres.",
+            "Abyssal Monsters now introduce some of their skills over the first 3 Acts instead of being able to use all of their skills from Act 1.",
+            "(Hotfix 3) Reduced the damage for Damage over Time Ground Effects from most Abyss Monsters.",
+            "(Hotfix 3) Reduced the damage from the Blackblooded Cretin's on death Remnants.",
+            "(Hotfix 3) Temporarily disabled the Undying Will Abyss modifiers from functioning on Tamed Beasts.",
+            "(Hotfix 4) The Abyss Monster modifier Eruption of Souls will no longer cause the player to become stuck when spawned by a player or player minion.",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        },
+        {
+          "version": "0.3.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "breach",
+      "name": "Breach",
+      "type": "League mechanic",
+      "tags": [
+        "Breach",
+        "Encounter",
+        "League mechanic"
+      ],
+      "status": "Parsed",
+      "summary": "Breach is a type of map encounter. Breaches are tears in reality that summon Hiveborn monsters from another dimension.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Breach",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Breach&action=edit",
+      "fetchedAt": "2026-07-12T06:42:07.904Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [
+        "Initially, only Unstable Breaches can be found in the wild. Inside a Breach Fortress, you can also find Breach Hive encounters, and larger Hive Fortress encounters near the center of the fortress. Certain Atlas passives can cause Breach Hives to appear in maps outside of Breach Fortresses.",
+        "— Unstable Breaches —",
+        "Unstable Breaches appear as purple hands emanating energy. When touched, the Breach will begin to expand and summon Hiveborn monsters. Hiveborn monsters are confined within the Breach circle.",
+        "When an Unstable Breach is opened, a meter will appear indicating the encounter status, shown as a two overlapping bars. Your goal is to fill up the lighter bar by killing Hiveborn monsters before the brighter section fills up that bar and collapse the Breach prematurely. If you manage the completely fill the bar, whe…",
+        "Occasionally, after killing all the Rare monsters, the Breach may summon Vruun, Marshall of Xesht instead of collapsing. If this happens, the Breach will collapse after Vruun is killed.",
+        "Once the Breach encounter ends, whether prematurely or not, it will drop items from the Breach encounter at the player's location.",
+        "— Breach Hive —",
+        "Breach Hives are large stabilised Breaches surrounded by organic walls. When you approach these walls, they will burn away. There are also numerous fissures that burst and burn away walls in a large area, which can detonate nearby fissures to create a chain reaction. At the center of the Breach Hive, there will be a b…",
+        "Ailith's health is split into sections, and the amount of damage she takes depends on the power of the enemy that hits her. If Ailith's health is fully depleted, the encounter is failed. Once the encounter begins, walking near the walls will no longer destroy them, but some walls will be randomly destroyed as the wave…",
+        "When starting the encounter, multiple purple flames will spawn near Ailith, which can be activated to unleash various abilities to help defend her:",
+        "… (ดูรายละเอียดเต็มบนหน้า wiki)"
+      ],
+      "monsters": [],
+      "bosses": [
+        {
+          "name": "Xesht, We That Are One",
+          "url": "https://www.poe2wiki.net/wiki/Xesht,_We_That_Are_One",
+          "note": "Pinnacle boss (จากหน้า Pinnacle encounter)"
+        }
+      ],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.5.3",
+          "changes": [
+            "Increased the number of Maps that spawn in Breach Strongholds. The size of the Stronghold in the infinite Atlas should now be approximately the same size as the one encountered near the Ziggurat.",
+            "Improved the user experience when consuming Breach Fruits in large quantities. You can now Ctrl+Click the button that normally births a Wombgift to activate the cursor into a mode where you can rapidly click all the Wombgifts in your inventory and drop the items.",
+            "Adjusted the Modifiers that are applied to Maps in a Breach Stronghold when using an additional Breachstone with the Tear Open the Rift Breach Atlas Passive Skill:",
+            "· The Modifier to Ailith Skill Damage can no longer roll.",
+            "· Modifiers to the chance to find specific Wombgift types can no longer roll.",
+            "Added the following new Modifiers:",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        },
+        {
+          "version": "0.5.2",
+          "changes": [
+            "Significantly reduced the damage on the Chaos Beam from the It That Hates Breach Monster. They also no longer fire chaos projectiles at range, and instead now uses a Melee combo if you are in a close proximity."
+          ]
+        },
+        {
+          "version": "0.5.1",
+          "changes": [
+            "Additional Rares spawned when an Unstable Breach stabalises will now always spawn, regardless of if Vruun is going to spawn or not. Vruun will now spawn after all the rares are killed.",
+            "Breach Monster density now correctly increases the number of monsters in the Breach. This now stacks additively with Pack Size, relevant descriptions will be updated in a future patch."
+          ]
+        },
+        {
+          "version": "0.5.0",
+          "changes": [
+            "New Breach Storyline: Travel to the Monastery of the Keepers, the hallowed halls of the Keepers of the Flame, and discover The Genesis Tree, stolen from the enemy and gifted to the Keepers by the Dreamer himself. For more information see: https://pathofexile2.com/ancients#breach",
+            "There a new Hub Area, \"The Monastery of the Keepers\" to the south of your starting location on the atlas. The maps around this location all contain Breach encounters. Completing these maps gives you points for the Breach Atlas Tree.",
+            "The Breach Atlas Passive Tree has been completely revamped with many new nodes and existing nodes changed.",
+            "Starting a breach now shows a progress bar that indicates how long you have until the breach will close as well as how much time killing monsters is extending the life of the Breach.",
+            "Reaching 100% on this bar will begin a new mechanic: A Stabilised Breach. A stabilised breach will spawn new challenges at its starting point.",
+            "Added new Boss to Stabilised Breach: Vruun, Marshal of Xesht",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        },
+        {
+          "version": "0.3.0",
+          "changes": [
+            "Currently, access to most Pinnacle Content requires the same key at the easiest, and most difficult version of the content. This creates a negative feeling where at lower difficulties, instead of wanting to run the content, you're often better off just selling it to someone who…",
+            "To address this, each content (excluding The Arbiter of Ash) will now drop Splinters, which will not form into singular Items. Instead of using the singular, combined item in the Realmgate, you can now just bring your Splinters. Upon inserting the splinters into the Realmgate, a…",
+            "As a result of this change, the corresponding Atlas Passive Trees no longer affects the difficulty of the content, and has been changed to purely affect the content in the Maps on the Atlas."
+          ]
+        },
+        {
+          "version": "0.2.0g",
+          "changes": [
+            "Breach Splinter drop rates have been increased by +50%."
+          ]
+        },
+        {
+          "version": "0.2.0f",
+          "changes": [
+            "Breach hands now can drop Breach Splinter at all levels. This amount starts low and increases with area level, similar to splinter drops from monsters."
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "Extra content, such as Breach, Delirium, Expedition and Ritual, now start spawning further away from The Ziggurat Refuge.",
+            "The number of Monsters spawned from Breaches has been reduced.",
+            "A higher percentage of the total number of Breach monsters spawned are now spawned earlier in the encounter.",
+            "Reduced the number of small Breach chests found.",
+            "Breach Splinters can now be obtained from Breaches in all Map Tiers, with the amount scaling up per Map Tier.",
+            "Breach and Delirium encounters are now considered complete when you open the Clasped Hand or Delirium Mirror.",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        },
+        {
+          "version": "0.1.1",
+          "changes": [
+            "Reduced the number of monsters and small chests from Breaches by 15%."
+          ]
+        },
+        {
+          "version": "0.1.0e",
+          "changes": [
+            "Lowered the baseline monster density of Breach Encounters, primarily by reducing the frequency of the \"Elite\" monsters appearing.",
+            "Fixed an inconsistency in the different types of packs that could spawn during Breach Encounters, you should now see more different types of Monsters appearing on an area to area basis."
+          ]
+        }
+      ],
+      "notes": [
+        "Breach encounters grant Hiveblood and wombgifts used for crafting with the Genesis Tree, as well as Breach Splinters used to create Breachstones."
+      ],
+      "warnings": [
+        "Drops/Rewards บน wiki เป็นข้อความอธิบาย (ไม่มีตาราง rate ให้แกะ) — สรุปไว้ใน Notes, ดูเต็มบนหน้า wiki"
+      ]
+    },
+    {
+      "id": "delirium",
+      "name": "Delirium",
+      "type": "League mechanic",
+      "tags": [
+        "Delirium",
+        "Encounter",
+        "League mechanic"
+      ],
+      "status": "Parsed",
+      "summary": "Delirium is a type of map encounter. Upon approaching a Delirium mirror, the entire zone becomes covered in a grey fog that summons monsters and empowers them. Monsters summoned or empowered by the fog have a chance to drop liquid emotions.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Delirium",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Delirium&action=edit",
+      "fetchedAt": "2026-07-12T06:42:10.302Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [
+        "Maps that contain a Delirium encounter will spawn a Delirium Mirror near the starting area of the map. Walking through the mirror will cause the Delirium fog to spread outward in a ring shape. While in the fog, additional Delirium monsters will spawn, and existing Magic and Rare monsters may gain Delirium modifiers. T…",
+        "The deeper you go into the fog, the more Delirious the encounter will be, causing more monsters to appear, buffing monsters with more damage and additional Toughness, and improving their item drops.",
+        "During a Delirium encounter, a meter will appear indicating progress in the encounter; the main bar indicates how much of the map is covered in the fog, the bottom marker shows how deep you are in the fog, and the top markers show how deep you need to go into the fog to find a special Fracturing Mirror. The rightmost…",
+        "The Delirium encounter will end if you step out of the fog for more than 5 seconds. Delirium fog is paused temporarily while no players are in the area or while facing certain other encounters or the map boss, indicated by the meter turning black. It is also possible to end the Delirium encounter early by pressing the…",
+        "The Delirium fog will flow in the direction of the map boss.",
+        "— Fracturing Mirror Shards —",
+        "Fracturing Mirror Shards are special types of Mirror Shards that have additional effects. The top part of the meter will show how deep in the fog you need to go to find them, but the type of Mirror Shard that will spawn will be a mystery until it is found.",
+        "The effects of the Mirror Shard depend on its color:",
+        "Escalation (Blue?): Add an additional Delirium modifier to a Rare monster.",
+        "Escalation (Teal?): Temporarily pauses the Delirium fog.",
+        "… (ดูรายละเอียดเต็มบนหน้า wiki)"
+      ],
+      "monsters": [],
+      "bosses": [
+        {
+          "name": "The Raven Trickster",
+          "url": "https://www.poe2wiki.net/wiki/The_Raven_Trickster",
+          "note": "Pinnacle boss (จากหน้า Pinnacle encounter)"
+        }
+      ],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.5.3",
+          "changes": [
+            "Simulacrum Maps are no longer spawned immediately when spreading Delirium fog on the Atlas. Instead, they are now spawned when reaching 100% Deliriousness in the fog bank.",
+            "Maps with Fog on the Atlas now have their special Mirror Shards shown on the Delirium Progress bar, with a player distance indicator and slight visual changes to indicate the player is in fog anywhere in the map. This is purely a visual change.",
+            "The scaling of Delirium Fog has been halved to make Delirium not as difficult when encountering it early in the Endgame. To make up for this, Delirium Tablets now scale the effect of the Delirium Fog when using multiple Tablets, including Maps with Grand Mirrors or those within…",
+            "Improved Delirium Pure Escalation shards, these will now enhance all normal shards to release Pure Emotion Delirium Monster packs, as opposed to just the special Shards that were on the Bar. You can now also see when these shards are enhanced as they are imbued with a purple gla…",
+            "Added additional Monsters to the Loathsome Mire.",
+            "Summoning Circle encounters now pause Delirium Fog. It is paused when starting the encounter, and paused again when defeating the boss spawned by the Summoning Circle.",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        },
+        {
+          "version": "0.5.1",
+          "changes": [
+            "Delirium Fog can no longer spread to Maps that grant Atlas Passive Skills."
+          ]
+        },
+        {
+          "version": "0.5.0",
+          "changes": [
+            "New Storyline: An ancient Trickster God has been unleashed, spreading madness across Wraeclast. Do you dare to uncover his origins and confront your darkest fears? See https://pathofexile2.com/ancients#delirium for more details.",
+            "There is now a hub area \"The Withered Willow\" for Delirium to the south-west of your starting location on the Atlas. The maps around this location all contain Deliriums, and give you points for the Delirium Atlas Passive Tree.",
+            "After breaking a Delirium mirror, there is now a progress bar showing how deep you are in the fog, and how long you have until the fog clears. The start of the Delirium bar represents your initial location at the Delirium mirror, the end of the Delirium bar represents the locati…",
+            "There are now a set of new Delirium Encounters that can be seen on the Delirium bar. Reaching certain depths will cause coloured mirror shards to appear. Walking into the mirror shards will break them, activating the new encounters.",
+            "The direction of the map boss can be observed by looking at the fog effect. Moving in the direction of the fog will always lead you to the map boss.",
+            "Map bosses in Delirium will always be 100% delirious.",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        },
+        {
+          "version": "0.4.0",
+          "changes": [
+            "Waystones can no longer be instilled using Liquid Emotions.",
+            "Improved the visuals of Delirium fog and added a radius around the player that improves clarity further, this radius has less of a desaturation effect and makes the fog thinner.",
+            "Delirium no longer has the reward bar indicator, instead Delirium monsters have a chance to drop Liquid Emotions.",
+            "Delirium Bosses have a guaranteed Liquid Emotion drop and an increased chance to drop higher tier Liquid Emotions."
+          ]
+        },
+        {
+          "version": "0.3.1",
+          "changes": [
+            "Fixed a bug preventing Fracturing Mirrors from spawning in Delirium."
+          ]
+        },
+        {
+          "version": "0.3.0",
+          "changes": [
+            "Currently, access to most Pinnacle Content requires the same key at the easiest, and most difficult version of the content. This creates a negative feeling where at lower difficulties, instead of wanting to run the content, you're often better off just selling it to someone who…",
+            "To address this, each content (excluding The Arbiter of Ash) will now drop Splinters, which will not form into singular Items. Instead of using the singular, combined item in the Realmgate, you can now just bring your Splinters. Upon inserting the splinters into the Realmgate, a…",
+            "As a result of this change, the corresponding Atlas Passive Trees no longer affects the difficulty of the content, and has been changed to purely affect the content in the Maps on the Atlas."
+          ]
+        },
+        {
+          "version": "0.2.0g",
+          "changes": [
+            "Increased the amount of Item Rarity per depth in Delirium encounters. It increases to approximately 2.5 times what it was before.",
+            "The Delirious percentage scaling with waves in Simulacrum has been reduced. Each wave now adds 5% Delirious (previously 10%), up to a maximum of 75% at Difficulty zero (previously 100%), and 115% at Difficulty 4 (previously 140%).",
+            "Many Simulacrum modifiers have had the benefits they provide to Delirium Monsters reduced.",
+            "Delirium splinter drop rates have been increased by +80%."
+          ]
+        },
+        {
+          "version": "0.2.0e",
+          "changes": [
+            "Delirium encounters now last approximately 2.5 times longer.",
+            "The front of the Delirium Fog can now continue expanding while doing other mechanics, though the back of the fog will still pause. This prevents scenarios where you pause the fog while on the edge of it and accidentally end the Delirium.",
+            "Strongboxes now pause Delirium fog when they are opened, in addition to the pause they already had on completion."
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "Extra content, such as Breach, Delirium, Expedition and Ritual, now start spawning further away from The Ziggurat Refuge.",
+            "Delirium Encounters in Maps now reward 1 Simulacrum Splinter each time a reward type is filled.",
+            "Simulacrum Splinters can now be obtained through Delirium Encounters in all Map Tiers, with the amount scaling up per Map Tier.",
+            "The base number of Monsters spawned in Delirium Encounters has been reduced, and the number that emerge by touching Fracturing Mirrors has been greatly increased.",
+            "Reduced the intensity of the fog in Delirium encounters.",
+            "Breach and Delirium encounters are now considered complete when you open the Clasped Hand or Delirium Mirror.",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        },
+        {
+          "version": "0.1.1",
+          "changes": [
+            "Added dedicated 2D art for Waystones that are instilled with layers of Delirium.",
+            "Objects such as Delirium Shards can no longer be pushed by other Monsters.",
+            "Delirium Monsters are no longer untargetable during their emerge animation, as a result they should no longer push you during this."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "expedition",
+      "name": "Expedition",
+      "type": "League mechanic",
+      "tags": [
+        "Encounter",
+        "Expedition",
+        "League mechanic"
+      ],
+      "status": "Parsed",
+      "summary": "Expedition is a type of encounter. An Expedition encounter will task the player with placing a chain of explosives over a Kalguuran burial site to unearth lost artifacts and monsters.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Expedition",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Expedition&action=edit",
+      "fetchedAt": "2026-07-12T06:42:13.354Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [],
+      "monsters": [],
+      "bosses": [
+        {
+          "name": "The Aberration",
+          "url": "https://www.poe2wiki.net/wiki/The_Aberration",
+          "note": "Pinnacle boss (จากหน้า Pinnacle encounter)"
+        }
+      ],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.5.4",
+          "changes": [
+            "Added an Expedition Atlas Passive Skill Tree. You can earn Atlas Passive Points for this by defeating each Boss in The Grand Expedition questline.",
+            "Grand Expeditions now have 1 to 2 Expedition Map Modifiers applied to the area. The following new Grand Expedition modifiers have also been added:",
+            "· Increased number of Runic Monster Markers",
+            "· Runic Monsters are Duplicated",
+            "· Area contains additional Remnants",
+            "Remnants now randomly choose which Rune slot will propagate to further Monsters in Expeditions and Grand Expeditions, rather than randomly which Rune will propagate based on each recipe.",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        },
+        {
+          "version": "0.5.3",
+          "changes": [
+            "The maximum number of Remnants in a Grand Expedition now increases per Waystone Tier, with the highest number of Remnants possible to be found in Tier 15+ Maps.",
+            "Grand Expedition chests have been greatly improved:",
+            "· All the basic Weapon and Armour chests have been removed. Now you should find an abundance of Chests which drop Currency, Unique Items and Waystones. Additonally there are now mysterious chests that drop regular items and trinket chests both of which drop items with a very hig…",
+            "· You can now place 15 Explosives (from 20) in a Grand Expedition to reduce the length of the encounter, combined with the higher value chests and increased number of Remnants your decisions will also be more important.",
+            "The Runic Modifiers on Monsters granted by Runic Inscriptions now improve the rewards of the Monsters more significantly. These have in most cases been doubled, in some cases significantly more."
+          ]
+        },
+        {
+          "version": "0.5.0",
+          "changes": [
+            "Expedition Remnants have been changed into the Remnants from The Runes of Aldur league.",
+            "New Endgame Story: Set out on an expedition with Farrow to explore the Ocean as you investigate the tombs of fallen Kalguurans and challenge them to earn remarkable rewards. Seek out the crater of a fallen star, a meteor of pure Verisium, from which you hope to forge objects of…",
+            "There is now a hub area \"The Ruins of Kingsmarch\" for The Runes of Aldur to the south-east of your starting location on the Atlas.",
+            "The Logbook mechanic has been changed into an Ocean Exploring mechanic. Using logbooks now unveils a section of the ocean with a variety of islands to explore.",
+            "Many new underground areas have been added that can be uncovered during expeditions.",
+            "Many new islands have been added with new Grand Expeditions (previously known as logbooks).",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        },
+        {
+          "version": "0.3.0",
+          "changes": [
+            "Currently, access to most Pinnacle Content requires the same key at the easiest, and most difficult version of the content. This creates a negative feeling where at lower difficulties, instead of wanting to run the content, you're often better off just selling it to someone who…",
+            "To address this, each content (excluding The Arbiter of Ash) will now drop Splinters, which will not form into singular Items. Instead of using the singular, combined item in the Realmgate, you can now just bring your Splinters. Upon inserting the splinters into the Realmgate, a…",
+            "As a result of this change, the corresponding Atlas Passive Trees no longer affects the difficulty of the content, and has been changed to purely affect the content in the Maps on the Atlas.",
+            "Olroth, Origin of the Fall no longer spawns in Logbooks.",
+            "The Detailed Records Expedition Notable Passive Skill now provides +1 to Level of Expedition Logbooks found in your Maps, and Expedition Logbooks found in your Maps always have 4 Implicit Modifiers (previously 3). It no longer provides 30% increased Quantity of Logbooks dropped…",
+            "Party members can no longer fruitlessly attempt to open Expedition portals.",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        },
+        {
+          "version": "0.2.0g",
+          "changes": [
+            "Expedition Magic and Rare chests now have the same base balance as other endgame Magic and Rare chests.",
+            "Normal expedition chests have also been improved.",
+            "We also fixed a bug where Increased Chest Item Rarity from Expedition Remnants was not multiplying correctly with the Chest Item Rarity the chest already had. These Remnants will now have a greater effect.",
+            "Buffed the rewards from most Expedition Remnant mods.",
+            "Expedition Remnant upside modifiers have generally been buffed.",
+            "Several Expedition Remnant downsides have been adjusted.",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "Extra content, such as Breach, Delirium, Expedition and Ritual, now start spawning further away from The Ziggurat Refuge.",
+            "A new crafting mechanic called Recombination has been added to Expedition, which allows you select mods on two items, hoping to get the best elements of each on a single item. As you select more mods, the chance of success decreases. If you are not successful, the items will be…"
+          ]
+        },
+        {
+          "version": "0.1.1",
+          "changes": [
+            "Removed the level requirement to access Expedition Vendors.",
+            "Rarity of items in Expedition Vendor shops now increases with shop level, so shops generally have more rare items at higher levels. This doesn't affect existing shops, and you will need to use a reroll currency to generate shops with the improved rarity."
+          ]
+        },
+        {
+          "version": "0.1.0e",
+          "changes": [
+            "The Ground Laser and Ground Lightning abilities used by the Runed Knight in Expedition Encounters now deal substantially less Damage."
+          ]
+        },
+        {
+          "version": "0.1.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "ritual",
+      "name": "Ritual",
+      "type": "League mechanic",
+      "tags": [
+        "Encounter",
+        "League mechanic",
+        "Ritual"
+      ],
+      "status": "Parsed",
+      "summary": "Rituals are a type of encounter. Rituals are mysterious sacrificial sites built by the The King in the Mists.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Ritual",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Ritual&action=edit",
+      "fetchedAt": "2026-07-12T06:42:16.531Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [
+        "Zones containing a Ritual encounter spawn 3 or 4 Ritual altars. Ritual altars can be activated once most of the monsters surrounding the altar are killed. Activating a Ritual altar will enclose the area in darkness, preventing the player from leaving, and begins reviving monsters killed within the Ritual circle. The a…",
+        "Killing monsters within the circle will grant tribute. The amount of tribute earned from killing the monsters during the encounter depends on the monster's rarity, as well as how many times it has appeared in a ritual in that area; it will provide 25% less tribute each time it is revived. One of the options in the atl…",
+        "After a ritual altar is complete, tribute earned can be spent at the altar for rewards. A swarm of locusts will fly out of completed Ritual altars that point in the direction of the nearest incomplete Ritual altar.",
+        "The encounter will be marked as completed once all Ritual altars have been found.",
+        "It is possible to \"drag\" monsters (e.g. Rogue Exiles) into the Ritual area before killing them to cause them to be resurrected during the ritual encounter. Similarly, monsters that move out of the area before dying will not be resurrected."
+      ],
+      "monsters": [],
+      "bosses": [
+        {
+          "name": "The Bodach",
+          "url": "https://www.poe2wiki.net/wiki/The_Bodach",
+          "note": "Pinnacle boss (จากหน้า Pinnacle encounter)"
+        }
+      ],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.5.2",
+          "changes": [
+            "Queen's Rituals from the Mysterious Rites Atlas Passive now have 10 additional Omens in the first set of Favours.",
+            "The Mysterious Rites Atlas Passive now describes all of the other bonuses the Queen's Ritual previously had as well.",
+            "Unique enemy spawns in Rituals are now staggered. Rituals will pause spawning monsters until the boss is killed."
+          ]
+        },
+        {
+          "version": "0.5.1",
+          "changes": [
+            "(Hotfix 6) Omen of Sinistral Erasure, Omen of Dextral Erasure, Omen of Sinistral Annulment, Omen of Dextral Annulment, Omen of the Blessed and Omen of Sanctification can now generate in Rituals in level 79 and above instead of 80 and above."
+          ]
+        },
+        {
+          "version": "0.5.0",
+          "changes": [
+            "New Storyline: Aoife lingers as a restless spirit, bound to the Wildwood and searching for one who might answer her call. The King in the Mists has claimed her flesh, leaving her soul adrift, untethered and unable to pass beyond. She believes that only by reclaiming what was tak…",
+            "There a new Hub Area, \"Caer Tarth\" to the west of your starting location on the atlas. The maps around this location all contain Ritual encounters. Completing these maps gives you points for the Ritual Atlas Tree.",
+            "The Ritual Atlas Passive Tree has been completely revamped with many new nodes and existing nodes changed.",
+            "After completing a Ritual Altar encounter in a Map, locusts will point the way to the next Altar.",
+            "All items in the Endgame Ritual Reward screen are now either Uniques or Omens.",
+            "Any tribute not spent on rewards can now be sacrificed to gain an Audience with the King",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        },
+        {
+          "version": "0.3.0",
+          "changes": [
+            "Currently, access to most Pinnacle Content requires the same key at the easiest, and most difficult version of the content. This creates a negative feeling where at lower difficulties, instead of wanting to run the content, you're often better off just selling it to someone who…",
+            "To address this, each content (excluding The Arbiter of Ash) will now drop Splinters, which will not form into singular Items. Instead of using the singular, combined item in the Realmgate, you can now just bring your Splinters. Upon inserting the splinters into the Realmgate, a…",
+            "As a result of this change, the corresponding Atlas Passive Trees no longer affects the difficulty of the content, and has been changed to purely affect the content in the Maps on the Atlas.",
+            "The Ritual Favour UI now displays the number of rerolls available.",
+            "Fixed a bug where Ritual Rewards were sometimes offering Waystones a tier below the current Map."
+          ]
+        },
+        {
+          "version": "0.2.1",
+          "changes": [
+            "The Smothered Ritual type that spawns Chaos Volatiles has had it's spawn frequency halved and the damage lowered.",
+            "Rat Tornadoes from the Infested Ritual type have had their damage and move speed reduced slightly.",
+            "The Ritual modifier that spawned Chaos Pustules now spawns them at a much lower frequency and have been increased in size slightly so they are more visible (this does not affect their damaging area of effect)."
+          ]
+        },
+        {
+          "version": "0.2.0g",
+          "changes": [
+            "The chance of finding Audiences with the King in Ritual is increased by +50%."
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "Extra content, such as Breach, Delirium, Expedition and Ritual, now start spawning further away from The Ziggurat Refuge.",
+            "Omens now always appear as Ritual Rewards in Map areas. There's also a small chance for an additional Omen to appear.",
+            "Lowered the maximum number of monsters that can be alive at once in Ritual encounters, particularly earlier in the game.",
+            "The Ritual Rewards menu now pauses the game."
+          ]
+        },
+        {
+          "version": "0.1.1",
+          "changes": [
+            "Chaos Pustules in Ritual encounters have had their visuals improved.",
+            "Increased the chance for Omens to appear as Ritual Rewards."
+          ]
+        },
+        {
+          "version": "0.1.0f",
+          "changes": [
+            "Fixed a bug where Ritual Altars could sometimes fail to activate."
+          ]
+        },
+        {
+          "version": "0.1.0e",
+          "changes": [
+            "(Hotfix 7) Fixed a visual bug with item deferral cost in Ritual."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "azmerian-wisp",
+      "name": "Azmerian wisp",
+      "type": "Content",
+      "tags": [
+        "Encounter"
+      ],
+      "status": "Parsed",
+      "summary": "Azmerian wisps, and their associated Azmeri Spirits, are a type of encounter. They represent various Azmeri Animal Guardians and appears as a wisp of light that can be one of four varieties: Wild, Vivid, Primal, or Sacred.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Azmerian_wisp",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Azmerian_wisp&action=edit",
+      "fetchedAt": "2026-07-12T06:42:07.017Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [
+        "Wisps appear as a glowing ball of light. As you approach the wisp, it will flee, causing monsters it comes into contact to be Spirit-influenced with the X-Touched effect, granting specific buffs. The wisp moves faster the closer you are, and will slow down if you are too far away. If you remain too far away for a peri…",
+        "The wisp will attempt to seek out a rare or unique enemy in the area to possess it, restoring it to full life and granting it the Hunted by X effect which grants enhanced buffs to the monster and periodically summons spiritual animals to aid in combat. The monster will also have more rewarding drops, which also scale…",
+        "Wisps will disappear if there is no rare or unique monsters in the area that it can possess.",
+        "Wisp of the Spring Hare can appear at area level 33+ and Wisp of the Cunning Fox can appear at area level 66+."
+      ],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.5.0",
+          "changes": [
+            "Azmeri Spirits that are released from monsters now retain their power and empower other spirits released from the monster."
+          ]
+        },
+        {
+          "version": "0.3.0",
+          "changes": [
+            "Delwyn no longer appears alongside Azmerian Wisps during the Campaign after the first time you encounter him.",
+            "Azmeri Spirits now start appearing from Hunting Grounds and beyond, instead of in Grelwood.",
+            "Wisp minimap icons are no longer removed from your minimap if you run out of range of them."
+          ]
+        },
+        {
+          "version": "0.2.0h",
+          "changes": [
+            "Azmeri Spirits of the Spring Hare and Fox are now approximately three times more common."
+          ]
+        },
+        {
+          "version": "0.2.0g",
+          "changes": [
+            "Rare monsters possessed by Azmerian Wisps now always drop a Rare item.",
+            "Fixed a bug where the first Wisp in the Grelwood didn't have its Item Rarity or Quantity stats."
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "cleansed-map",
+      "name": "Cleansed map",
+      "type": "Content",
+      "tags": [
+        "Encounter",
+        "Endgame"
+      ],
+      "status": "Parsed",
+      "summary": "Cleansed map are a type of map encounter that can appear after completing a Corrupted Nexus. Doing so will convert all nearby maps affected by Coalesced Corruption to instead become cleansed maps, which contain additional cleansed monster packs.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Cleansed_map",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Cleansed_map&action=edit",
+      "fetchedAt": "2026-07-12T06:42:08.665Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [
+        "Cleansed monsters have a chance to drop a Fracturing Orb.",
+        "One possible cleansed map modifier causes the unique monster The Immured Fury to appear in the map. The Immured Fury always drops a Fracturing Orb when killed."
+      ],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.2.0",
+          "changes": [
+            "Introduced to the game.",
+            "Cleansing a Nexus will cause surrounding Maps to become Cleansed Maps which have their own set of Monsters and rewards, including the newly introduced Fracturing Orb."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "coalesced-corruption",
+      "name": "Coalesced Corruption",
+      "type": "Content",
+      "tags": [
+        "Encounter",
+        "Endgame"
+      ],
+      "status": "Parsed",
+      "summary": "Coalesced Corruption, also known as simply Corruption or Beyond, is a type of map encounter that appears in areas affected by corruption. Monsters slain close together in these areas have a chance to merge together and manifest more powerful monsters.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Coalesced_Corruption",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Coalesced_Corruption&action=edit",
+      "fetchedAt": "2026-07-12T06:42:09.430Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [
+        "Corrupted areas are more likely to have modifiers. These modifiers are removed if the corruption encounter is removed from a map, such as through failing a map.",
+        "Defeating Beyond monsters has a chance to spawn stronger and higher rarity monsters. Each map can have one of three specific Beyond factions.",
+        "— Corrupted Nexus —",
+        "Several maps with Coalesced Corruption will surround a map indicated as a Corrupted Nexus. The Corrupted Nexus will always contain a Beyond boss that appears after killing the map boss. In order to access a Corrupted Nexus, a waystone with at least 4 modifiers must be used.",
+        "Completing the Corrupted Nexus map will cause all nearby maps with Coalesced Corruption to become cleansed maps instead, causing different monsters to appear.",
+        "Upon completing your first Corrupted Nexus, it will unlock the Doryani's Science Atlas specialisation. The first three skill point for Doryani's Science are acquired by completing Corrupted Nexuses. A guaranteed Corrupted Nexus will spawn to the southeast of the Ziggurat Encampment."
+      ],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.3.0",
+          "changes": [
+            "Unidentified Corrupted Waystones can now be used to access a Corrupted Nexus."
+          ]
+        },
+        {
+          "version": "0.2.0g",
+          "changes": [
+            "Reduced the number of Corrupted Nexus' you need to complete your Atlas Passive Tree. Each Corrupted Nexus now grants 5 skill points allowing you to complete this task much faster.",
+            "Increased the visibility of Corrupted Nexus' so that you can see them from further away."
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "Areas of Corruption on the Atlas now have a central Corrupted Nexus that is the source of the affliction. In the areas leading to the Nexus, Corruption will spill out from slain enemies and amalgamate into powerful monsters.",
+            "Upon reaching the Nexus you will begin the task of cleansing the source of Corruption. Complete this task and receive Crystalline Shards that you can use to obtain Atlas Passive Skill points.",
+            "A Boss for each faction has been added, these appear in the Corrupted Nexus.",
+            "Additional Corruption Monster factions have also been introduced.",
+            "Corruption Monsters have had their visuals and animations improved, and their skills have been rebalanced.",
+            "Corruption areas no longer implicitly have +1 to Area Level but now are much more likely to have modifiers, and the modifiers can be more powerful. Some new Corruption modifiers have also been added.",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        },
+        {
+          "version": "0.1.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "crux-of-nothingness",
+      "name": "Crux of Nothingness",
+      "type": "Content",
+      "tags": [
+        "Endgame",
+        "Map area",
+        "Pinnacle",
+        "Ritual"
+      ],
+      "status": "Parsed",
+      "summary": "Crux of Nothingness is the name of the boss arena for The King in the Mists. It can spawn anywhere on the Atlas, but is inaccessible without using An Audience With the King. While you have An Audience With the King in your inventory, there will be buttons on the Atlas where you can use the item to reveal the Crux of N…",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Crux_of_Nothingness",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Crux_of_Nothingness&action=edit",
+      "fetchedAt": "2026-07-12T06:42:31.770Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.5.3",
+          "changes": [
+            "Followers of the King in the Mists have taken up residence within the maze in the Crux of Nothingness, and aim to kill you as you try to escape the maze."
+          ]
+        },
+        {
+          "version": "0.3.0",
+          "changes": [
+            "Currently, access to most Pinnacle Content requires the same key at the easiest, and most difficult version of the content. This creates a negative feeling where at lower difficulties, instead of wanting to run the content, you're often better off just selling it to someone who…",
+            "To address this, each content (excluding The Arbiter of Ash) will now drop Splinters, which will not form into singular Items. Instead of using the singular, combined item in the Realmgate, you can now just bring your Splinters. Upon inserting the splinters into the Realmgate, a…",
+            "· Reduced the number of difficulties from 0-4 to 1-3. (undocumented)",
+            "As a result of this change, the corresponding Atlas Passive Trees no longer affects the difficulty of the content, and has been changed to purely affect the content in the Maps on the Atlas.",
+            "Now ranges from Area/Monster Level 78-82, instead of 80-82. (undocumented)"
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "All Bosses that are affected by Difficulty and Simulacrum can now drop all of their specific unique items at any Difficulty, however rare uniques are even rarer at lower difficulties. This also applies to the drop chances for Reliquary keys from this content.",
+            "Pinnacle boss content now takes roughly half the amount of time to unlock compared to before. In addition, Pinnacle bosses have been made much easier at Difficulty 0 as well. It's our intention to allow you to face Difficulty 0 of this content much earlier in your endgame progre…",
+            "Players no longer lose experience from dying in Simulacrum, The Twisted Domain, Olroth's arena inside Logbooks, the Crux of Nothingness, or The Burning Monolith. Players also no longer gain experience from killing monsters in these areas."
+          ]
+        },
+        {
+          "version": "0.1.1c",
+          "changes": [
+            "Added up to five respawn attempts for the Crux of Nothingness area, based on the area difficulty. If you die before killing The King of the Mists, reviving will place you inside the boss arena and begin the fight again.",
+            "Respawns can only be triggered by the person who put in the Expedition Logbook, Breachstone or An Audience with the King, and everyone in your party will be respawned at the same time."
+          ]
+        },
+        {
+          "version": "0.1.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "difficulty",
+      "name": "Difficulty",
+      "type": "Content",
+      "tags": [
+        "Encounter",
+        "Endgame"
+      ],
+      "status": "Parsed",
+      "summary": "Difficulty is a mechanic that increases the difficulty of endgame bosses and pinnacle encounters, which raises area level and monster life and damage, decreasing the number of respawn attempts for pinnacle encounters, and adjusts the odds of receiving certain boss-exclusive uniques of these encounters. Increased diffi…",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Difficulty",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Difficulty&action=edit",
+      "fetchedAt": "2026-07-12T06:42:11.067Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.5.0",
+          "changes": [
+            "Pinnacle bosses which have previously had an adjustable Difficulty mechanic no longer use them.(undocumented)"
+          ]
+        },
+        {
+          "version": "0.3.0",
+          "changes": [
+            "Currently, access to most Pinnacle Content requires the same key at the easiest, and most difficult version of the content. This creates a negative feeling where at lower difficulties, instead of wanting to run the content, you're often better off just selling it to someone who…",
+            "To address this, each content (excluding The Arbiter of Ash) will now drop Splinters, which will not form into singular Items. Instead of using the singular, combined item in the Realmgate, you can now just bring your Splinters. Upon inserting the splinters into the Realmgate, a…",
+            "As a result of this change, the corresponding Atlas Passive Trees no longer affects the difficulty of the content, and has been changed to purely affect the content in the Maps on the Atlas.",
+            "The Arbiter of Ash Boss fight is now a static difficulty encounter with infinite portals (previously only infinite portals at difficulty 0). The rewards of this fight now match the previous difficulty 4 rewards."
+          ]
+        },
+        {
+          "version": "0.2.0f",
+          "changes": [
+            "Pinnacle Bosses now have unlimited respawn attempts at Difficulty 0."
+          ]
+        },
+        {
+          "version": "0.1.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "encounter",
+      "name": "Encounter",
+      "type": "Content",
+      "tags": [
+        "Encounter",
+        "Endgame"
+      ],
+      "status": "Parsed",
+      "summary": "An encounter, also known as league mechanic, map mechanic, or extra content, is an instance of content added to an area that offers the user additional challenge (often in the form of additional and more challenging monsters) for a chance at a reward (often items). Some encounter types, like Ritual, are introduced via…",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Encounter",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Encounter&action=edit",
+      "fetchedAt": "2026-07-12T06:42:11.830Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.5.0",
+          "changes": [
+            "Fate of the Vaal has been added to the Core Game. You first encounter a series of 6 Ancient Beacons in Act 3, energise them to obtain Energised Crystals and open a portal to the Vaal Ruins. You'll encounter a second set of 6 Ancient Beacons in the Interludes."
+          ]
+        },
+        {
+          "version": "0.4.0",
+          "changes": [
+            "Abyss has been added to the core game. You can find Abyss encounters in specific campaign areas, starting in Act 2. Abyss encounters have been added to the Endgame, as well as Abyss Tablets and related modifiers."
+          ]
+        },
+        {
+          "version": "0.3.1",
+          "changes": [
+            "Map Areas now generate with 1 to 3 extra random content, including Breach, Delirium, Ritual, Expedition, Shrines, Strongboxes, Essences, Wisps, Rogue Exiles, and Summoning Circles.",
+            "This content will be added in addition to the content added by your Tablets and Map Modifiers, and selected afterwards. If you have a Modifier that adds an Expedition Encounter, which cannot have more than 1 in an area, a different type of extra content is selected instead."
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "Introduced 12 Rogue Exiles - others like you who have been exiled and are openly hostile. Each one has their own skills and personalities, and are much smarter than the average monster. These Exiles use unique items that they will drop if you successfully kill them.",
+            "Introduced Azmerian Wisps - spirits that can be found throughout both the campaign and the Endgame. As you approach these wisps, they will flee, leading you past monsters. Any monsters it comes into contact with are infused by the spirit, making them more powerful and the spirit…",
+            "Extra content, such as Breach, Delirium, Expedition and Ritual, now start spawning further away from The Ziggurat Refuge."
+          ]
+        },
+        {
+          "version": "0.1.1c",
+          "changes": [
+            "Minimap Icons for League mechanics now remain visible regardless of how far away you travel from them, making it easier to return to them later."
+          ]
+        },
+        {
+          "version": "0.1.1",
+          "changes": [
+            "Added the new Overseer's Precursor Tablet, a currency item which can be placed in completed Towers to add Map Bosses to valid Maps in radius. These tablets drop from Map Bosses, and can roll exclusive modifiers that affect Map Bosses.",
+            "Map areas have been adjusted to have more distinct specialities for the content they contain. For example, one Map area might have more total number of monsters, while another is more likely to contain additional content such as Strongboxes, Essences or Shrines. Generally speaki…",
+            "· A number of Maps now have 50% more chance to contain Essences.",
+            "· A number of Maps now have 50% more chance to contain Strongboxes.",
+            "· A number of Maps now have 50% more chance to contain Shrines.",
+            "· Maps that are only exclusively found in Biomes containing Citadels now have 50% more chance to contain Essences, Strongboxes and Shrines.",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        },
+        {
+          "version": "0.1.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "essence-encounter",
+      "name": "Essence (encounter)",
+      "type": "Content",
+      "tags": [
+        "Encounter"
+      ],
+      "status": "Parsed",
+      "summary": "Essences are a type of encounter found in both campaign (as early as Act 1 Hunting Grounds) and endgame maps.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Essence_(encounter)",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Essence_(encounter)&action=edit",
+      "fetchedAt": "2026-07-12T06:42:12.591Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [
+        "Players may occasionally encounter several monsters frozen in crystallised corruption. This always consists of a single rare monster and several normal minions. Clicking on the Essence monolith three times will free the monster, allowing it to fight the player.",
+        "The rare Essence monster inherits one or more Essence monster modifiers which correspond to the essences it holds. Once defeated, it will drop each of the listed essences.",
+        "Using a Vaal Orb on an imprisoned monster will corrupt it and modify the essences it's holding in unpredictable ways. Outcomes include:",
+        "No change.",
+        "Add an additional random essence.",
+        "Reroll all essences, transforming them into the same tier of essences.",
+        "Upgrade essences into their better versions and transform Perfect Essences into a Corrupted Essence.",
+        "Essence monsters are freed immediately",
+        "Note: If the result is an upgrade or reroll to another type, then Essence of the Abyss will be removed if present.",
+        "Essence encounters do not respawn if reset by character death.",
+        "… (ดูรายละเอียดเต็มบนหน้า wiki)"
+      ],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.3.0",
+          "changes": [
+            "Added 7 new types of Essences.",
+            "Essences now upgrade to better tier instead of random. (undocumented)"
+          ]
+        },
+        {
+          "version": "0.2.0h",
+          "changes": [
+            "Added quick-use Currency buttons to Strongboxes and monsters imprisoned in Essences. These buttons will only be visible if you have the currency items in your inventory."
+          ]
+        },
+        {
+          "version": "0.2.0d",
+          "changes": [
+            "Flesh Larva monsters can no longer be imprisoned in Essences."
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "Essences can now have Vaal Orbs applied to them to corrupt the Essences with a range of unpredictable outcomes. Greater Essences are possible to be upgraded to four new Corrupted Essences."
+          ]
+        },
+        {
+          "version": "0.1.1",
+          "changes": [
+            "A number of Maps now have 50% more chance to contain Essences.",
+            "Maps that are only exclusively found in Biomes containing Citadels now have 50% more chance to contain Essences, Strongboxes and Shrines.",
+            "Monsters now have increased Toughness per Essence modifier affecting them.",
+            "Added a small delay before monsters released from Essence Monoliths can use their skills.",
+            "Improved the telegraphing of the anchor drop from monsters affected by Essence of Torment.",
+            "Improved the visuals of the area of effect from monsters affected by Essence of Electricity. The time before the area of effect explodes has also been increased.",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        },
+        {
+          "version": "0.1.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "irradiated",
+      "name": "Irradiated",
+      "type": "Content",
+      "tags": [
+        "Encounter"
+      ],
+      "status": "Stub",
+      "summary": "Irradiated is a map mechanic which gives affected maps +1 to Monster level. This stacks with the +1 to Monster Level of Area modifier which may occur in Coalesced Corruption or Cleansed areas.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Irradiated",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Irradiated&action=edit",
+      "fetchedAt": "2026-07-12T06:42:14.116Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [],
+      "notes": [],
+      "warnings": [
+        "needs parser support — โครงหน้านี้ยังไม่มี section ที่ parser รู้จัก (ดูบน wiki โดยตรง)"
+      ]
+    },
+    {
+      "id": "map-juicing",
+      "name": "Map juicing",
+      "type": "Content",
+      "tags": [
+        "Encounter",
+        "Endgame"
+      ],
+      "status": "Stub",
+      "summary": "Map juicing is a series of actions taken deliberately to increase certain rewards yielded by specific map encounters of your choice. Completing waystones without it is referred to as Alch and Go. This involves fine-tuning your Atlas Passive Tree and atlas master; selecting waystones and precursor tablets with specific…",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Map_juicing",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Map_juicing&action=edit",
+      "fetchedAt": "2026-07-12T06:42:14.879Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [],
+      "notes": [],
+      "warnings": [
+        "needs parser support — โครงหน้านี้ยังไม่มี section ที่ parser รู้จัก (ดูบน wiki โดยตรง)"
+      ]
+    },
+    {
+      "id": "pinnacle-encounter",
+      "name": "Pinnacle encounter",
+      "type": "Content",
+      "tags": [
+        "Encounter",
+        "Endgame"
+      ],
+      "status": "Parsed",
+      "summary": "Pinnacle bosses (or pinnacle encounters) represent the most difficult and rewarding content in the endgame. They generally feature a difficult boss. All pinnacle encounters can drop exclusive unique items.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Pinnacle_encounter",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Pinnacle_encounter&action=edit",
+      "fetchedAt": "2026-07-12T06:42:15.644Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.5.0",
+          "changes": [
+            "All league mechanics on the Atlas now have quests that introduce the mechanic and guide you through its various stages up to the Pinnacle Boss.",
+            "All Pinnacle Bosses now have quest versions that can be accessed deterministically, alongside repeatable non-quest versions that offer a greater challenge.",
+            "Pinnacle bosses no longer have a difficulty value and no longer accessed by using splinters at The Realmgate.(undocumented)"
+          ]
+        },
+        {
+          "version": "0.3.0",
+          "changes": [
+            "Currently, access to most Pinnacle Content requires the same key at the easiest, and most difficult version of the content. This creates a negative feeling where at lower difficulties, instead of wanting to run the content, you're often better off just selling it to someone who…",
+            "To address this, each content (excluding The Arbiter of Ash) will now drop Splinters, which will not form into singular Items. Instead of using the singular, combined item in the Realmgate, you can now just bring your Splinters. Upon inserting the splinters into the Realmgate, a…",
+            "As a result of this change, the corresponding Atlas Passive Trees no longer affects the difficulty of the content, and has been changed to purely affect the content in the Maps on the Atlas."
+          ]
+        },
+        {
+          "version": "0.2.0f",
+          "changes": [
+            "Pinnacle Bosses now have unlimited respawn attempts at Difficulty 0."
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "Pinnacle boss content now takes roughly half the amount of time to unlock compared to before. In addition, Pinnaccle bosses have been made much easier at Difficulty 0 as well. It's our intention to allow you to face Difficulty 0 of this content much earlier in your endgame progr…",
+            "Players no longer lose experience from from dying in Simulacrum, The Twisted Domain, Olroth's arena inside Logbooks, the Crux of Nothingness, or The Burning Monolith. Players also no longer gain experience from killing monsters in these areas."
+          ]
+        },
+        {
+          "version": "0.1.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "rogue-exile",
+      "name": "Rogue exile",
+      "type": "Content",
+      "tags": [
+        "Encounter"
+      ],
+      "status": "Parsed",
+      "summary": "Rogue exiles are a special type of monsters. Wandering around Wraeclast, these hostile exiles seek out a fight to the death. Rogue exiles start appearing in Act 4 of the campaign and have an ~8% chance to appear in maps.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Rogue_exile",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Rogue_exile&action=edit",
+      "fetchedAt": "2026-07-12T06:42:17.285Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [
+        "Rogue exiles are Unique monsters based on playable characters and can use player skills, including Dodge Roll. They use a more advanced AI than other monsters with smart targeting and smart pathfinding. They can also use life flasks to heal themselves mid-combat.",
+        "Rogue exiles come equipped with their own set of equipment, which can occasionally include drop-enabled unique items, and stats from these items will affect the rogue exile. They may use items with socketed augments which are retained when dropped. Any unique items they carry will be displayed under their modifiers. W…",
+        "A Rogue exile captured in a Ritual generates new equipment each time they are respawned, including unique items.",
+        "Rogue exiles that spawn near abysses will respawn as a Lichborn Exile when killed, imbuing them with additional abilities and Abyssal modifiers. Their name will display as \" , the Lich Born\". Lichborn exiles can drop the exclusive unique item Heart of the Well."
+      ],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.5.3",
+          "changes": [
+            "Rogue Exiles no longer drop Corrupted items."
+          ]
+        },
+        {
+          "version": "0.4.0",
+          "changes": [
+            "Made various improvements to Rogue Exile behaviour.",
+            "Re-enabled the following Rogue Exiles; Taua, the Ruthless, Ulfred, the Afflicted, Drusian, the Artillerist and Doran, the Deft."
+          ]
+        },
+        {
+          "version": "0.3.0",
+          "changes": [
+            "Rogue Exiles now get additional life scaling from level 65 onwards, resulting in a roughly 30-70% life increase from Tier 1 Waystones to Tier 16 Waystones.",
+            "Non-Unique items on Rogue Exiles are now affected by increased Rarity of items found in Area.",
+            "Fixed a bug where some items dropped from Rogue Exiles would drop Identified."
+          ]
+        },
+        {
+          "version": "0.2.1",
+          "changes": [
+            "Rogue Exiles in Endgame Areas have a much higher chance to spawn with Unique Items."
+          ]
+        },
+        {
+          "version": "0.2.0f",
+          "changes": [
+            "Rogue Exiles will always have appropriate Tier Runes socketed into dropped items relative to their item levels."
+          ]
+        },
+        {
+          "version": "0.2.0e",
+          "changes": [
+            "Added lighting to Rogue Exiles to reduce the likelihood of losing track of them."
+          ]
+        },
+        {
+          "version": "0.2.0b",
+          "changes": [
+            "All non-unique monsters have less life, tapering from 100% to 75% of what they had between levels 8 and 15. All monsters between level 15 and 46 now have exactly 25% less Life. All monsters between level 46 and 64 now have less life, tapering up from 75% to 100%. This results in…",
+            "Rogue Exiles have had their Life reduced by 40% (on top of the change above)."
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "shrine",
+      "name": "Shrine",
+      "type": "Content",
+      "tags": [
+        "Encounter"
+      ],
+      "status": "Parsed",
+      "summary": "Shrines (also known as Precursor Artifacts) are a type of encounter. Shrines empower monsters within its presence with Shrine buffs or Shrine effects. Defeating the monsters surrounding the Shrine and interacting with it will temporarily grant the Shrine buff to the player.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Shrine",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Shrine&action=edit",
+      "fetchedAt": "2026-07-12T06:42:18.037Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.5.0",
+          "changes": [
+            "Halved the Damage as Extra buffs granted from the following shrines: Freezing Shrine, Gloom Shrine, Meteoric Shrine, and Tempest Shrine.",
+            "The base duration of all Shrines is now 45 seconds."
+          ]
+        },
+        {
+          "version": "0.2.0h",
+          "changes": [
+            "Disabled the Greed and Corruption Shrines.",
+            "Adjusted the damage timing on Meteoric Shrine to match visuals.",
+            "Adjusted the buff durations for the following Shrines to 60 seconds: Meteoric, Freezing, Tempest and Gloom.",
+            "Adjusted the buff durations for the following Shrines to 90 seconds: Acceleration, Seeking, Massive, Replenishing, Enlightening, Resistance and Diamond.",
+            "Increased the rate at which the Diamond and Divine Shrines could spawn."
+          ]
+        },
+        {
+          "version": "0.2.0f",
+          "changes": [
+            "Shrines are now easier to click on.",
+            "Adjusted the frequency and damage of the ice shard spiral volley from Shrines."
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "Fixed a bug where the Greed Shrine buff was granted by an Avarice Shrine. In all instances this should now be referred to as a Greed Shrine."
+          ]
+        },
+        {
+          "version": "0.1.1",
+          "changes": [
+            "A number of Maps now have 50% more chance to contain Shrines.",
+            "Maps that are only exclusively found in Biomes containing Citadels now have 50% more chance to contain Essences, Strongboxes and Shrines.",
+            "Improved the highlightability/clickability of Shrines."
+          ]
+        },
+        {
+          "version": "0.1.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "simulacrum",
+      "name": "Simulacrum",
+      "type": "Content",
+      "tags": [
+        "Delirium",
+        "Endgame",
+        "Map area"
+      ],
+      "status": "Parsed",
+      "summary": "The Simulacrum is a map that can be accessed via Delirium encounters.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Simulacrum",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Simulacrum&action=edit",
+      "fetchedAt": "2026-07-12T06:42:29.483Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [
+        "Upon completing a map with a Grand Mirror, you can add Delirium fog to a map on the Atlas, which will spread to nearby maps. Once the maps in the fog reaches 100% Deliriousness, at least one of the fog covered maps will turn into a Simulacrum.",
+        "An itemised Simulacrum (map fragment) can be used to transform a map with 100%+ Deliriousness into a Simulacrum."
+      ],
+      "mechanics": [
+        "The Simulacrum consists of 7 waves of enemies to defeat. The map is an amalgamation of interconnected arenas based on tilesets from Act 1. The Deliriousness percentage of the Simulacrum increases with each wave, starting with 100% Deliriousness at wave 1, going up to 200% at wave 7.",
+        "Once the You can't just wake up from this one. Notable Atlas passive skill is allocated, between each wave you can select one mirror shard to add its effect to all future waves:",
+        "Escalating Threats: Adds an additional modifier to the area. These modifiers generally add danger and reward.",
+        "Apex Predators: Adds an additional map boss to the encounter.",
+        "Pure Emotions: Adds additional monster packs to the encounter."
+      ],
+      "monsters": [
+        {
+          "name": "Kosis, The Revelation",
+          "url": "https://www.poe2wiki.net/wiki/Kosis,_The_Revelation"
+        },
+        {
+          "name": "Omniphobia, Fear Manifest",
+          "url": "https://www.poe2wiki.net/wiki/Omniphobia,_Fear_Manifest"
+        },
+        {
+          "name": "Malice",
+          "url": "https://www.poe2wiki.net/wiki/Malice_(monster)"
+        },
+        {
+          "name": "Rage",
+          "url": "https://www.poe2wiki.net/wiki/Rage_(monster)"
+        },
+        {
+          "name": "Spite",
+          "url": "https://www.poe2wiki.net/wiki/Spite"
+        },
+        {
+          "name": "Turmoil",
+          "url": "https://www.poe2wiki.net/wiki/Turmoil"
+        }
+      ],
+      "bosses": [],
+      "guaranteedDrops": [
+        "One Simulacrum-exclusive unique item drops after completing the 7th (final) wave of the simulacrum. Additionally, 1 to 2 Raven's Reflection will also drop.",
+        "Assailum — 42% of the guaranteed pool",
+        "Perfidy — 33% of the guaranteed pool",
+        "Collapsing Horizon — 10% of the guaranteed pool",
+        "Melting Maelstrom — 4% of the guaranteed pool",
+        "Strugglescream — 2% of the guaranteed pool",
+        "Megalomaniac (2 mod) — 3% of the guaranteed pool",
+        "Megalomaniac (3 mod) — 3% of the guaranteed pool",
+        "Voices — ~1%? of the guaranteed pool",
+        "Tangmazu's Reliquary Key — <1% of the guaranteed pool"
+      ],
+      "dropRates": [
+        {
+          "name": "Assailum",
+          "url": "https://www.poe2wiki.net/wiki/Assailum",
+          "group": "Guaranteed Unique",
+          "rateText": "42%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Perfidy",
+          "url": "https://www.poe2wiki.net/wiki/Perfidy",
+          "group": "Guaranteed Unique",
+          "rateText": "33%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Collapsing Horizon",
+          "url": "https://www.poe2wiki.net/wiki/Collapsing_Horizon",
+          "group": "Guaranteed Unique",
+          "rateText": "10%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Melting Maelstrom",
+          "url": "https://www.poe2wiki.net/wiki/Melting_Maelstrom",
+          "group": "Guaranteed Unique",
+          "rateText": "4%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Strugglescream",
+          "url": "https://www.poe2wiki.net/wiki/Strugglescream",
+          "group": "Guaranteed Unique",
+          "rateText": "2%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Megalomaniac",
+          "url": "https://www.poe2wiki.net/wiki/Megalomaniac",
+          "group": "Guaranteed Unique",
+          "rateText": "3%",
+          "rateKind": "estimated",
+          "note": "2 mod"
+        },
+        {
+          "name": "Megalomaniac",
+          "url": "https://www.poe2wiki.net/wiki/Megalomaniac",
+          "group": "Guaranteed Unique",
+          "rateText": "3%",
+          "rateKind": "estimated",
+          "note": "3 mod"
+        },
+        {
+          "name": "Voices",
+          "url": "https://www.poe2wiki.net/wiki/Voices",
+          "group": "Guaranteed Unique",
+          "rateText": "~1%?",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Tangmazu's Reliquary Key",
+          "url": "https://www.poe2wiki.net/wiki/Tangmazu's_Reliquary_Key",
+          "group": "Guaranteed Unique",
+          "rateText": "<1%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Raven's Reflection",
+          "url": "https://www.poe2wiki.net/wiki/Raven's_Reflection",
+          "group": "Additional drops",
+          "rateText": "80% (1x) · 20% (2x)",
+          "rateKind": "estimated",
+          "note": ""
+        }
+      ],
+      "drops": [
+        {
+          "name": "Assailum",
+          "url": "https://www.poe2wiki.net/wiki/Assailum",
+          "group": "Guaranteed Unique",
+          "rateText": "42%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Perfidy",
+          "url": "https://www.poe2wiki.net/wiki/Perfidy",
+          "group": "Guaranteed Unique",
+          "rateText": "33%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Collapsing Horizon",
+          "url": "https://www.poe2wiki.net/wiki/Collapsing_Horizon",
+          "group": "Guaranteed Unique",
+          "rateText": "10%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Melting Maelstrom",
+          "url": "https://www.poe2wiki.net/wiki/Melting_Maelstrom",
+          "group": "Guaranteed Unique",
+          "rateText": "4%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Strugglescream",
+          "url": "https://www.poe2wiki.net/wiki/Strugglescream",
+          "group": "Guaranteed Unique",
+          "rateText": "2%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Megalomaniac",
+          "url": "https://www.poe2wiki.net/wiki/Megalomaniac",
+          "group": "Guaranteed Unique",
+          "rateText": "3%",
+          "rateKind": "estimated",
+          "note": "2 mod"
+        },
+        {
+          "name": "Megalomaniac",
+          "url": "https://www.poe2wiki.net/wiki/Megalomaniac",
+          "group": "Guaranteed Unique",
+          "rateText": "3%",
+          "rateKind": "estimated",
+          "note": "3 mod"
+        },
+        {
+          "name": "Voices",
+          "url": "https://www.poe2wiki.net/wiki/Voices",
+          "group": "Guaranteed Unique",
+          "rateText": "~1%?",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Tangmazu's Reliquary Key",
+          "url": "https://www.poe2wiki.net/wiki/Tangmazu's_Reliquary_Key",
+          "group": "Guaranteed Unique",
+          "rateText": "<1%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Raven's Reflection",
+          "url": "https://www.poe2wiki.net/wiki/Raven's_Reflection",
+          "group": "Additional drops",
+          "rateText": "80% (1x) · 20% (2x)",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Liquid emotion",
+          "url": "https://www.poe2wiki.net/wiki/Liquid_emotion",
+          "group": "Additional drops",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        }
+      ],
+      "versionHistory": [
+        {
+          "version": "0.5.3",
+          "changes": [
+            "Simulacrums now start at 100% Delirious, scaling up to 200%. This was previously intended to be 0% scaling up to 100%, but was actually not working at all.",
+            "Simulacrum Maps are no longer spawned immediately when spreading Delirium fog on the Atlas. Instead, they are now spawned when reaching 100% Deliriousness in the fog bank.",
+            "The You can't just wake up from this one Notable Delirium Passive Skill now also provides Simulacrums now spawn Shards between Waves, allowing a single selection:",
+            "· Escalating Threats: Adds an additional Modifier to the area. These modifiers generally add danger and reward.",
+            "· Apex Predators: Adds an additional Boss to the Encounter.",
+            "· Pure Emotions: Adds additional monster packs to the encounter.",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        },
+        {
+          "version": "0.5.0",
+          "changes": [
+            "Simulacrum has been updated, and is now a 7-wave encounter.",
+            "Completing a Simulacrum will now give you a key to face the new Delirium Pinnacle Boss"
+          ]
+        },
+        {
+          "version": "0.4.0",
+          "changes": [
+            "Boss Waves in the Simulacrum also drop a guaranteed Liquid Emotion with a chance of being a higher tier Liquid Emotion."
+          ]
+        },
+        {
+          "version": "0.3.0",
+          "changes": [
+            "Currently, access to most Pinnacle Content requires the same key at the easiest, and most difficult version of the content. This creates a negative feeling where at lower difficulties, instead of wanting to run the content, you're often better off just selling it to someone who…",
+            "To address this, each content (excluding The Arbiter of Ash) will now drop Splinters, which will not form into singular Items. Instead of using the singular, combined item in the Realmgate, you can now just bring your Splinters. Upon inserting the splinters into the Realmgate, a…",
+            "· Reduced the number of difficulties from 0-4 to 1-3. (undocumented)",
+            "As a result of this change, the corresponding Atlas Passive Trees no longer affects the difficulty of the content, and has been changed to purely affect the content in the Maps on the Atlas.",
+            "Now ranges from Area/Monster Level 78-82, instead of 80-82. (undocumented)"
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "The modifier in Simulacrum for Rare Monsters having an additional Modifier no longer appears.",
+            "All Bosses that are affected by Difficulty and Simulacrum can now drop all of their specific unique items at any Difficulty, however rare uniques are even rarer at lower difficulties. This also applies to the drop chances for Reliquary keys from this content.",
+            "Pinnacle boss content now takes roughly half the amount of time to unlock compared to before. In addition, Pinnacle bosses have been made much easier at Difficulty 0 as well. It's our intention to allow you to face Difficulty 0 of this content much earlier in your endgame progre…",
+            "Players no longer lose experience from dying in Simulacrum, The Twisted Domain, Olroth's arena inside Logbooks, the Crux of Nothingness, or The Burning Monolith. Players also no longer gain experience from killing monsters in these areas.",
+            "Moved the location of the stash in Simulacrum to make it harder to accidentally start the encounter when trying to open the stash."
+          ]
+        },
+        {
+          "version": "0.1.1",
+          "changes": [
+            "Reduced the damage scaling of Monsters in Simulacrum encounters with added Difficulty."
+          ]
+        },
+        {
+          "version": "0.1.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [
+        "Estimated drop rates from version 0.5.0. n=59 Actual drop rates may vary.",
+        "Each wave drops at least one Liquid Emotion at the end of the wave. Waves containing a boss have a chance of dropping higher tier Liquid Emotions.",
+        "One Simulacrum-exclusive unique item drops after completing the 7th (final) wave of the simulacrum. Additionally, 1 to 2 Raven's Reflection will also drop."
+      ],
+      "warnings": []
+    },
+    {
+      "id": "strongbox",
+      "name": "Strongbox",
+      "type": "Content",
+      "tags": [
+        "Encounter"
+      ],
+      "status": "Parsed",
+      "summary": "Strongboxes are an encounter found in both the campaign and endgame. Strongboxes are a type of chest that can have modifiers. These chests may be crafted upon with currency items. When a strongbox is opened, a dark mist will flow out of them and summon packs of monsters. Once all the monsters are slain, the chest will…",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Strongbox",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Strongbox&action=edit",
+      "fetchedAt": "2026-07-12T06:42:18.804Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [
+        "Strongboxes can have most currency items applied to them to alter its modifiers. The modifiers on a strongbox will add or improve the items it drops or empower monsters within.",
+        "Rare Strongboxes can have up to 3 prefixes and suffixes by default. They can have up to 4 prefixes and suffixes after certain Atlas passives have been allocated. In addition, certain Atlas passives will enable certain modifiers to be able to be rolled on strongboxes.",
+        "Corrupting a strongbox with a Vaal Orb results in all items being Corrupted.",
+        "Certain mechanics may allow a strongbox to be openable again. To do so, the player must hold the left click button down on the strongbox.",
+        "The loot from strongboxes is not affected by rarity modifiers from your gear, though they are affected by strongbox-specific modifiers. Strongboxes innately gain 50% more item quantity and rarity starting from Act 4, and 100% more in endgame."
+      ],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.5.0",
+          "changes": [
+            "Lowered the base chances for Essences, Azmeri Spirits, Shrines, Strongboxes, Summoning Circles and Rogue Exiles appearing in Maps somewhat due to the much larger increase now available on the Atlas Tree.",
+            "The \"Contains Identified Items\" modifier on Strongboxes can no longer roll.",
+            "The additional Chest level modifier on Strongboxes is now +1 (from +1-2)",
+            "Prefix modifiers on Strongboxes that use skills, such as \"Casts Chaos Barrages\" now additionally have 10-20% more Rarity of Contained Items.",
+            "Added two new Prefix modifiers to Strongboxes: 40-60% increased Rarity of Items Dropped from Strongbox Monsters and 40-60% more Rarity of Contained Items. 15-30% increased Effectiveness of Strongbox Monsters and 20-30% more Quantity of Contained Items."
+          ]
+        },
+        {
+          "version": "0.3.0",
+          "changes": [
+            "Unique Strongboxes now have their own unique minimap icons.",
+            "Added a Minimap icon to The Rain Festival Beetle monster (from the Unique Strongbox)."
+          ]
+        },
+        {
+          "version": "0.2.1",
+          "changes": [
+            "The Lightning Storms Strongbox modifier now causes fewer lightning bolts, and its lightning bolts have improved visuals effects."
+          ]
+        },
+        {
+          "version": "0.2.0h",
+          "changes": [
+            "Added quick-use Currency buttons to Strongboxes and monsters imprisoned in Essences. These buttons will only be visible if you have the currency items in your inventory."
+          ]
+        },
+        {
+          "version": "0.2.0g",
+          "changes": [
+            "Strongboxes have increased Item Quantity and Item Rarity, guarantee a Rare item as well as getting a further +50% more Item Quantity and Item Rarity in Cruel, and +100% more in Endgame.",
+            "Researcher's Strongboxes will now have a much higher chance to drop Rare currency instead of Magic currency.",
+            "Reduced the variance in the number of items Strongboxes dropped. They should more consistently drop a good number of items.",
+            "Fixed a bug where Strongboxes with the \"of Singularity\" modifier would sometimes fail to drop an Unique item."
+          ]
+        },
+        {
+          "version": "0.2.0e",
+          "changes": [
+            "Strongboxes now pause Delirium fog when they are opened, in addition to the pause they already had on completion."
+          ]
+        },
+        {
+          "version": "0.2.0d",
+          "changes": [
+            "The Rain Festival Beetle now has Drops 3-5 additional Jewels (from 5-7) and 100-150% more Rarity of Contained Items (from 50-100%).(undocumented)"
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "Introduced 4 Unique Strongboxes - special chests with unique encounters.",
+            "Strongboxes now spawn slightly more packs of Monsters in Maps.",
+            "Strongboxes can now appear in certain Act 1 areas.",
+            "(Hotfix 4) Monsters spawned from Strongboxes can no longer be Spectred."
+          ]
+        },
+        {
+          "version": "0.1.1c",
+          "changes": [
+            "Added Minimap Icons for Strongboxes."
+          ]
+        },
+        {
+          "version": "0.1.1",
+          "changes": [
+            "A number of Maps now have 50% more chance to contain Strongboxes.",
+            "Maps that are only exclusively found in Biomes containing Citadels now have 50% more chance to contain Essences, Strongboxes and Shrines.",
+            "Strongboxes have been adjusted to spawn waves of enemies over a much shorter period of time.",
+            "The Strongbox fog effect now fades away once all the waves of enemies have been spawned.",
+            "Significantly increased the chance to encounter Research Strongboxes.",
+            "Added a visual effect to distinguish which Monsters have been spawned by a Strongbox.",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "summoning-circle",
+      "name": "Summoning Circle",
+      "type": "Content",
+      "tags": [
+        "Encounter"
+      ],
+      "status": "Parsed",
+      "summary": "Summoning Circles are a type of encounter that spawns a random map boss when interacted with. After interacting with the three stone monoliths surrounding a summoning circle, a large beam of energy comes down from the sky and summon the boss.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Summoning_Circle",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Summoning_Circle&action=edit",
+      "fetchedAt": "2026-07-12T06:42:19.567Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.5.3",
+          "changes": [
+            "Summoning Circle encounters now pause Delirium Fog. It is paused when starting the encounter, and paused again when defeating the boss spawned by the Summoning Circle."
+          ]
+        },
+        {
+          "version": "0.5.0",
+          "changes": [
+            "Summoning Circles added to Maps are now described as containing a single Summoning Circle, with multiple Reactivation Runes. Reactivation Runes now describe what they do, and have been made easier to notice."
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "the-burning-monolith",
+      "name": "The Burning Monolith",
+      "type": "Content",
+      "tags": [
+        "Endgame",
+        "Map area",
+        "Pinnacle"
+      ],
+      "status": "Parsed",
+      "summary": "The Burning Monolith is a special area in the Precursor Fortress. The area contains a gate locked behind three keys. Behind the gate is the pinnacle boss The Arbiter of Ash.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/The_Burning_Monolith",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=The_Burning_Monolith&action=edit",
+      "fetchedAt": "2026-07-12T06:42:30.244Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [],
+      "monsters": [],
+      "bosses": [
+        {
+          "name": "The Arbiter of Ash",
+          "url": "https://www.poe2wiki.net/wiki/The_Arbiter_of_Ash",
+          "note": "Pinnacle boss (จากหน้า Pinnacle encounter)"
+        }
+      ],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.5.0",
+          "changes": [
+            "The Burning Monolith along with Arbiter of Ash has been moved into the Fortress.",
+            "There are now two versions of each pinnacle boss, the Quest version and the Infinite Farm version. As such Primary, Secondary and Tertiary Calamity Fragments can no longer be obtained.",
+            "Area level reduced to 74.(undocumented)"
+          ]
+        },
+        {
+          "version": "0.1.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "the-genesis-tree",
+      "name": "The Genesis Tree",
+      "type": "Content",
+      "tags": [
+        "Breach",
+        "Encounter"
+      ],
+      "status": "Parsed",
+      "summary": "The Genesis Tree is a type of crafting mechanic located in the Monastery of the Keepers. Using Hiveblood and wombgifts collected from Breach monsters, the Genesis Tree can birth items. The tree's wombs have a set of passive skills that can be allocated to modify the outcome of the crafts.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/The_Genesis_Tree",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=The_Genesis_Tree&action=edit",
+      "fetchedAt": "2026-07-12T06:42:20.329Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [
+        "Crafting with the Genesis Tree requires two components: Hiveblood, which is automatically gained at the end of breach encounters based on Breach monsters killed; and a Wombgift, which can drop at the end of Breach encounters or can be found in breach chests in Hive Fortresses.",
+        "The Genesis Tree has four different \"wombs\", each corresponding to a different reward type: currency, ring, amulet, belt; plus a fifth tree-less womb for crafting Breachstones from Revelatory Wombgifts. Each womb slot accepts only its specific type of wombgift. Once a wombgift is placed in a slot, press the button bel…",
+        "Each womb tree has 10 or 15 passive points that can be allocated to them, which is enough to spec only about 1/6th of the total available passive tree nodes. Passives on the Genesis Tree can be freely respecced with no cost.",
+        "The Genesis Tree can generate exclusive item bases, as well as catalysts used to add quality to jewellery and jewels. It can also create rings and amulets with exclusive caster or minion explicit modifiers.",
+        "All collected Hiveblood with automatically go to the Genesis Tree. The Genesis Tree can hold up to 100,000 Hiveblood.",
+        "Holding Ctrl while left clicking the \"Use Wombgift\" button will change the cursor to quick-use other wombgifts by left-clicking them.",
+        "— Unlocking Womb passive nodes —",
+        "Each of the four wombs (Currency, Amulet, Ring, and Belt) initially has all passive tree nodes locked and unassignable. Birthing an item will unlock 3-5 nodes in pre-determined sequence. It takes about 10 birthings in each womb to fully unlock that womb's passive tree. The level of the Wombgifts does not matter for un…",
+        "— Unlocking Womb passive points —",
+        "Each of the four wombs has 10 or 15 passive points each that must be unlocked, separately from unlocking the ability to assign the passive tree nodes. On the Breach Atlas Passive Tree, Diverse Control grants 2 points for each womb, Exquisite Design grants 5 points for the Amulet womb, and Growing Wealth grants 5 point…",
+        "… (ดูรายละเอียดเต็มบนหน้า wiki)"
+      ],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.5.3",
+          "changes": [
+            "Improved the user experience when consuming Breach Fruits in large quantities. You can now Ctrl+Click the button that normally births a Wombgift to activate the cursor into a mode where you can rapidly click all the Wombgifts in your inventory and drop the items."
+          ]
+        },
+        {
+          "version": "0.5.2",
+          "changes": [
+            "Added a new Necrotic Catalyst which adds quality that enhances Minion Modifiers on a Ring or Amulet. There is also a Refined Necrotic Catalyst, both of which are available through the Genesis Tree."
+          ]
+        },
+        {
+          "version": "0.5.1",
+          "changes": [
+            "Additional Rares spawned when an Unstable Breach stabalises will now always spawn, regardless of if Vruun is going to spawn or not. Vruun will now spawn after all the rares are killed.",
+            "Breach Monster density now correctly increases the number of monsters in the Breach. This now stacks additively with Pack Size, relevant descriptions will be updated in a future patch."
+          ]
+        },
+        {
+          "version": "0.5.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "twisted-domain",
+      "name": "Twisted Domain",
+      "type": "Content",
+      "tags": [
+        "Breach",
+        "Endgame",
+        "Map area",
+        "Pinnacle"
+      ],
+      "status": "Parsed",
+      "summary": "The Twisted Domain is an endgame area containing the pinnacle Breach encounter, accessible through the use of a Breachlord Sac in the Monastery of the Keepers.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Twisted_Domain",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Twisted_Domain&action=edit",
+      "fetchedAt": "2026-07-12T06:42:31.007Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [],
+      "monsters": [
+        {
+          "name": "Xesht, We That Are One",
+          "url": "https://www.poe2wiki.net/wiki/Xesht,_We_That_Are_One"
+        },
+        {
+          "name": "It That Claws",
+          "url": "https://www.poe2wiki.net/wiki/It_That_Claws"
+        },
+        {
+          "name": "It That Controls",
+          "url": "https://www.poe2wiki.net/wiki/It_That_Controls"
+        },
+        {
+          "name": "It That Crawls",
+          "url": "https://www.poe2wiki.net/wiki/It_That_Crawls"
+        },
+        {
+          "name": "It That Creeps",
+          "url": "https://www.poe2wiki.net/wiki/It_That_Creeps"
+        },
+        {
+          "name": "It That Grasps",
+          "url": "https://www.poe2wiki.net/wiki/It_That_Grasps"
+        },
+        {
+          "name": "It That Guards",
+          "url": "https://www.poe2wiki.net/wiki/It_That_Guards"
+        },
+        {
+          "name": "It That Hates",
+          "url": "https://www.poe2wiki.net/wiki/It_That_Hates"
+        },
+        {
+          "name": "It That Hunts",
+          "url": "https://www.poe2wiki.net/wiki/It_That_Hunts"
+        },
+        {
+          "name": "It That Lashes",
+          "url": "https://www.poe2wiki.net/wiki/It_That_Lashes"
+        },
+        {
+          "name": "It That Shreds",
+          "url": "https://www.poe2wiki.net/wiki/It_That_Shreds"
+        },
+        {
+          "name": "It That Stalks",
+          "url": "https://www.poe2wiki.net/wiki/It_That_Stalks"
+        },
+        {
+          "name": "It That Suspects",
+          "url": "https://www.poe2wiki.net/wiki/It_That_Suspects"
+        },
+        {
+          "name": "It That Watches",
+          "url": "https://www.poe2wiki.net/wiki/It_That_Watches"
+        }
+      ],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.3.0",
+          "changes": [
+            "Currently, access to most Pinnacle Content requires the same key at the easiest, and most difficult version of the content. This creates a negative feeling where at lower difficulties, instead of wanting to run the content, you're often better off just selling it to someone who…",
+            "To address this, each content (excluding The Arbiter of Ash) will now drop Splinters, which will not form into singular Items. Instead of using the singular, combined item in the Realmgate, you can now just bring your Splinters. Upon inserting the splinters into the Realmgate, a…",
+            "· Reduced the number of difficulties from 0-4 to 1-3. (undocumented)",
+            "As a result of this change, the corresponding Atlas Passive Trees no longer affects the difficulty of the content, and has been changed to purely affect the content in the Maps on the Atlas.",
+            "Now ranges from Area/Monster Level 78-82, instead of 80-82. (undocumented)"
+          ]
+        },
+        {
+          "version": "0.2.1",
+          "changes": [
+            "The Twisted Domain now drops significantly more Catalysts on average.",
+            "Breach Ring dropped from Clasped Hands in the Twisted Domain are now always Rare.",
+            "Monsters in the Twisted Domain are now more rewarding.",
+            "Lowered the number of \"\"It That Watches\"\" monster in the Twisted Domain.",
+            "Increased rare and magic pack chance in the Twisted Domain."
+          ]
+        },
+        {
+          "version": "0.2.0g",
+          "changes": [
+            "Added checkpoints to the Twisted Domain."
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "All Bosses that are affected by Difficulty and Simulacrum can now drop all of their specific unique items at any Difficulty, however rare uniques are even rarer at lower difficulties. This also applies to the drop chances for Reliquary keys from this content.",
+            "Pinnacle boss content now takes roughly half the amount of time to unlock compared to before. In addition, Pinnacle bosses have been made much easier at Difficulty 0 as well. It's our intention to allow you to face Difficulty 0 of this content much earlier in your endgame progre…",
+            "Players no longer lose experience from dying in Simulacrum, The Twisted Domain, Olroth's arena inside Logbooks, the Crux of Nothingness, or The Burning Monolith. Players also no longer gain experience from killing monsters in these areas."
+          ]
+        },
+        {
+          "version": "0.1.1c",
+          "changes": [
+            "Added up to five respawn attempts for the Twisted Domain area, based on the area difficulty. If the Breach Domain is completed but you die during the Xesht, We Who Are One boss fight, you will revive at the entrance to the boss arena. If you die before completing the Breach Doma…",
+            "Respawns can only be triggered by the person who put in the Expedition Logbook, Breachstone or An Audience with the King, and everyone in your party will be respawned at the same time."
+          ]
+        },
+        {
+          "version": "0.1.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "verisium-remnant",
+      "name": "Verisium Remnant",
+      "type": "Content",
+      "tags": [
+        "Encounter",
+        "Expedition"
+      ],
+      "status": "Parsed",
+      "summary": "Verisium Remnants, also known as Runic Remnants or simply Remnants, are a type of encounter. They can be found as individual encounters in Runes of Aldur league, and can also be found as part of Expedition encounters.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Verisium_Remnant",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Verisium_Remnant&action=edit",
+      "fetchedAt": "2026-07-12T06:42:21.095Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [],
+      "mechanics": [
+        "Verisium Remnants appear in the form of a large chunk of rock inscribed with runes, guarded by a pack of monsters. Pulsing blue Verisium veins can be found in the terrain nearby. Once the nearby monsters are killed, the remnant can be interacted with, revealing the number of runes it can be inscribed with one of its s…",
+        "Clicking on the \"Runeshape Combinations\" icon will open an interface that lets you inscribe a runeshape combination into the remnant, allowing the player to choose a specific reward to receive from the remnant encounter, as well as the list of modifiers it will add to the encounter. The available options will depend o…",
+        "Once the runeshape combination have been chosen, the remnant can be activated, raising nearby defeated monsters and summoning new ones while also empowering them or unleashing skills. Longer runeshape combinations will spawn additional waves of monsters. The remnant will apply the rune modifiers to summoned monsters i…",
+        "Completing a Verisium Remnant encounter for the first time will unlock the Runeshape Tome interface, which can be opened with by default.",
+        "— Expedition —",
+        "Remnants can also be found as part of Expedition encounters. Detonated remnants will apply the effect of a random rune in its runeshape combination to monsters in subsequent explosion in the explosion chain. Remnants must be fully inscribed before detonating them."
+      ],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.5.4",
+          "changes": [
+            "Remnants now randomly choose which Rune slot will propagate to further Monsters in Expeditions and Grand Expeditions, rather than randomly which Rune will propagate based on each recipe.",
+            "Added a highlight to the Rune that will be propagated upon completing a Remnant in the Runeshape Recipes list."
+          ]
+        },
+        {
+          "version": "0.5.3",
+          "changes": [
+            "The maximum number of Remnants in a Grand Expedition now increases per Waystone Tier, with the highest number of Remnants possible to be found in Tier 15+ Maps.",
+            "The Runic Modifiers on Monsters granted by Runic Inscriptions now improve the rewards of the Monsters more significantly. These have in most cases been doubled, in some cases significantly more."
+          ]
+        },
+        {
+          "version": "0.5.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [
+        "Remnant encounters drop Verisium and other crafting components used for Runeforging.",
+        "Specific runeshape combinations can grant exclusive runes, alloys, and fluxes. Some of these items are unlocked after completing Farrow's quest in specific Acts.",
+        "— Basic rewards —",
+        "— Runeshape rewards —",
+        "— Runes —",
+        "— Other —"
+      ],
+      "warnings": [
+        "Drops/Rewards บน wiki เป็นข้อความอธิบาย (ไม่มีตาราง rate ให้แกะ) — สรุปไว้ใน Notes, ดูเต็มบนหน้า wiki"
+      ]
+    },
+    {
+      "id": "atziri-the-red-queen",
+      "name": "Atziri, the Red Queen",
+      "type": "Boss",
+      "tags": [
+        "Monster",
+        "Pinnacle"
+      ],
+      "status": "Parsed",
+      "summary": "Atziri, the Red Queen is the pinnacle boss of the Fate of the Vaal league mechanic. She is found in Atziri's Temple. She has a second form called Atziri, the Fell Serpent.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Atziri,_the_Red_Queen",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Atziri%2C_the_Red_Queen&action=edit",
+      "fetchedAt": "2026-07-12T06:42:21.859Z",
+      "image": {
+        "url": "",
+        "fileName": "Atziri corrupted cinematic.jpg",
+        "sourceUrl": "https://www.poe2wiki.net/wiki/File:Atziri_corrupted_cinematic.jpg",
+        "licenseNote": "Game artwork © Grinding Gear Games; wiki file page lists no explicit license — not embedded, view on wiki",
+        "safeToEmbed": false
+      },
+      "access": [
+        "Location: Atziri's Temple",
+        "In order to fight Atziri, the player must first complete a series of tasks in the Temple of Atziri:",
+        "Place rooms to access the Architect's Chamber",
+        "Defeat Xipocado, Royal Architect",
+        "Use Xipocado's Console to place a Royal Access Chamber",
+        "Place rooms to access Royal Access Chamber and unlock Atziri's Chambers",
+        "Place rooms to access Atziri's Chamber",
+        "Though Atziri's Chamber can be pathed to directly, the door that leads to her arena will not unlock until the character interacts with the Royal Access Chamber.",
+        "Access key: — — via Atziri's Temple"
+      ],
+      "mechanics": [],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [
+        {
+          "name": "Atziri's Step",
+          "url": "https://www.poe2wiki.net/wiki/Atziri's_Step",
+          "group": "",
+          "rateText": "35%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Drillneck",
+          "url": "https://www.poe2wiki.net/wiki/Drillneck",
+          "group": "",
+          "rateText": "32%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Atziri's Rule",
+          "url": "https://www.poe2wiki.net/wiki/Atziri's_Rule",
+          "group": "",
+          "rateText": "12%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Atziri's Contempt",
+          "url": "https://www.poe2wiki.net/wiki/Atziri's_Contempt",
+          "group": "",
+          "rateText": "8%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Flesh Crucible",
+          "url": "https://www.poe2wiki.net/wiki/Flesh_Crucible",
+          "group": "",
+          "rateText": "1%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Sacrificial Regalia",
+          "url": "https://www.poe2wiki.net/wiki/Sacrificial_Regalia",
+          "group": "",
+          "rateText": "100%, magic or rare rarity",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Atziri's Communion",
+          "url": "https://www.poe2wiki.net/wiki/Atziri's_Communion",
+          "group": "",
+          "rateText": "?%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Atziri's Impatience",
+          "url": "https://www.poe2wiki.net/wiki/Atziri's_Impatience",
+          "group": "",
+          "rateText": "8%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Zerphi's Infamy",
+          "url": "https://www.poe2wiki.net/wiki/Zerphi's_Infamy",
+          "group": "",
+          "rateText": "11%",
+          "rateKind": "estimated",
+          "note": ""
+        }
+      ],
+      "drops": [
+        {
+          "name": "Atziri's Step",
+          "url": "https://www.poe2wiki.net/wiki/Atziri's_Step",
+          "group": "",
+          "rateText": "35%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Drillneck",
+          "url": "https://www.poe2wiki.net/wiki/Drillneck",
+          "group": "",
+          "rateText": "32%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Atziri's Rule",
+          "url": "https://www.poe2wiki.net/wiki/Atziri's_Rule",
+          "group": "",
+          "rateText": "12%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Atziri's Contempt",
+          "url": "https://www.poe2wiki.net/wiki/Atziri's_Contempt",
+          "group": "",
+          "rateText": "8%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Flesh Crucible",
+          "url": "https://www.poe2wiki.net/wiki/Flesh_Crucible",
+          "group": "",
+          "rateText": "1%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Sacrificial Regalia",
+          "url": "https://www.poe2wiki.net/wiki/Sacrificial_Regalia",
+          "group": "",
+          "rateText": "100%, magic or rare rarity",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Atziri's Communion",
+          "url": "https://www.poe2wiki.net/wiki/Atziri's_Communion",
+          "group": "",
+          "rateText": "?%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Atziri's Impatience",
+          "url": "https://www.poe2wiki.net/wiki/Atziri's_Impatience",
+          "group": "",
+          "rateText": "8%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Zerphi's Infamy",
+          "url": "https://www.poe2wiki.net/wiki/Zerphi's_Infamy",
+          "group": "",
+          "rateText": "11%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Atziri's Temple",
+          "url": "https://www.poe2wiki.net/wiki/Atziri's_Temple",
+          "group": "",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "Ancient Infuser",
+          "url": "https://www.poe2wiki.net/wiki/Ancient_Infuser",
+          "group": "",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "Architect's Orb",
+          "url": "https://www.poe2wiki.net/wiki/Architect's_Orb",
+          "group": "",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "Core Destabiliser",
+          "url": "https://www.poe2wiki.net/wiki/Core_Destabiliser",
+          "group": "",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "Crystallised Corruption",
+          "url": "https://www.poe2wiki.net/wiki/Crystallised_Corruption",
+          "group": "",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "Orb of Extraction",
+          "url": "https://www.poe2wiki.net/wiki/Orb_of_Extraction",
+          "group": "",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "Vaal Cultivation Orb",
+          "url": "https://www.poe2wiki.net/wiki/Vaal_Cultivation_Orb",
+          "group": "",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "Infuser",
+          "url": "https://www.poe2wiki.net/wiki/Infuser",
+          "group": "",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "Vaal Siphoner",
+          "url": "https://www.poe2wiki.net/wiki/Vaal_Siphoner",
+          "group": "",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "Kamasa's Orb of Sacrifice",
+          "url": "https://www.poe2wiki.net/wiki/Kamasa's_Orb_of_Sacrifice",
+          "group": "",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "Kopec's Orb of Sacrifice",
+          "url": "https://www.poe2wiki.net/wiki/Kopec's_Orb_of_Sacrifice",
+          "group": "",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "Yaomac's Orb of Sacrifice",
+          "url": "https://www.poe2wiki.net/wiki/Yaomac's_Orb_of_Sacrifice",
+          "group": "",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "Yugul's Orb of Sacrifice",
+          "url": "https://www.poe2wiki.net/wiki/Yugul's_Orb_of_Sacrifice",
+          "group": "",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        }
+      ],
+      "versionHistory": [
+        {
+          "version": "0.5.4",
+          "changes": [
+            "After killing Atziri, the Red Queen, her Vault now has a chance to drop 1 of 4 new Orb of Sacrifice currency items. These currencies upgrade Corrupted Enchantments on items, at the cost of randomly removing an Explicit Modifier."
+          ]
+        },
+        {
+          "version": "0.5.1",
+          "changes": [
+            "Added a new Lineage Support Gem: Atziri's Communion.",
+            "· Drops from Atziri, the Red Queen"
+          ]
+        },
+        {
+          "version": "0.4.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [
+        "Estimated drop rates from version 0.4.0. n=100 Actual drop rates may vary.",
+        "After defeating Atziri, she will drop Atziri's Medallion. This item must be taken to entrance of Atziri's Chamber at the checkpoint. The Medallion will be consumed to unlock Atziri's Vault (containing her drops) as well as six Royal Trove chests (containing currency). The opening of the chests is delayed to an animati…",
+        "— Atziri's Vault —",
+        "Atziri's Vault always contains one of the following unique items:",
+        "(12%, 7 random variants)",
+        "Atziri's Vault can also contain the following items:",
+        "… (ดูรายละเอียดเต็มบนหน้า wiki)"
+      ],
+      "warnings": []
+    },
+    {
+      "id": "the-aberration",
+      "name": "The Aberration",
+      "type": "Boss",
+      "tags": [
+        "Expedition",
+        "Monster",
+        "Pinnacle"
+      ],
+      "status": "Parsed",
+      "summary": "The Aberration is the pinnacle boss of Expedition and Runes of Aldur league. It can be fought by travelling to the Verisium Crater from Ruins of Kingsmarch after defeating Olroth, Origin of the Fall and bringing The Triskelion Reforged.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/The_Aberration",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=The_Aberration&action=edit",
+      "fetchedAt": "2026-07-12T06:42:22.622Z",
+      "image": {
+        "url": "",
+        "fileName": "The Abberation.png",
+        "sourceUrl": "https://www.poe2wiki.net/wiki/File:The_Abberation.png",
+        "licenseNote": "Game artwork © Grinding Gear Games; wiki file page lists no explicit license — not embedded, view on wiki",
+        "safeToEmbed": false
+      },
+      "access": [
+        "Location: Ruins of Kingsmarch (Level 79 (quest) · 82)",
+        "Access key: The Triskelion Reforged — via Expedition"
+      ],
+      "mechanics": [],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [
+        "The Aberration always drops one of the following:",
+        "Venerable Starlit Ore (Eyes of the Runefather) — 36% of the guaranteed pool",
+        "Warding Starlit Ore (Duality) — 32% of the guaranteed pool",
+        "Veridical Starlit Ore (Eventide Petals) — 16% of the guaranteed pool",
+        "Revered Starlit Ore (The Unleashed) — 12% of the guaranteed pool",
+        "Twisted Empyrean — 4% of the guaranteed pool"
+      ],
+      "dropRates": [
+        {
+          "name": "Venerable Starlit Ore",
+          "url": "https://www.poe2wiki.net/wiki/Venerable_Starlit_Ore",
+          "group": "Guaranteed pool",
+          "rateText": "36%",
+          "rateKind": "estimated",
+          "note": "Eyes of the Runefather"
+        },
+        {
+          "name": "Warding Starlit Ore",
+          "url": "https://www.poe2wiki.net/wiki/Warding_Starlit_Ore",
+          "group": "Guaranteed pool",
+          "rateText": "32%",
+          "rateKind": "estimated",
+          "note": "Duality"
+        },
+        {
+          "name": "Veridical Starlit Ore",
+          "url": "https://www.poe2wiki.net/wiki/Veridical_Starlit_Ore",
+          "group": "Guaranteed pool",
+          "rateText": "16%",
+          "rateKind": "estimated",
+          "note": "Eventide Petals"
+        },
+        {
+          "name": "Revered Starlit Ore",
+          "url": "https://www.poe2wiki.net/wiki/Revered_Starlit_Ore",
+          "group": "Guaranteed pool",
+          "rateText": "12%",
+          "rateKind": "estimated",
+          "note": "The Unleashed"
+        },
+        {
+          "name": "Twisted Empyrean",
+          "url": "https://www.poe2wiki.net/wiki/Twisted_Empyrean",
+          "group": "Guaranteed pool",
+          "rateText": "4%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Olroth's Conviction",
+          "url": "https://www.poe2wiki.net/wiki/Olroth's_Conviction",
+          "group": "Additional drops",
+          "rateText": "6%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Olroth's Hubris",
+          "url": "https://www.poe2wiki.net/wiki/Olroth's_Hubris",
+          "group": "Additional drops",
+          "rateText": "4%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Emergent instinct",
+          "url": "https://www.poe2wiki.net/wiki/Emergent_instinct",
+          "group": "Additional drops",
+          "rateText": "2.5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Emergent Protection",
+          "url": "https://www.poe2wiki.net/wiki/Emergent_Protection",
+          "group": "Additional drops",
+          "rateText": "2%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Emergent Vigour",
+          "url": "https://www.poe2wiki.net/wiki/Emergent_Vigour",
+          "group": "Additional drops",
+          "rateText": "0.5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Emergent Possibility",
+          "url": "https://www.poe2wiki.net/wiki/Emergent_Possibility",
+          "group": "Additional drops",
+          "rateText": "<0.5%",
+          "rateKind": "estimated",
+          "note": ""
+        }
+      ],
+      "drops": [
+        {
+          "name": "Venerable Starlit Ore",
+          "url": "https://www.poe2wiki.net/wiki/Venerable_Starlit_Ore",
+          "group": "Guaranteed pool",
+          "rateText": "36%",
+          "rateKind": "estimated",
+          "note": "Eyes of the Runefather"
+        },
+        {
+          "name": "Warding Starlit Ore",
+          "url": "https://www.poe2wiki.net/wiki/Warding_Starlit_Ore",
+          "group": "Guaranteed pool",
+          "rateText": "32%",
+          "rateKind": "estimated",
+          "note": "Duality"
+        },
+        {
+          "name": "Veridical Starlit Ore",
+          "url": "https://www.poe2wiki.net/wiki/Veridical_Starlit_Ore",
+          "group": "Guaranteed pool",
+          "rateText": "16%",
+          "rateKind": "estimated",
+          "note": "Eventide Petals"
+        },
+        {
+          "name": "Revered Starlit Ore",
+          "url": "https://www.poe2wiki.net/wiki/Revered_Starlit_Ore",
+          "group": "Guaranteed pool",
+          "rateText": "12%",
+          "rateKind": "estimated",
+          "note": "The Unleashed"
+        },
+        {
+          "name": "Twisted Empyrean",
+          "url": "https://www.poe2wiki.net/wiki/Twisted_Empyrean",
+          "group": "Guaranteed pool",
+          "rateText": "4%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Olroth's Conviction",
+          "url": "https://www.poe2wiki.net/wiki/Olroth's_Conviction",
+          "group": "Additional drops",
+          "rateText": "6%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Olroth's Hubris",
+          "url": "https://www.poe2wiki.net/wiki/Olroth's_Hubris",
+          "group": "Additional drops",
+          "rateText": "4%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Emergent instinct",
+          "url": "https://www.poe2wiki.net/wiki/Emergent_instinct",
+          "group": "Additional drops",
+          "rateText": "2.5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Emergent Protection",
+          "url": "https://www.poe2wiki.net/wiki/Emergent_Protection",
+          "group": "Additional drops",
+          "rateText": "2%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Emergent Vigour",
+          "url": "https://www.poe2wiki.net/wiki/Emergent_Vigour",
+          "group": "Additional drops",
+          "rateText": "0.5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Emergent Possibility",
+          "url": "https://www.poe2wiki.net/wiki/Emergent_Possibility",
+          "group": "Additional drops",
+          "rateText": "<0.5%",
+          "rateKind": "estimated",
+          "note": ""
+        }
+      ],
+      "versionHistory": [
+        {
+          "version": "0.5.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [
+        "Estimated drop rates from version 0.5.0 using Untold Histories (Jado's Spycraft). n=200 . Actual drop rates may vary.",
+        "The Aberration always drops one of the following:",
+        "It can also drop:",
+        "… (ดูรายละเอียดเต็มบนหน้า wiki)"
+      ],
+      "warnings": []
+    },
+    {
+      "id": "the-arbiter-of-ash",
+      "name": "The Arbiter of Ash",
+      "type": "Boss",
+      "tags": [
+        "Monster",
+        "Pinnacle"
+      ],
+      "status": "Parsed",
+      "summary": "The Arbiter of Ash the pinnacle boss of The Burning Monolith. The regular version of this encounter can be accessed by bringing three Crisis Fragments to the Burning Monolith.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/The_Arbiter_of_Ash",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=The_Arbiter_of_Ash&action=edit",
+      "fetchedAt": "2026-07-12T06:42:23.388Z",
+      "image": {
+        "url": "",
+        "fileName": "The Arbiter of Ash.png",
+        "sourceUrl": "https://www.poe2wiki.net/wiki/File:The_Arbiter_of_Ash.png",
+        "licenseNote": "Game artwork © Grinding Gear Games; wiki file page lists no explicit license — not embedded, view on wiki",
+        "safeToEmbed": false
+      },
+      "access": [
+        "Location: The Burning Monolith (Level 74 (quest) · 82 (regular))",
+        "Access key: Ancient Crisis Fragment, Faded Crisis Fragment, Weathered Crisis Fragment — via The Burning Monolith"
+      ],
+      "mechanics": [
+        "Skill: — Phase 1 —",
+        "Skill: Beam: \"You have failed... Humanity has failed... It must start again\"/\"Accept your finality\"/\"Behold... The Burning Horizon\" - Channels a long beam of fire",
+        "Skill: Flaming Gales: \"A plague-born... Hungry for Her milk... Yet ruthlessly pillaging her... Of all she could give\"/\"Foul belligerent gods... Ascendants of the feeble... Cursed Her supple flesh... and mind\"/\"Corruption plagues... and Her wounds worsen... The cleansing foretold is.. preordained\" - Covers the arena in…",
+        "Skill: Falling Flame Seed: \"Rapture of flame\"/\"Sacred Fire of the Mothersoul, you are called upon\" - A seed of fire fall from the sky in sequence, creating a ring. The area outside of the ring explodes with fire after a short duration."
+      ],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [
+        "Morior Invictus — 41% of the guaranteed pool",
+        "Solus Ipse — 23% of the guaranteed pool",
+        "Sine Aequo — 6% of the guaranteed pool",
+        "Ab Aeterno — 8% of the guaranteed pool",
+        "Sacred Flame — 7% of the guaranteed pool",
+        "Prism of Belief — 15% of the guaranteed pool",
+        "The Arbiter's Reliquary Key — <1% of the guaranteed pool"
+      ],
+      "dropRates": [
+        {
+          "name": "Morior Invictus",
+          "url": "https://www.poe2wiki.net/wiki/Morior_Invictus",
+          "group": "Guaranteed Unique",
+          "rateText": "41%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Solus Ipse",
+          "url": "https://www.poe2wiki.net/wiki/Solus_Ipse",
+          "group": "Guaranteed Unique",
+          "rateText": "23%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Sine Aequo",
+          "url": "https://www.poe2wiki.net/wiki/Sine_Aequo",
+          "group": "Guaranteed Unique",
+          "rateText": "6%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Ab Aeterno",
+          "url": "https://www.poe2wiki.net/wiki/Ab_Aeterno",
+          "group": "Guaranteed Unique",
+          "rateText": "8%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Sacred Flame",
+          "url": "https://www.poe2wiki.net/wiki/Sacred_Flame",
+          "group": "Guaranteed Unique",
+          "rateText": "7%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Prism of Belief",
+          "url": "https://www.poe2wiki.net/wiki/Prism_of_Belief",
+          "group": "Guaranteed Unique",
+          "rateText": "15%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "The Arbiter's Reliquary Key",
+          "url": "https://www.poe2wiki.net/wiki/The_Arbiter's_Reliquary_Key",
+          "group": "Guaranteed Unique",
+          "rateText": "<1%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Arbiter's Ignition",
+          "url": "https://www.poe2wiki.net/wiki/Arbiter's_Ignition",
+          "group": "Additional drops",
+          "rateText": "6%",
+          "rateKind": "estimated",
+          "note": ""
+        }
+      ],
+      "drops": [
+        {
+          "name": "Morior Invictus",
+          "url": "https://www.poe2wiki.net/wiki/Morior_Invictus",
+          "group": "Guaranteed Unique",
+          "rateText": "41%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Solus Ipse",
+          "url": "https://www.poe2wiki.net/wiki/Solus_Ipse",
+          "group": "Guaranteed Unique",
+          "rateText": "23%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Sine Aequo",
+          "url": "https://www.poe2wiki.net/wiki/Sine_Aequo",
+          "group": "Guaranteed Unique",
+          "rateText": "6%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Ab Aeterno",
+          "url": "https://www.poe2wiki.net/wiki/Ab_Aeterno",
+          "group": "Guaranteed Unique",
+          "rateText": "8%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Sacred Flame",
+          "url": "https://www.poe2wiki.net/wiki/Sacred_Flame",
+          "group": "Guaranteed Unique",
+          "rateText": "7%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Prism of Belief",
+          "url": "https://www.poe2wiki.net/wiki/Prism_of_Belief",
+          "group": "Guaranteed Unique",
+          "rateText": "15%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "The Arbiter's Reliquary Key",
+          "url": "https://www.poe2wiki.net/wiki/The_Arbiter's_Reliquary_Key",
+          "group": "Guaranteed Unique",
+          "rateText": "<1%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Arbiter's Ignition",
+          "url": "https://www.poe2wiki.net/wiki/Arbiter's_Ignition",
+          "group": "Additional drops",
+          "rateText": "6%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "lineage support gem",
+          "url": "https://www.poe2wiki.net/wiki/lineage_support_gem",
+          "group": "Additional drops",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        }
+      ],
+      "versionHistory": [
+        {
+          "version": "0.5.0",
+          "changes": [
+            "Reduced the Chaos Damage bonus granted to The Arbiter of Ash when he plunges his sword into the Chaos Sphere.",
+            "Reduced the duration of the damage bonuses The Arbiter of Ash gains after plunging his sword into the Chaos or Cold Spheres from 30 seconds to 20 seconds."
+          ]
+        },
+        {
+          "version": "0.5.0",
+          "changes": [
+            "The Burning Monolith along with Arbiter of Ash has been moved into the Fortress.",
+            "There are now two versions of each pinnacle boss, the Quest version and the Infinite Farm version. As such Primary, Secondary and Tertiary Calamity Fragments can no longer be obtained."
+          ]
+        },
+        {
+          "version": "0.4.0",
+          "changes": [
+            "To unlock the ability to craft a tablet beyond 2 modifiers you need to have defeated the Arbiter of Ash.",
+            "Arbiter of Ash no longer drops a rare corrupted Tablet.",
+            "The Arbiter of Ash will now phase transition at a lower life threshold and will heal to full during the transition."
+          ]
+        },
+        {
+          "version": "0.3.0",
+          "changes": [
+            "The Arbiter of Ash Boss fight is now a static difficulty encounter with infinite portals (previously only infinite portals at difficulty 0). The rewards of this fight now match the previous difficulty 4 rewards.",
+            "The Arbiter of Ash Atlas Passive Skill Tree has been removed, and some of the bonuses have become inherent to The Arbiter of Ash's drops.",
+            "Added a Uber version of The Arbiter of Ash Boss fight, which requires the new Calamity Fragments to access. These are obtained from Citadel Bosses, but only once you've allocated the maximum number of points in your Boss Atlas Passive Tree, ensuring those Citadels are at their h…",
+            "Now is Area/Monster Level 82 (regular) and 84 (uber), instead of 82-83. (undocumented)"
+          ]
+        },
+        {
+          "version": "0.2.0f",
+          "changes": [
+            "Pinnacle Bosses now have unlimited respawn attempts at Difficulty 0."
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "The various endgame quests that lead to the Arbiter of Ash encounter have been consolidated into a single quest.",
+            "All Bosses that are affected by Difficulty and Simulacrum can now drop all of their specific unique items at any Difficulty, however rare uniques are even rarer at lower difficulties. This also applies to the drop chances for Reliquary keys from this content.",
+            "Pinnacle boss content now takes roughly half the amount of time to unlock compared to before. In addition, Pinnacle bosses have been made much easier at Difficulty 0 as well. It's our intention to allow you to face Difficulty 0 of this content much earlier in your endgame progre…",
+            "Players no longer lose experience from dying in Simulacrum, The Twisted Domain, Olroth's arena inside Logbooks, the Crux of Nothingness, or The Burning Monolith. Players also no longer gain experience from killing monsters in these areas.",
+            "The Life of the following Pinnacle Bosses has been adjusted: Olroth, The Origin of the Fall, Xesht, We That Are One, The King in the Mists, and The Arbiter of Ash. At difficulty 0 they now have roughly half the maximum Life as before, scaling back up to be unchanged by difficult…",
+            "The following bosses no longer have armour penetration: Olroth, The Origin of the Fall, Xesht, We That Are One, The King in the Mists, and The Arbiter of Ash.",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        },
+        {
+          "version": "0.1.1c",
+          "changes": [
+            "Fixed a bug where the \"you have died\" screen could persist after being revived in the Arbiter of Ash Boss fight when using a controller."
+          ]
+        },
+        {
+          "version": "0.1.1",
+          "changes": [
+            "To address the problem of only having one attempt at the Arbiter of Ash Boss fight, you will now have up to five respawn attempts at this fight. Respawns can only be triggered by the person who put in the keys, and everyone in your party will be respawned at the same time. Leavi…",
+            "The Arbiter of Ash can no longer be interrupted during his falling flame seed skill. His flaming gale skill can no longer be blocked.",
+            "The Arbiter of Ash Boss is now invulnerable for longer during its emergence and now takes significantly reduced damage while emerging.",
+            "The Arbiter of Ash is now way less likely to target minions when using his sword, which could prevent some of their skills being used.",
+            "Fixed a bug where \"The Way Forward' Atlas Passive would cause The Arbiter of Ash to drop Tier 16 Waystones instead of Tier 15."
+          ]
+        },
+        {
+          "version": "0.1.0e",
+          "changes": [
+            "Fixed a bug where the Arbiter of Ash area level wasn't being increased with difficulty."
+          ]
+        },
+        {
+          "version": "0.1.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [
+        "Estimated drop rates from version 0.3.0."
+      ],
+      "warnings": []
+    },
+    {
+      "id": "the-arbiter-of-divinity",
+      "name": "The Arbiter of Divinity",
+      "type": "Boss",
+      "tags": [
+        "Monster",
+        "Pinnacle"
+      ],
+      "status": "Parsed",
+      "summary": "The Arbiter of Divinity is the pinnacle boss of The Origin Tower and one of the final bosses of the Endgame. The regular version of this encounter can be accessed by combining the Origin Spark and Origin Cradle in the Precursor forge, then bringing the Origin Core to the top of the Origin Tower.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/The_Arbiter_of_Divinity",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=The_Arbiter_of_Divinity&action=edit",
+      "fetchedAt": "2026-07-12T06:42:24.149Z",
+      "image": {
+        "url": "",
+        "fileName": "The Arbiter of Divinity key art.jpg",
+        "sourceUrl": "https://www.poe2wiki.net/wiki/File:The_Arbiter_of_Divinity_key_art.jpg",
+        "licenseNote": "Game artwork © Grinding Gear Games; wiki file page lists no explicit license — not embedded, view on wiki",
+        "safeToEmbed": false
+      },
+      "access": [
+        "Location: The Origin Tower (Level 79 (quest) · 82)",
+        "Access key: Origin Core (Origin Spark + Origin Cradle) — via The Origin Tower"
+      ],
+      "mechanics": [],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [
+        "The Ordained — ?% of the guaranteed pool",
+        "Decree of Acuity — ?% of the guaranteed pool",
+        "Decree of Flight — ?% of the guaranteed pool",
+        "Decree of Loyalty — ?% of the guaranteed pool",
+        "Immaculate Adherence — ?% of the guaranteed pool",
+        "Opportunity — ?% of the guaranteed pool"
+      ],
+      "dropRates": [
+        {
+          "name": "The Ordained",
+          "url": "https://www.poe2wiki.net/wiki/The_Ordained",
+          "group": "Guaranteed Unique",
+          "rateText": "?%",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "Decree of Acuity",
+          "url": "https://www.poe2wiki.net/wiki/Decree_of_Acuity",
+          "group": "Guaranteed Unique",
+          "rateText": "?%",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "Decree of Flight",
+          "url": "https://www.poe2wiki.net/wiki/Decree_of_Flight",
+          "group": "Guaranteed Unique",
+          "rateText": "?%",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "Decree of Loyalty",
+          "url": "https://www.poe2wiki.net/wiki/Decree_of_Loyalty",
+          "group": "Guaranteed Unique",
+          "rateText": "?%",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "Immaculate Adherence",
+          "url": "https://www.poe2wiki.net/wiki/Immaculate_Adherence",
+          "group": "Guaranteed Unique",
+          "rateText": "?%",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "Opportunity",
+          "url": "https://www.poe2wiki.net/wiki/Opportunity",
+          "group": "Guaranteed Unique",
+          "rateText": "?%",
+          "rateKind": "listed",
+          "note": ""
+        }
+      ],
+      "drops": [
+        {
+          "name": "The Ordained",
+          "url": "https://www.poe2wiki.net/wiki/The_Ordained",
+          "group": "Guaranteed Unique",
+          "rateText": "?%",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "Decree of Acuity",
+          "url": "https://www.poe2wiki.net/wiki/Decree_of_Acuity",
+          "group": "Guaranteed Unique",
+          "rateText": "?%",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "Decree of Flight",
+          "url": "https://www.poe2wiki.net/wiki/Decree_of_Flight",
+          "group": "Guaranteed Unique",
+          "rateText": "?%",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "Decree of Loyalty",
+          "url": "https://www.poe2wiki.net/wiki/Decree_of_Loyalty",
+          "group": "Guaranteed Unique",
+          "rateText": "?%",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "Immaculate Adherence",
+          "url": "https://www.poe2wiki.net/wiki/Immaculate_Adherence",
+          "group": "Guaranteed Unique",
+          "rateText": "?%",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "Opportunity",
+          "url": "https://www.poe2wiki.net/wiki/Opportunity",
+          "group": "Guaranteed Unique",
+          "rateText": "?%",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "Seraph's Heart",
+          "url": "https://www.poe2wiki.net/wiki/Seraph's_Heart",
+          "group": "Additional drops",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "Her Declaration",
+          "url": "https://www.poe2wiki.net/wiki/Her_Declaration",
+          "group": "Additional drops",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "lineage support gem",
+          "url": "https://www.poe2wiki.net/wiki/lineage_support_gem",
+          "group": "Additional drops",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        }
+      ],
+      "versionHistory": [
+        {
+          "version": "0.5.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [
+        "Once the Arbiter of Divinity is defeated, you will be given the option to activate one of the Towers in the Fortress, which will complete every map in the section connected to the Tower and grant Atlas passive points for each of them."
+      ],
+      "warnings": []
+    },
+    {
+      "id": "the-bodach",
+      "name": "The Bodach",
+      "type": "Boss",
+      "tags": [
+        "Monster",
+        "Pinnacle",
+        "Ritual"
+      ],
+      "status": "Parsed",
+      "summary": "The Bodach is the pinnacle boss of Ritual. It can be fought by travelling to Caer Tarth and placing five of the effigy pieces on the effigy.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/The_Bodach",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=The_Bodach&action=edit",
+      "fetchedAt": "2026-07-12T06:42:24.915Z",
+      "image": {
+        "url": "",
+        "fileName": "The Bodach.png",
+        "sourceUrl": "https://www.poe2wiki.net/wiki/File:The_Bodach.png",
+        "licenseNote": "Game artwork © Grinding Gear Games; wiki file page lists no explicit license — not embedded, view on wiki",
+        "safeToEmbed": false
+      },
+      "access": [
+        "Location: Caer Tarth (Level 79 (quest) · 82)",
+        "Access key: Frayed Cloth, Ragged Cloth, Tangled Torso, Brittle Arm, Mossy Arm (quest) · x5 Call of the Shadows (repeatable) — via Ritual"
+      ],
+      "mechanics": [],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [
+        "The Bodach always drops one of the following:",
+        "Vestige of Darkness — 56% of the guaranteed pool",
+        "Forgotten Warden — 26% of the guaranteed pool",
+        "Sylvan's Effigy — 10% of the guaranteed pool",
+        "Liminal Coil — 5% of the guaranteed pool",
+        "Periphery — 5% of the guaranteed pool"
+      ],
+      "dropRates": [
+        {
+          "name": "Vestige of Darkness",
+          "url": "https://www.poe2wiki.net/wiki/Vestige_of_Darkness",
+          "group": "Guaranteed pool",
+          "rateText": "56%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Forgotten Warden",
+          "url": "https://www.poe2wiki.net/wiki/Forgotten_Warden",
+          "group": "Guaranteed pool",
+          "rateText": "26%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Sylvan's Effigy",
+          "url": "https://www.poe2wiki.net/wiki/Sylvan's_Effigy",
+          "group": "Guaranteed pool",
+          "rateText": "10%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Liminal Coil",
+          "url": "https://www.poe2wiki.net/wiki/Liminal_Coil",
+          "group": "Guaranteed pool",
+          "rateText": "5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Periphery",
+          "url": "https://www.poe2wiki.net/wiki/Periphery",
+          "group": "Guaranteed pool",
+          "rateText": "5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Catha's Brilliance",
+          "url": "https://www.poe2wiki.net/wiki/Catha's_Brilliance",
+          "group": "Additional drops",
+          "rateText": "5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Mórrigan's Insight",
+          "url": "https://www.poe2wiki.net/wiki/M%C3%B3rrigan's_Insight",
+          "group": "Additional drops",
+          "rateText": "5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Carved Mischief",
+          "url": "https://www.poe2wiki.net/wiki/Carved_Mischief",
+          "group": "Additional drops",
+          "rateText": "6%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Carved Majesty",
+          "url": "https://www.poe2wiki.net/wiki/Carved_Majesty",
+          "group": "Additional drops",
+          "rateText": "2%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Carved Tenacity",
+          "url": "https://www.poe2wiki.net/wiki/Carved_Tenacity",
+          "group": "Additional drops",
+          "rateText": "1%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Carved Cunning",
+          "url": "https://www.poe2wiki.net/wiki/Carved_Cunning",
+          "group": "Additional drops",
+          "rateText": "<1%",
+          "rateKind": "estimated",
+          "note": ""
+        }
+      ],
+      "drops": [
+        {
+          "name": "Vestige of Darkness",
+          "url": "https://www.poe2wiki.net/wiki/Vestige_of_Darkness",
+          "group": "Guaranteed pool",
+          "rateText": "56%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Forgotten Warden",
+          "url": "https://www.poe2wiki.net/wiki/Forgotten_Warden",
+          "group": "Guaranteed pool",
+          "rateText": "26%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Sylvan's Effigy",
+          "url": "https://www.poe2wiki.net/wiki/Sylvan's_Effigy",
+          "group": "Guaranteed pool",
+          "rateText": "10%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Liminal Coil",
+          "url": "https://www.poe2wiki.net/wiki/Liminal_Coil",
+          "group": "Guaranteed pool",
+          "rateText": "5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Periphery",
+          "url": "https://www.poe2wiki.net/wiki/Periphery",
+          "group": "Guaranteed pool",
+          "rateText": "5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Catha's Brilliance",
+          "url": "https://www.poe2wiki.net/wiki/Catha's_Brilliance",
+          "group": "Additional drops",
+          "rateText": "5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Mórrigan's Insight",
+          "url": "https://www.poe2wiki.net/wiki/M%C3%B3rrigan's_Insight",
+          "group": "Additional drops",
+          "rateText": "5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Carved Mischief",
+          "url": "https://www.poe2wiki.net/wiki/Carved_Mischief",
+          "group": "Additional drops",
+          "rateText": "6%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Carved Majesty",
+          "url": "https://www.poe2wiki.net/wiki/Carved_Majesty",
+          "group": "Additional drops",
+          "rateText": "2%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Carved Tenacity",
+          "url": "https://www.poe2wiki.net/wiki/Carved_Tenacity",
+          "group": "Additional drops",
+          "rateText": "1%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Carved Cunning",
+          "url": "https://www.poe2wiki.net/wiki/Carved_Cunning",
+          "group": "Additional drops",
+          "rateText": "<1%",
+          "rateKind": "estimated",
+          "note": ""
+        }
+      ],
+      "versionHistory": [
+        {
+          "version": "0.5.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [
+        "Estimated drop rates from version 0.5.0. n=100 Actual drop rates may vary.",
+        "The Bodach always drops one of the following:",
+        "It can also drop:",
+        "… (ดูรายละเอียดเต็มบนหน้า wiki)"
+      ],
+      "warnings": []
+    },
+    {
+      "id": "the-raven-trickster",
+      "name": "The Raven Trickster",
+      "type": "Boss",
+      "tags": [
+        "Delirium",
+        "Monster",
+        "Pinnacle"
+      ],
+      "status": "Parsed",
+      "summary": "The Raven Trickster (also known as Tangmazu) is the pinnacle boss of Delirium. He can be fought by bringing a Raven's Reflection to The Withered Hollow and placing it in the mirror. He also appears as in the Simulacrum, though he functions as an NPC there instead. He is the \"Strange Voice\" narrating the dialogues that…",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/The_Raven_Trickster",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=The_Raven_Trickster&action=edit",
+      "fetchedAt": "2026-07-12T06:42:25.678Z",
+      "image": {
+        "url": "",
+        "fileName": "The Raven Trickster.png",
+        "sourceUrl": "https://www.poe2wiki.net/wiki/File:The_Raven_Trickster.png",
+        "licenseNote": "Game artwork © Grinding Gear Games; wiki file page lists no explicit license — not embedded, view on wiki",
+        "safeToEmbed": false
+      },
+      "access": [
+        "Location: The Withered Hollow (Level 79 (quest) · 82)",
+        "Access key: Raven's Reflection — via Delirium"
+      ],
+      "mechanics": [],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [
+        "The Raven Trickster always drops one of the following:",
+        "Veilpiercer — 35% of the guaranteed pool",
+        "Sadist's Mercy — 30% of the guaranteed pool",
+        "The Auspex (can drop Raven-Touched) — 17% of the guaranteed pool",
+        "Horror's Flight (can drop Raven-Touched) — 10% of the guaranteed pool",
+        "The Raven's Flock — 5% of the guaranteed pool",
+        "Split Personality — ~3% of the guaranteed pool"
+      ],
+      "dropRates": [
+        {
+          "name": "Veilpiercer",
+          "url": "https://www.poe2wiki.net/wiki/Veilpiercer",
+          "group": "Guaranteed pool",
+          "rateText": "35%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Sadist's Mercy",
+          "url": "https://www.poe2wiki.net/wiki/Sadist's_Mercy",
+          "group": "Guaranteed pool",
+          "rateText": "30%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "The Auspex",
+          "url": "https://www.poe2wiki.net/wiki/The_Auspex",
+          "group": "Guaranteed pool",
+          "rateText": "17%",
+          "rateKind": "estimated",
+          "note": "can drop Raven-Touched"
+        },
+        {
+          "name": "Horror's Flight",
+          "url": "https://www.poe2wiki.net/wiki/Horror's_Flight",
+          "group": "Guaranteed pool",
+          "rateText": "10%",
+          "rateKind": "estimated",
+          "note": "can drop Raven-Touched"
+        },
+        {
+          "name": "The Raven's Flock",
+          "url": "https://www.poe2wiki.net/wiki/The_Raven's_Flock",
+          "group": "Guaranteed pool",
+          "rateText": "5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Split Personality",
+          "url": "https://www.poe2wiki.net/wiki/Split_Personality",
+          "group": "Guaranteed pool",
+          "rateText": "~3%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Trickster's Shard",
+          "url": "https://www.poe2wiki.net/wiki/Trickster's_Shard",
+          "group": "Additional drops",
+          "rateText": "~4.3%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Tangmazu's Thurible",
+          "url": "https://www.poe2wiki.net/wiki/Tangmazu's_Thurible",
+          "group": "Additional drops",
+          "rateText": "~3.5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Raven-Touched Shard",
+          "url": "https://www.poe2wiki.net/wiki/Raven-Touched_Shard",
+          "group": "Additional drops",
+          "rateText": "~2.5%",
+          "rateKind": "estimated",
+          "note": ""
+        }
+      ],
+      "drops": [
+        {
+          "name": "Veilpiercer",
+          "url": "https://www.poe2wiki.net/wiki/Veilpiercer",
+          "group": "Guaranteed pool",
+          "rateText": "35%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Sadist's Mercy",
+          "url": "https://www.poe2wiki.net/wiki/Sadist's_Mercy",
+          "group": "Guaranteed pool",
+          "rateText": "30%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "The Auspex",
+          "url": "https://www.poe2wiki.net/wiki/The_Auspex",
+          "group": "Guaranteed pool",
+          "rateText": "17%",
+          "rateKind": "estimated",
+          "note": "can drop Raven-Touched"
+        },
+        {
+          "name": "Horror's Flight",
+          "url": "https://www.poe2wiki.net/wiki/Horror's_Flight",
+          "group": "Guaranteed pool",
+          "rateText": "10%",
+          "rateKind": "estimated",
+          "note": "can drop Raven-Touched"
+        },
+        {
+          "name": "The Raven's Flock",
+          "url": "https://www.poe2wiki.net/wiki/The_Raven's_Flock",
+          "group": "Guaranteed pool",
+          "rateText": "5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Split Personality",
+          "url": "https://www.poe2wiki.net/wiki/Split_Personality",
+          "group": "Guaranteed pool",
+          "rateText": "~3%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Trickster's Shard",
+          "url": "https://www.poe2wiki.net/wiki/Trickster's_Shard",
+          "group": "Additional drops",
+          "rateText": "~4.3%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Tangmazu's Thurible",
+          "url": "https://www.poe2wiki.net/wiki/Tangmazu's_Thurible",
+          "group": "Additional drops",
+          "rateText": "~3.5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Raven-Touched Shard",
+          "url": "https://www.poe2wiki.net/wiki/Raven-Touched_Shard",
+          "group": "Additional drops",
+          "rateText": "~2.5%",
+          "rateKind": "estimated",
+          "note": ""
+        }
+      ],
+      "versionHistory": [
+        {
+          "version": "0.5.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [
+        "Estimated drop rates from version 0.5.0. n=295 (234 kills) Actual drop rates may vary.",
+        "The Raven Trickster always drops one of the following:",
+        "He can also drop:",
+        "… (ดูรายละเอียดเต็มบนหน้า wiki)"
+      ],
+      "warnings": []
+    },
+    {
+      "id": "the-trialmaster",
+      "name": "The Trialmaster",
+      "type": "Boss",
+      "tags": [
+        "Monster",
+        "Pinnacle"
+      ],
+      "status": "Parsed",
+      "summary": "The Trialmaster is an NPC and an endgame boss. He can be found in the Trial of Chaos, challenging aspirants as directed by his master, Chaos.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/The_Trialmaster",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=The_Trialmaster&action=edit",
+      "fetchedAt": "2026-07-12T06:42:26.444Z",
+      "image": {
+        "url": "",
+        "fileName": "The Trialmaster NPC screenshot.jpg",
+        "sourceUrl": "https://www.poe2wiki.net/wiki/File:The_Trialmaster_NPC_screenshot.jpg",
+        "licenseNote": "Game artwork © Grinding Gear Games; wiki file page lists no explicit license — not embedded, view on wiki",
+        "safeToEmbed": false
+      },
+      "access": [
+        "Location: The Trial of Chaos · The Trialmaster's Tower (Level 80)"
+      ],
+      "mechanics": [],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [],
+      "drops": [],
+      "versionHistory": [
+        {
+          "version": "0.2.0f",
+          "changes": [
+            "(Hotfix 2) Added a Trialmaster NPC to the boss arena after Trialmaster has been defeated to let you refund passive points."
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "The Life of The Trialmaster and Zarokh, The Temporal have been reduced.",
+            "The Trialmaster now deals increased damage with his channeled blood slam."
+          ]
+        },
+        {
+          "version": "0.1.1c",
+          "changes": [
+            "Fixed a bug where The Trialmaster could use his time stop skill and vanish during his fight."
+          ]
+        },
+        {
+          "version": "0.1.1",
+          "changes": [
+            "Added an exit portal to the Trialmaster arena."
+          ]
+        },
+        {
+          "version": "0.1.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [],
+      "warnings": [
+        "หน้านี้ไม่มี section Drops/Rewards บน wiki"
+      ]
+    },
+    {
+      "id": "vessel-of-kulemak",
+      "name": "Vessel of Kulemak",
+      "type": "Boss",
+      "tags": [
+        "Abyss",
+        "Monster",
+        "Pinnacle"
+      ],
+      "status": "Parsed",
+      "summary": "Vessel of Kulemak is the pinnacle boss of the Abyss encounter. It is located in The Black Cathedral, and players need a Kulemak's Invitation to begin an encounter.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Vessel_of_Kulemak",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Vessel_of_Kulemak&action=edit",
+      "fetchedAt": "2026-07-12T06:42:27.206Z",
+      "image": {
+        "url": "",
+        "fileName": "Vessel of Kulemak.png",
+        "sourceUrl": "https://www.poe2wiki.net/wiki/File:Vessel_of_Kulemak.png",
+        "licenseNote": "Game artwork © Grinding Gear Games; wiki file page lists no explicit license — not embedded, view on wiki",
+        "safeToEmbed": false
+      },
+      "access": [
+        "Location: The Black Cathedral (Level 80-82)",
+        "Access key: Kulemak's Invitation — via Abyss"
+      ],
+      "mechanics": [],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [
+        "Vessel of Kulemak always drops a Grip of Kulemak that can be empowered to have up to 4 custom desecrated modifiers. The the list of desecrated modifiers it gains depends on the Lich empowerments chosen.",
+        "Vessel of Kulemak will always drops one of the following unique items:",
+        "The Unborn Lich — 55% of the guaranteed pool",
+        "Darkness Enthroned — 40% of the guaranteed pool",
+        "Undying Hate — 5% of the guaranteed pool",
+        "The Master's Reach — at full power, ?% of the guaranteed pool"
+      ],
+      "dropRates": [
+        {
+          "name": "The Unborn Lich",
+          "url": "https://www.poe2wiki.net/wiki/The_Unborn_Lich",
+          "group": "Guaranteed pool",
+          "rateText": "55%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Darkness Enthroned",
+          "url": "https://www.poe2wiki.net/wiki/Darkness_Enthroned",
+          "group": "Guaranteed pool",
+          "rateText": "40%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Undying Hate",
+          "url": "https://www.poe2wiki.net/wiki/Undying_Hate",
+          "group": "Guaranteed pool",
+          "rateText": "5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "The Master's Reach",
+          "url": "https://www.poe2wiki.net/wiki/The_Master's_Reach",
+          "group": "Guaranteed pool",
+          "rateText": "at full power, ?%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Tecrod's Revenge",
+          "url": "https://www.poe2wiki.net/wiki/Tecrod's_Revenge",
+          "group": "Additional drops",
+          "rateText": "~10%",
+          "rateKind": "estimated",
+          "note": ""
+        }
+      ],
+      "drops": [
+        {
+          "name": "The Unborn Lich",
+          "url": "https://www.poe2wiki.net/wiki/The_Unborn_Lich",
+          "group": "Guaranteed pool",
+          "rateText": "55%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Darkness Enthroned",
+          "url": "https://www.poe2wiki.net/wiki/Darkness_Enthroned",
+          "group": "Guaranteed pool",
+          "rateText": "40%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Undying Hate",
+          "url": "https://www.poe2wiki.net/wiki/Undying_Hate",
+          "group": "Guaranteed pool",
+          "rateText": "5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "The Master's Reach",
+          "url": "https://www.poe2wiki.net/wiki/The_Master's_Reach",
+          "group": "Guaranteed pool",
+          "rateText": "at full power, ?%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Tecrod's Revenge",
+          "url": "https://www.poe2wiki.net/wiki/Tecrod's_Revenge",
+          "group": "Additional drops",
+          "rateText": "~10%",
+          "rateKind": "estimated",
+          "note": ""
+        }
+      ],
+      "versionHistory": [
+        {
+          "version": "0.5.3",
+          "changes": [
+            "Conquering the Vessel of Kulemak now has a chance to drop Ancient Jawbones, Ancient Ribs and Ancient Collarbones.",
+            "Added 13 new Abyssal Wasting Modifiers for the Grip of Kulemak Unique Ring."
+          ]
+        },
+        {
+          "version": "0.3.1b",
+          "changes": [
+            "Fixed an issue where characters could get stuck in unwalkable terrain in the final phase of the Vessel of Kulemak fight."
+          ]
+        },
+        {
+          "version": "0.3.0c",
+          "changes": [
+            "Improved how the Vessel of Kulemak's cold beams function in party play."
+          ]
+        },
+        {
+          "version": "0.3.0b",
+          "changes": [
+            "The Vessel of Kulemak's Teleport Slam can no longer be avoided, and the damage it deals has been reduced.",
+            "Improved the telegraphing for the Vessel of Kulemak's arena-wide cleave. The cleave has also been made easier to dodge in the final part of the fight."
+          ]
+        },
+        {
+          "version": "0.3.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [
+        "Estimated drop rates from version 0.5.0. n=200 Actual drop rates may vary.",
+        "— Ring —",
+        "Vessel of Kulemak always drops a Grip of Kulemak that can be empowered to have up to 4 custom desecrated modifiers. The the list of desecrated modifiers it gains depends on the Lich empowerments chosen.",
+        "The modifiers are not divided into prefix and suffix modifiers, therefore they cannot be deterministically chosen. Players can only select a Lich and hope to get any mod from that Lich's mod pool.",
+        "— Other uniques —",
+        "Vessel of Kulemak will always drops one of the following unique items:",
+        "In addition, it can also drop:",
+        "… (ดูรายละเอียดเต็มบนหน้า wiki)"
+      ],
+      "warnings": []
+    },
+    {
+      "id": "xesht-we-that-are-one",
+      "name": "Xesht, We That Are One",
+      "type": "Boss",
+      "tags": [
+        "Breach",
+        "Monster",
+        "Pinnacle"
+      ],
+      "status": "Parsed",
+      "summary": "Xesht, We That Are One is the pinnacle boss of the Breach map mechanic. It is also referred to as the Breach Overseer and It That Returned. It is found in the Twisted Domain, accessible by using the Breachlord Sac in the Dreamer's chambers in the Monastery of the Keepers.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Xesht,_We_That_Are_One",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Xesht%2C_We_That_Are_One&action=edit",
+      "fetchedAt": "2026-07-12T06:42:27.957Z",
+      "image": {
+        "url": "",
+        "fileName": "Xesht, We That Are One.jpg",
+        "sourceUrl": "https://www.poe2wiki.net/wiki/File:Xesht,_We_That_Are_One.jpg",
+        "licenseNote": "Game artwork © Grinding Gear Games; wiki file page lists no explicit license — not embedded, view on wiki",
+        "safeToEmbed": false
+      },
+      "access": [
+        "Location: Twisted Domain (Level 79 (quest) · 82)",
+        "Access key: Breachlord Sac — via Breach"
+      ],
+      "mechanics": [
+        "Skill: \"His message burns with our grasp.\"/\"Hear the grey winds.\"/\"He is Xoph.\" - Xoph Sun Orb - Summons Xoph, who fires a sun-like orb towards the ground.",
+        "Skill: \"She of thought and motion.\"/\"She of wisdom and action.\"/\"She of stolen cruelty.\"/\"She is Esh.\" - Esh Shock Nova - Summons Esh, who creates a large expanding circle; explodes outwards in rings of lightning after reaching its maximum size.",
+        "Skill: \"She of chilling sorrow.\"/\"She is Tul.\" - Tul Ice Flurry - Summons Tul, who fires a fan of icy projectiles towards the player.",
+        "Skill: \"We call. We command.\"/\"They fight... once more...\" - Esh/Tul Combo - Uses both Esh Shock Nova and Tul Ice Flurry simultaneously."
+      ],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [
+        "Beyond Reach — 29.5% of the guaranteed pool",
+        "Xoph's Blood — 14% of the guaranteed pool",
+        "The Pandemonius — 10.5% of the guaranteed pool",
+        "Choir of the Storm — 17.5% of the guaranteed pool",
+        "Hand of Wisdom and Action — 10% of the guaranteed pool",
+        "Skin of the Loyal — 7% of the guaranteed pool",
+        "Controlled Metamorphosis — 11% of the guaranteed pool",
+        "Xesht's Reliquary Key — 0.5% of the guaranteed pool"
+      ],
+      "dropRates": [
+        {
+          "name": "Beyond Reach",
+          "url": "https://www.poe2wiki.net/wiki/Beyond_Reach",
+          "group": "Guaranteed Unique",
+          "rateText": "29.5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Xoph's Blood",
+          "url": "https://www.poe2wiki.net/wiki/Xoph's_Blood",
+          "group": "Guaranteed Unique",
+          "rateText": "14%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "The Pandemonius",
+          "url": "https://www.poe2wiki.net/wiki/The_Pandemonius",
+          "group": "Guaranteed Unique",
+          "rateText": "10.5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Choir of the Storm",
+          "url": "https://www.poe2wiki.net/wiki/Choir_of_the_Storm",
+          "group": "Guaranteed Unique",
+          "rateText": "17.5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Hand of Wisdom and Action",
+          "url": "https://www.poe2wiki.net/wiki/Hand_of_Wisdom_and_Action",
+          "group": "Guaranteed Unique",
+          "rateText": "10%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Skin of the Loyal",
+          "url": "https://www.poe2wiki.net/wiki/Skin_of_the_Loyal",
+          "group": "Guaranteed Unique",
+          "rateText": "7%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Controlled Metamorphosis",
+          "url": "https://www.poe2wiki.net/wiki/Controlled_Metamorphosis",
+          "group": "Guaranteed Unique",
+          "rateText": "11%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Xesht's Reliquary Key",
+          "url": "https://www.poe2wiki.net/wiki/Xesht's_Reliquary_Key",
+          "group": "Guaranteed Unique",
+          "rateText": "0.5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Xoph's Pyre",
+          "url": "https://www.poe2wiki.net/wiki/Xoph's_Pyre",
+          "group": "Additional drops",
+          "rateText": "3%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Tul's Stillness",
+          "url": "https://www.poe2wiki.net/wiki/Tul's_Stillness",
+          "group": "Additional drops",
+          "rateText": "?",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Esh's Radiance",
+          "url": "https://www.poe2wiki.net/wiki/Esh's_Radiance",
+          "group": "Additional drops",
+          "rateText": "1%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Uul-Netol's Embrace",
+          "url": "https://www.poe2wiki.net/wiki/Uul-Netol's_Embrace",
+          "group": "Additional drops",
+          "rateText": "1.5%",
+          "rateKind": "estimated",
+          "note": ""
+        }
+      ],
+      "drops": [
+        {
+          "name": "Beyond Reach",
+          "url": "https://www.poe2wiki.net/wiki/Beyond_Reach",
+          "group": "Guaranteed Unique",
+          "rateText": "29.5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Xoph's Blood",
+          "url": "https://www.poe2wiki.net/wiki/Xoph's_Blood",
+          "group": "Guaranteed Unique",
+          "rateText": "14%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "The Pandemonius",
+          "url": "https://www.poe2wiki.net/wiki/The_Pandemonius",
+          "group": "Guaranteed Unique",
+          "rateText": "10.5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Choir of the Storm",
+          "url": "https://www.poe2wiki.net/wiki/Choir_of_the_Storm",
+          "group": "Guaranteed Unique",
+          "rateText": "17.5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Hand of Wisdom and Action",
+          "url": "https://www.poe2wiki.net/wiki/Hand_of_Wisdom_and_Action",
+          "group": "Guaranteed Unique",
+          "rateText": "10%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Skin of the Loyal",
+          "url": "https://www.poe2wiki.net/wiki/Skin_of_the_Loyal",
+          "group": "Guaranteed Unique",
+          "rateText": "7%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Controlled Metamorphosis",
+          "url": "https://www.poe2wiki.net/wiki/Controlled_Metamorphosis",
+          "group": "Guaranteed Unique",
+          "rateText": "11%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Xesht's Reliquary Key",
+          "url": "https://www.poe2wiki.net/wiki/Xesht's_Reliquary_Key",
+          "group": "Guaranteed Unique",
+          "rateText": "0.5%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Xoph's Pyre",
+          "url": "https://www.poe2wiki.net/wiki/Xoph's_Pyre",
+          "group": "Additional drops",
+          "rateText": "3%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Tul's Stillness",
+          "url": "https://www.poe2wiki.net/wiki/Tul's_Stillness",
+          "group": "Additional drops",
+          "rateText": "?",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Esh's Radiance",
+          "url": "https://www.poe2wiki.net/wiki/Esh's_Radiance",
+          "group": "Additional drops",
+          "rateText": "1%",
+          "rateKind": "estimated",
+          "note": ""
+        },
+        {
+          "name": "Uul-Netol's Embrace",
+          "url": "https://www.poe2wiki.net/wiki/Uul-Netol's_Embrace",
+          "group": "Additional drops",
+          "rateText": "1.5%",
+          "rateKind": "estimated",
+          "note": ""
+        }
+      ],
+      "versionHistory": [
+        {
+          "version": "0.3.0",
+          "changes": [
+            "Currently, access to most Pinnacle Content requires the same key at the easiest, and most difficult version of the content. This creates a negative feeling where at lower difficulties, instead of wanting to run the content, you're often better off just selling it to someone who…",
+            "To address this, each content (excluding The Arbiter of Ash) will now drop Splinters, which will not form into singular Items. Instead of using the singular, combined item in the Realmgate, you can now just bring your Splinters. Upon inserting the splinters into the Realmgate, a…",
+            "· Reduced the number of difficulties from 0-4 to 1-3. (undocumented)",
+            "· Now has 0 respawn chances at Difficulty 3. (undocumented)",
+            "As a result of this change, the corresponding Atlas Passive Trees no longer affects the difficulty of the content, and has been changed to purely affect the content in the Maps on the Atlas.",
+            "Now ranges from Area/Monster Level 78-82, instead of 80-82. (undocumented)",
+            "… (มีรายการเพิ่มเติมบน wiki)"
+          ]
+        },
+        {
+          "version": "0.2.0f",
+          "changes": [
+            "Pinnacle Bosses now have unlimited respawn attempts at Difficulty 0."
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "All Bosses that are affected by Difficulty and Simulacrum can now drop all of their specific unique items at any Difficulty, however rare uniques are even rarer at lower difficulties. This also applies to the drop chances for Reliquary keys from this content.",
+            "Pinnacle boss content now takes roughly half the amount of time to unlock compared to before. In addition, Pinnacle bosses have been made much easier at Difficulty 0 as well. It's our intention to allow you to face Difficulty 0 of this content much earlier in your endgame progre…",
+            "Players no longer lose experience from dying in Simulacrum, The Twisted Domain, Olroth's arena inside Logbooks, the Crux of Nothingness, or The Burning Monolith. Players also no longer gain experience from killing monsters in these areas."
+          ]
+        },
+        {
+          "version": "0.1.1c",
+          "changes": [
+            "Added up to five respawn attempts for the Twisted Domain area, based on the area difficulty. If the Breach Domain is completed but you die during the Xesht, We That Are One boss fight, you will revive at the entrance to the boss arena. If you die before completing the Breach Dom…",
+            "Respawns can only be triggered by the person who put in the Expedition Logbook, Breachstone or An Audience with the King, and everyone in your party will be respawned at the same time.",
+            "The Life of the following Pinnacle Bosses has been adjusted: Olroth, The Origin of the Fall, Xesht, We That Are One, The King in the Mists, and The Arbiter of Ash. At difficulty 0 they now have roughly half the maximum Life as before, scaling back up to be unchanged by difficult…",
+            "The following bosses no longer have armour penetration: Olroth, The Origin of the Fall, Xesht, We That Are One, The King in the Mists, and The Arbiter of Ash."
+          ]
+        },
+        {
+          "version": "0.1.0f",
+          "changes": [
+            "Fixed a bug where Xesht, We That Are One could sometimes endlessly throw hands."
+          ]
+        },
+        {
+          "version": "0.1.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [
+        "Estimated drop rates from version 0.3.0."
+      ],
+      "warnings": []
+    },
+    {
+      "id": "zarokh-the-temporal",
+      "name": "Zarokh, the Temporal",
+      "type": "Boss",
+      "tags": [
+        "Monster",
+        "Pinnacle"
+      ],
+      "status": "Parsed",
+      "summary": "Zarokh, the Temporal is the final boss of the Trial of the Sekhemas, found on the fourth floor.",
+      "sourceUrl": "https://www.poe2wiki.net/wiki/Zarokh,_the_Temporal",
+      "editSourceUrl": "https://www.poe2wiki.net/index.php?title=Zarokh%2C_the_Temporal&action=edit",
+      "fetchedAt": "2026-07-12T06:42:28.717Z",
+      "image": {
+        "url": "",
+        "fileName": "",
+        "sourceUrl": "",
+        "licenseNote": "",
+        "safeToEmbed": false
+      },
+      "access": [
+        "Location: Trial of the Sekhemas (Level 78-80)"
+      ],
+      "mechanics": [],
+      "monsters": [],
+      "bosses": [],
+      "guaranteedDrops": [],
+      "dropRates": [
+        {
+          "name": "The Burden of Leadership",
+          "url": "https://www.poe2wiki.net/wiki/The_Burden_of_Leadership",
+          "group": "",
+          "rateText": "35.5% (31%)",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "The Peacemaker's Draught",
+          "url": "https://www.poe2wiki.net/wiki/The_Peacemaker's_Draught",
+          "group": "",
+          "rateText": "35.5% (31%)",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "The Desperate Alliance",
+          "url": "https://www.poe2wiki.net/wiki/The_Desperate_Alliance",
+          "group": "",
+          "rateText": "19.5% (17%)",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "The Changing Seasons",
+          "url": "https://www.poe2wiki.net/wiki/The_Changing_Seasons",
+          "group": "",
+          "rateText": "9% (8%)",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "The Last Flame",
+          "url": "https://www.poe2wiki.net/wiki/The_Last_Flame",
+          "group": "",
+          "rateText": "<0.1%",
+          "rateKind": "listed",
+          "note": ""
+        }
+      ],
+      "drops": [
+        {
+          "name": "The Burden of Leadership",
+          "url": "https://www.poe2wiki.net/wiki/The_Burden_of_Leadership",
+          "group": "",
+          "rateText": "35.5% (31%)",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "The Peacemaker's Draught",
+          "url": "https://www.poe2wiki.net/wiki/The_Peacemaker's_Draught",
+          "group": "",
+          "rateText": "35.5% (31%)",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "The Desperate Alliance",
+          "url": "https://www.poe2wiki.net/wiki/The_Desperate_Alliance",
+          "group": "",
+          "rateText": "19.5% (17%)",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "The Changing Seasons",
+          "url": "https://www.poe2wiki.net/wiki/The_Changing_Seasons",
+          "group": "",
+          "rateText": "9% (8%)",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "The Last Flame",
+          "url": "https://www.poe2wiki.net/wiki/The_Last_Flame",
+          "group": "",
+          "rateText": "<0.1%",
+          "rateKind": "listed",
+          "note": ""
+        },
+        {
+          "name": "Zarokh's Refrain",
+          "url": "https://www.poe2wiki.net/wiki/Zarokh's_Refrain",
+          "group": "Additional drops",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "Zarokh's Revolt",
+          "url": "https://www.poe2wiki.net/wiki/Zarokh's_Revolt",
+          "group": "Additional drops",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "Varashta's Blessing",
+          "url": "https://www.poe2wiki.net/wiki/Varashta's_Blessing",
+          "group": "Additional drops",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "The Burden of Leadership",
+          "url": "https://www.poe2wiki.net/wiki/The_Burden_of_Leadership",
+          "group": "Additional drops",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": "Fire; Cold; Lightning"
+        },
+        {
+          "name": "The Desperate Alliance",
+          "url": "https://www.poe2wiki.net/wiki/The_Desperate_Alliance",
+          "group": "Additional drops",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "The Changing Seasons",
+          "url": "https://www.poe2wiki.net/wiki/The_Changing_Seasons",
+          "group": "Additional drops",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        },
+        {
+          "name": "The Last Flame",
+          "url": "https://www.poe2wiki.net/wiki/The_Last_Flame",
+          "group": "Additional drops",
+          "rateText": "",
+          "rateKind": "unknown",
+          "note": ""
+        }
+      ],
+      "versionHistory": [
+        {
+          "version": "0.4.0",
+          "changes": [
+            "Added a new lineage support to Zarokh, the Temporal's drop table: Zarokh's Revolt.(undocumented)"
+          ]
+        },
+        {
+          "version": "0.3.0",
+          "changes": [
+            "Failing to collect all the hourglasses during the Zarokh, the Temporal boss fight no longer fails your Trial of the Sekhemas, now instead only damaging your Honour. If you fail to collect the hourglasses, Zarokh, the Temporal now enters a secondary phase where the hourglasses an…"
+          ]
+        },
+        {
+          "version": "0.2.0f",
+          "changes": [
+            "Zarokh, the Temporal no longer aggressively targets player minions if any are present."
+          ]
+        },
+        {
+          "version": "0.2.0",
+          "changes": [
+            "The Life of The Trialmaster and Zarokh, The Temporal have been reduced.",
+            "Zarokh, the Temporal no longer targets non-players with its Rewind skill."
+          ]
+        },
+        {
+          "version": "0.1.1c",
+          "changes": [
+            "Fixed a bug where Zarokh, the Temporal could continue using his spinning lightning skill after death or while heavily stunned.",
+            "Fixed a bug where Zarokh, the Temporal's spinning lightning beam skill was not able to hit victims hiding in the corners of the arena."
+          ]
+        },
+        {
+          "version": "0.1.1b",
+          "changes": [
+            "Fixed a bug where on rare occasions Zarokh, the Temporal could kill all targets of the hourglass time trial skill without giving a chance to avoid it."
+          ]
+        },
+        {
+          "version": "0.1.0f",
+          "changes": [
+            "Fixed a client crash that could occur after entering Demon Form while fighting Zarokh, the Temporal."
+          ]
+        },
+        {
+          "version": "0.1.0",
+          "changes": [
+            "Introduced to the game."
+          ]
+        }
+      ],
+      "notes": [
+        "Zarokh drops at least one unique relic (or multiple unique relics with the relic modifier #% increased quantity of Relics dropped by Monsters).",
+        "In addition, he can also drop the following lineage supports:",
+        "— Unique items from challenge runs —",
+        "Completing challenge runs by using a unique relic will cause Zarokh to drop a specific unique item, or the corresponding Zarokh's Reliquary Key that rewards that unique item:",
+        "… (ดูรายละเอียดเต็มบนหน้า wiki)"
+      ],
+      "warnings": []
+    }
+  ],
+  "errors": []
+}
