@@ -2,6 +2,17 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-12 (13)
+
+- **Atlas Farm V.2 — Run Economics lab (new tab, patch 0.17)** (`index.html`): a separate in-development page under Planning ("Atlas V.2") for deciding whether keyed/entry-cost content (Simulacrum, boss keys, trials) is worth running. Old Atlas Farm Planner untouched (nav/docs additions only).
+  - **Run economics per run (Div):** Entry Cost (entry items × qty + optional setup cost) → Guaranteed Return (guaranteed drops × qty × sell-haircut) → Guaranteed Net / Guaranteed ROI → Break-even Guaranteed Value (entry ÷ haircut). Optional **manual** Common-return estimate adds clearly-labeled Expected Net/ROI (manual) tiles. Profit color states: green profit / orange near break-even (±10% of entry) / red loss.
+  - **Farm V.2 Score 0–100, fully transparent** (per-dimension table with reasons): Guaranteed Floor 0–35, Cost Efficiency 0–20, Market Momentum 0–10 (7d trend of market-linked items, neutral 5 when none), Setup Readiness 0–15 (3-item checklist), Freshness 0–10 (stale > 14 days), Source Confidence 0–10, Risk Penalty 0..−20. **Bigdrop/Upside Notes are display-only chips** ("not included in guaranteed ROI") and never scored; no game rates are guessed anywhere.
+  - **Prices:** independent same-origin fetch of `data/market-radar.json`; exact case-insensitive name match (Divine-priced only) prefills prices with a **Market / Manual / Missing** badge per item row (badge updates live while typing); everything works manually when the snapshot is missing. Simulacrum matched at 3.11 Div in the current snapshot; Raven's Reflection is manual by design (not in snapshot — Raven-Touched Shard is a different item, deliberately not fuzzy-matched).
+  - **Templates + QoL:** Add Simulacrum / Boss-Fragment / Trial-Soul-Core / Custom; duplicate, confirm-gated delete, favorite (sorts first), active stripe, Last Checked with ⚠ stale warn, live recalc while typing, summary strip (Best Run Now / saved / profitable / stale).
+  - **Storage:** new additive key `poe2FarmLabV2.runs.v1` (tolerant reads, added to `APP_DATA_KEYS` so Settings backup covers it); `poe2FarmPlanner.*` never read or written.
+  - Fixed during build: `fv2Fmt` trailing-zero trim turned integer `10` into `1` (spotted in screenshot review — haircut label showed 1%); harness check added.
+  - Verification: Playwright-core (headless msedge) over a local HTTP server — **57/57** checks passing: nav/tab switch both planners, seeded old-planner card intact after V.2 use, Simulacrum template + market badge + math (entry 3.11 / return 4.5 / net +1.39 / ROI +44.7% / break-even 3.46 with Raven manual 5 Div), Expected-manual tiles, bigdrop edits don't move Guaranteed Net, all 7 score dimensions + readiness +5, stale/fresh last-checked, favorite/active/duplicate/delete, reload persistence in the new key, unknown-item Manual fallback, 4 theme/mode combos (RawBlock square 0px vs Trust 10px radius + pill chips), 480px no overflow single-column, patch modal 0.17, zero console/page errors. Screenshots reviewed (desktop dark, mobile). Harness in scratchpad, deleted after use.
+
 ## 2026-07-12 (12)
 
 - **App-wide QoL/UX pass** (`index.html`, patch 0.16) — one focused improvement set per page, all additive, no storage keys changed:

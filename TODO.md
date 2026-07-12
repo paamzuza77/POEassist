@@ -7,6 +7,7 @@ Short, actionable list. Phases live in `ROADMAP.md`; history in `CHANGELOG.md`.
 - (empty — nothing queued)
 
 ## Deferred
+- [ ] Atlas Farm V.2: real expected-value modeling is deliberately out of scope — only build it if reliable per-content reward data ever exists (no guessed rates; today Common return is manual-only and Bigdrops are notes-only). Other V.2 candidates: export/import runs as JSON, a "runs per hour" field for Div/hour, Settings danger-zone scoped reset for the V.2 key.
 - [ ] Replace placeholder `README.md` (currently just a title) with a short public-facing description + live-site link.
 - [ ] Extend Settings further (theme/mode 0.13; startup tab + data overview + export/import + scoped resets 0.15) — remaining candidates: Divine-rate default, sidebar default state, and moving the in-Shop rate/table-sizing controls into Settings for one control center.
 - [ ] Divine Market: optional opt-in persistence for user-added price points (currently session-only by design — needs a product decision + additive key before building).
@@ -20,6 +21,7 @@ Short, actionable list. Phases live in `ROADMAP.md`; history in `CHANGELOG.md`.
 
 ## Done
 
+- [x] Atlas Farm V.2 — new separate Run Economics tab (Planning group): entry cost / Guaranteed Floor after haircut / Net / ROI / break-even, transparent Farm V.2 Score (7 dimensions), Simulacrum + Boss/Fragment + Trial + Custom templates, market-snapshot price prefill with Manual fallback, Bigdrop Upside Notes excluded from ROI; new additive key `poe2FarmLabV2.runs.v1`; old Atlas Planner untouched; patch 0.17 (2026-07-12).
 - [x] App-wide QoL/UX pass — league "Ends in" countdown (Hub + Divine), Market Radar TOP PICK badge + Enter-to-apply, Divine section reorder + form prefill, Atlas filter counts + last-checked age warnings, Gear preset data dots + res-cap counter, Shopping quick-filter counts + slot-view label; all additive, no storage keys changed; patch 0.16 (2026-07-12).
 - [x] Settings app control center — startup-tab preference (new additive key `poeAssist.startTab.v1`), read-only local-data overview, Export/Import all local data (backup file), and `confirm()`-gated scoped resets (UI-only / Shopping / Atlas / Gear); patch 0.15 (2026-07-12).
 - [x] Trust Blue Pay coverage polish (comprehensive rounded/soft/navy-accent overrides across all major surfaces, dark-mode grey repairs, RawBlock untouched) + original inline-SVG favicon (resolves the `/favicon.ico` 404); patch 0.14 (2026-07-12).
