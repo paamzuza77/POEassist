@@ -153,6 +153,7 @@
   html[data-theme="trust-blue-pay"] .item-editor,
   html[data-theme="trust-blue-pay"] .stat-radar,
   html[data-theme="trust-blue-pay"] .aug-calc,
+  html[data-theme="trust-blue-pay"] .ac-tip,
   html[data-theme="trust-blue-pay"] .template-label,
   html[data-theme="trust-blue-pay"] .sr-score-box,
   html[data-theme="trust-blue-pay"] .sr-bar,
@@ -3283,20 +3284,53 @@
     text-transform: uppercase;
     margin: 0 0 8px;
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 8px;
-    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 7px;
   }
-  /* คำอธิบายสั้นๆ ใต้หัวข้อ section (patch 0.25 — แทน .ac-sec-note เดิม) */
-  .ac-sec-desc {
+  /* ปุ่ม ? + tooltip อธิบาย section (patch 0.26 — แทนย่อหน้า .ac-sec-desc ของ 0.25) */
+  .ac-help {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--border);
+    border-radius: 50%; /* ตั้งใจให้กลมแม้ใน RawBlock — เป็น help badge มาตรฐาน */
+    background: var(--void);
+    color: var(--text);
     font-family: var(--font-mono);
     font-size: 10px;
-    color: var(--text-dim);
-    margin: 0 0 8px;
-    line-height: 1.55;
+    font-weight: 700;
+    line-height: 1;
+    padding: 0;
+    cursor: help;
   }
-  .ac-sec-desc strong { color: var(--text-muted); }
+  .ac-help:hover, .ac-help:focus-visible { background: var(--text); color: var(--void); outline: none; }
+  .ac-tip {
+    display: none;
+    position: fixed; /* ตำแหน่งจริงคำนวณใน JS (เหนือ/ใต้ไอคอน + หนีบไม่ให้ล้นจอ) */
+    z-index: 120;    /* เหนือ numpad (70) แต่ใต้ modal (300) */
+    width: max-content;
+    max-width: min(340px, calc(100vw - 24px));
+    background: var(--void);
+    border: 2px solid var(--border);
+    padding: 10px 12px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    text-align: left;
+    line-height: 1.6;
+    color: var(--text);
+    white-space: normal;
+    cursor: default;
+  }
+  .ac-tip strong { font-weight: 700; }
+  .ac-tip .tip-ok { color: var(--ok); font-weight: 700; }
+  .ac-tip .tip-warn { color: var(--lightning); font-weight: 700; }
   .ac-table-wrap { overflow-x: auto; } /* จอแคบ: ตารางเลื่อนในกรอบตัวเอง ไม่ดันหน้า */
   .ac-table {
     width: 100%;
@@ -3549,8 +3583,9 @@
         <h2 class="ac-title">Augment Calc</h2>
 
         <div class="ac-section">
-          <p class="ac-sec-title">Augment Result</p>
-          <p class="ac-sec-desc">จำลองว่าค่ากันธาตุจะกลายเป็นเท่าไหร่ ถ้าใส่ Augment กันธาตุลงในอุปกรณ์ +1 / +2 / +3 เม็ด (ธาตุปกติ +22% ต่อเม็ด · Chaos +11% ต่อเม็ด) — ตัวเลขคือ<strong>ค่ากันธาตุที่จะได้</strong> ไม่ใช่จำนวนไอเทม และไม่รวม Rarity/IRR</p>
+          <p class="ac-sec-title">Augment Result
+            <button type="button" class="ac-help" aria-label="คำอธิบาย Augment Result" aria-describedby="acTipAug">?<span class="ac-tip" id="acTipAug" role="tooltip">จำลองค่ากันธาตุหลังใส่ Augment กันธาตุลงในอุปกรณ์ — <strong>ไม่ใช่จำนวนไอเทมที่ต้องหา</strong><br>• Fire/Cold/Lightning Augment = +22% ต่อเม็ด<br>• Chaos Augment = +11% ต่อเม็ด<br>• ช่อง +1/+2/+3 คือค่ากันธาตุสุดท้ายหลังใส่ Augment จำนวนนั้น (ไม่รวม Rarity/IRR)<br>• <span class="tip-ok">สีเขียว</span> = ถึงเป้าหมายแล้ว · <span class="tip-warn">สีส้ม</span> = ยังขาด</span></button>
+          </p>
           <div class="ac-table-wrap">
             <table class="ac-table">
               <thead><tr><th>Element</th><th>Current</th><th>Need</th><th>+1</th><th>+2</th><th>+3</th></tr></thead>
@@ -3560,8 +3595,9 @@
         </div>
 
         <div class="ac-section">
-          <p class="ac-sec-title">Items Needed Estimate</p>
-          <p class="ac-sec-desc">ประมาณ<strong>จำนวนชิ้นของไอเทมสวมใส่</strong>ที่ต้องหาเพิ่ม (ไม่ใช่จำนวน Augment) โดยสมมุติว่าไอเทม 1 ชิ้นมีค่ากันธาตุอย่างน้อยตามตัวเลขในตาราง — ธาตุปกติใช้ roll 40/45% · Chaos ใช้ 25/20% (ปัดขึ้นเสมอ) เป็นการประมาณคร่าวๆ ไม่ใช่กฎซื้อของเป๊ะๆ; ถึงเป้าแล้วจะขึ้น ✓ Ready / 0 ชิ้น</p>
+          <p class="ac-sec-title">Items Needed Estimate
+            <button type="button" class="ac-help" aria-label="คำอธิบาย Items Needed Estimate" aria-describedby="acTipItems">?<span class="ac-tip" id="acTipItems" role="tooltip">ประมาณ<strong>จำนวนชิ้นของไอเทมสวมใส่</strong>ที่ต้องหาเพิ่ม (ไม่ใช่จำนวน Augment) โดยสมมุติว่าไอเทม 1 ชิ้นมีค่ากันธาตุอย่างน้อยตามตัวเลขในตาราง<br>• Fire/Cold/Lightning ใช้ตัวอย่าง 40% และ 45%<br>• Chaos ใช้ตัวอย่าง 25% และ 20%<br>• สูตร: (Target − Current) ÷ ค่ากันธาตุต่อชิ้น แล้วปัดขึ้น<br>• เป็นค่าประมาณเพื่อช่วยวางแผน ไม่ใช่ราคาหรือจำนวนที่ exact เสมอ<br>• ถ้าถึงเป้าแล้วจะแสดง <span class="tip-ok">✓ Ready / 0 ชิ้น</span></span></button>
+          </p>
           <div class="ac-table-wrap">
             <table class="ac-table">
               <thead><tr><th>Element</th><th>Missing</th><th>Roll #1</th><th>Roll #2</th></tr></thead>
@@ -4622,6 +4658,57 @@ function updateForgeAugCalc(totals) {
       cells + '</tr>';
   }).join('');
 }
+
+/* ---------- ปุ่ม ? + tooltip ของ Augment Calc (patch 0.26) ----------
+   hover + keyboard focus (+ แตะบนมือถือ) — วางเหนือไอคอนก่อน ที่ไม่พอค่อยย้ายลงใต้
+   และหนีบซ้าย/ขวาไม่ให้ล้นจอ (tooltip เป็น position:fixed ลูกของปุ่ม) */
+(function initAcHelpTips() {
+  const btns = document.querySelectorAll('.ac-help');
+  if (!btns.length) return;
+  let openBtn = null;
+
+  function tipOf(btn) { return btn.querySelector('.ac-tip'); }
+
+  function show(btn) {
+    if (openBtn && openBtn !== btn) hide();
+    const tip = tipOf(btn);
+    if (!tip) return;
+    tip.style.display = 'block';
+    // วัดขนาดจริงก่อนค่อยจัดตำแหน่ง
+    const r = btn.getBoundingClientRect();
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    const left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), window.innerWidth - w - 8);
+    let top = r.top - h - 8;          // เหนือไอคอนก่อน
+    if (top < 8) top = r.bottom + 8;  // ที่ด้านบนไม่พอ → ใต้ไอคอน
+    tip.style.left = left + 'px';
+    tip.style.top = top + 'px';
+    openBtn = btn;
+  }
+  function hide() {
+    if (!openBtn) return;
+    const tip = tipOf(openBtn);
+    if (tip) tip.style.display = 'none';
+    openBtn = null;
+  }
+
+  btns.forEach(btn => {
+    btn.addEventListener('mouseenter', () => show(btn));
+    btn.addEventListener('mouseleave', () => { if (document.activeElement !== btn) hide(); });
+    btn.addEventListener('focus', () => show(btn));
+    btn.addEventListener('blur', hide);
+    // มือถือ/แตะ: บางเบราว์เซอร์ไม่ให้ focus ปุ่มตอนแตะ — click เป็น fallback เปิด
+    btn.addEventListener('click', () => { if (openBtn !== btn) show(btn); });
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hide(); });
+  document.addEventListener('pointerdown', (e) => { if (openBtn && !openBtn.contains(e.target)) hide(); });
+  // หน้าเลื่อน: ถ้าเปิดจากโฟกัสคีย์บอร์ด (เช่น Tab แล้วเบราว์เซอร์เลื่อนหาให้เอง) ให้ขยับตำแหน่งตาม
+  // นอกนั้นปิดไปเลย ไม่ให้ tooltip ลอยค้างผิดที่
+  window.addEventListener('scroll', () => {
+    if (openBtn && document.activeElement === openBtn) show(openBtn);
+    else hide();
+  }, true);
+  window.addEventListener('resize', hide);
+})();
 
 // ผูกช่องแก้เป้าหมาย (ครั้งเดียวตอนโหลด) — แก้แล้วบันทึก + คำนวณใหม่ทันที
 (function initForgeTargets() {
@@ -6628,6 +6715,15 @@ document.getElementById('shopSizeReset').addEventListener('click', resetShopSizi
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.26',
+    date: '2026-07-13',
+    notes: [
+      'Augment Calc: ย้ายคำอธิบายยาวๆ ของ Augment Result / Items Needed Estimate ออกจากตัวแผง — เปลี่ยนเป็นปุ่ม ? กลมเล็กๆ ท้ายชื่อ section แทน (แผงกะทัดรัดขึ้น)',
+      'ชี้เมาส์ / กด Tab โฟกัส / แตะปุ่ม ? แล้วจะมี tooltip อธิบายละเอียด: สูตร, ค่า Augment ต่อเม็ด (+22%/+11%), ตัวอย่าง roll (40/45% · 25/20%), ความหมายของสี และย้ำว่าอันไหนคือค่ากันธาตุ อันไหนคือจำนวนชิ้นไอเทม — Esc/แตะข้างนอกเพื่อปิด',
+      'tooltip จัดตำแหน่งเองไม่ให้ล้นจอ (เหนือไอคอนก่อน ที่ไม่พอค่อยลงใต้) รองรับทั้งสองธีมและจอมือถือ — การคำนวณทุกอย่างเหมือนเดิม',
+    ],
+  },
   {
     version: '0.25',
     date: '2026-07-13',
