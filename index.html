@@ -8,17 +8,20 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23003087'/%3E%3Crect x='9' y='8' width='14' height='3.4' fill='%23fff'/%3E%3Crect x='9' y='14.3' width='11' height='3.4' fill='%23fff'/%3E%3Crect x='9' y='20.6' width='14' height='3.4' fill='%23fff'/%3E%3Crect x='9' y='8' width='3.4' height='16' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<!-- ตั้ง data-theme / data-mode บน <html> ให้เร็วที่สุด (กัน flash ธีม/โหมดตอนโหลด) — ค่าเริ่มต้น rawblock/light -->
+<!-- ตั้ง data-theme / data-mode / data-font-scale บน <html> ให้เร็วที่สุด (กัน flash ธีม/โหมด/ขนาดตัวอักษรตอนโหลด) — ค่าเริ่มต้น rawblock/light/normal -->
 <script>
 (function () {
   try {
     var t = localStorage.getItem('poeAssist.theme.v1');
     var m = localStorage.getItem('poeAssist.colorMode.v1');
+    var f = localStorage.getItem('poeAssist.fontScale.v1');
     document.documentElement.setAttribute('data-theme', t === 'trust-blue-pay' ? 'trust-blue-pay' : 'rawblock');
     document.documentElement.setAttribute('data-mode', m === 'dark' ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-font-scale', (f === 'small' || f === 'large') ? f : 'normal');
   } catch (e) {
     document.documentElement.setAttribute('data-theme', 'rawblock');
     document.documentElement.setAttribute('data-mode', 'light');
+    document.documentElement.setAttribute('data-font-scale', 'normal');
   }
 })();
 </script>
@@ -3373,6 +3376,101 @@
     margin: 8px 0 0;
     line-height: 1.5;
   }
+
+  /* ==================== Settings redesign + display prefs (patch 0.27) ====================
+     - ขนาดตัวอักษรทั้งเว็บ: zoom บน <body> ตาม data-font-scale บน <html> (ตั้งไว้ตั้งแต่ <head> กัน flash)
+       ใช้ zoom (ไม่ใช่ font-size) เพราะ CSS ทั้งไฟล์เป็น px — สัดส่วน layout/ตาราง/ไอคอนคงเดิมทั้งหมด
+       โค้ด JS ที่วางตำแหน่งด้วย getBoundingClientRect ต้องหารด้วย uiZoom() (ดู numpad / ac-tip / divine tooltip)
+     - Settings modal: layout 2 ฝั่ง (เมนูหมวดซ้าย / แผงขวา) — จอแคบเมนูกลายเป็นแถวแนวนอน */
+  html[data-font-scale="small"] body { zoom: 0.92; }
+  html[data-font-scale="large"] body { zoom: 1.08; }
+
+  .settings-panel { max-width: 780px; } /* override 420px เดิม — layout 2 ฝั่งต้องกว้างขึ้น */
+  .settings-layout { display: flex; gap: 20px; align-items: flex-start; }
+  .settings-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 0 0 175px;
+    position: sticky;
+    top: 0;
+  }
+  .settings-nav button {
+    background: var(--void);
+    border: 2px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 9px 12px;
+    cursor: pointer;
+  }
+  .settings-nav button:hover { background: var(--text); color: var(--void); }
+  .settings-nav button.active { background: var(--text); color: var(--void); }
+  .settings-nav button.nav-danger { color: var(--fire); border-color: var(--fire); }
+  .settings-nav button.nav-danger:hover, .settings-nav button.nav-danger.active { background: var(--fire); color: var(--void); }
+  .settings-page { flex: 1 1 auto; min-width: 0; }
+  .settings-page[hidden] { display: none; }
+  .settings-page > .settings-section-title:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+  @media (max-width: 640px) {
+    .settings-layout { flex-direction: column; gap: 14px; }
+    .settings-nav { position: static; flex-direction: row; flex-wrap: wrap; flex: initial; width: 100%; }
+    .settings-nav button { flex: 1 1 auto; text-align: center; padding: 8px 8px; min-width: 30%; }
+  }
+
+  /* ---- Language & Region: แถวเรทสกุลเงิน ---- */
+  .settings-rate-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--text);
+  }
+  .settings-rate-row input {
+    width: 110px;
+    background: var(--panel-sunken);
+    border: 3px solid var(--border);
+    border-radius: 0;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    padding: 7px 9px;
+  }
+  .settings-rate-row input:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--border); }
+  .settings-rate-unset { color: var(--lightning); font-family: var(--font-mono); font-size: 11px; font-weight: 700; margin: 6px 0 0; }
+
+  /* ---- Contact / Donate ---- */
+  .settings-contact-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+  .settings-contact-row a {
+    color: var(--link);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    word-break: break-all;
+  }
+  .settings-donate-box {
+    border: 2px dashed var(--border);
+    padding: 14px 16px;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ---- Trust Blue Pay: พื้นผิวใหม่ของ patch 0.27 (โค้งมน/เส้นบาง ให้เข้าธีม — สีมาจาก token เดิม) ---- */
+  html[data-theme="trust-blue-pay"] .settings-nav button,
+  html[data-theme="trust-blue-pay"] .settings-rate-row input,
+  html[data-theme="trust-blue-pay"] .settings-donate-box {
+    border-width: 1px;
+    border-radius: 10px;
+  }
 </style>
 </head>
 <body>
@@ -3655,7 +3753,7 @@
     <div class="shop-summary" id="shopSummary">
       <div class="summary-group rate-group">
         <p class="sg-title">เรทเงิน</p>
-        <div class="rate-line">1 Div = <input type="text" inputmode="decimal" class="num-input" id="divineRateInput" placeholder="0"> ฿</div>
+        <div class="rate-line">1 Div = <input type="text" inputmode="decimal" class="num-input" id="divineRateInput" placeholder="0"> <span id="rateFiatSymbol">฿</span></div>
         <div class="sg-note" id="statusTotal">ซื้อแล้ว 0 จาก 0 รายการ</div>
       </div>
       <div class="summary-group">
@@ -4674,14 +4772,16 @@ function updateForgeAugCalc(totals) {
     const tip = tipOf(btn);
     if (!tip) return;
     tip.style.display = 'block';
-    // วัดขนาดจริงก่อนค่อยจัดตำแหน่ง
+    // วัดขนาดจริงก่อนค่อยจัดตำแหน่ง — คิดใน viewport px แล้วหาร uiZoom() ตอนเซ็ต
+    // (offsetWidth เป็น px ก่อน zoom แต่ getBoundingClientRect เป็น px หลัง zoom — ดู font-scale patch 0.27)
+    const z = uiZoom();
     const r = btn.getBoundingClientRect();
-    const w = tip.offsetWidth, h = tip.offsetHeight;
+    const w = tip.offsetWidth * z, h = tip.offsetHeight * z;
     const left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), window.innerWidth - w - 8);
     let top = r.top - h - 8;          // เหนือไอคอนก่อน
     if (top < 8) top = r.bottom + 8;  // ที่ด้านบนไม่พอ → ใต้ไอคอน
-    tip.style.left = left + 'px';
-    tip.style.top = top + 'px';
+    tip.style.left = (left / z) + 'px';
+    tip.style.top = (top / z) + 'px';
     openBtn = btn;
   }
   function hide() {
@@ -5251,6 +5351,290 @@ applyColorModePreference();
   syncAppearanceControls();
 })();
 
+/* ==================== Display preferences: language / fiat currency / font size (patch 0.27) ====================
+   คีย์ใหม่ทั้งหมด additive:
+   - poeAssist.language.v1      : 'th' | 'en' (ค่าเริ่มต้น th) — ตอนนี้ดิกชันนารีครอบคลุมหน้า Settings + Contact/Donate;
+                                  ข้อความแท็บอื่นยังเป็นไทยตามเดิม ค่อยย้ายเข้า I18N ทีละส่วนภายหลังได้
+   - poeAssist.fiatCurrency.v1  : 'THB'|'USD'|'GBP'|'EUR'|'JPY' — สกุลเงิน fiat ที่ใช้แสดงผลทั้งเว็บ
+   - poeAssist.divineFiatRates.v1: { THB: 35, USD: 1.1, ... } เรทต่อ 1 Divine แยกจำต่อสกุล — ผู้ใช้กรอกเองเท่านั้น
+                                  (static site — ห้ามดึง/เดาเรทอัตโนมัติเด็ดขาด; ไม่มีเรท = แสดง "—" ไม่ใช่ 0)
+   - poeAssist.fontScale.v1     : 'small'|'normal'|'large' → zoom ทั้ง <body> (0.92 / 1 / 1.08)
+   เรท THB เดิมใน poe2ShopList.rate.v1 ยังถูกอ่านเป็น fallback และถูกเขียนคู่เสมอเมื่อสกุลเงินคือ THB
+   — ไม่ลบ/ไม่เปลี่ยนรูปคีย์เดิม (backup/Export ของเก่ายังใช้ได้) */
+const LANG_KEY = 'poeAssist.language.v1';
+const FIAT_KEY = 'poeAssist.fiatCurrency.v1';
+const FIAT_RATES_KEY = 'poeAssist.divineFiatRates.v1';
+const FONT_SCALE_KEY = 'poeAssist.fontScale.v1';
+const LEGACY_THB_RATE_KEY = 'poe2ShopList.rate.v1'; // เรทเดิมของ Gear Planner — ความหมายคือ THB เสมอ
+
+const FIAT_CURRENCIES = [
+  { id: 'THB', symbol: '฿', th: 'บาทไทย',       en: 'Thai Baht' },
+  { id: 'USD', symbol: '$', th: 'ดอลลาร์สหรัฐ',  en: 'US Dollar' },
+  { id: 'GBP', symbol: '£', th: 'ปอนด์อังกฤษ',   en: 'British Pound' },
+  { id: 'EUR', symbol: '€', th: 'ยูโร',          en: 'Euro' },
+  { id: 'JPY', symbol: '¥', th: 'เยนญี่ปุ่น',     en: 'Japanese Yen' },
+];
+const FONT_SCALE_IDS = ['small', 'normal', 'large'];
+
+let appLang = (function loadLang() {
+  try { return localStorage.getItem(LANG_KEY) === 'en' ? 'en' : 'th'; }
+  catch (e) { return 'th'; }
+})();
+let appFiat = (function loadFiat() {
+  try {
+    const v = localStorage.getItem(FIAT_KEY);
+    return FIAT_CURRENCIES.some(c => c.id === v) ? v : 'THB';
+  } catch (e) { return 'THB'; }
+})();
+let fiatRates = (function loadFiatRates() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(FIAT_RATES_KEY));
+    if (raw && typeof raw === 'object' && !Array.isArray(raw)) return raw;
+  } catch (e) { /* malformed storage */ }
+  return {};
+})();
+let appFontScale = (function loadFontScale() {
+  try {
+    const v = localStorage.getItem(FONT_SCALE_KEY);
+    return FONT_SCALE_IDS.includes(v) ? v : 'normal';
+  } catch (e) { return 'normal'; }
+})();
+
+function fiatInfo() { return FIAT_CURRENCIES.find(c => c.id === appFiat) || FIAT_CURRENCIES[0]; }
+function fiatCode() { return fiatInfo().id; }
+function fiatSymbol() { return fiatInfo().symbol; }
+
+// เรท 1 Divine → สกุลเงินที่เลือก (0 = ยังไม่ตั้งเรท — UI ต้องแสดง "—" ห้ามแสดงเป็นเงิน 0)
+function getDivineFiatRate() {
+  const v = parseFloat(fiatRates[appFiat]);
+  if (!isNaN(v) && v > 0) return v;
+  if (appFiat === 'THB') {
+    // fallback เรทเดิมของ Gear Planner (คีย์เก่า = THB) — อ่านอย่างเดียว ไม่ migrate/ลบ
+    try {
+      const legacy = parseFloat(localStorage.getItem(LEGACY_THB_RATE_KEY));
+      if (!isNaN(legacy) && legacy > 0) return legacy;
+    } catch (e) { /* storage unavailable */ }
+  }
+  return 0;
+}
+function setDivineFiatRate(v) {
+  if (typeof v === 'number' && !isNaN(v) && v > 0) fiatRates[appFiat] = v;
+  else delete fiatRates[appFiat];
+  try { localStorage.setItem(FIAT_RATES_KEY, JSON.stringify(fiatRates)); } catch (e) { /* storage unavailable */ }
+  if (appFiat === 'THB') {
+    // เขียนคู่ลงคีย์เดิมด้วย — Export JSON ของ Gear Planner และผู้ใช้เวอร์ชันเก่ายังเห็นเรทตรงกัน
+    try { localStorage.setItem(LEGACY_THB_RATE_KEY, String(typeof v === 'number' && v > 0 ? v : 0)); } catch (e) { /* storage unavailable */ }
+  }
+}
+
+// zoom ปัจจุบันของ <body> (font-scale) — โค้ดที่วางตำแหน่ง fixed/absolute จาก getBoundingClientRect
+// ต้องคูณ/หารด้วยค่านี้ (rect เป็น px หลัง zoom แต่ style.left/offsetWidth เป็น px ก่อน zoom)
+function uiZoom() {
+  const z = parseFloat(getComputedStyle(document.body).zoom);
+  return (!isNaN(z) && z > 0) ? z : 1;
+}
+
+function setAppFontScale(id) {
+  appFontScale = FONT_SCALE_IDS.includes(id) ? id : 'normal';
+  try { localStorage.setItem(FONT_SCALE_KEY, appFontScale); } catch (e) { /* storage unavailable */ }
+  document.documentElement.setAttribute('data-font-scale', appFontScale);
+  document.dispatchEvent(new CustomEvent('poeassist:prefschange'));
+}
+
+/* ---- I18N: ดิกชันนารีสองภาษา (th = ข้อความปัจจุบัน / en = คำแปล) ----
+   ใช้ t(key) หรือ tFmt(key, {n: ...}) — element ที่ตั้ง data-i18n จะถูกเขียนใหม่โดย applyI18nTexts()
+   ตอนนี้ครอบคลุม: Settings ทั้งหน้า (หมวด/หัวข้อ/label/ปุ่ม/confirm) + Contact + Donate
+   ยังเป็นไทยอย่างเดียว: เนื้อหาแท็บทั้งหมด, ข้อความ error ของ parseBackup, PATCH_NOTES */
+const I18N = {
+  th: {
+    'settings.title': 'Settings',
+    'settings.close': '✕ ปิด',
+    'cat.appearance': 'Appearance',
+    'cat.language': 'ภาษา / สกุลเงิน',
+    'cat.data': 'ข้อมูล / Backup',
+    'cat.contact': 'ติดต่อ',
+    'cat.donate': 'Donate',
+    'cat.danger': 'Danger Zone',
+    'sec.appearance': 'Appearance',
+    'sec.startup': 'Startup',
+    'sec.language': 'Language',
+    'sec.currency': 'Display currency',
+    'sec.localdata': 'Local data',
+    'sec.backup': 'Data backup',
+    'sec.contact': 'Contact',
+    'sec.donate': 'Donate / Support',
+    'sec.danger': 'Danger zone',
+    'appearance.theme': 'ธีม / Theme',
+    'appearance.mode': 'โหมด / Mode',
+    'appearance.fontsize': 'ขนาดตัวอักษร / Font size',
+    'appearance.note': 'ธีมและโหมดจำไว้หลังรีโหลด และสลับได้จากปุ่มมุมขวาบนด้วย.',
+    'fontsize.small': 'เล็ก (92%)',
+    'fontsize.normal': 'ปกติ (100%)',
+    'fontsize.large': 'ใหญ่ (108%)',
+    'fontsize.note': 'ปรับขนาดการแสดงผลทั้งเว็บ — จำไว้หลังรีโหลด.',
+    'startup.label': 'แท็บเริ่มต้นตอนเปิดเว็บ / Start tab',
+    'startup.note': 'มีผลตอนเปิด/รีโหลดเว็บครั้งถัดไป. "แท็บล่าสุด" = พฤติกรรมเดิม.',
+    'lang.label': 'ภาษา / Language',
+    'lang.th': 'ไทย (TH)',
+    'lang.en': 'English (EN)',
+    'lang.note': 'ตอนนี้การแปลครอบคลุมหน้า Settings + Contact/Donate เป็นหลัก — เนื้อหาแท็บอื่นยังเป็นภาษาไทยตามเดิม (จะทยอยย้ายเข้าดิกชันนารีภายหลัง).',
+    'fiat.label': 'สกุลเงินแสดงผล / Display currency',
+    'fiat.note': 'มีผลกับยอดเงิน fiat ทุกจุด เช่นการ์ดเรท/งบใน Gear Planner และหน่วย fiat ใน Market Radar — หน่วยในเกม (Divine/Chaos/Exalted) ไม่เปลี่ยน.',
+    'fiat.divinenote': 'หมายเหตุ: แท็บ Divine Market เป็นข้อมูลตัวอย่างสกุล THB — ไม่ถูกแปลงตามสกุลเงินที่เลือก (ไม่มีเรทจริงให้แปลง จึงไม่เดาให้).',
+    'fiat.rate.prefix': '1 Divine =',
+    'fiat.rate.note': 'เรทกรอกเอง แยกจำต่อสกุลเงิน — เว็บนี้เป็น static site ไม่ดึงเรทอัตโนมัติ.',
+    'fiat.unset': 'ยังไม่ตั้งเรทของสกุลเงินนี้ — ยอด fiat จะแสดงเป็น "—" จนกว่าจะกรอกเรท',
+    'ov.shoprows': 'รายการ Gear Planner',
+    'ov.farmcards': 'การ์ด Farm Planner',
+    'ov.gearpresets': 'พรีเซ็ตเกียร์ที่มีข้อมูล',
+    'ov.thememode': 'ธีม / โหมด',
+    'ov.language': 'ภาษา',
+    'ov.currency': 'สกุลเงิน / เรท',
+    'ov.norate': 'ยังไม่ตั้งเรท',
+    'ov.activetab': 'แท็บที่ใช้อยู่',
+    'backup.export': '⭳ Export all data',
+    'backup.import': '⭱ Import backup',
+    'backup.note': 'สำรอง/กู้คืนเฉพาะข้อมูลในเบราว์เซอร์ (การตั้งค่า + รายการซื้อ + การ์ดฟาร์ม + พรีเซ็ตเกียร์). ไม่รวมข้อมูลตลาดที่ generate อัตโนมัติ.',
+    'backup.import.confirm': 'นำเข้าไฟล์สำรองนี้จะเขียนทับข้อมูลปัจจุบัน {n} รายการคีย์ที่รู้จัก แล้วรีโหลดหน้า.\nแนะนำ Export เก็บของเดิมไว้ก่อนถ้าไม่แน่ใจ. ดำเนินการต่อ?',
+    'backup.import.fail': 'นำเข้าไม่สำเร็จ: ',
+    'backup.write.fail': 'เขียนข้อมูลไม่สำเร็จ: ',
+    'backup.read.fail': 'อ่านไฟล์ไม่สำเร็จ',
+    'contact.desc': 'แจ้งบั๊ก / ส่งข้อเสนอแนะเกี่ยวกับเว็บนี้ได้ทางอีเมลนี้',
+    'contact.copy': 'คัดลอกอีเมล',
+    'contact.copied': 'คัดลอกแล้ว ✓',
+    'contact.copyfail': 'คัดลอกไม่สำเร็จ — คัดลอกเองจากลิงก์ได้เลย',
+    'donate.placeholder': 'ยังไม่เปิดให้บริการ',
+    'donate.note': 'ส่วนสนับสนุน/เลี้ยงกาแฟยังเป็น placeholder — ยังไม่มีช่องทางจ่ายเงินจริง จะเปิดให้บริการในอนาคต.',
+    'danger.resetui': 'รีเซ็ตการตั้งค่า UI (ธีม/โหมด/ภาษา/สกุลเงิน/ขนาดตัวอักษร/ย่อเมนู/แท็บเริ่มต้น/ขนาดตาราง)',
+    'danger.resetui.confirm': 'รีเซ็ตเฉพาะการตั้งค่า UI กลับเป็นค่าเริ่มต้น?\n(ไม่ลบรายการซื้อ/การ์ดฟาร์ม/พรีเซ็ตเกียร์ และเรท THB เดิมยังอยู่) แล้วรีโหลดหน้า.',
+    'danger.clearshop': 'ล้างรายการ Gear Planner ทั้งหมด',
+    'danger.clearshop.confirm': 'ลบรายการ Gear Planner ทั้งหมด ({n} แถว)?\nย้อนกลับไม่ได้ — แนะนำ Export ก่อน. แล้วรีโหลดหน้า.',
+    'danger.clearfarm': 'ล้างการ์ด Farm Planner ทั้งหมด',
+    'danger.clearfarm.confirm': 'ลบการ์ด Farm Planner ทั้งหมด ({n} การ์ด)?\nย้อนกลับไม่ได้ — แนะนำ Export ก่อน. แล้วรีโหลดหน้า.',
+    'danger.cleargear': 'ล้างพรีเซ็ตเกียร์ (Resistance Checker)',
+    'danger.cleargear.confirm': 'ล้างพรีเซ็ตเกียร์ทั้งหมด (มีข้อมูล {n} / 3 พรีเซ็ต)?\nย้อนกลับไม่ได้ — แนะนำ Export ก่อน. แล้วรีโหลดหน้า.',
+  },
+  en: {
+    'settings.title': 'Settings',
+    'settings.close': '✕ Close',
+    'cat.appearance': 'Appearance',
+    'cat.language': 'Language & Region',
+    'cat.data': 'Data & Backup',
+    'cat.contact': 'Contact',
+    'cat.donate': 'Donate',
+    'cat.danger': 'Danger Zone',
+    'sec.appearance': 'Appearance',
+    'sec.startup': 'Startup',
+    'sec.language': 'Language',
+    'sec.currency': 'Display currency',
+    'sec.localdata': 'Local data',
+    'sec.backup': 'Data backup',
+    'sec.contact': 'Contact',
+    'sec.donate': 'Donate / Support',
+    'sec.danger': 'Danger zone',
+    'appearance.theme': 'Theme',
+    'appearance.mode': 'Mode',
+    'appearance.fontsize': 'Font size',
+    'appearance.note': 'Theme and mode persist after reload — the top-right button also toggles mode.',
+    'fontsize.small': 'Small (92%)',
+    'fontsize.normal': 'Normal (100%)',
+    'fontsize.large': 'Large (108%)',
+    'fontsize.note': 'Scales the whole app — persists after reload.',
+    'startup.label': 'Start tab when opening the app',
+    'startup.note': 'Takes effect on the next launch/reload. "Last used" = previous behavior.',
+    'lang.label': 'Language',
+    'lang.th': 'ไทย (TH)',
+    'lang.en': 'English (EN)',
+    'lang.note': 'Translation currently covers the Settings window + Contact/Donate — other tabs remain in Thai for now (more strings will migrate into the dictionary gradually).',
+    'fiat.label': 'Display currency',
+    'fiat.note': 'Affects every fiat amount, e.g. the Gear Planner rate/budget lines and the Market Radar fiat unit — in-game currencies (Divine/Chaos/Exalted) are unchanged.',
+    'fiat.divinenote': 'Note: the Divine Market tab is THB-denominated sample data and is not converted to the selected currency (no real rate exists, so none is guessed).',
+    'fiat.rate.prefix': '1 Divine =',
+    'fiat.rate.note': 'Rates are user-entered and remembered per currency — this static site never fetches live exchange rates.',
+    'fiat.unset': 'No rate saved for this currency yet — fiat amounts show "—" until you enter one',
+    'ov.shoprows': 'Gear Planner rows',
+    'ov.farmcards': 'Farm Planner cards',
+    'ov.gearpresets': 'Gear presets with data',
+    'ov.thememode': 'Theme / mode',
+    'ov.language': 'Language',
+    'ov.currency': 'Currency / rate',
+    'ov.norate': 'no rate set',
+    'ov.activetab': 'Active tab',
+    'backup.export': '⭳ Export all data',
+    'backup.import': '⭱ Import backup',
+    'backup.note': 'Backs up / restores browser-stored data only (settings + shopping rows + farm cards + gear presets). Auto-generated market data is not included.',
+    'backup.import.confirm': 'Importing this backup will overwrite {n} known data keys, then reload the page.\nExport your current data first if unsure. Continue?',
+    'backup.import.fail': 'Import failed: ',
+    'backup.write.fail': 'Writing data failed: ',
+    'backup.read.fail': 'Could not read the file',
+    'contact.desc': 'For bug reports and suggestions about this app, use this email',
+    'contact.copy': 'Copy email',
+    'contact.copied': 'Copied ✓',
+    'contact.copyfail': 'Copy failed — please copy from the link manually',
+    'donate.placeholder': 'Not available yet',
+    'donate.note': 'The donate / coffee section is a placeholder — no payment links are live yet.',
+    'danger.resetui': 'Reset UI preferences (theme/mode/language/currency/font size/sidebar/start tab/table sizing)',
+    'danger.resetui.confirm': 'Reset UI preferences to defaults?\n(Shopping rows / farm cards / gear presets are kept, and the original THB rate stays.) The page will reload.',
+    'danger.clearshop': 'Clear all Gear Planner rows',
+    'danger.clearshop.confirm': 'Delete all Gear Planner rows ({n} rows)?\nThis cannot be undone — Export first is recommended. The page will reload.',
+    'danger.clearfarm': 'Clear all Farm Planner cards',
+    'danger.clearfarm.confirm': 'Delete all Farm Planner cards ({n} cards)?\nThis cannot be undone — Export first is recommended. The page will reload.',
+    'danger.cleargear': 'Clear gear presets (Resistance Checker)',
+    'danger.cleargear.confirm': 'Clear all gear presets ({n} / 3 presets have data)?\nThis cannot be undone — Export first is recommended. The page will reload.',
+  },
+};
+
+function t(key) {
+  const d = I18N[appLang] || I18N.th;
+  if (Object.prototype.hasOwnProperty.call(d, key)) return d[key];
+  if (Object.prototype.hasOwnProperty.call(I18N.th, key)) return I18N.th[key];
+  return key;
+}
+function tFmt(key, params) {
+  let s = t(key);
+  Object.keys(params || {}).forEach(k => { s = s.split('{' + k + '}').join(params[k]); });
+  return s;
+}
+function applyI18nTexts(root) {
+  (root || document).querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+}
+
+function setAppLanguage(l) {
+  appLang = l === 'en' ? 'en' : 'th';
+  try { localStorage.setItem(LANG_KEY, appLang); } catch (e) { /* storage unavailable */ }
+  applyI18nTexts();
+  document.dispatchEvent(new CustomEvent('poeassist:prefschange'));
+}
+
+// อัปเดตทุกจุดนอก Settings ที่แสดงสกุลเงิน fiat: การ์ดเรท Gear Planner + ตัวเลือกหน่วยใน Market Radar
+// initial=true = เรียกตอนโหลด (แก้ label อย่างเดียว — ยังแตะ divineRate/summary ไม่ได้เพราะประกาศทีหลังในไฟล์)
+function updateFiatCurrencyUi(initial) {
+  const sym = document.getElementById('rateFiatSymbol');
+  if (sym) sym.textContent = fiatSymbol();
+  // หน่วย fiat ใน Market Radar: value คงเป็น 'THB' (id ภายใน — filter ที่เซฟไว้ไม่พัง) แต่ label ตามสกุลที่เลือก
+  const rfOpt = document.querySelector('#rfUnit option[value="THB"]');
+  if (rfOpt) rfOpt.textContent = fiatCode();
+  if (!initial) {
+    divineRate = getDivineFiatRate(); // เรทของสกุลใหม่ (0 = ยังไม่ตั้ง → summary แสดง "—")
+    const inp = document.getElementById('divineRateInput');
+    if (inp) inp.value = divineRate || '';
+    if (typeof updateShopSummary === 'function') updateShopSummary();
+    const rfUnit = document.getElementById('rfUnit');
+    if (rfUnit && rfUnit.value === 'THB') rfUnit.dispatchEvent(new Event('change')); // รีเฟรช label "1 Divine = ? <สกุล>"
+  }
+}
+
+function setAppFiatCurrency(code) {
+  appFiat = FIAT_CURRENCIES.some(c => c.id === code) ? code : 'THB';
+  try { localStorage.setItem(FIAT_KEY, appFiat); } catch (e) { /* storage unavailable */ }
+  updateFiatCurrencyUi(false);
+  document.dispatchEvent(new CustomEvent('poeassist:prefschange'));
+}
+
+// ยืนยัน attribute + label ตอนโหลด (head script ตั้ง data-font-scale ให้แล้ว — กันกรณีถูกบล็อก)
+document.documentElement.setAttribute('data-font-scale', appFontScale);
+updateFiatCurrencyUi(true);
+
 /* ==================== Local data backup / reset ==================== */
 // ทุกคีย์ที่เป็น "ข้อมูลผู้ใช้/การตั้งค่า" ในเบราว์เซอร์ (ไม่รวมไฟล์ JSON ที่ generate มา)
 // ใช้ทั้งใน Export/Import ทั้งชุด — เก็บเป็น string ดิบตามที่อยู่ใน localStorage (lossless)
@@ -5263,6 +5647,10 @@ const APP_DATA_KEYS = [
   'poeAssist.colorMode.v1',
   'poeAssist.sidebarCollapsed.v1',
   'poeAssist.startTab.v1',
+  'poeAssist.language.v1',
+  'poeAssist.fiatCurrency.v1',
+  'poeAssist.divineFiatRates.v1',
+  'poeAssist.fontScale.v1',
   'poe2ShopList.rows.v1',
   'poe2ShopList.rate.v1',
   'poe2ShopList.tableSizing.v1',
@@ -5281,6 +5669,10 @@ const UI_PREF_KEYS = [
   'poeAssist.colorMode.v1',
   'poeAssist.sidebarCollapsed.v1',
   'poeAssist.startTab.v1',
+  'poeAssist.language.v1',
+  'poeAssist.fiatCurrency.v1',
+  'poeAssist.divineFiatRates.v1', // เรทที่ผู้ใช้กรอกถือเป็น UI pref — เรท THB เดิมใน poe2ShopList.rate.v1 "ไม่" ถูกลบ (ตั้งใจ)
+  'poeAssist.fontScale.v1',
   'poe2ShopList.tableSizing.v1',
   'poe2FarmPlanner.view.v1',
 ];
@@ -5347,9 +5739,9 @@ function parseBackup(text) {
 }
 
 /* ==================== Settings ==================== */
-// ศูนย์ควบคุมของแอป: Appearance (ธีม/โหมด ซิงก์กับ topbar), Startup (แท็บเริ่มต้น),
-// Data overview (นับจำนวนแบบ read-only), Data backup (Export/Import ทั้งชุด),
-// Danger zone (reset UI / ล้างเฉพาะกลุ่ม — มี confirm ทุกปุ่ม). คีย์ storage ไม่ถูกเปลี่ยนรูป
+// ศูนย์ควบคุมของแอป — patch 0.27: layout ใหม่ 2 ฝั่ง (เมนูหมวดซ้าย / แผงขวา; จอแคบเมนูกลายเป็นแถวแนวนอน)
+// หมวด: Appearance (ธีม/โหมด/ขนาดตัวอักษร + Startup), ภาษา/สกุลเงิน, ข้อมูล/Backup, ติดต่อ, Donate, Danger Zone
+// ควบคุมเดิมทั้งหมดยังอยู่ครบ (id เดิม) — ข้อความผ่าน I18N/t() ตาม poeAssist.language.v1; คีย์ storage ไม่ถูกเปลี่ยนรูป
 (function initSettings() {
   const btn = document.getElementById('settingsBtn');
   const overlay = document.createElement('div');
@@ -5358,38 +5750,89 @@ function parseBackup(text) {
   const panel = document.createElement('div');
   panel.className = 'patch-panel settings-panel';
   const h = document.createElement('h2');
-  h.textContent = 'Settings';
+  const hTitle = document.createElement('span');
+  hTitle.dataset.i18n = 'settings.title';
+  hTitle.textContent = t('settings.title');
+  h.appendChild(hTitle);
   const close = document.createElement('button');
   close.className = 'patch-close';
   close.type = 'button';
-  close.textContent = '✕ ปิด';
+  close.dataset.i18n = 'settings.close';
+  close.textContent = t('settings.close');
   h.appendChild(close);
   panel.appendChild(h);
 
   const body = document.createElement('div');
   body.className = 'settings-body';
+  const layout = document.createElement('div');
+  layout.className = 'settings-layout';
+  body.appendChild(layout);
 
-  // ---- helper: หัวข้อ section ----
-  function sectionTitle(text) {
-    const t = document.createElement('div');
-    t.className = 'settings-section-title';
-    t.textContent = text;
-    return t;
+  // ---- หมวด: ปุ่ม nav ฝั่งซ้าย + หน้า (page) ฝั่งขวา หมวดละหนึ่ง ----
+  const CATS = [
+    { id: 'appearance', key: 'cat.appearance' },
+    { id: 'language',   key: 'cat.language' },
+    { id: 'data',       key: 'cat.data' },
+    { id: 'contact',    key: 'cat.contact' },
+    { id: 'donate',     key: 'cat.donate' },
+    { id: 'danger',     key: 'cat.danger', danger: true },
+  ];
+  const nav = document.createElement('div');
+  nav.className = 'settings-nav';
+  layout.appendChild(nav);
+  const pages = {};
+  CATS.forEach(c => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.dataset.i18n = c.key;
+    b.textContent = t(c.key);
+    if (c.danger) b.classList.add('nav-danger');
+    b.addEventListener('click', () => showCat(c.id));
+    nav.appendChild(b);
+    const p = document.createElement('div');
+    p.className = 'settings-page';
+    p.hidden = true;
+    layout.appendChild(p);
+    pages[c.id] = { page: p, navBtn: b };
+  });
+  function showCat(id) {
+    CATS.forEach(c => {
+      pages[c.id].page.hidden = c.id !== id;
+      pages[c.id].navBtn.classList.toggle('active', c.id === id);
+    });
   }
-  // ---- helper: segmented control (ธีม/โหมด) ----
-  function makeGroup(labelText, segId, options, currentGetter, onPick, keyName) {
+
+  // ---- helper: หัวข้อ section / ย่อหน้า note (ผูก data-i18n ให้แปลตามภาษาได้) ----
+  function sectionTitle(key) {
+    const el = document.createElement('div');
+    el.className = 'settings-section-title';
+    el.dataset.i18n = key;
+    el.textContent = t(key);
+    return el;
+  }
+  function noteP(key) {
+    const p = document.createElement('p');
+    p.className = 'appearance-note';
+    p.dataset.i18n = key;
+    p.textContent = t(key);
+    return p;
+  }
+  // ---- helper: segmented control — option.i18n (ถ้ามี) ทำให้ label ปุ่มแปลตามภาษา ----
+  function makeGroup(labelKey, segId, options, currentGetter, onPick, keyName) {
     const group = document.createElement('div');
     group.className = 'appearance-group';
     const lab = document.createElement('div');
     lab.className = 'appearance-group-label';
-    lab.textContent = labelText;
+    lab.dataset.i18n = labelKey;
+    lab.textContent = t(labelKey);
     const seg = document.createElement('div');
     seg.className = 'appearance-seg';
     seg.id = segId;
     options.forEach(opt => {
       const b = document.createElement('button');
       b.type = 'button';
-      b.textContent = opt.label;
+      if (opt.i18n) b.dataset.i18n = opt.i18n;
+      b.textContent = opt.i18n ? t(opt.i18n) : opt.label;
       b.dataset[keyName] = opt.id;
       b.classList.toggle('active', opt.id === currentGetter());
       b.addEventListener('click', () => onPick(opt.id));
@@ -5400,26 +5843,33 @@ function parseBackup(text) {
     return group;
   }
 
-  // ===== 1 · Appearance =====
-  body.appendChild(sectionTitle('Appearance'));
-  body.appendChild(makeGroup('ธีม / Theme', 'appearanceThemeSeg', APP_THEMES,
+  // ===== หมวด 1 · Appearance (ธีม/โหมด/ขนาดตัวอักษร + Startup) =====
+  const pgAppearance = pages.appearance.page;
+  pgAppearance.appendChild(sectionTitle('sec.appearance'));
+  pgAppearance.appendChild(makeGroup('appearance.theme', 'appearanceThemeSeg', APP_THEMES,
     () => appTheme, setAppTheme, 'theme'));
-  body.appendChild(makeGroup('โหมด / Mode',
+  pgAppearance.appendChild(makeGroup('appearance.mode',
     'appearanceModeSeg',
     [{ id: 'light', label: 'Light' }, { id: 'dark', label: 'Dark' }],
     () => appMode, setAppColorMode, 'mode'));
-  const apNote = document.createElement('p');
-  apNote.className = 'appearance-note';
-  apNote.textContent = 'ธีมและโหมดจำไว้หลังรีโหลด และสลับได้จากปุ่มมุมขวาบนด้วย.';
-  body.appendChild(apNote);
+  pgAppearance.appendChild(makeGroup('appearance.fontsize',
+    'settingsFontScaleSeg',
+    [
+      { id: 'small',  i18n: 'fontsize.small' },
+      { id: 'normal', i18n: 'fontsize.normal' },
+      { id: 'large',  i18n: 'fontsize.large' },
+    ],
+    () => appFontScale, setAppFontScale, 'fontscale'));
+  pgAppearance.appendChild(noteP('appearance.note'));
+  pgAppearance.appendChild(noteP('fontsize.note'));
 
-  // ===== 2 · Startup =====
-  body.appendChild(sectionTitle('Startup'));
+  pgAppearance.appendChild(sectionTitle('sec.startup'));
   const startGroup = document.createElement('div');
   startGroup.className = 'appearance-group';
   const startLab = document.createElement('div');
   startLab.className = 'appearance-group-label';
-  startLab.textContent = 'แท็บเริ่มต้นตอนเปิดเว็บ / Start tab';
+  startLab.dataset.i18n = 'startup.label';
+  startLab.textContent = t('startup.label');
   const startSel = document.createElement('select');
   startSel.className = 'settings-select';
   startSel.id = 'settingsStartTab';
@@ -5432,24 +5882,96 @@ function parseBackup(text) {
   });
   startGroup.appendChild(startLab);
   startGroup.appendChild(startSel);
-  const startNote = document.createElement('p');
-  startNote.className = 'appearance-note';
-  startNote.textContent = 'มีผลตอนเปิด/รีโหลดเว็บครั้งถัดไป. "แท็บล่าสุด" = พฤติกรรมเดิม.';
-  startGroup.appendChild(startNote);
-  body.appendChild(startGroup);
+  startGroup.appendChild(noteP('startup.note'));
+  pgAppearance.appendChild(startGroup);
 
-  // ===== 3 · Data overview (read-only) =====
-  body.appendChild(sectionTitle('Local data'));
+  // ===== หมวด 2 · ภาษา / สกุลเงิน =====
+  const pgLang = pages.language.page;
+  pgLang.appendChild(sectionTitle('sec.language'));
+  pgLang.appendChild(makeGroup('lang.label', 'settingsLangSeg',
+    [
+      { id: 'th', i18n: 'lang.th' },
+      { id: 'en', i18n: 'lang.en' },
+    ],
+    () => appLang, setAppLanguage, 'lang'));
+  pgLang.appendChild(noteP('lang.note'));
+
+  pgLang.appendChild(sectionTitle('sec.currency'));
+  const fiatGroup = document.createElement('div');
+  fiatGroup.className = 'appearance-group';
+  const fiatLab = document.createElement('div');
+  fiatLab.className = 'appearance-group-label';
+  fiatLab.dataset.i18n = 'fiat.label';
+  fiatLab.textContent = t('fiat.label');
+  const fiatSel = document.createElement('select');
+  fiatSel.className = 'settings-select';
+  fiatSel.id = 'settingsFiatSel';
+  FIAT_CURRENCIES.forEach(c => fiatSel.appendChild(
+    new Option(c.id + ' — ' + (appLang === 'en' ? c.en : c.th) + ' (' + c.symbol + ')', c.id)));
+  fiatSel.value = appFiat;
+  fiatSel.addEventListener('change', () => setAppFiatCurrency(fiatSel.value));
+  fiatGroup.appendChild(fiatLab);
+  fiatGroup.appendChild(fiatSel);
+  pgLang.appendChild(fiatGroup);
+
+  // แถวเรทของสกุลที่เลือก — ค่าเดียวกับช่องเรทในการ์ด Gear Planner (ซิงก์ให้ตรงกันเสมอ)
+  const rateRow = document.createElement('div');
+  rateRow.className = 'settings-rate-row';
+  const ratePrefix = document.createElement('span');
+  ratePrefix.dataset.i18n = 'fiat.rate.prefix';
+  ratePrefix.textContent = t('fiat.rate.prefix');
+  const rateInput = document.createElement('input');
+  rateInput.type = 'text';
+  rateInput.inputMode = 'decimal';
+  rateInput.className = 'num-input';
+  rateInput.id = 'settingsFiatRate';
+  rateInput.placeholder = '0';
+  const rateCode = document.createElement('span');
+  rateCode.id = 'settingsFiatRateCode';
+  rateCode.textContent = fiatCode();
+  rateRow.appendChild(ratePrefix);
+  rateRow.appendChild(rateInput);
+  rateRow.appendChild(rateCode);
+  pgLang.appendChild(rateRow);
+  const rateUnset = document.createElement('p');
+  rateUnset.className = 'settings-rate-unset';
+  rateUnset.dataset.i18n = 'fiat.unset';
+  rateUnset.textContent = t('fiat.unset');
+  pgLang.appendChild(rateUnset);
+  {
+    const rate0 = getDivineFiatRate();
+    rateInput.value = rate0 || '';
+    rateUnset.hidden = rate0 > 0;
+  }
+  rateInput.addEventListener('input', () => {
+    const v = parseFloat(rateInput.value);
+    divineRate = isNaN(v) || v < 0 ? 0 : v;
+    setDivineFiatRate(divineRate);
+    const shopInp = document.getElementById('divineRateInput');
+    if (shopInp) shopInp.value = divineRate || '';
+    if (typeof updateShopSummary === 'function') updateShopSummary();
+    rateUnset.hidden = divineRate > 0;
+  });
+  pgLang.appendChild(noteP('fiat.rate.note'));
+  pgLang.appendChild(noteP('fiat.note'));
+  pgLang.appendChild(noteP('fiat.divinenote'));
+
+  // ===== หมวด 3 · ข้อมูล / Backup =====
+  const pgData = pages.data.page;
+  pgData.appendChild(sectionTitle('sec.localdata'));
   const overview = document.createElement('div');
   overview.className = 'settings-overview';
-  body.appendChild(overview);
+  pgData.appendChild(overview);
   function refreshOverview() {
+    const rate = getDivineFiatRate();
     const rows = [
-      ['รายการ Shopping List', countLocalArray('poe2ShopList.rows.v1') + ' แถว'],
-      ['การ์ด Atlas Planner', countLocalArray('poe2FarmPlanner.cards.v1') + ' การ์ด'],
-      ['พรีเซ็ตเกียร์ที่มีข้อมูล', countGearPresetsWithData() + ' / 3'],
-      ['ธีม / โหมด', appTheme + ' · ' + appMode],
-      ['แท็บที่ใช้อยู่', TAB_TITLES[activeTab] || activeTab],
+      [t('ov.shoprows'), String(countLocalArray('poe2ShopList.rows.v1'))],
+      [t('ov.farmcards'), String(countLocalArray('poe2FarmPlanner.cards.v1'))],
+      [t('ov.gearpresets'), countGearPresetsWithData() + ' / 3'],
+      [t('ov.thememode'), appTheme + ' · ' + appMode],
+      [t('ov.language'), appLang === 'en' ? 'English' : 'ไทย'],
+      [t('ov.currency'), fiatCode() + ' · ' + (rate > 0 ? '1 Div = ' + rate + ' ' + fiatSymbol() : t('ov.norate'))],
+      [t('ov.activetab'), TAB_TITLES[activeTab] || activeTab],
     ];
     overview.innerHTML = '';
     rows.forEach(([k, v]) => {
@@ -5467,19 +5989,20 @@ function parseBackup(text) {
     });
   }
 
-  // ===== 4 · Data backup =====
-  body.appendChild(sectionTitle('Data backup'));
+  pgData.appendChild(sectionTitle('sec.backup'));
   const backupRow = document.createElement('div');
   backupRow.className = 'settings-actions';
   const exportBtn = document.createElement('button');
   exportBtn.className = 'ocr-btn';
   exportBtn.type = 'button';
-  exportBtn.textContent = '⭳ Export all data';
+  exportBtn.dataset.i18n = 'backup.export';
+  exportBtn.textContent = t('backup.export');
   exportBtn.addEventListener('click', exportAppData);
   const importBtn = document.createElement('button');
   importBtn.className = 'ocr-btn';
   importBtn.type = 'button';
-  importBtn.textContent = '⭱ Import backup';
+  importBtn.dataset.i18n = 'backup.import';
+  importBtn.textContent = t('backup.import');
   const importInput = document.createElement('input');
   importInput.type = 'file';
   importInput.accept = 'application/json,.json';
@@ -5493,74 +6016,144 @@ function parseBackup(text) {
     reader.onload = () => {
       let incoming;
       try { incoming = parseBackup(String(reader.result)); }
-      catch (err) { alert('นำเข้าไม่สำเร็จ: ' + err.message); return; }
+      catch (err) { alert(t('backup.import.fail') + err.message); return; }
       const n = Object.keys(incoming).length;
-      if (!confirm('นำเข้าไฟล์สำรองนี้จะเขียนทับข้อมูลปัจจุบัน ' + n + ' รายการคีย์ที่รู้จัก แล้วรีโหลดหน้า.\nแนะนำ Export เก็บของเดิมไว้ก่อนถ้าไม่แน่ใจ. ดำเนินการต่อ?')) return;
+      if (!confirm(tFmt('backup.import.confirm', { n: n }))) return;
       try {
         Object.keys(incoming).forEach(k => localStorage.setItem(k, incoming[k]));
-      } catch (err) { alert('เขียนข้อมูลไม่สำเร็จ: ' + err.message); return; }
+      } catch (err) { alert(t('backup.write.fail') + err.message); return; }
       location.reload();
     };
-    reader.onerror = () => alert('อ่านไฟล์ไม่สำเร็จ');
+    reader.onerror = () => alert(t('backup.read.fail'));
     reader.readAsText(file);
   });
   backupRow.appendChild(exportBtn);
   backupRow.appendChild(importBtn);
   backupRow.appendChild(importInput);
-  body.appendChild(backupRow);
-  const backupNote = document.createElement('p');
-  backupNote.className = 'appearance-note';
-  backupNote.textContent = 'สำรอง/กู้คืนเฉพาะข้อมูลในเบราว์เซอร์ (การตั้งค่า + รายการซื้อ + การ์ดฟาร์ม + พรีเซ็ตเกียร์). ไม่รวมข้อมูลตลาดที่ generate อัตโนมัติ.';
-  body.appendChild(backupNote);
+  pgData.appendChild(backupRow);
+  pgData.appendChild(noteP('backup.note'));
 
-  // ===== 5 · Danger zone =====
-  body.appendChild(sectionTitle('Danger zone'));
+  // ===== หมวด 4 · ติดต่อ (แจ้งบั๊ก/ข้อเสนอแนะ) =====
+  const pgContact = pages.contact.page;
+  pgContact.appendChild(sectionTitle('sec.contact'));
+  pgContact.appendChild(noteP('contact.desc'));
+  const CONTACT_EMAIL = 'nattakarn3340@gmail.com';
+  const contactRow = document.createElement('div');
+  contactRow.className = 'settings-contact-row';
+  const mailA = document.createElement('a');
+  mailA.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + encodeURIComponent('[Exile Assistant] Bug / Suggestion');
+  mailA.textContent = CONTACT_EMAIL;
+  const copyBtn = document.createElement('button');
+  copyBtn.className = 'ocr-btn';
+  copyBtn.type = 'button';
+  copyBtn.dataset.i18n = 'contact.copy';
+  copyBtn.textContent = t('contact.copy');
+  let copyResetTimer = null;
+  copyBtn.addEventListener('click', () => {
+    const done = (ok) => {
+      copyBtn.textContent = ok ? t('contact.copied') : t('contact.copyfail');
+      clearTimeout(copyResetTimer);
+      copyResetTimer = setTimeout(() => { copyBtn.textContent = t('contact.copy'); }, 1800);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(CONTACT_EMAIL).then(() => done(true), () => done(false));
+    } else {
+      // fallback เบราว์เซอร์เก่า / non-secure context
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = CONTACT_EMAIL;
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand('copy');
+        ta.remove();
+        done(ok);
+      } catch (err) { done(false); }
+    }
+  });
+  contactRow.appendChild(mailA);
+  contactRow.appendChild(copyBtn);
+  pgContact.appendChild(contactRow);
+
+  // ===== หมวด 5 · Donate (placeholder — ห้ามใส่ลิงก์จ่ายเงินจนกว่าจะเปิดให้บริการจริง) =====
+  const pgDonate = pages.donate.page;
+  pgDonate.appendChild(sectionTitle('sec.donate'));
+  const donateBox = document.createElement('div');
+  donateBox.className = 'settings-donate-box';
+  donateBox.dataset.i18n = 'donate.placeholder';
+  donateBox.textContent = t('donate.placeholder');
+  pgDonate.appendChild(donateBox);
+  pgDonate.appendChild(noteP('donate.note'));
+
+  // ===== หมวด 6 · Danger zone =====
+  const pgDanger = pages.danger.page;
+  pgDanger.appendChild(sectionTitle('sec.danger'));
   const danger = document.createElement('div');
   danger.className = 'settings-danger';
-  function dangerBtn(label, onClick) {
+  function dangerBtn(labelKey, onClick) {
     const b = document.createElement('button');
     b.className = 'ocr-btn danger';
     b.type = 'button';
-    b.textContent = label;
+    b.dataset.i18n = labelKey;
+    b.textContent = t(labelKey);
     b.addEventListener('click', onClick);
     return b;
   }
-  danger.appendChild(dangerBtn('รีเซ็ตการตั้งค่า UI (ธีม/โหมด/ย่อเมนู/แท็บเริ่มต้น/ขนาดตาราง)', () => {
-    if (!confirm('รีเซ็ตเฉพาะการตั้งค่า UI กลับเป็นค่าเริ่มต้น?\n(ไม่ลบรายการซื้อ/การ์ดฟาร์ม/พรีเซ็ตเกียร์) แล้วรีโหลดหน้า.')) return;
+  danger.appendChild(dangerBtn('danger.resetui', () => {
+    if (!confirm(t('danger.resetui.confirm'))) return;
     UI_PREF_KEYS.forEach(k => { try { localStorage.removeItem(k); } catch (e) { /* ignore */ } });
     location.reload();
   }));
-  danger.appendChild(dangerBtn('ล้างรายการ Shopping List ทั้งหมด', () => {
+  danger.appendChild(dangerBtn('danger.clearshop', () => {
     const n = countLocalArray('poe2ShopList.rows.v1');
-    if (!confirm('ลบรายการ Shopping List ทั้งหมด (' + n + ' แถว)?\nย้อนกลับไม่ได้ — แนะนำ Export ก่อน. แล้วรีโหลดหน้า.')) return;
+    if (!confirm(tFmt('danger.clearshop.confirm', { n: n }))) return;
     try { localStorage.removeItem('poe2ShopList.rows.v1'); } catch (e) { /* ignore */ }
     location.reload();
   }));
-  danger.appendChild(dangerBtn('ล้างการ์ด Atlas Planner ทั้งหมด', () => {
+  danger.appendChild(dangerBtn('danger.clearfarm', () => {
     const n = countLocalArray('poe2FarmPlanner.cards.v1');
-    if (!confirm('ลบการ์ด Atlas Planner ทั้งหมด (' + n + ' การ์ด)?\nย้อนกลับไม่ได้ — แนะนำ Export ก่อน. แล้วรีโหลดหน้า.')) return;
+    if (!confirm(tFmt('danger.clearfarm.confirm', { n: n }))) return;
     try { localStorage.removeItem('poe2FarmPlanner.cards.v1'); } catch (e) { /* ignore */ }
     location.reload();
   }));
-  danger.appendChild(dangerBtn('ล้างพรีเซ็ตเกียร์ (Gear Checker)', () => {
+  danger.appendChild(dangerBtn('danger.cleargear', () => {
     const n = countGearPresetsWithData();
-    if (!confirm('ล้างพรีเซ็ตเกียร์ทั้งหมด (มีข้อมูล ' + n + ' / 3 พรีเซ็ต)?\nย้อนกลับไม่ได้ — แนะนำ Export ก่อน. แล้วรีโหลดหน้า.')) return;
+    if (!confirm(tFmt('danger.cleargear.confirm', { n: n }))) return;
     try {
       localStorage.removeItem('poe2ResForge.presets.v2');
       localStorage.removeItem('poe2ResForge.activePreset.v2');
     } catch (e) { /* ignore */ }
     location.reload();
   }));
-  body.appendChild(danger);
+  pgDanger.appendChild(danger);
 
   panel.appendChild(body);
   overlay.appendChild(panel);
   document.body.appendChild(overlay);
-  btn.addEventListener('click', () => {
-    overlay.hidden = false;
+
+  // ---- refresh ทุกค่าที่เปลี่ยนได้ — เรียกตอนเปิด modal และเมื่อ ภาษา/สกุลเงิน/ขนาดตัวอักษร เปลี่ยน ----
+  function refreshDynamic() {
+    applyI18nTexts(overlay);
+    Array.from(fiatSel.options).forEach(o => {
+      const c = FIAT_CURRENCIES.find(x => x.id === o.value);
+      if (c) o.textContent = c.id + ' — ' + (appLang === 'en' ? c.en : c.th) + ' (' + c.symbol + ')';
+    });
+    fiatSel.value = appFiat;
+    const rate = getDivineFiatRate();
+    if (document.activeElement !== rateInput) rateInput.value = rate || '';
+    rateCode.textContent = fiatCode();
+    rateUnset.hidden = rate > 0;
+    overlay.querySelectorAll('#settingsLangSeg button').forEach(b => b.classList.toggle('active', b.dataset.lang === appLang));
+    overlay.querySelectorAll('#settingsFontScaleSeg button').forEach(b => b.classList.toggle('active', b.dataset.fontscale === appFontScale));
     syncAppearanceControls();
     startSel.value = loadStartTabPreference();
     refreshOverview();
+  }
+  document.addEventListener('poeassist:prefschange', refreshDynamic);
+
+  showCat('appearance');
+  btn.addEventListener('click', () => {
+    overlay.hidden = false;
+    refreshDynamic();
   });
   close.addEventListener('click', () => { overlay.hidden = true; });
   overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.hidden = true; });
@@ -5749,10 +6342,9 @@ let shopRows = (function loadShopRows() {
   return [];
 })();
 
-let divineRate = (function loadRate() {
-  const v = parseFloat(localStorage.getItem(SHOP_RATE_KEY));
-  return isNaN(v) || v < 0 ? 0 : v;
-})();
+// เรท 1 Div → fiat ของ "สกุลเงินที่เลือกใน Settings" (patch 0.27) — 0 = ยังไม่ตั้งเรทของสกุลนั้น
+// THB อ่าน fallback จากคีย์เดิม SHOP_RATE_KEY ให้อัตโนมัติ (ใน getDivineFiatRate) — ข้อมูลเก่าไม่หาย
+let divineRate = getDivineFiatRate();
 
 let shopFilterText = '';
 let shopQuickFilter = 'all';   // all | need | bought | noprice | deal (in-memory เท่านั้น)
@@ -5763,7 +6355,8 @@ function persistShopRows() {
   try { localStorage.setItem(SHOP_ROWS_KEY, JSON.stringify(shopRows)); } catch (e) { /* storage unavailable */ }
 }
 function persistDivineRate() {
-  try { localStorage.setItem(SHOP_RATE_KEY, String(divineRate)); } catch (e) { /* storage unavailable */ }
+  // เก็บลง poeAssist.divineFiatRates.v1 แยกต่อสกุลเงิน; ถ้าสกุลคือ THB จะเขียนคู่ลง SHOP_RATE_KEY เดิมด้วย
+  setDivineFiatRate(divineRate);
 }
 
 function fmtNum(n) {
@@ -5859,8 +6452,9 @@ function updateShopSummary() {
   });
 
   const set = (id, div) => { document.getElementById(id).textContent = fmtNum(div) + ' Div'; };
+  // ยอด fiat ตามสกุลเงินที่เลือกใน Settings — ไม่มีเรท = "—" (ห้ามแสดงเป็นเงิน 0 / ห้ามเดาเรท)
   const setThb = (id, div) => {
-    document.getElementById(id).textContent = divineRate > 0 ? '= ' + fmtNum(div * divineRate) + ' ฿' : '— ฿';
+    document.getElementById(id).textContent = divineRate > 0 ? '= ' + fmtNum(div * divineRate) + ' ' + fiatSymbol() : '— ' + fiatSymbol();
   };
 
   // helper เทียบเป็น Mirror ใต้ยอด Div ที่วางแผน — ไม่มีราคา Mirror = ซ่อน, ไม่แตะการคำนวณเดิม
@@ -5885,7 +6479,7 @@ function updateShopSummary() {
     shopRows.length === 0 ? 'ยังไม่มีรายการ — กด "+ Add Row" เพื่อเริ่ม' :
     (divineRate > 0
       ? 'ซื้อแล้ว ' + boughtCount + ' จาก ' + shopRows.length + ' รายการ · เหลืออีก ' + (shopRows.length - boughtCount)
-      : 'ใส่เรท 1 Div = ? บาท เพื่อให้ทุกยอดแสดงเป็นเงินบาทด้วย');
+      : 'ใส่เรท 1 Div = ? ' + fiatCode() + ' เพื่อให้ทุกยอดแสดงเป็นเงิน ' + fiatCode() + ' ด้วย');
 
   const warn = document.getElementById('shopMissWarn');
   if (missingCount > 0) {
@@ -5938,7 +6532,7 @@ function renderShopBuyNext() {
   nm.textContent = rowDisplayName(pick);
   const estEl = document.createElement('span');
   estEl.className = 'shop-buynext-est';
-  estEl.textContent = ' ~' + fmtNum(est) + ' Div' + (divineRate > 0 ? ' (= ' + fmtNum(est * divineRate) + ' ฿)' : '');
+  estEl.textContent = ' ~' + fmtNum(est) + ' Div' + (divineRate > 0 ? ' (= ' + fmtNum(est * divineRate) + ' ' + fiatSymbol() + ')' : '');
   line.appendChild(nm);
   line.appendChild(estEl);
   const sub = document.createElement('div');
@@ -6531,14 +7125,16 @@ const shopNumpadEl = (function buildShopNumpad() {
 function positionShopNumpad() {
   if (!shopNumpadTarget) return;
   if (window.innerWidth <= 640) return; // จอแคบ: CSS ตรึงไว้ล่างจอแทน (!important ชนะ inline style)
+  // คิดตำแหน่งใน viewport px แล้วหาร uiZoom() ตอนเซ็ต style (font-scale patch 0.27 — zoom บน <body>)
+  const z = uiZoom();
   const r = shopNumpadTarget.getBoundingClientRect();
-  const w = shopNumpadEl.offsetWidth, h = shopNumpadEl.offsetHeight;
+  const w = shopNumpadEl.offsetWidth * z, h = shopNumpadEl.offsetHeight * z;
   const left = Math.min(Math.max(8, r.left), window.innerWidth - w - 8);
   let top = r.bottom + 6; // วางใต้ช่องก่อน — ไม่บังช่องที่กำลังพิมพ์
   if (top + h > window.innerHeight - 8) top = r.top - h - 6; // ที่ไม่พอ → ย้ายไปด้านบน
   if (top < 8) top = 8;
-  shopNumpadEl.style.left = left + 'px';
-  shopNumpadEl.style.top = top + 'px';
+  shopNumpadEl.style.left = (left / z) + 'px';
+  shopNumpadEl.style.top = (top / z) + 'px';
 }
 
 function openShopNumpad(input) {
@@ -6715,6 +7311,18 @@ document.getElementById('shopSizeReset').addEventListener('click', resetShopSizi
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.27',
+    date: '2026-07-13',
+    notes: [
+      'Settings โฉมใหม่ — แบ่งเป็นหมวดพร้อมเมนูฝั่งซ้าย (Appearance / ภาษา·สกุลเงิน / ข้อมูล·Backup / ติดต่อ / Donate / Danger Zone) จอแคบเมนูกลายเป็นแถวแนวนอน — การตั้งค่าเดิมทั้งหมดยังอยู่ครบ',
+      'เพิ่มตั้งค่าภาษา ไทย/English (ค่าเริ่มต้นไทย จำไว้หลังรีโหลด) — ตอนนี้แปลครอบคลุมหน้า Settings + Contact/Donate ก่อน เนื้อหาแท็บอื่นยังเป็นไทย จะทยอยแปลเพิ่มภายหลัง',
+      'เพิ่มตั้งค่าสกุลเงินแสดงผล THB / USD / GBP / EUR / JPY — มีผลกับยอดเงินทุกจุด (การ์ดเรท + งบ Min/Max/ซื้อแล้ว/ต้องใช้อีก + แถบซื้อต่อไปใน Gear Planner, หน่วย fiat ใน Market Radar); เรทกรอกเองแยกจำต่อสกุล — สกุลที่ยังไม่ตั้งเรทจะแสดง "—" ไม่มั่วเป็น 0 และเรท THB เดิมยังอยู่ครบ (แท็บ Divine Market ยังเป็นข้อมูลตัวอย่าง THB ตามเดิม — ไม่มีเรทจริงให้แปลงจึงไม่เดาให้)',
+      'เพิ่มตั้งค่าขนาดตัวอักษร เล็ก (92%) / ปกติ / ใหญ่ (108%) — ปรับทั้งเว็บ จำไว้หลังรีโหลด (numpad/tooltip จัดตำแหน่งถูกต้องทุกขนาด)',
+      'เพิ่มส่วนติดต่อ (อีเมลแจ้งบั๊ก/ข้อเสนอแนะ พร้อมปุ่มคัดลอก) และส่วน Donate ซึ่งยังไม่เปิดให้บริการ (placeholder — ยังไม่มีช่องทางจ่ายเงิน)',
+      'Backup (Export/Import) ครอบคลุมคีย์ตั้งค่าใหม่ทั้งหมด และปุ่มรีเซ็ตการตั้งค่า UI ล้าง ภาษา/สกุลเงิน/เรทที่กรอก/ขนาดตัวอักษร ด้วย (ข้อมูลรายการซื้อ/การ์ดฟาร์ม/พรีเซ็ตเกียร์/เรท THB คีย์เดิม ไม่ถูกแตะ)',
+    ],
+  },
   {
     version: '0.26',
     date: '2026-07-13',
@@ -8836,8 +9444,10 @@ loadRadar();
 
   function syncRateUi() {
     const unit = unitSelect.value;
+    // 'THB' = id ภายในของหน่วย fiat — label ที่โชว์เปลี่ยนตามสกุลเงินที่เลือกใน Settings (patch 0.27)
+    const unitLabel = unit === 'THB' ? fiatCode() : unit;
     rateWrap.hidden = unit === 'Divine';
-    rateWrap.childNodes[0].textContent = '1 Divine = ? ' + (unit === 'Divine' ? '' : unit) + ' ';
+    rateWrap.childNodes[0].textContent = '1 Divine = ? ' + (unit === 'Divine' ? '' : unitLabel) + ' ';
     if (unit === 'Divine') return;
     const saved = parseFloat(radarRates[unit]);
     if (!isNaN(saved) && saved > 0) {
@@ -9730,8 +10340,10 @@ function renderDivineChart(pts, forecast) {
       const rect = wrap.getBoundingClientRect();
       const cx = evt.touches ? evt.touches[0].clientX : evt.clientX;
       const cy = evt.touches ? evt.touches[0].clientY : evt.clientY;
-      tip.style.left = Math.max(0, Math.min(cx - rect.left + 12, rect.width - 160)) + 'px';
-      tip.style.top = Math.max(0, cy - rect.top - 40) + 'px';
+      // rect/clientX เป็น viewport px แต่ style.left เป็น px ก่อน zoom → หาร uiZoom() (font-scale patch 0.27)
+      const z = uiZoom();
+      tip.style.left = Math.max(0, Math.min((cx - rect.left) / z + 12, rect.width / z - 160)) + 'px';
+      tip.style.top = Math.max(0, (cy - rect.top) / z - 40) + 'px';
       tip.hidden = false;
     };
     c.addEventListener('mouseenter', showTip);
