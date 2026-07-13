@@ -7,6 +7,9 @@ Short, actionable list. Phases live in `ROADMAP.md`; history in `CHANGELOG.md`.
 - (empty — nothing queued)
 
 ## Deferred
+- [ ] Keyword Codex: English descriptions second pass (currently Thai-only by design — `descEn` would be an additive field in `data/keyword-codex.json`; UI would need a language toggle, likely tied to `poeAssist.language.v1`).
+- [ ] Keyword Codex: ~47 EN-only entries (mostly `*_Rune` league keywords not yet localized on poe2db TH) show "needs review" — re-run `node scripts/update-keyword-codex.mjs` after big poe2db TH updates to pick up new translations.
+- [ ] Keyword Codex: category rules (`KWC_CATEGORY_RULES` in the script) are deliberately coarse — 458 keywords match no category (visible only under "All"). Refine rules if users ask, but keep them transparent regex-on-English-name only.
 - [ ] Content Codex: more parser coverage — `Irradiated` + `Map juicing` are `Stub` ("needs parser support": non-standard page layouts), and several mechanic pages have prose-only Rewards sections (captured in Notes, no structured drop rows). Extend the parse helpers in `scripts/update-content-codex.mjs` when worth it.
 - [ ] Content Codex: image license audit — currently **no wiki images are embedded** (game assets © GGG, file pages carry no explicit license → placeholder + wiki link). If embedding is ever wanted, audit per-file licensing on the wiki first and store proof in the JSON (`image.licenseNote`), never hotlink blindly.
 - [ ] Content Codex: optional link into Farm Planner economics — e.g. "plan a farm around this content" button that pre-fills a Farm Planner card from a codex entry. Product decision needed; keep the two tabs decoupled until then.
@@ -29,6 +32,8 @@ Short, actionable list. Phases live in `ROADMAP.md`; history in `CHANGELOG.md`.
 - [ ] Pre-Divine-Market line numbers in `PROJECT_INDEX.md`'s feature map (Exile Hub, Market Radar, Farm Planner, Gear Checker, Shopping List, Patch Notes, Cross-cutting sections) have drifted (`index.html` is now ~5600 lines). A drift warning is in place — always `rg` the anchor term first. Refresh the numbers opportunistically on the next `index.html` task.
 
 ## Done
+
+- [x] Keyword Codex tab (patch 0.28) — new Tools-group tab: poe2db TH/EN keyword encyclopedia (766 keywords, 717 paired by URL slug — names never translated by us, unpaired = "needs review" badge; Thai-only descriptions this pass). New generator `scripts/update-keyword-codex.mjs` (2 requests/run, manual only) → `data/keyword-codex.json`. UI: TH/EN/description search with safe highlight, 10 live-count filter chips (inferred category facets), master/detail, favorites (new additive key `poe2KeywordCodex.favorites.v1`, backup-covered), clickable related-keyword chips, 2–3 keyword Quick Compare (in-memory), copy buttons, poe2db TH/EN source links. 2026-07-14.
 
 - [x] Settings upgrade (patch 0.27) — two-pane category layout (Appearance / ภาษา·สกุลเงิน / ข้อมูล·Backup / ติดต่อ / Donate / Danger Zone; horizontal tabs ≤640px); TH/EN language setting (`poeAssist.language.v1`, `I18N`/`t()` helper — Settings+Contact/Donate translated, tabs still Thai); display currency THB/USD/GBP/EUR/JPY (`poeAssist.fiatCurrency.v1` + per-currency user rates in `poeAssist.divineFiatRates.v1`; legacy THB rate read/written safely, unset rate shows "—"; Gear Planner + Market Radar fiat unit follow it, Divine Market stays THB by design); font size small/normal/large (`poeAssist.fontScale.v1`, body zoom + `uiZoom()` positioning fixes); Contact (mailto + copy) and Donate placeholder; new keys in backup + UI-prefs reset. 2026-07-13.
 

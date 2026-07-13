@@ -213,6 +213,9 @@
   html[data-theme="trust-blue-pay"] .codex-section,
   html[data-theme="trust-blue-pay"] .codex-empty,
   html[data-theme="trust-blue-pay"] .codex-img-box,
+  html[data-theme="trust-blue-pay"] .kwc-compare-bar,
+  html[data-theme="trust-blue-pay"] .kwc-compare-card,
+  html[data-theme="trust-blue-pay"] .kli-cmp,
   html[data-theme="trust-blue-pay"] .patch-panel,
   html[data-theme="trust-blue-pay"] .patch-close,
   html[data-theme="trust-blue-pay"] .mode-toggle,
@@ -237,6 +240,9 @@
   html[data-theme="trust-blue-pay"] .codex-rate-chip,
   html[data-theme="trust-blue-pay"] .codex-link-chip,
   html[data-theme="trust-blue-pay"] .codex-mob-chip,
+  html[data-theme="trust-blue-pay"] .kwc-review-badge,
+  html[data-theme="trust-blue-pay"] .kwc-cat-chip,
+  html[data-theme="trust-blue-pay"] .kwc-cmp-chip,
   html[data-theme="trust-blue-pay"] .sr-status,
   html[data-theme="trust-blue-pay"] .farm-link-chip {
     border-width: 1px;
@@ -262,6 +268,7 @@
   html[data-theme="trust-blue-pay"] .divine-metric-card,
   html[data-theme="trust-blue-pay"] .codex-list-item,
   html[data-theme="trust-blue-pay"] .codex-detail-panel,
+  html[data-theme="trust-blue-pay"] .kwc-compare-card,
   html[data-theme="trust-blue-pay"] .shop-summary .summary-group,
   html[data-theme="trust-blue-pay"] #shopGearPanel {
     box-shadow: 0 1px 4px rgba(0, 48, 135, 0.06);
@@ -282,6 +289,7 @@
   html[data-theme="trust-blue-pay"][data-mode="dark"] .divine-metric-card,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .codex-list-item,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .codex-detail-panel,
+  html[data-theme="trust-blue-pay"][data-mode="dark"] .kwc-compare-card,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .shop-summary .summary-group,
   html[data-theme="trust-blue-pay"][data-mode="dark"] #shopGearPanel {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
@@ -3471,6 +3479,129 @@
     border-width: 1px;
     border-radius: 10px;
   }
+  /* ==================== Keyword Codex (patch 0.28) ====================
+     สารานุกรม keyword TH/EN จาก poe2db — โครง master/detail ใช้คลาส codex-* ร่วม
+     (codex-head/toolbar/filters/layout/detail-panel/section/empty ถูก reuse ตรงๆ)
+     ที่นี่มีเฉพาะส่วนที่เพิ่มใหม่: ลิสต์แบบ scroll, การ์ดคีย์เวิร์ด, highlight, compare */
+  .kwc-count {
+    align-self: center;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .kwc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 76vh;
+    overflow-y: auto;
+    padding-right: 2px; /* กัน scrollbar ทับขอบการ์ด */
+  }
+  .kli-name-th { font-family: var(--font-head); font-size: 13.5px; flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .kli-name-en {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    overflow-wrap: anywhere;
+  }
+  .kli-preview {
+    margin-top: 3px;
+    font-size: 11.5px;
+    color: var(--text-dim);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .kwc-hl { background: var(--gold); color: var(--panel); padding: 0 1px; }
+  .kwc-review-badge {
+    display: inline-block;
+    border: 2px solid var(--lightning);
+    color: var(--lightning);
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1px 6px;
+    white-space: nowrap;
+  }
+  .kwc-cat-chip {
+    display: inline-block;
+    border: 2px solid var(--border-soft);
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1px 6px;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .kwc-desc { margin: 10px 0 0; font-size: 13.5px; line-height: 1.65; white-space: pre-line; overflow-wrap: anywhere; }
+  .kwc-detail-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+  .kwc-detail-actions .ocr-btn { font-size: 10.5px; padding: 5px 10px; }
+  /* ปุ่มเล็กบนการ์ดลิสต์: เพิ่มเข้า compare */
+  .kli-cmp {
+    background: none;
+    border: 2px solid var(--border-soft);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1.5;
+  }
+  .kli-cmp:hover { border-color: var(--border); color: var(--text); }
+  .kli-cmp.on { border-color: var(--gold); color: var(--gold); }
+  /* Compare tray + ตารางเทียบ */
+  /* display:flex/grid ชนะกฎ [hidden] ของเบราว์เซอร์ — ต้อง override กลับเอง */
+  .kwc-compare-bar[hidden], .kwc-compare-grid[hidden] { display: none; }
+  .kwc-compare-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    border: 3px solid var(--border);
+    background: var(--panel);
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+  }
+  .kwc-cmp-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    padding: 2px 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .kwc-cmp-chip button {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0;
+    line-height: 1;
+  }
+  .kwc-compare-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .kwc-compare-card { border: 3px solid var(--border); background: var(--panel); padding: 10px 12px; min-width: 0; }
+  .kwc-compare-card .kwc-desc { font-size: 12px; max-height: 300px; overflow-y: auto; }
+
+  @media (max-width: 900px) {
+    /* จอแคบ: ค้นหา/ฟิลเตอร์ → ลิสต์ (เตี้ยลง) → detail — .codex-layout พับเป็นคอลัมน์เดียวอยู่แล้ว */
+    .kwc-list { max-height: 44vh; }
+  }
 </style>
 </head>
 <body>
@@ -3502,6 +3633,7 @@
         <div class="nav-group-label">Tools</div>
         <button class="nav-item" type="button" id="tabBtnForge" role="tab"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 2h12v6l-6 6-6-6z"/></svg></span>Resistance Checker</button>
         <button class="nav-item" type="button" id="tabBtnCodex" role="tab"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8 3.2C6.9 2.2 5 1.5 1 1.5v11.9c4 0 5.9.7 7 1.6 1.1-.9 3-1.6 7-1.6V1.5c-4 0-5.9.7-7 1.7zM7 12.9c-1.1-.6-2.7-1-4.5-1.2V3.1c2 .2 3.5.7 4.5 1.5zm2 0c1.1-.6 2.7-1 4.5-1.2V3.1c-2 .2-3.5.7-4.5 1.5z"/></svg></span>Content Codex</button>
+        <button class="nav-item" type="button" id="tabBtnKeyword" role="tab"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 2.5A1.5 1.5 0 0 1 3.5 1h9A1.5 1.5 0 0 1 14 2.5v11a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5v-11zm2 1v1.6h8V3.5H4zm0 3.6v1.4h5V7.1H4zm0 3.4v1.4h6.5v-1.4H4z"/></svg></span>Keyword Codex</button>
       </div>
     </nav>
 
@@ -3956,6 +4088,32 @@
       <div class="codex-detail" id="codexDetail"></div>
     </div>
   </div><!-- /pageCodex -->
+
+  <div id="pageKeyword" hidden>
+    <!-- ===== Keyword Codex — สารานุกรม keyword ของ PoE2 (ไทย/อังกฤษ) =====
+         ข้อมูลทั้งหมดอ่านจาก data/keyword-codex.json (generate ด้วย scripts/update-keyword-codex.mjs จาก poe2db.tw)
+         กติกา: ชื่อไทยมาจากหน้า TH ของ poe2db / ชื่ออังกฤษมาจากหน้า US — "ไม่แปลชื่อเอง"
+         คำอธิบายรอบแรกเป็นไทยอย่างเดียว · entry ที่จับคู่ TH/EN ไม่ครบติดป้าย needs review (ไม่เดา) -->
+    <div class="codex-head">
+      <div class="codex-title-row">
+        <h2 class="codex-title">Keyword Codex</h2>
+        <span class="codex-dev-badge">poe2db Data</span>
+        <span class="radar-badge missing" id="kwcBadge">Loading…</span>
+      </div>
+      <div class="codex-source-line" id="kwcSourceLine"></div>
+    </div>
+    <div class="codex-toolbar">
+      <input type="text" class="shop-filter" id="kwcSearch" placeholder="ค้นหา: ชื่อ keyword ไทย / อังกฤษ / คำอธิบายไทย… (เช่น bleed, เลือดไหล)">
+      <span class="kwc-count" id="kwcCount"></span>
+    </div>
+    <div class="codex-filters" id="kwcFilters"></div>
+    <div class="kwc-compare-bar" id="kwcCompareBar" hidden></div>
+    <div class="kwc-compare-grid" id="kwcCompareGrid" hidden></div>
+    <div class="codex-layout kwc-layout">
+      <div class="kwc-list" id="kwcList"></div>
+      <div class="codex-detail" id="kwcDetail"></div>
+    </div>
+  </div><!-- /pageKeyword -->
     </main>
   </div>
 </div>
@@ -5217,10 +5375,10 @@ addCorners(document.querySelector('.totals-panel'));
 
 const TAB_KEY = 'poeAssist.activeTab.v1';
 // หมายเหตุ: internal id ยังเป็น farm/shop/forge เหมือนเดิม (ผูกกับ storage/startup tab) — เปลี่ยนแค่ชื่อที่แสดง
-const TAB_IDS = { home: 'pageHome', radar: 'pageRadar', farm: 'pageFarm', forge: 'pageForge', shop: 'pageShop', divine: 'pageDivine', codex: 'pageCodex' };
-const TAB_BTNS = { home: 'tabBtnHome', radar: 'tabBtnRadar', farm: 'tabBtnFarm', forge: 'tabBtnForge', shop: 'tabBtnShop', divine: 'tabBtnDivine', codex: 'tabBtnCodex' };
-const TAB_TITLES = { home: 'Exile Hub', radar: 'Market Radar', farm: 'Farm Planner', forge: 'Resistance Checker', shop: 'Gear Planner', divine: 'Divine Market', codex: 'Content Codex' };
-const TAB_GROUPS = { home: 'Main', radar: 'Main', divine: 'Main', farm: 'Planning', shop: 'Planning', forge: 'Tools', codex: 'Tools' };
+const TAB_IDS = { home: 'pageHome', radar: 'pageRadar', farm: 'pageFarm', forge: 'pageForge', shop: 'pageShop', divine: 'pageDivine', codex: 'pageCodex', keyword: 'pageKeyword' };
+const TAB_BTNS = { home: 'tabBtnHome', radar: 'tabBtnRadar', farm: 'tabBtnFarm', forge: 'tabBtnForge', shop: 'tabBtnShop', divine: 'tabBtnDivine', codex: 'tabBtnCodex', keyword: 'tabBtnKeyword' };
+const TAB_TITLES = { home: 'Exile Hub', radar: 'Market Radar', farm: 'Farm Planner', forge: 'Resistance Checker', shop: 'Gear Planner', divine: 'Divine Market', codex: 'Content Codex', keyword: 'Keyword Codex' };
+const TAB_GROUPS = { home: 'Main', radar: 'Main', divine: 'Main', farm: 'Planning', shop: 'Planning', forge: 'Tools', codex: 'Tools', keyword: 'Tools' };
 
 // แท็บเริ่มต้นตอนเปิดเว็บ (additive key) — 'last' = ใช้แท็บล่าสุดเหมือนเดิม, หรือ id แท็บที่ตายตัว
 const START_TAB_KEY = 'poeAssist.startTab.v1';
@@ -5659,6 +5817,7 @@ const APP_DATA_KEYS = [
   'poe2FarmPlanner.view.v1',
   'poe2FarmLabV2.runs.v1', // แท็บ Atlas V.2 ถูกถอดออกแล้ว — คงคีย์ไว้ให้ backup เก็บข้อมูลเดิมของผู้ใช้ไว้ได้
   'poe2ContentCodex.favorites.v1',
+  'poe2KeywordCodex.favorites.v1',
   'poeAssist.radarFilter.v1',
   'poeAssist.radarRates.v1',
   'poeAssist.stashSale.manual.v1',
@@ -7311,6 +7470,16 @@ document.getElementById('shopSizeReset').addEventListener('click', resetShopSizi
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.28',
+    date: '2026-07-14',
+    notes: [
+      'เพิ่มแท็บใหม่ Keyword Codex (กลุ่ม Tools) — สารานุกรม keyword ของ PoE2 กว่า 700 คำจาก poe2db.tw: ชื่อไทยจากหน้า TH / ชื่ออังกฤษจากหน้า US จับคู่ด้วย slug ของต้นทาง ไม่มีการแปลเอง (คู่ที่จับไม่ครบติดป้าย needs review)',
+      'ค้นหาได้ทั้งชื่อไทย / ชื่ออังกฤษ / คำอธิบายไทย พร้อม highlight คำที่ตรง + ฟิลเตอร์หมวด (Damage / Ailment / Defense / Resource / Attribute / Combat / Minion / Map·Content) แบบนับจำนวนสด — หมวดอนุมานจากชื่ออังกฤษแบบโปร่งใส ไม่แตะข้อความต้นทาง',
+      'Keyword Codex: ติดดาว Favorites (จำไว้หลังรีโหลด + รวมใน Backup), Related Keywords คลิกกระโดดได้, เปรียบเทียบ keyword ได้ 2–3 ตัวเคียงกัน, ปุ่ม Copy ชื่อ/คำอธิบาย และลิงก์ต้นทาง poe2db TH/EN ทุกคำ',
+      'ข้อมูล Keyword Codex refresh แบบ manual ด้วย node scripts/update-keyword-codex.mjs (ไม่ดึงเว็บนอกจากเบราว์เซอร์ — เป็น static JSON เหมือน Content Codex)',
+    ],
+  },
   {
     version: '0.27',
     date: '2026-07-13',
@@ -10754,6 +10923,369 @@ async function loadCodex() {
   const refresh = document.getElementById('codexRefreshBtn');
   if (refresh) refresh.addEventListener('click', loadCodex);
   loadCodex();
+})();
+
+/* ==================== Keyword Codex ====================
+   สารานุกรม keyword TH/EN — อ่านจาก data/keyword-codex.json อย่างเดียว
+   (generate ด้วย scripts/update-keyword-codex.mjs จาก poe2db.tw — เบราว์เซอร์ไม่เรียก poe2db ตรงๆ)
+   กติกา: ชื่อไทย = หน้า TH ของ poe2db / ชื่ออังกฤษ = หน้า US — ไม่แปลชื่อเองเด็ดขาด
+   entry ที่จับคู่สองภาษาไม่ครบ → ป้าย "needs review" (ไม่เดา) · หมวดหมู่เป็น facet ที่ generator
+   อนุมานจากชื่อ/slug อังกฤษแบบโปร่งใส (ดู KWC_CATEGORY_RULES ในสคริปต์) ไม่ใช่ข้อมูลต้นทาง */
+
+const KWC_URL = 'data/keyword-codex.json';
+const KWC_FAV_KEY = 'poe2KeywordCodex.favorites.v1'; // additive key — array ของ keyword id ที่ติดดาว
+const KWC_LIST_CAP = 200;   // ลิสต์ยาว 700+ รายการ — วาดสูงสุดเท่านี้ต่อรอบ (ค้นหาเพื่อกรองต่อ)
+const KWC_COMPARE_MAX = 3;
+
+let kwcData = null;
+let kwcLoadState = 'loading'; // loading | ok | missing | error
+let kwcSelectedId = null;     // in-memory เท่านั้น
+let kwcFilter = 'all';
+let kwcSearchText = '';
+let kwcCompare = [];          // keyword id ที่เลือกเปรียบเทียบ (in-memory — ตั้งใจไม่ persist)
+let kwcFavs = new Set();
+try {
+  const favArr = JSON.parse(localStorage.getItem(KWC_FAV_KEY));
+  if (Array.isArray(favArr)) kwcFavs = new Set(favArr.filter(x => typeof x === 'string'));
+} catch (e) { /* ข้อมูลเสีย/ไม่มี → เริ่มว่าง */ }
+
+function persistKwcFavs() {
+  try { localStorage.setItem(KWC_FAV_KEY, JSON.stringify([...kwcFavs])); } catch (e) { /* storage unavailable */ }
+}
+
+// ข้อความมาจากเว็บภายนอก — escape ทุก string ก่อนใส่ HTML
+function kwcEsc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+// ลิงก์ต้นทางสร้างจาก slug (id) เท่านั้น — ยอมเฉพาะรูปแบบ slug ที่ generator ปล่อยผ่าน
+function kwcSrcUrl(id, lang) {
+  return /^[A-Za-z0-9_'%.-]+$/.test(String(id || '')) ? 'https://poe2db.tw/' + (lang === 'en' ? 'us' : 'th') + '/' + id : '';
+}
+// highlight คำค้นแบบปลอดภัย: escape ข้อความก่อน แล้วค่อยครอบ <mark> บนสำเนา escape แล้ว
+function kwcHl(text, q) {
+  const esc = kwcEsc(text);
+  if (!q) return esc;
+  const pat = q.trim().split(/\s+/).map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).filter(Boolean).join('|');
+  if (!pat) return esc;
+  try { return esc.replace(new RegExp('(' + pat + ')', 'gi'), '<mark class="kwc-hl">$1</mark>'); }
+  catch (e) { return esc; }
+}
+function kwcFmtDate(iso) {
+  const d = iso ? new Date(iso) : null;
+  return d && !isNaN(d) ? d.toISOString().slice(0, 10) : '—';
+}
+function kwcById(id) {
+  const arr = (kwcData && Array.isArray(kwcData.keywords)) ? kwcData.keywords : [];
+  return arr.find(k => k.id === id) || null;
+}
+
+const KWC_FILTERS = [
+  { id: 'all', label: 'ทั้งหมด' },
+  { id: 'damage', label: 'Damage' },
+  { id: 'ailment', label: 'Ailment' },
+  { id: 'defense', label: 'Defense' },
+  { id: 'resource', label: 'Resource' },
+  { id: 'attribute', label: 'Attribute' },
+  { id: 'combat', label: 'Combat' },
+  { id: 'minion', label: 'Minion' },
+  { id: 'map', label: 'Map/Content' },
+  { id: 'fav', label: '★ Favorites' },
+];
+
+function kwcMatchesFilter(kw, filterId) {
+  if (filterId === 'all') return true;
+  if (filterId === 'fav') return kwcFavs.has(kw.id);
+  return (kw.cats || []).includes(filterId);
+}
+// ค้นหาจาก: ชื่อไทย + ชื่ออังกฤษ + คำอธิบายไทย (ตาม spec — ไม่ค้น field อื่น)
+function kwcMatchesSearch(kw, q) {
+  if (!q) return true;
+  const hay = [kw.nameTh, kw.nameEn, kw.descTh].filter(Boolean).join(' ').toLowerCase();
+  return q.toLowerCase().split(/\s+/).every(w => hay.includes(w));
+}
+function kwcSearchScoped() {
+  const arr = (kwcData && Array.isArray(kwcData.keywords)) ? kwcData.keywords : [];
+  return arr.filter(k => kwcMatchesSearch(k, kwcSearchText));
+}
+function kwcVisibleKeywords() {
+  const scoped = kwcSearchScoped().filter(k => kwcMatchesFilter(k, kwcFilter));
+  // ติดดาวขึ้นก่อน — ลำดับที่เหลือตามไฟล์ (เรียงตามชื่ออังกฤษ)
+  return [...scoped].sort((a, b) => (kwcFavs.has(b.id) ? 1 : 0) - (kwcFavs.has(a.id) ? 1 : 0));
+}
+
+function renderKwcFilters() {
+  const wrap = document.getElementById('kwcFilters');
+  if (!wrap) return;
+  const scoped = kwcSearchScoped();
+  wrap.innerHTML = KWC_FILTERS.map(f => {
+    const n = scoped.filter(k => kwcMatchesFilter(k, f.id)).length;
+    return `<button type="button" class="filter-chip${kwcFilter === f.id ? ' active' : ''}" data-kwc-filter="${f.id}">${kwcEsc(f.label)} (${n})</button>`;
+  }).join('');
+  wrap.querySelectorAll('button[data-kwc-filter]').forEach(btn => {
+    btn.addEventListener('click', () => { kwcFilter = btn.dataset.kwcFilter; renderKwc(); });
+  });
+}
+
+function kwcReviewBadge(kw) {
+  return kw.needsReview
+    ? `<span class="kwc-review-badge" title="จับคู่ชื่อ TH/EN จาก poe2db ไม่ครบสองฝั่ง — แสดงชื่อดิบจากต้นทางตามที่มี ไม่เดา">needs review</span>`
+    : '';
+}
+function kwcCatChips(kw, max) {
+  return (kw.cats || []).slice(0, max || 99).map(c => {
+    const f = KWC_FILTERS.find(x => x.id === c);
+    return `<span class="kwc-cat-chip">${kwcEsc(f ? f.label : c)}</span>`;
+  }).join('');
+}
+
+function renderKwcList() {
+  const listEl = document.getElementById('kwcList');
+  if (!listEl) return;
+  const visible = kwcVisibleKeywords();
+  const countEl = document.getElementById('kwcCount');
+  if (countEl) countEl.textContent = visible.length + ' รายการ';
+  if (!visible.length) {
+    listEl.innerHTML = kwcFilter === 'fav' && !kwcSearchText
+      ? `<div class="codex-empty">ยังไม่มี keyword ที่ติดดาว<br>กด ☆ บนการ์ดเพื่อเก็บเข้า Favorites</div>`
+      : `<div class="codex-empty">ไม่พบ keyword ที่ตรงกับการค้นหา/ฟิลเตอร์<br>ลองล้างคำค้นหรือเปลี่ยนฟิลเตอร์</div>`;
+    return;
+  }
+  if (!visible.some(k => k.id === kwcSelectedId)) kwcSelectedId = visible[0].id;
+  const shown = visible.slice(0, KWC_LIST_CAP);
+  listEl.innerHTML = shown.map(k => {
+    const fav = kwcFavs.has(k.id);
+    const inCmp = kwcCompare.includes(k.id);
+    const preview = (k.descTh || '').split('\n')[0];
+    return `<div class="codex-list-item${k.id === kwcSelectedId ? ' selected' : ''}" data-kwc-id="${kwcEsc(k.id)}" role="button" tabindex="0">
+      <div class="cli-head">
+        <span class="kli-name-th">${kwcHl(k.nameTh || k.nameEn || k.id, kwcSearchText)}</span>
+        <button type="button" class="kli-cmp${inCmp ? ' on' : ''}" data-kwc-cmp="${kwcEsc(k.id)}" title="${inCmp ? 'เอาออกจากการเปรียบเทียบ' : 'เพิ่มเข้าการเปรียบเทียบ (สูงสุด ' + KWC_COMPARE_MAX + ')'}">⇄</button>
+        <button type="button" class="cli-star${fav ? ' on' : ''}" data-kwc-fav="${kwcEsc(k.id)}" title="${fav ? 'เอาออกจาก Favorites' : 'ติดดาวเก็บเข้า Favorites'}">${fav ? '★' : '☆'}</button>
+      </div>
+      <div class="kli-name-en">${kwcHl(k.nameEn || '—', kwcSearchText)} ${kwcReviewBadge(k)}</div>
+      ${preview ? `<div class="kli-preview">${kwcHl(preview.slice(0, 140), kwcSearchText)}</div>` : ''}
+    </div>`;
+  }).join('') + (visible.length > shown.length
+    ? `<div class="codex-empty">แสดง ${shown.length} จาก ${visible.length} รายการ — พิมพ์ค้นหาหรือเลือกฟิลเตอร์เพื่อกรองต่อ</div>` : '');
+  listEl.querySelectorAll('[data-kwc-id]').forEach(item => {
+    const select = () => { kwcSelectedId = item.dataset.kwcId; renderKwc(); };
+    item.addEventListener('click', select);
+    item.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); select(); } });
+  });
+  listEl.querySelectorAll('[data-kwc-fav]').forEach(btn => {
+    btn.addEventListener('click', ev => {
+      ev.stopPropagation(); // อย่าให้การติดดาวไปเลือกการ์ด
+      kwcToggleFav(btn.dataset.kwcFav);
+    });
+  });
+  listEl.querySelectorAll('[data-kwc-cmp]').forEach(btn => {
+    btn.addEventListener('click', ev => {
+      ev.stopPropagation();
+      kwcToggleCompare(btn.dataset.kwcCmp);
+    });
+  });
+}
+
+function kwcToggleFav(id) {
+  if (kwcFavs.has(id)) kwcFavs.delete(id); else kwcFavs.add(id);
+  persistKwcFavs();
+  renderKwc();
+}
+function kwcToggleCompare(id) {
+  const i = kwcCompare.indexOf(id);
+  if (i >= 0) kwcCompare.splice(i, 1);
+  else {
+    if (kwcCompare.length >= KWC_COMPARE_MAX) return; // เต็ม 3 — ปุ่มบนแถบ compare บอกไว้แล้ว
+    kwcCompare.push(id);
+  }
+  renderKwc();
+}
+
+// คัดลอกข้อความ (clipboard API + fallback แบบเดียวกับปุ่ม copy อีเมลใน Settings)
+function kwcCopyText(text, btn) {
+  const done = () => {
+    if (!btn) return;
+    const old = btn.textContent;
+    btn.textContent = '✓ คัดลอกแล้ว';
+    setTimeout(() => { btn.textContent = old; }, 1200);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(() => { /* เงียบไว้ — ผู้ใช้เลือกคัดลอกเองได้ */ });
+  } else {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+      done();
+    } catch (e) { /* ignore */ }
+  }
+}
+
+// Related Keywords: generator เก็บ id ของ keyword ที่ถูกอ้างในคำอธิบายต้นทาง (best-effort)
+function renderKwcRelated(kw) {
+  const rel = (kw.related || []).map(kwcById).filter(Boolean);
+  if (!rel.length) return '';
+  const chips = rel.map(r =>
+    `<button type="button" class="codex-mob-chip" data-kwc-rel="${kwcEsc(r.id)}">${kwcEsc(r.nameTh || r.nameEn || r.id)}</button>`).join('');
+  return `<div class="codex-section"><h3 class="codex-section-title">Related Keywords</h3><div class="codex-chip-row">${chips}</div></div>`;
+}
+
+function renderKwcDetail() {
+  const el = document.getElementById('kwcDetail');
+  if (!el) return;
+  const kw = kwcVisibleKeywords().find(k => k.id === kwcSelectedId);
+  if (!kw) { el.innerHTML = `<div class="codex-empty">เลือก keyword จากลิสต์ด้านซ้ายเพื่อดูรายละเอียด</div>`; return; }
+
+  const fav = kwcFavs.has(kw.id);
+  const inCmp = kwcCompare.includes(kw.id);
+  const urlTh = kwcSrcUrl(kw.id, 'th');
+  const urlEn = kwcSrcUrl(kw.id, 'en');
+  const desc = kw.descTh
+    ? `<p class="kwc-desc">${kwcHl(kw.descTh, kwcSearchText)}</p>`
+    : `<p class="codex-rate-note">ยังไม่มีคำอธิบายภาษาไทยของ keyword นี้บน poe2db (TH) — ดูรายละเอียดจากหน้า EN ด้านบน (รอบนี้เก็บเฉพาะคำอธิบายไทย ไม่แปลเอง)</p>`;
+
+  el.innerHTML = `<div class="codex-detail-panel">
+    <div class="codex-detail-head">
+      <h3 class="codex-detail-name">${kwcEsc(kw.nameTh || kw.nameEn || kw.id)}</h3>
+      <button type="button" class="cli-star${fav ? ' on' : ''}" data-kwc-fav-detail title="${fav ? 'เอาออกจาก Favorites' : 'ติดดาวเก็บเข้า Favorites'}">${fav ? '★' : '☆'}</button>
+      ${urlTh ? `<a class="codex-link-chip" href="${kwcEsc(urlTh)}" target="_blank" rel="noopener">poe2db TH</a>` : ''}
+      ${urlEn ? `<a class="codex-link-chip" href="${kwcEsc(urlEn)}" target="_blank" rel="noopener">poe2db EN</a>` : ''}
+    </div>
+    <div class="codex-detail-sub">
+      <span class="kli-name-en">${kwcEsc(kw.nameEn || '— (ไม่มีชื่อ EN บนหน้า US)')}</span>
+      ${kwcReviewBadge(kw)}${kwcCatChips(kw)}
+    </div>
+    ${desc}
+    <div class="kwc-detail-actions">
+      ${kw.nameTh ? `<button type="button" class="ocr-btn" data-kwc-copy="${kwcEsc(kw.nameTh)}">Copy ชื่อไทย</button>` : ''}
+      ${kw.nameEn ? `<button type="button" class="ocr-btn" data-kwc-copy="${kwcEsc(kw.nameEn)}">Copy ชื่ออังกฤษ</button>` : ''}
+      ${kw.descTh ? `<button type="button" class="ocr-btn" data-kwc-copy-desc>Copy คำอธิบาย</button>` : ''}
+      <button type="button" class="ocr-btn${inCmp ? ' primary' : ''}" data-kwc-cmp-detail>${inCmp ? '⇄ เอาออกจาก Compare' : '⇄ เพิ่มเข้า Compare'}</button>
+    </div>
+    ${renderKwcRelated(kw)}
+    <div class="codex-section" style="margin-top:12px"><h3 class="codex-section-title">Source</h3>
+      <p class="codex-rate-note" style="margin:0">ชื่อ/คำอธิบายคัดจาก poe2db.tw ตรงตามต้นทาง (TH: หน้า th · EN: หน้า us) — ไม่มีการแปลเอง · Fetched: ${kwcFmtDate(kwcData && kwcData.updatedAt)}</p>
+    </div>
+  </div>`;
+
+  const favBtn = el.querySelector('[data-kwc-fav-detail]');
+  if (favBtn) favBtn.addEventListener('click', () => kwcToggleFav(kw.id));
+  const cmpBtn = el.querySelector('[data-kwc-cmp-detail]');
+  if (cmpBtn) cmpBtn.addEventListener('click', () => kwcToggleCompare(kw.id));
+  el.querySelectorAll('[data-kwc-copy]').forEach(btn =>
+    btn.addEventListener('click', () => kwcCopyText(btn.dataset.kwcCopy, btn)));
+  const copyDesc = el.querySelector('[data-kwc-copy-desc]');
+  if (copyDesc) copyDesc.addEventListener('click', () => kwcCopyText(kw.descTh || '', copyDesc));
+  el.querySelectorAll('[data-kwc-rel]').forEach(btn =>
+    btn.addEventListener('click', () => {
+      // เลือก keyword ที่ถูกอ้าง — ล้างฟิลเตอร์/คำค้นถ้ามันทำให้ตัวที่เลือกมองไม่เห็น
+      const targetId = btn.dataset.kwcRel;
+      kwcSelectedId = targetId;
+      const target = kwcById(targetId);
+      if (target && (!kwcMatchesFilter(target, kwcFilter) || !kwcMatchesSearch(target, kwcSearchText))) {
+        kwcFilter = 'all';
+        kwcSearchText = '';
+        const s = document.getElementById('kwcSearch');
+        if (s) s.value = '';
+      }
+      renderKwc();
+    }));
+}
+
+function renderKwcCompare() {
+  const bar = document.getElementById('kwcCompareBar');
+  const grid = document.getElementById('kwcCompareGrid');
+  if (!bar || !grid) return;
+  const items = kwcCompare.map(kwcById).filter(Boolean);
+  if (!items.length) { bar.hidden = true; grid.hidden = true; grid.innerHTML = ''; return; }
+  bar.hidden = false;
+  bar.innerHTML = `<span>Compare (${items.length}/${KWC_COMPARE_MAX}):</span>`
+    + items.map(k => `<span class="kwc-cmp-chip">${kwcEsc(k.nameTh || k.nameEn || k.id)}
+        <button type="button" data-kwc-cmp-rm="${kwcEsc(k.id)}" title="เอาออกจากการเปรียบเทียบ">✕</button></span>`).join('')
+    + (items.length < 2 ? `<span style="color:var(--text-dim)">เลือกอย่างน้อย 2 ตัวเพื่อเทียบกัน</span>` : '')
+    + `<button type="button" class="ocr-btn" data-kwc-cmp-clear style="margin-left:auto">ล้างทั้งหมด</button>`;
+  bar.querySelectorAll('[data-kwc-cmp-rm]').forEach(btn =>
+    btn.addEventListener('click', () => kwcToggleCompare(btn.dataset.kwcCmpRm)));
+  const clear = bar.querySelector('[data-kwc-cmp-clear]');
+  if (clear) clear.addEventListener('click', () => { kwcCompare = []; renderKwc(); });
+
+  if (items.length < 2) { grid.hidden = true; grid.innerHTML = ''; return; }
+  grid.hidden = false;
+  grid.innerHTML = items.map(k => `<div class="kwc-compare-card">
+    <div class="cli-head"><span class="kli-name-th">${kwcEsc(k.nameTh || k.nameEn || k.id)}</span></div>
+    <div class="kli-name-en">${kwcEsc(k.nameEn || '—')} ${kwcReviewBadge(k)}</div>
+    <div class="codex-chip-row" style="margin-top:6px">${kwcCatChips(k)}</div>
+    ${k.descTh ? `<p class="kwc-desc">${kwcEsc(k.descTh)}</p>` : `<p class="codex-rate-note">ไม่มีคำอธิบายไทย</p>`}
+  </div>`).join('');
+}
+
+function renderKwcSourceLine() {
+  const el = document.getElementById('kwcSourceLine');
+  if (!el) return;
+  if (!kwcData) { el.textContent = ''; return; }
+  const src = kwcData.source || {};
+  const counts = kwcData.counts || {};
+  el.innerHTML = `Source: <a href="https://poe2db.tw/th/Keywords" target="_blank" rel="noopener">poe2db.tw</a> (TH + EN)
+    · Updated: ${kwcFmtDate(kwcData.updatedAt)}
+    · ${(kwcData.keywords || []).length} keywords${counts.enOnly || counts.thOnly ? ` · <span class="codex-warn">⚠ ${(counts.enOnly || 0) + (counts.thOnly || 0)} รายการจับคู่สองภาษาไม่ครบ (needs review)</span>` : ''}
+    <br>ชื่อ/คำอธิบายคัดจาก poe2db ตรงตามต้นทาง — ไม่แปลเอง (refresh ด้วย <code>node scripts/update-keyword-codex.mjs</code>)`;
+}
+
+function renderKwc() {
+  if (kwcLoadState !== 'ok') return; // สถานะ loading/missing/error วาดโดย loadKwc()
+  renderKwcSourceLine();
+  renderKwcFilters();
+  renderKwcCompare();
+  renderKwcList();
+  renderKwcDetail();
+}
+
+async function loadKwc() {
+  kwcLoadState = 'loading';
+  const badge = document.getElementById('kwcBadge');
+  const setBadge = (cls, text) => { if (badge) { badge.className = 'radar-badge ' + cls; badge.textContent = text; } };
+  setBadge('missing', 'Loading…');
+  const listEl = document.getElementById('kwcList');
+  const detailEl = document.getElementById('kwcDetail');
+  try {
+    const res = await fetch(KWC_URL + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) {
+      kwcLoadState = 'missing';
+      setBadge('missing', 'Missing');
+      if (listEl) listEl.innerHTML = `<div class="codex-empty">ยังไม่มีไฟล์ข้อมูล Keyword Codex<br>รัน <code>node scripts/update-keyword-codex.mjs</code> เพื่อ generate <code>data/keyword-codex.json</code></div>`;
+      if (detailEl) detailEl.innerHTML = '';
+      return;
+    }
+    let data;
+    try { data = await res.json(); }
+    catch (parseErr) {
+      kwcLoadState = 'error';
+      setBadge('error', 'Error');
+      if (listEl) listEl.innerHTML = `<div class="codex-empty">อ่านไฟล์ข้อมูลไม่สำเร็จ (JSON เสียหาย) — ลอง generate ใหม่</div>`;
+      if (detailEl) detailEl.innerHTML = '';
+      return;
+    }
+    kwcData = data || {};
+    if (!Array.isArray(kwcData.keywords)) kwcData.keywords = [];
+    kwcLoadState = 'ok';
+    setBadge('fresh', kwcData.keywords.length + ' keywords');
+    renderKwc();
+  } catch (netErr) {
+    kwcLoadState = 'missing';
+    setBadge('missing', 'Missing');
+    if (listEl) listEl.innerHTML = `<div class="codex-empty">โหลดข้อมูล Keyword Codex ไม่ได้ — ตรวจว่าเปิดผ่าน HTTP server และมี <code>data/keyword-codex.json</code></div>`;
+    if (detailEl) detailEl.innerHTML = '';
+  }
+}
+
+(function initKwc() {
+  const search = document.getElementById('kwcSearch');
+  if (search) search.addEventListener('input', () => { kwcSearchText = search.value.trim(); renderKwc(); });
+  loadKwc();
 })();
 </script>
 </body>
