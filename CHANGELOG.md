@@ -2,6 +2,13 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-14 (2)
+
+- **Keyword Codex: English description fallback (patch 0.29)** (`index.html`, `scripts/update-keyword-codex.mjs`, `data/keyword-codex.json`): entries with no Thai description on poe2db (TH) — currently the 47 EN-only keywords, mostly `*_Rune` — now display the English description from the US page instead of a "no Thai description" note. No manual translation anywhere.
+  - **Generator:** now stores `descEn` (**only** when `descTh` is missing, so the 717 paired entries don't double the file size) + explicit `descLang: th|en|none`; counts gained `descEnFallback`/`descNone` (currently 47/0). `htmlToText` additionally strips PoE-internal text markup that leaks into EN rune descriptions (`<<ExpedRuneX>>` tokens, `<rgb(...)>{...}`/`<italic>{...}` color-brace codes — verified braces appear *only* from this markup, 0 in TH) — mechanical cleanup, wording untouched. Overwrite-safety behavior unchanged (fetch failure / <100 entries → keep previous file).
+  - **UI:** new `kwcDesc(kw)` helper (Thai → English → none; computed from fields, tolerant of old JSON without `descEn`) used by list preview, detail, compare, and the copy-description button; secondary grey `.kwc-en-badge` "EN fallback" chip (with explanatory title) rendered by `kwcEnBadge()` on list cards, detail sub-row, and compare cards — only for fallback entries; both-missing state shows "ไม่มีคำอธิบาย / No description available". Search hay now includes `descEn`. Badge registered in the Trust Blue Pay pill group.
+  - Verification: generator run clean (766 total, 47 EN fallback, 0 none, 0 stray braces, Thai entries untouched); Playwright smoke suite extended to **49/49** checks — all patch-0.28 checks still pass plus: fallback detail shows English text + exactly one EN badge (detail/list/compare), Thai entries show Thai with no badge, search "Remnant gains" matches fallback descriptions, copy-desc button present for fallback entries, compare mixes Thai + EN cards correctly, all tabs render, 4 theme/mode combos, 480px no overflow, zero console errors. Screenshot of a fallback entry reviewed (RawBlock light).
+
 ## 2026-07-14
 
 - **Keyword Codex tab (patch 0.28)** (`index.html`, `scripts/update-keyword-codex.mjs`, `data/keyword-codex.json`): new Tools-group tab — PoE2 keyword encyclopedia from poe2db.tw, **766 keywords** (717 TH/EN pairs, 47 EN-only, 2 TH-only).

@@ -241,6 +241,7 @@
   html[data-theme="trust-blue-pay"] .codex-link-chip,
   html[data-theme="trust-blue-pay"] .codex-mob-chip,
   html[data-theme="trust-blue-pay"] .kwc-review-badge,
+  html[data-theme="trust-blue-pay"] .kwc-en-badge,
   html[data-theme="trust-blue-pay"] .kwc-cat-chip,
   html[data-theme="trust-blue-pay"] .kwc-cmp-chip,
   html[data-theme="trust-blue-pay"] .sr-status,
@@ -3526,6 +3527,19 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     padding: 1px 6px;
+    white-space: nowrap;
+  }
+  /* ป้ายรอง: entry ที่ไม่มีคำอธิบายไทย แสดงคำอธิบายอังกฤษจากหน้า US แทน */
+  .kwc-en-badge {
+    display: inline-block;
+    border: 2px solid var(--border-soft);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1px 6px;
+    margin-left: 4px;
     white-space: nowrap;
   }
   .kwc-cat-chip {
@@ -7471,6 +7485,15 @@ document.getElementById('shopSizeReset').addEventListener('click', resetShopSizi
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.29',
+    date: '2026-07-14',
+    notes: [
+      'Keyword Codex: keyword ที่ยังไม่มีคำอธิบายภาษาไทยบน poe2db (TH) จะแสดงคำอธิบายภาษาอังกฤษจากหน้า US แทน (คัดจากต้นทางตรงๆ ไม่แปลเอง) พร้อมป้ายเล็ก "EN fallback" บนการ์ด/รายละเอียด/หน้าเปรียบเทียบ — ที่มีคำอธิบายไทยอยู่แล้วยังแสดงไทยเหมือนเดิม',
+      'Keyword Codex: ช่องค้นหาครอบคลุมคำอธิบายอังกฤษ fallback ด้วย และถ้าไม่มีคำอธิบายทั้งสองภาษา จะแสดงสถานะ "ไม่มีคำอธิบาย / No description available" แทนช่องว่าง',
+      'Keyword Codex: ล้าง markup ภายในของเกม (เช่น <<...>>, วงเล็บปีกกาจากโค้ดสี) ที่ติดมากับคำอธิบายกลุ่ม Rune ฝั่ง EN — ลอกแบบกลไกล้วน ไม่แตะถ้อยคำ',
+    ],
+  },
+  {
     version: '0.28',
     date: '2026-07-14',
     notes: [
@@ -10979,6 +11002,18 @@ function kwcById(id) {
   const arr = (kwcData && Array.isArray(kwcData.keywords)) ? kwcData.keywords : [];
   return arr.find(k => k.id === id) || null;
 }
+// คำอธิบายที่จะแสดง: ไทยก่อนเสมอ → อังกฤษ (fallback จากหน้า US, ติดป้าย EN fallback) → ไม่มี
+// คำนวณจาก field ตรงๆ (ไม่พึ่ง descLang ในไฟล์) เพื่อ tolerant กับไฟล์เก่าที่ยังไม่มี descEn
+function kwcDesc(kw) {
+  if (kw.descTh) return { text: kw.descTh, lang: 'th' };
+  if (kw.descEn) return { text: kw.descEn, lang: 'en' };
+  return { text: '', lang: 'none' };
+}
+function kwcEnBadge(kw) {
+  return kwcDesc(kw).lang === 'en'
+    ? `<span class="kwc-en-badge" title="ยังไม่มีคำอธิบายไทยบน poe2db (TH) — แสดงคำอธิบายอังกฤษจากหน้า US แทน (ไม่แปลเอง)">EN fallback</span>`
+    : '';
+}
 
 const KWC_FILTERS = [
   { id: 'all', label: 'ทั้งหมด' },
@@ -10998,10 +11033,10 @@ function kwcMatchesFilter(kw, filterId) {
   if (filterId === 'fav') return kwcFavs.has(kw.id);
   return (kw.cats || []).includes(filterId);
 }
-// ค้นหาจาก: ชื่อไทย + ชื่ออังกฤษ + คำอธิบายไทย (ตาม spec — ไม่ค้น field อื่น)
+// ค้นหาจาก: ชื่อไทย + ชื่ออังกฤษ + คำอธิบายไทย + คำอธิบายอังกฤษ fallback (ตาม spec — ไม่ค้น field อื่น)
 function kwcMatchesSearch(kw, q) {
   if (!q) return true;
-  const hay = [kw.nameTh, kw.nameEn, kw.descTh].filter(Boolean).join(' ').toLowerCase();
+  const hay = [kw.nameTh, kw.nameEn, kw.descTh, kw.descEn].filter(Boolean).join(' ').toLowerCase();
   return q.toLowerCase().split(/\s+/).every(w => hay.includes(w));
 }
 function kwcSearchScoped() {
@@ -11056,14 +11091,14 @@ function renderKwcList() {
   listEl.innerHTML = shown.map(k => {
     const fav = kwcFavs.has(k.id);
     const inCmp = kwcCompare.includes(k.id);
-    const preview = (k.descTh || '').split('\n')[0];
+    const preview = kwcDesc(k).text.split('\n')[0];
     return `<div class="codex-list-item${k.id === kwcSelectedId ? ' selected' : ''}" data-kwc-id="${kwcEsc(k.id)}" role="button" tabindex="0">
       <div class="cli-head">
         <span class="kli-name-th">${kwcHl(k.nameTh || k.nameEn || k.id, kwcSearchText)}</span>
         <button type="button" class="kli-cmp${inCmp ? ' on' : ''}" data-kwc-cmp="${kwcEsc(k.id)}" title="${inCmp ? 'เอาออกจากการเปรียบเทียบ' : 'เพิ่มเข้าการเปรียบเทียบ (สูงสุด ' + KWC_COMPARE_MAX + ')'}">⇄</button>
         <button type="button" class="cli-star${fav ? ' on' : ''}" data-kwc-fav="${kwcEsc(k.id)}" title="${fav ? 'เอาออกจาก Favorites' : 'ติดดาวเก็บเข้า Favorites'}">${fav ? '★' : '☆'}</button>
       </div>
-      <div class="kli-name-en">${kwcHl(k.nameEn || '—', kwcSearchText)} ${kwcReviewBadge(k)}</div>
+      <div class="kli-name-en">${kwcHl(k.nameEn || '—', kwcSearchText)} ${kwcReviewBadge(k)}${kwcEnBadge(k)}</div>
       ${preview ? `<div class="kli-preview">${kwcHl(preview.slice(0, 140), kwcSearchText)}</div>` : ''}
     </div>`;
   }).join('') + (visible.length > shown.length
@@ -11144,9 +11179,11 @@ function renderKwcDetail() {
   const inCmp = kwcCompare.includes(kw.id);
   const urlTh = kwcSrcUrl(kw.id, 'th');
   const urlEn = kwcSrcUrl(kw.id, 'en');
-  const desc = kw.descTh
-    ? `<p class="kwc-desc">${kwcHl(kw.descTh, kwcSearchText)}</p>`
-    : `<p class="codex-rate-note">ยังไม่มีคำอธิบายภาษาไทยของ keyword นี้บน poe2db (TH) — ดูรายละเอียดจากหน้า EN ด้านบน (รอบนี้เก็บเฉพาะคำอธิบายไทย ไม่แปลเอง)</p>`;
+  // คำอธิบาย: ไทย → อังกฤษ fallback (ป้าย EN fallback อยู่ในแถว detail-sub) → ไม่มีทั้งคู่
+  const dsc = kwcDesc(kw);
+  const desc = dsc.text
+    ? `<p class="kwc-desc">${kwcHl(dsc.text, kwcSearchText)}</p>`
+    : `<p class="codex-rate-note">ไม่มีคำอธิบาย / No description available — ดูรายละเอียดบนหน้า poe2db ด้านบน</p>`;
 
   el.innerHTML = `<div class="codex-detail-panel">
     <div class="codex-detail-head">
@@ -11157,13 +11194,13 @@ function renderKwcDetail() {
     </div>
     <div class="codex-detail-sub">
       <span class="kli-name-en">${kwcEsc(kw.nameEn || '— (ไม่มีชื่อ EN บนหน้า US)')}</span>
-      ${kwcReviewBadge(kw)}${kwcCatChips(kw)}
+      ${kwcReviewBadge(kw)}${kwcEnBadge(kw)}${kwcCatChips(kw)}
     </div>
     ${desc}
     <div class="kwc-detail-actions">
       ${kw.nameTh ? `<button type="button" class="ocr-btn" data-kwc-copy="${kwcEsc(kw.nameTh)}">Copy ชื่อไทย</button>` : ''}
       ${kw.nameEn ? `<button type="button" class="ocr-btn" data-kwc-copy="${kwcEsc(kw.nameEn)}">Copy ชื่ออังกฤษ</button>` : ''}
-      ${kw.descTh ? `<button type="button" class="ocr-btn" data-kwc-copy-desc>Copy คำอธิบาย</button>` : ''}
+      ${dsc.text ? `<button type="button" class="ocr-btn" data-kwc-copy-desc>Copy คำอธิบาย</button>` : ''}
       <button type="button" class="ocr-btn${inCmp ? ' primary' : ''}" data-kwc-cmp-detail>${inCmp ? '⇄ เอาออกจาก Compare' : '⇄ เพิ่มเข้า Compare'}</button>
     </div>
     ${renderKwcRelated(kw)}
@@ -11179,7 +11216,7 @@ function renderKwcDetail() {
   el.querySelectorAll('[data-kwc-copy]').forEach(btn =>
     btn.addEventListener('click', () => kwcCopyText(btn.dataset.kwcCopy, btn)));
   const copyDesc = el.querySelector('[data-kwc-copy-desc]');
-  if (copyDesc) copyDesc.addEventListener('click', () => kwcCopyText(kw.descTh || '', copyDesc));
+  if (copyDesc) copyDesc.addEventListener('click', () => kwcCopyText(dsc.text, copyDesc));
   el.querySelectorAll('[data-kwc-rel]').forEach(btn =>
     btn.addEventListener('click', () => {
       // เลือก keyword ที่ถูกอ้าง — ล้างฟิลเตอร์/คำค้นถ้ามันทำให้ตัวที่เลือกมองไม่เห็น
@@ -11215,12 +11252,15 @@ function renderKwcCompare() {
 
   if (items.length < 2) { grid.hidden = true; grid.innerHTML = ''; return; }
   grid.hidden = false;
-  grid.innerHTML = items.map(k => `<div class="kwc-compare-card">
+  grid.innerHTML = items.map(k => {
+    const dsc = kwcDesc(k);
+    return `<div class="kwc-compare-card">
     <div class="cli-head"><span class="kli-name-th">${kwcEsc(k.nameTh || k.nameEn || k.id)}</span></div>
-    <div class="kli-name-en">${kwcEsc(k.nameEn || '—')} ${kwcReviewBadge(k)}</div>
+    <div class="kli-name-en">${kwcEsc(k.nameEn || '—')} ${kwcReviewBadge(k)}${kwcEnBadge(k)}</div>
     <div class="codex-chip-row" style="margin-top:6px">${kwcCatChips(k)}</div>
-    ${k.descTh ? `<p class="kwc-desc">${kwcEsc(k.descTh)}</p>` : `<p class="codex-rate-note">ไม่มีคำอธิบายไทย</p>`}
-  </div>`).join('');
+    ${dsc.text ? `<p class="kwc-desc">${kwcEsc(dsc.text)}</p>` : `<p class="codex-rate-note">ไม่มีคำอธิบาย / No description available</p>`}
+  </div>`;
+  }).join('');
 }
 
 function renderKwcSourceLine() {
