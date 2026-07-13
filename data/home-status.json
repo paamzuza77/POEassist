@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-13T11:31:16.117Z",
+  "updatedAt": "2026-07-13T15:13:56.431Z",
   "league": {
     "name": "Runes of Aldur",
     "displayName": "Return of the Ancients 0.5",
@@ -9,8 +9,8 @@
   },
   "stashSale": {
     "mode": "auto",
-    "nextStartAt": "2026-07-10T00:00:00.000Z",
-    "nextEndAt": null,
+    "nextStartAt": null,
+    "nextEndAt": "2026-07-14T00:00:00.000Z",
     "source": "poe2db.tw"
   }
 }
