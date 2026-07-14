@@ -1,7 +1,7 @@
 {
   "version": 1,
   "league": "runesofaldur",
-  "updatedAt": "2026-07-14T22:00:30.874Z",
+  "updatedAt": "2026-07-14T22:26:38.367Z",
   "source": {
     "name": "poe.ninja",
     "url": "https://poe.ninja/poe2/economy/runesofaldur/currency"
@@ -1271,10 +1271,10 @@
       "name": "Refined Reaver Catalyst",
       "category": "Breach",
       "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQnJlYWNoL0pld2VsQ2F0YWx5c3RBdHRhY2siLCJzY2FsZSI6MSwicmVhbG0iOiJwb2UyIn1d/9c13494ea8/JewelCatalystAttack.png",
-      "value": 4.05,
+      "value": 4.02,
       "valueCurrency": "Divine",
-      "trend7d": 9.19,
-      "volume": 5858,
+      "trend7d": 9.51,
+      "volume": 5059,
       "volumeScore": 1,
       "liquidityLabel": "High",
       "mappedContent": "Breach",
@@ -1289,16 +1289,16 @@
       "name": "Refined Sibilant Catalyst",
       "category": "Breach",
       "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQnJlYWNoL0pld2VsQ2F0YWx5c3RDYXN0ZXIiLCJzY2FsZSI6MSwicmVhbG0iOiJwb2UyIn1d/280306d9e0/JewelCatalystCaster.png",
-      "value": 6.74,
+      "value": 6.76,
       "valueCurrency": "Divine",
-      "trend7d": 4.61,
-      "volume": 10625,
+      "trend7d": 6.04,
+      "volume": 9806,
       "volumeScore": 1,
       "liquidityLabel": "High",
       "mappedContent": "Breach",
       "contentKey": "breach",
       "confidence": 0.95,
-      "score": 73,
+      "score": 74,
       "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
       "wikiUrl": "",
       "risk": ""
@@ -2294,34 +2294,34 @@
     {
       "contentKey": "breach",
       "displayName": "Breach",
-      "farmScore": 81,
+      "farmScore": 82,
       "confidence": 0.95,
       "status": "2 item(s) ≥1 Divine mapped to this content",
       "evidenceItems": [
         {
-          "name": "Refined Reaver Catalyst",
-          "value": 4.05,
+          "name": "Refined Sibilant Catalyst",
+          "value": 6.76,
           "valueCurrency": "Divine",
-          "trend7d": 9.19,
+          "trend7d": 6.04,
           "volumeScore": 1,
           "liquidityLabel": "High",
           "score": 74,
           "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach"
         },
         {
-          "name": "Refined Sibilant Catalyst",
-          "value": 6.74,
+          "name": "Refined Reaver Catalyst",
+          "value": 4.02,
           "valueCurrency": "Divine",
-          "trend7d": 4.61,
+          "trend7d": 9.51,
           "volumeScore": 1,
           "liquidityLabel": "High",
-          "score": 73,
+          "score": 74,
           "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach"
         }
       ],
       "relatedItems": [
-        "Refined Reaver Catalyst",
-        "Refined Sibilant Catalyst"
+        "Refined Sibilant Catalyst",
+        "Refined Reaver Catalyst"
       ],
       "risk": "",
       "sourceUrls": [
