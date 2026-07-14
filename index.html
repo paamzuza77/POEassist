@@ -217,6 +217,9 @@
   html[data-theme="trust-blue-pay"] .kwc-compare-card,
   html[data-theme="trust-blue-pay"] .kli-cmp,
   html[data-theme="trust-blue-pay"] .kw-tip,
+  html[data-theme="trust-blue-pay"] .toast,
+  html[data-theme="trust-blue-pay"] .ux-state,
+  html[data-theme="trust-blue-pay"] .ux-skel-row,
   html[data-theme="trust-blue-pay"] .patch-panel,
   html[data-theme="trust-blue-pay"] .patch-close,
   html[data-theme="trust-blue-pay"] .mode-toggle,
@@ -279,6 +282,7 @@
     box-shadow: 0 1px 4px rgba(0, 48, 135, 0.06);
   }
   html[data-theme="trust-blue-pay"] .patch-panel,
+  html[data-theme="trust-blue-pay"] .toast,
   html[data-theme="trust-blue-pay"] .kw-tip {
     box-shadow: 0 12px 32px rgba(0, 48, 135, 0.14);
   }
@@ -300,7 +304,8 @@
   html[data-theme="trust-blue-pay"][data-mode="dark"] #shopGearPanel {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
   }
-  html[data-theme="trust-blue-pay"][data-mode="dark"] .patch-panel {
+  html[data-theme="trust-blue-pay"][data-mode="dark"] .patch-panel,
+  html[data-theme="trust-blue-pay"][data-mode="dark"] .toast {
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
   }
 
@@ -1443,6 +1448,8 @@
     color: var(--text-dim);
     padding: 28px 10px !important;
   }
+  /* เซลล์ที่บรรจุ .ux-state (patch 0.31): กล่อง state มี padding ของตัวเองแล้ว — อย่าเบิ้ล */
+  .shop-empty.ux-empty-cell { padding: 12px !important; }
 
   /* ---------- Build Shopping List: dashboard extras (RawBlock) ---------- */
   .shop-progress {
@@ -3723,6 +3730,181 @@
     text-decoration: none;
   }
   .kw-tip-link:hover { background: var(--link); color: var(--panel); }
+
+  /* ==================== Modern UX Foundation (patch 0.31) ====================
+     3 ระบบกลางที่ใช้ซ้ำได้ทั้งแอป — ไม่ผูกกับแท็บไหนเป็นพิเศษ:
+       1) Toast   .toast-stack / .toast          → showToast() ใน JS
+       2) States  .ux-state / .ux-skel*          → uxEmptyState() / uxSkeleton()
+       3) Micro   .ux-flash / .is-busy / focus   → uxFlash() / uxBusy()
+     สีสถานะใช้ token เดิม (--ok / --lightning / --fire / --link) จึงตามธีมทั้ง 4 ชุดเอง
+     ================================================================== */
+
+  /* ---------- 1 · Toasts ---------- */
+  /* z-index 400 = เหนือ modal (300) โดยตั้งใจ — error ตอน Import ใน Settings ต้องอ่านได้ */
+  .toast-stack {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 400;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 10px;
+    width: min(380px, calc(100vw - 40px));
+    pointer-events: none;
+  }
+  .toast {
+    pointer-events: auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--panel);
+    border: 3px solid var(--border);
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    line-height: 1.5;
+    animation: uxToastIn 0.18s ease-out;
+  }
+  .toast.leaving { animation: uxToastOut 0.16s ease-in forwards; }
+  .toast-ico {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.35;
+    flex: 0 0 auto;
+  }
+  .toast-msg { flex: 1 1 auto; min-width: 0; word-break: break-word; }
+  .toast-close {
+    flex: 0 0 auto;
+    border: none;
+    background: none;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1;
+    padding: 1px 2px;
+    cursor: pointer;
+  }
+  .toast-close:hover { color: var(--text); }
+  .toast.success { border-color: var(--ok); }
+  .toast.success .toast-ico { color: var(--ok); }
+  .toast.warn { border-color: var(--lightning); }
+  .toast.warn .toast-ico { color: var(--lightning); }
+  .toast.error { border-color: var(--fire); }
+  .toast.error .toast-ico { color: var(--fire); }
+  .toast.info { border-color: var(--link); }
+  .toast.info .toast-ico { color: var(--link); }
+  @keyframes uxToastIn {
+    from { opacity: 0; transform: translateX(16px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes uxToastOut {
+    from { opacity: 1; transform: none; }
+    to { opacity: 0; transform: translateX(16px); }
+  }
+
+  /* ---------- 2 · Empty / loading / error states ---------- */
+  .ux-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    padding: 28px 20px;
+    border: 3px dashed var(--border-soft);
+    color: var(--text-dim);
+  }
+  .ux-state-ico { font-size: 24px; line-height: 1; }
+  .ux-state-title {
+    font-family: var(--font-head);
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text);
+  }
+  .ux-state-body {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    line-height: 1.6;
+    max-width: 46ch;
+  }
+  .ux-state-body code {
+    font-family: var(--font-mono);
+    border: 1px solid var(--border-soft);
+    padding: 0 3px;
+  }
+  .ux-state-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 4px;
+  }
+  .ux-state.error { border-style: solid; border-color: var(--fire); }
+  .ux-state.error .ux-state-title { color: var(--fire); }
+  .ux-state.loading { border-style: solid; }
+
+  /* Skeleton: ไม่ใช้ gradient (ผิดสเปก RawBlock) — ใช้แถบสีขอบจางเต้นเบาๆ แทน */
+  .ux-skel-list { display: flex; flex-direction: column; gap: 8px; padding: 4px 0; }
+  .ux-skel-row {
+    height: 44px;
+    border: 2px solid var(--border-soft);
+    background: var(--border-soft);
+    opacity: 0.35;
+    animation: uxSkelPulse 1.2s ease-in-out infinite;
+  }
+  .ux-skel-row:nth-child(2) { animation-delay: 0.12s; }
+  .ux-skel-row:nth-child(3) { animation-delay: 0.24s; }
+  .ux-skel-row:nth-child(4) { animation-delay: 0.36s; }
+  .ux-skel-row:nth-child(5) { animation-delay: 0.48s; }
+  @keyframes uxSkelPulse {
+    0%, 100% { opacity: 0.20; }
+    50% { opacity: 0.45; }
+  }
+
+  /* ---------- 3 · Micro-interactions ---------- */
+  /* ไฮไลต์แถว/การ์ดที่เพิ่งเพิ่ม/แก้ — เปลี่ยนเฉพาะ background จึงไม่ทำให้ตารางกระตุก */
+  @keyframes uxFlashBg {
+    0% { background-color: rgba(46, 160, 90, 0.30); }
+    100% { background-color: transparent; }
+  }
+  .ux-flash { animation: uxFlashBg 1.1s ease-out; }
+  tr.ux-flash { animation: none; }               /* <tr> รับ background ไม่แน่นอน — ยิงที่ <td> แทน */
+  tr.ux-flash > td { animation: uxFlashBg 1.1s ease-out; }
+
+  /* ปุ่มกดแล้วยุบเล็กน้อย + สถานะกำลังทำงาน (import/export) */
+  .ocr-btn:active:not(:disabled):not(.is-busy) { transform: translateY(1px); }
+  .ocr-btn.is-busy,
+  .ocr-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Focus ring กลาง — เดิมมีเฉพาะบางคลาส ทำให้เดินด้วย Tab แล้วหลุดสายตาเป็นช่วงๆ */
+  button:focus-visible,
+  a:focus-visible,
+  [role="button"]:focus-visible,
+  [tabindex]:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--border);
+    outline-offset: 1px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .toast,
+    .toast.leaving,
+    .ux-skel-row,
+    .ux-flash,
+    tr.ux-flash > td { animation: none; }
+    .ocr-btn:active:not(:disabled):not(.is-busy) { transform: none; }
+  }
+
+  @media (max-width: 480px) {
+    .toast-stack { right: 12px; left: 12px; bottom: 12px; width: auto; }
+  }
 </style>
 </head>
 <body>
@@ -4239,6 +4421,10 @@
   </div>
 </div>
 
+<!-- Toast notifications (patch 0.31) — aria-live เพื่อให้ screen reader อ่านผลของการกระทำ
+     ตัว toast ถูกสร้าง/ลบด้วย showToast() ใน JS · ดูบล็อก "Modern UX Foundation" -->
+<div id="toastStack" class="toast-stack" role="status" aria-live="polite"></div>
+
 <script>
 /* ==================== Keyword Help Bridge (patch 0.30) ====================
    สะพานเชื่อม data/keyword-codex.json ให้เป็นระบบช่วยเหลือกลไกทั้งแอป:
@@ -4582,6 +4768,183 @@ function openKeywordCodexEntry(id) {
       });
   });
 })();
+
+/* ==================== Modern UX Foundation (patch 0.31) ====================
+   ระบบกลาง 3 อย่างที่ทุกแท็บเรียกใช้ได้ (ไม่มี state/สคีมาใหม่ ไม่แตะการคำนวณใดๆ):
+
+     showToast(msg, opts) / showSuccessToast / showWarningToast / showErrorToast / showInfoToast
+       opts: { duration, key }  — key เดิมจะ "แทนที่" toast ตัวเก่า ไม่ซ้อนกองกัน
+       auto-dismiss + หยุดนับถอยหลังตอนเอาเมาส์ชี้/โฟกัสอยู่ในนั้น + ปุ่มปิดเอง
+       เขียนลง aria-live region ให้ screen reader อ่านด้วย
+
+     uxEmptyState({ icon, title, body, bodyHtml, actions, variant })  → HTMLElement
+       variant: 'empty' (ค่าเริ่มต้น) | 'loading' | 'error'
+       actions: [{ label, onClick, primary }]
+     uxSkeleton(rows)  → HTMLElement (placeholder ระหว่างโหลด JSON)
+
+     uxFlash(el)          — ไฮไลต์เขียวจางๆ ให้แถว/การ์ดที่เพิ่งเพิ่ม/เปลี่ยน
+     uxBusy(btn, on, txt) — ปุ่มกำลังทำงาน (import/export) กันกดซ้ำ
+
+   ห้ามใช้ toast แทน confirm() ของงานที่ลบข้อมูล — toast ไม่บล็อก ผู้ใช้กดพลาดแล้วกู้ไม่ได้
+   =========================================================================== */
+
+const TOAST_ICONS = { success: '✓', warn: '⚠', error: '✕', info: 'i' };
+const TOAST_DEFAULT_MS = 3200;
+const toastByKey = new Map(); // key → element (toast ที่มี key ซ้ำจะถูกแทนที่ ไม่กองซ้อน)
+
+function toastStackEl() {
+  let stack = document.getElementById('toastStack');
+  if (!stack) {
+    stack = document.createElement('div');
+    stack.id = 'toastStack';
+    stack.className = 'toast-stack';
+    stack.setAttribute('role', 'status');
+    stack.setAttribute('aria-live', 'polite');
+    document.body.appendChild(stack);
+  }
+  return stack;
+}
+
+function dismissToast(el) {
+  if (!el || el.dataset.leaving === '1') return;
+  el.dataset.leaving = '1';
+  clearTimeout(el._toastTimer);
+  if (el.dataset.toastKey) toastByKey.delete(el.dataset.toastKey);
+  el.classList.add('leaving');
+  const drop = () => el.remove();
+  el.addEventListener('animationend', drop, { once: true });
+  setTimeout(drop, 400); // กันกรณี reduced-motion (ไม่มี animationend ให้รอ)
+}
+
+function showToast(message, opts) {
+  const o = opts || {};
+  const kind = TOAST_ICONS[o.kind] ? o.kind : 'info';
+  const duration = typeof o.duration === 'number' ? o.duration : TOAST_DEFAULT_MS;
+
+  if (o.key && toastByKey.has(o.key)) dismissToast(toastByKey.get(o.key));
+
+  const el = document.createElement('div');
+  el.className = 'toast ' + kind;
+  if (o.key) { el.dataset.toastKey = o.key; toastByKey.set(o.key, el); }
+
+  const ico = document.createElement('span');
+  ico.className = 'toast-ico';
+  ico.setAttribute('aria-hidden', 'true');
+  ico.textContent = TOAST_ICONS[kind];
+  const msg = document.createElement('span');
+  msg.className = 'toast-msg';
+  msg.textContent = String(message == null ? '' : message); // textContent = escape ให้เอง
+  const close = document.createElement('button');
+  close.type = 'button';
+  close.className = 'toast-close';
+  close.setAttribute('aria-label', 'ปิดการแจ้งเตือน');
+  close.textContent = '✕';
+  close.addEventListener('click', () => dismissToast(el));
+
+  el.appendChild(ico);
+  el.appendChild(msg);
+  el.appendChild(close);
+  toastStackEl().appendChild(el);
+
+  // หยุดนับถอยหลังตอนชี้/โฟกัสอยู่ในนั้น — ผู้ใช้จะได้อ่าน/กดลิงก์ทัน
+  const arm = () => {
+    clearTimeout(el._toastTimer);
+    if (duration > 0) el._toastTimer = setTimeout(() => dismissToast(el), duration);
+  };
+  el.addEventListener('mouseenter', () => clearTimeout(el._toastTimer));
+  el.addEventListener('mouseleave', arm);
+  el.addEventListener('focusin', () => clearTimeout(el._toastTimer));
+  el.addEventListener('focusout', arm);
+  arm();
+  return el;
+}
+
+function showSuccessToast(message, opts) { return showToast(message, Object.assign({}, opts, { kind: 'success' })); }
+function showWarningToast(message, opts) { return showToast(message, Object.assign({}, opts, { kind: 'warn' })); }
+function showErrorToast(message, opts) { return showToast(message, Object.assign({}, opts, { kind: 'error', duration: (opts && opts.duration) || 6000 })); }
+function showInfoToast(message, opts) { return showToast(message, Object.assign({}, opts, { kind: 'info' })); }
+
+/* ---- Empty / loading / error state ---- */
+function uxEmptyState(cfg) {
+  const c = cfg || {};
+  const box = document.createElement('div');
+  box.className = 'ux-state' + (c.variant && c.variant !== 'empty' ? ' ' + c.variant : '');
+  if (c.icon) {
+    const i = document.createElement('div');
+    i.className = 'ux-state-ico';
+    i.setAttribute('aria-hidden', 'true');
+    i.textContent = c.icon;
+    box.appendChild(i);
+  }
+  if (c.title) {
+    const t2 = document.createElement('div');
+    t2.className = 'ux-state-title';
+    t2.textContent = c.title;
+    box.appendChild(t2);
+  }
+  if (c.body || c.bodyHtml) {
+    const b = document.createElement('div');
+    b.className = 'ux-state-body';
+    // bodyHtml ใช้เฉพาะข้อความคงที่ในไฟล์นี้ (เช่น <code>คำสั่ง</code>) — ห้ามส่งข้อมูลจากภายนอกเข้ามา
+    if (c.bodyHtml) b.innerHTML = c.bodyHtml; else b.textContent = c.body;
+    box.appendChild(b);
+  }
+  const acts = (c.actions || []).filter(Boolean);
+  if (acts.length) {
+    const row = document.createElement('div');
+    row.className = 'ux-state-actions';
+    acts.forEach(a => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ocr-btn' + (a.primary ? ' primary' : '');
+      btn.textContent = a.label;
+      btn.addEventListener('click', a.onClick);
+      row.appendChild(btn);
+    });
+    box.appendChild(row);
+  }
+  return box;
+}
+
+function uxSkeleton(rows) {
+  const wrap = document.createElement('div');
+  wrap.className = 'ux-skel-list';
+  wrap.setAttribute('aria-hidden', 'true'); // ตัวจริงคือ aria-busy/ข้อความสถานะ — ไม่ต้องให้ SR อ่านกล่องเปล่า
+  const n = Math.max(1, Math.min(8, rows || 5));
+  for (let i = 0; i < n; i++) {
+    const r = document.createElement('div');
+    r.className = 'ux-skel-row';
+    wrap.appendChild(r);
+  }
+  return wrap;
+}
+
+/* ---- Micro-interactions ---- */
+function uxFlash(el) {
+  if (!el || !el.classList) return;
+  el.classList.remove('ux-flash');
+  void el.offsetWidth; // restart animation (reflow) — จำเป็นเมื่อ flash ซ้ำที่เดิม
+  el.classList.add('ux-flash');
+  setTimeout(() => el.classList.remove('ux-flash'), 1300);
+}
+
+// ปุ่มกำลังทำงาน: กันกดซ้ำระหว่าง export/import แล้วคืนข้อความเดิมให้เอง
+function uxBusy(btn, on, busyLabel) {
+  if (!btn) return;
+  if (on) {
+    if (btn.dataset.idleLabel == null) btn.dataset.idleLabel = btn.textContent;
+    btn.classList.add('is-busy');
+    btn.disabled = true;
+    if (busyLabel) btn.textContent = busyLabel;
+  } else {
+    btn.classList.remove('is-busy');
+    btn.disabled = false;
+    if (btn.dataset.idleLabel != null) {
+      btn.textContent = btn.dataset.idleLabel;
+      delete btn.dataset.idleLabel;
+    }
+  }
+}
 
 const ICONS = {
   helmet: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 15c0-5.5 3.5-9 8-9s8 3.5 8 9v2H4v-2z"/><path d="M4 17h16v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2z"/><path d="M9 8.5V6"/><path d="M15 8.5V6"/></svg>`,
@@ -5009,6 +5372,15 @@ document.getElementById('addRowBtn').addEventListener('click', () => {
   renderPaperdoll();
   renderJewelRow();
   recalc();
+  // ไฮไลต์ + โฟกัสช่อง % ของแถวจริงแถวสุดท้าย (ไม่นับแถว template ที่ยังไม่ materialize)
+  requestAnimationFrame(() => {
+    const rows = document.querySelectorAll('#editorRows .res-row:not(.res-row-template)');
+    const last = rows[rows.length - 1];
+    if (!last) return;
+    uxFlash(last);
+    const inp = last.querySelector('input');
+    if (inp) inp.focus();
+  });
 });
 
 function renderResGauges() {
@@ -5616,7 +5988,7 @@ async function handleItemImage(blob) {
     showOcrReview(parsed, imgURL, result.data.text || '');
   } catch (err) {
     ocrShow('idle');
-    alert('อ่านรูปไม่สำเร็จ: ' + err.message);
+    showErrorToast('อ่านรูปไม่สำเร็จ: ' + err.message);
     URL.revokeObjectURL(imgURL);
   } finally {
     ocrBusy = false;
@@ -6066,6 +6438,15 @@ function setAppFontScale(id) {
   document.dispatchEvent(new CustomEvent('poeassist:prefschange'));
 }
 
+// "บันทึกแล้ว" หลังเปลี่ยนภาษา/สกุลเงิน/ขนาดฟอนต์ (patch 0.31) — ใช้ key เดียวกัน
+// เพื่อให้กดรัวๆ แล้ว toast ตัวเดิมถูกแทนที่ ไม่กองซ้อน · ธีม/โหมดไม่ต้องแจ้ง (เห็นผลด้วยตาอยู่แล้ว)
+// ผูกใน setTimeout เพื่อกันกรณี setter ถูกเรียกระหว่างบูต (จะได้ไม่เด้ง toast ตอนเปิดเว็บ)
+setTimeout(() => {
+  document.addEventListener('poeassist:prefschange', () => {
+    showSuccessToast(t('toast.saved'), { key: 'prefs', duration: 1600 });
+  });
+}, 0);
+
 /* ---- I18N: ดิกชันนารีสองภาษา (th = ข้อความปัจจุบัน / en = คำแปล) ----
    ใช้ t(key) หรือ tFmt(key, {n: ...}) — element ที่ตั้ง data-i18n จะถูกเขียนใหม่โดย applyI18nTexts()
    ตอนนี้ครอบคลุม: Settings ทั้งหน้า (หมวด/หัวข้อ/label/ปุ่ม/confirm) + Contact + Donate
@@ -6124,6 +6505,8 @@ const I18N = {
     'backup.import.fail': 'นำเข้าไม่สำเร็จ: ',
     'backup.write.fail': 'เขียนข้อมูลไม่สำเร็จ: ',
     'backup.read.fail': 'อ่านไฟล์ไม่สำเร็จ',
+    'backup.export.ok': 'ดาวน์โหลดไฟล์สำรองข้อมูลแล้ว',
+    'toast.saved': 'บันทึกการตั้งค่าแล้ว',
     'contact.desc': 'แจ้งบั๊ก / ส่งข้อเสนอแนะเกี่ยวกับเว็บนี้ได้ทางอีเมลนี้',
     'contact.copy': 'คัดลอกอีเมล',
     'contact.copied': 'คัดลอกแล้ว ✓',
@@ -6192,6 +6575,8 @@ const I18N = {
     'backup.import.fail': 'Import failed: ',
     'backup.write.fail': 'Writing data failed: ',
     'backup.read.fail': 'Could not read the file',
+    'backup.export.ok': 'Backup file downloaded',
+    'toast.saved': 'Settings saved',
     'contact.desc': 'For bug reports and suggestions about this app, use this email',
     'contact.copy': 'Copy email',
     'contact.copied': 'Copied ✓',
@@ -6623,7 +7008,12 @@ function parseBackup(text) {
   exportBtn.type = 'button';
   exportBtn.dataset.i18n = 'backup.export';
   exportBtn.textContent = t('backup.export');
-  exportBtn.addEventListener('click', exportAppData);
+  exportBtn.addEventListener('click', () => {
+    uxBusy(exportBtn, true, '…');
+    try { exportAppData(); showSuccessToast(t('backup.export.ok')); }
+    catch (err) { showErrorToast('Export failed: ' + err.message); }
+    finally { uxBusy(exportBtn, false); }
+  });
   const importBtn = document.createElement('button');
   importBtn.className = 'ocr-btn';
   importBtn.type = 'button';
@@ -6639,18 +7029,21 @@ function parseBackup(text) {
     e.target.value = '';
     if (!file) return;
     const reader = new FileReader();
+    uxBusy(importBtn, true, '…');
     reader.onload = () => {
+      uxBusy(importBtn, false);
       let incoming;
       try { incoming = parseBackup(String(reader.result)); }
-      catch (err) { alert(t('backup.import.fail') + err.message); return; }
+      catch (err) { showErrorToast(t('backup.import.fail') + err.message); return; }
       const n = Object.keys(incoming).length;
+      // เขียนทับข้อมูลผู้ใช้ = ต้อง confirm() แบบบล็อกเหมือนเดิม — toast ใช้แทนไม่ได้
       if (!confirm(tFmt('backup.import.confirm', { n: n }))) return;
       try {
         Object.keys(incoming).forEach(k => localStorage.setItem(k, incoming[k]));
-      } catch (err) { alert(t('backup.write.fail') + err.message); return; }
-      location.reload();
+      } catch (err) { showErrorToast(t('backup.write.fail') + err.message); return; }
+      location.reload(); // สำเร็จ = รีโหลดทันที (toast จะไม่ทันเห็น) — ผลลัพธ์คือข้อมูลใหม่บนหน้าจอ
     };
-    reader.onerror = () => alert(t('backup.read.fail'));
+    reader.onerror = () => { uxBusy(importBtn, false); showErrorToast(t('backup.read.fail')); };
     reader.readAsText(file);
   });
   backupRow.appendChild(exportBtn);
@@ -6680,6 +7073,8 @@ function parseBackup(text) {
       copyBtn.textContent = ok ? t('contact.copied') : t('contact.copyfail');
       clearTimeout(copyResetTimer);
       copyResetTimer = setTimeout(() => { copyBtn.textContent = t('contact.copy'); }, 1800);
+      if (ok) showSuccessToast(t('contact.copied'), { key: 'copy' });
+      else showWarningToast(t('contact.copyfail'), { key: 'copy' });
     };
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(CONTACT_EMAIL).then(() => done(true), () => done(false));
@@ -7344,8 +7739,16 @@ function renderShopTable() {
     const tr = document.createElement('tr');
     const td = document.createElement('td');
     td.colSpan = 9;
-    td.className = 'shop-empty';
-    td.textContent = 'ยังไม่มีรายการ — กด "+ Add Row" เพื่อเริ่มวางแผนของที่ต้องซื้อ (หรือ Import JSON ถ้าเคย Export เก็บไว้)';
+    td.className = 'shop-empty ux-empty-cell';
+    td.appendChild(uxEmptyState({
+      icon: '🛒',
+      title: 'ยังไม่มีรายการของที่ต้องซื้อ',
+      body: 'เพิ่มแถวแรกเพื่อเริ่มวางแผนงบของบิลด์ หรือ Import JSON ถ้าเคย Export เก็บไว้',
+      actions: [
+        { label: '+ Add Row', primary: true, onClick: () => document.getElementById('shopAddRowBtn').click() },
+        { label: 'Import JSON', onClick: () => document.getElementById('shopImportBtn').click() },
+      ],
+    }));
     tr.appendChild(td);
     tbody.appendChild(tr);
     updateShopQuickFilterCounts([]);
@@ -7505,6 +7908,8 @@ function renderShopTable() {
       shopRows.splice(i + 1, 0, JSON.parse(JSON.stringify(row)));
       persistShopRows();
       renderShopTable();
+      focusShopRowName(i + 1); // โฟกัส + ไฮไลต์แถวที่เพิ่งก๊อป (จะได้เห็นว่าอันไหนคือของใหม่)
+      showSuccessToast('คัดลอกแถวแล้ว', { key: 'shop-row' });
     }));
     tdActions.appendChild(makeIconBtn('✕', 'ลบแถวนี้', () => {
       const i = shopRows.indexOf(row);
@@ -7522,22 +7927,23 @@ function renderShopTable() {
     const tr = document.createElement('tr');
     const td = document.createElement('td');
     td.colSpan = 9;
-    td.className = 'shop-empty';
+    td.className = 'shop-empty ux-empty-cell';
     const slotOnly = shopSelectedSlot !== 'all' && !shopFilterText.trim() && shopQuickFilter === 'all';
     if (slotOnly) {
       // ช่องที่เลือกยังว่าง — ให้ปุ่มเพิ่มไอเทมเข้าช่องนี้โดยตรง
-      const msg = document.createElement('div');
-      msg.textContent = 'ยังไม่มีไอเทมในช่องนี้ (เพิ่มได้หลายตัวเลือกต่อช่อง)';
-      const add = document.createElement('button');
-      add.type = 'button';
-      add.className = 'ocr-btn primary';
-      add.style.marginTop = '10px';
-      add.textContent = '+ เพิ่มไอเทมในช่องนี้';
-      add.addEventListener('click', () => quickAddToSlot(shopSelectedSlot));
-      td.appendChild(msg);
-      td.appendChild(add);
+      td.appendChild(uxEmptyState({
+        icon: '🗃',
+        title: 'ยังไม่มีไอเทมในช่องนี้',
+        body: 'หนึ่งช่องใส่ได้หลายตัวเลือก — เพิ่มไว้เทียบราคากันได้',
+        actions: [{ label: '+ เพิ่มไอเทมในช่องนี้', primary: true, onClick: () => quickAddToSlot(shopSelectedSlot) }],
+      }));
     } else {
-      td.textContent = 'ไม่มีแถวที่ตรงกับคำค้นหา/ฟิลเตอร์ที่เลือก';
+      td.appendChild(uxEmptyState({
+        icon: '🔍',
+        title: 'ไม่มีแถวที่ตรงกับคำค้นหา/ฟิลเตอร์',
+        body: 'ลองล้างคำค้น หรือกลับไปดูทุกช่อง',
+        actions: [{ label: 'ล้างคำค้น/ฟิลเตอร์', onClick: () => { resetShopViewFilters(); selectShopSlot('all'); } }],
+      }));
     }
     tr.appendChild(td);
     tbody.appendChild(tr);
@@ -7569,6 +7975,7 @@ function focusShopRowName(idx) {
     if (!tr) return;
     const inp = tr.querySelector('.item-cell input[type="text"]');
     if (inp) { inp.focus(); tr.scrollIntoView({ block: 'nearest' }); }
+    uxFlash(tr); // เส้นทางร่วมของทุกการเพิ่มแถว (toolbar + quick-add จากบอร์ด) — ไฮไลต์ที่เดียวพอ
   });
 }
 
@@ -7846,26 +8253,36 @@ document.getElementById('shopAddRowBtn').addEventListener('click', () => {
   const idx = shopRows.push(row) - 1;
   persistShopRows();
   renderShopTable();
-  focusShopRowName(idx);
+  focusShopRowName(idx); // โฟกัส + ไฮไลต์แถวใหม่
 });
 
 document.getElementById('shopClearAllBtn').addEventListener('click', () => {
-  if (shopRows.length === 0) return;
-  if (confirm('ลบทุกแถวใน Build Shopping List? (' + shopRows.length + ' แถว)\nการลบนี้ย้อนกลับไม่ได้ — แนะนำ Export JSON เก็บไว้ก่อนถ้าไม่แน่ใจ')) {
+  if (shopRows.length === 0) { showInfoToast('ไม่มีแถวให้ลบอยู่แล้ว'); return; }
+  const n = shopRows.length;
+  // ลบข้อมูลผู้ใช้ = ต้องยืนยันแบบบล็อกเสมอ (ห้ามเปลี่ยนเป็น toast)
+  if (confirm('ลบทุกแถวใน Build Shopping List? (' + n + ' แถว)\nการลบนี้ย้อนกลับไม่ได้ — แนะนำ Export JSON เก็บไว้ก่อนถ้าไม่แน่ใจ')) {
     shopRows = [];
     persistShopRows();
     renderShopTable();
+    showSuccessToast('ลบรายการทั้งหมดแล้ว (' + n + ' แถว)');
   }
 });
 
-document.getElementById('shopExportBtn').addEventListener('click', () => {
-  const payload = { version: 1, exportedAt: new Date().toISOString(), divineRate, rows: shopRows };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'poe2-build-shopping-list.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
+document.getElementById('shopExportBtn').addEventListener('click', (ev) => {
+  const btn = ev.currentTarget;
+  uxBusy(btn, true, '…');
+  try {
+    const payload = { version: 1, exportedAt: new Date().toISOString(), divineRate, rows: shopRows };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'poe2-build-shopping-list.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showSuccessToast('Export แล้ว — ' + shopRows.length + ' แถว');
+  } catch (err) {
+    showErrorToast('Export ไม่สำเร็จ: ' + err.message);
+  } finally { uxBusy(btn, false); }
 });
 
 document.getElementById('shopImportBtn').addEventListener('click', () => {
@@ -7875,12 +8292,16 @@ document.getElementById('shopImportFile').addEventListener('change', (e) => {
   const file = e.target.files && e.target.files[0];
   e.target.value = '';
   if (!file) return;
+  const importBtn = document.getElementById('shopImportBtn');
   const reader = new FileReader();
+  uxBusy(importBtn, true, '…');
   reader.onload = () => {
+    uxBusy(importBtn, false);
     try {
       const data = JSON.parse(reader.result);
       const rows = Array.isArray(data) ? data : data.rows;
       if (!Array.isArray(rows)) throw new Error('ไม่พบรายการแถวในไฟล์');
+      // เขียนทับรายการเดิม = ต้องยืนยันแบบบล็อกเสมอ
       if (!confirm('นำเข้า ' + rows.length + ' แถวแทนที่รายการปัจจุบัน (' + shopRows.length + ' แถว)?')) return;
       shopRows = rows.map(r => Object.assign(newShopRow(), r));
       if (data && typeof data.divineRate === 'number' && data.divineRate >= 0) {
@@ -7890,10 +8311,12 @@ document.getElementById('shopImportFile').addEventListener('change', (e) => {
       }
       persistShopRows();
       renderShopTable();
+      showSuccessToast('นำเข้าแล้ว — ' + shopRows.length + ' แถว');
     } catch (err) {
-      alert('Import ไม่สำเร็จ: ' + err.message);
+      showErrorToast('Import ไม่สำเร็จ: ' + err.message);
     }
   };
+  reader.onerror = () => { uxBusy(importBtn, false); showErrorToast('อ่านไฟล์ไม่สำเร็จ'); };
   reader.readAsText(file);
 });
 
@@ -7945,6 +8368,18 @@ document.getElementById('shopSizeReset').addEventListener('click', resetShopSizi
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.31',
+    date: '2026-07-15',
+    notes: [
+      'Toast แจ้งผลทั่วแอป — คัดลอก / Export / Import / เพิ่ม-ลบ-ก๊อปแถวและการ์ด / รีเฟรชตลาด / เปลี่ยนการตั้งค่า จะเด้งข้อความสั้นๆ มุมขวาล่าง (สำเร็จ/เตือน/ผิดพลาด/ข้อมูล) ปิดเองได้ ชี้เมาส์ค้างไว้แล้วไม่หาย และมีปุ่มปิด — งานที่ลบข้อมูลยังต้องยืนยันด้วยหน้าต่าง confirm เหมือนเดิมทุกอัน',
+      'หน้าจอ "ยังไม่มีข้อมูล / ค้นหาไม่เจอ / โหลดไม่สำเร็จ" ถูกทำใหม่ให้หน้าตาเหมือนกันทั้งแอป พร้อมปุ่มทางออกในตัว — เช่น "+ Add Row", "ล้างคำค้น/ฟิลเตอร์", "ดู keyword ทั้งหมด", "ลองโหลดใหม่", "ไปที่ตัวกรองราคา" (Gear Planner, Farm Planner, Keyword Codex, Content Codex, Market Radar)',
+      'แท็บที่โหลดจากไฟล์ JSON (Market Radar / Content Codex / Keyword Codex) แสดงโครงหน้าจางๆ (skeleton) ระหว่างรอข้อมูล แทนข้อความ "กำลังโหลด…" เฉยๆ',
+      'แถว/การ์ดที่เพิ่งเพิ่มหรือคัดลอกจะไฮไลต์เขียวจางๆ ให้เห็นชัดว่าอันไหนคือของใหม่ (Gear Planner, Farm Planner + Run Tracker, Resistance Checker) · ปุ่ม Export/Import กดแล้วขึ้นสถานะกำลังทำงาน กันกดซ้ำ',
+      'กด Tab เดินทั่วหน้าจอแล้วเห็นกรอบโฟกัสชัดขึ้นทุกปุ่ม/ช่องกรอก · Keyword Codex: กดเปรียบเทียบเกิน 3 คำแล้วมีข้อความบอกเหตุผล (เดิมเงียบไปเฉยๆ) · Divine Market: เพิ่มราคาแล้วบอกชัดว่าข้อมูลอยู่ในเซสชันนี้เท่านั้น',
+      'เอฟเฟกต์ทั้งหมดปิดอัตโนมัติถ้าเครื่องตั้งค่า "ลดการเคลื่อนไหว" (prefers-reduced-motion) — การคำนวณ/ข้อมูลที่บันทึกไว้ไม่มีอะไรเปลี่ยน',
+    ],
+  },
   {
     version: '0.30',
     date: '2026-07-14',
@@ -8882,12 +9317,16 @@ function buildFarmCard(card) {
     farmCards.splice(idx + 1, 0, copy);
     persistFarmCards();
     renderFarmGrid();
+    flashFarmListItem(copy.id);
+    showSuccessToast('คัดลอกการ์ดแล้ว — "' + copy.name + '"', { key: 'farm-card' });
   }));
   foot.appendChild(makeIconBtn('✕', 'ลบการ์ดนี้', () => {
-    if (!confirm('ลบการ์ด "' + (card.name || 'ไม่มีชื่อ') + '" ?')) return;
+    const label = card.name || 'ไม่มีชื่อ';
+    if (!confirm('ลบการ์ด "' + label + '" ?')) return; // ลบการ์ด = ยืนยันแบบบล็อกเหมือนเดิม
     farmCards.splice(farmCards.indexOf(card), 1);
     persistFarmCards();
     renderFarmGrid();
+    showSuccessToast('ลบการ์ด "' + label + '" แล้ว', { key: 'farm-card' });
   }, true));
   el.appendChild(foot);
 
@@ -8914,6 +9353,7 @@ function buildFarmListItem(card) {
     + (MUTED_STATUSES.includes(card.status) ? ' muted' : '');
   item.setAttribute('role', 'button');
   item.tabIndex = 0;
+  item.dataset.farmId = card.id; // ให้ flashFarmListItem หาเจอหลังเพิ่ม/ก๊อปการ์ด (patch 0.31)
 
   // แถว 1: ดาว + ชื่อ + เวลา H/M/S
   const row1 = document.createElement('div');
@@ -9007,19 +9447,37 @@ function renderFarmList() {
   list.innerHTML = '';
 
   if (farmCards.length === 0) {
-    const empty = document.createElement('div');
-    empty.className = 'farm-empty';
-    empty.textContent = 'ยังไม่มีสูตรฟาร์ม — กด "+ Add Farm Card" เพื่อจดสูตรแรก';
-    list.appendChild(empty);
+    list.appendChild(uxEmptyState({
+      icon: '🗺',
+      title: 'ยังไม่มีสูตรฟาร์ม',
+      body: 'จดสูตรแรกไว้ แล้วบันทึกผลรันจริงเพื่อดูกำไร/ชั่วโมงของแต่ละสูตร',
+      actions: [
+        { label: '+ Add Farm Card', primary: true, onClick: () => document.getElementById('farmAddBtn').click() },
+        { label: 'Import JSON', onClick: () => document.getElementById('farmImportBtn').click() },
+      ],
+    }));
     return;
   }
 
   const visible = visibleFarmCards();
   if (visible.length === 0) {
-    const empty = document.createElement('div');
-    empty.className = 'farm-empty';
-    empty.textContent = 'ไม่มีการ์ดที่ตรงกับตัวกรอง/คำค้นหา';
-    list.appendChild(empty);
+    list.appendChild(uxEmptyState({
+      icon: '🔍',
+      title: 'ไม่มีการ์ดที่ตรงกับตัวกรอง/คำค้นหา',
+      body: 'ลองล้างคำค้นหรือกลับไปดูการ์ดทั้งหมด',
+      actions: [{
+        label: 'ล้างคำค้น/ฟิลเตอร์',
+        onClick: () => {
+          farmSearchText = '';
+          const s = document.getElementById('farmSearch');
+          if (s) s.value = '';
+          farmFilter = FARM_FILTERS[0].label; // ชิปตัวแรก = "All"
+          persistFarmFilter();
+          renderFarmFilters();
+          renderFarmGrid();
+        },
+      }],
+    }));
     return;
   }
   visible.forEach(card => list.appendChild(buildFarmListItem(card)));
@@ -9453,6 +9911,12 @@ function buildFarmRunTracker(card, onChange) {
     persistFarmCards();
     renderRows();
     onChange();
+    // ไฮไลต์แถวรันที่เพิ่งเพิ่ม (อยู่ท้ายตาราง — ตารางยาวๆ จะได้ไม่ต้องไล่หา)
+    requestAnimationFrame(() => {
+      const rows = box.querySelectorAll('tbody tr');
+      const last = rows[rows.length - 1];
+      if (last) { uxFlash(last); last.scrollIntoView({ block: 'nearest' }); }
+    });
   });
   box.appendChild(addBtn);
 
@@ -9511,7 +9975,19 @@ document.getElementById('farmAddBtn').addEventListener('click', () => {
   farmSelectedId = card.id; // การ์ดใหม่ถูกเลือกทันที — เริ่มกรอกฝั่งขวาได้เลย
   persistFarmCards();
   renderFarmGrid();
+  flashFarmListItem(card.id);
+  showSuccessToast('เพิ่มการ์ดฟาร์มใหม่แล้ว — กรอกรายละเอียดฝั่งขวาได้เลย', { key: 'farm-card' });
 });
+
+// ไฮไลต์การ์ดในลิสต์ซ้ายหลังเพิ่ม/ก๊อป (การ์ดใหม่อยู่บนสุด อาจไม่อยู่ในสายตาถ้าลิสต์ยาว)
+function flashFarmListItem(id) {
+  requestAnimationFrame(() => {
+    const el = document.querySelector('#farmList [data-farm-id="' + id + '"]');
+    if (!el) return;
+    el.scrollIntoView({ block: 'nearest' });
+    uxFlash(el);
+  });
+}
 
 document.getElementById('farmSearch').addEventListener('input', (e) => {
   farmSearchText = e.target.value;
@@ -9527,22 +10003,32 @@ document.getElementById('farmProjectRuns').addEventListener('input', (e) => {
 });
 
 document.getElementById('farmClearBtn').addEventListener('click', () => {
-  if (farmCards.length === 0) return;
-  if (confirm('ลบสูตรฟาร์มทั้งหมด ' + farmCards.length + ' การ์ด?\nการลบนี้ย้อนกลับไม่ได้ — แนะนำ Export JSON เก็บไว้ก่อน')) {
+  if (farmCards.length === 0) { showInfoToast('ไม่มีการ์ดให้ลบอยู่แล้ว'); return; }
+  const n = farmCards.length;
+  // ลบข้อมูลผู้ใช้ = ต้องยืนยันแบบบล็อกเสมอ (ห้ามเปลี่ยนเป็น toast)
+  if (confirm('ลบสูตรฟาร์มทั้งหมด ' + n + ' การ์ด?\nการลบนี้ย้อนกลับไม่ได้ — แนะนำ Export JSON เก็บไว้ก่อน')) {
     farmCards = [];
     persistFarmCards();
     renderFarmGrid();
+    showSuccessToast('ลบการ์ดทั้งหมดแล้ว (' + n + ' การ์ด)');
   }
 });
 
-document.getElementById('farmExportBtn').addEventListener('click', () => {
-  const payload = { version: 1, exportedAt: new Date().toISOString(), cards: farmCards };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'poe2-atlas-farm-planner.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
+document.getElementById('farmExportBtn').addEventListener('click', (ev) => {
+  const btn = ev.currentTarget;
+  uxBusy(btn, true, '…');
+  try {
+    const payload = { version: 1, exportedAt: new Date().toISOString(), cards: farmCards };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'poe2-atlas-farm-planner.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showSuccessToast('Export แล้ว — ' + farmCards.length + ' การ์ด');
+  } catch (err) {
+    showErrorToast('Export ไม่สำเร็จ: ' + err.message);
+  } finally { uxBusy(btn, false); }
 });
 
 document.getElementById('farmImportBtn').addEventListener('click', () => {
@@ -9552,20 +10038,26 @@ document.getElementById('farmImportFile').addEventListener('change', (e) => {
   const file = e.target.files && e.target.files[0];
   e.target.value = '';
   if (!file) return;
+  const importBtn = document.getElementById('farmImportBtn');
   const reader = new FileReader();
+  uxBusy(importBtn, true, '…');
   reader.onload = () => {
+    uxBusy(importBtn, false);
     try {
       const data = JSON.parse(reader.result);
       const cards = Array.isArray(data) ? data : data.cards;
       if (!Array.isArray(cards)) throw new Error('ไม่พบการ์ดในไฟล์');
+      // เขียนทับการ์ดเดิม = ต้องยืนยันแบบบล็อกเสมอ
       if (!confirm('นำเข้า ' + cards.length + ' การ์ดแทนที่ของเดิม (' + farmCards.length + ' การ์ด)?')) return;
       farmCards = cards.map(normalizeFarmCard);
       persistFarmCards();
       renderFarmGrid();
+      showSuccessToast('นำเข้าแล้ว — ' + farmCards.length + ' การ์ด');
     } catch (err) {
-      alert('Import ไม่สำเร็จ: ' + err.message);
+      showErrorToast('Import ไม่สำเร็จ: ' + err.message);
     }
   };
+  reader.onerror = () => { uxBusy(importBtn, false); showErrorToast('อ่านไฟล์ไม่สำเร็จ'); };
   reader.readAsText(file);
 });
 
@@ -9839,12 +10331,26 @@ function renderRadar(data) {
   body.appendChild(scoreInfo);
 
   if (recos.length === 0) {
-    const none = document.createElement('div');
-    none.className = 'radar-fallback';
-    none.textContent = items.length === 0
-      ? 'ไม่มีไอเทมผ่านเกณฑ์ราคา — ยังคำนวณคำแนะนำไม่ได้'
-      : 'ไอเทมที่ผ่านเกณฑ์ไม่มีตัวไหน map กับ content ได้ในรอบนี้';
-    body.appendChild(none);
+    // ตัวกรองราคาคือสาเหตุที่พบบ่อยสุด — ให้ทางออกไปเลย (ไม่แก้สูตรคะแนน แค่โฟกัสช่องกรอก)
+    body.appendChild(items.length === 0
+      ? uxEmptyState({
+        icon: '🎯',
+        title: 'ไม่มีไอเทมผ่านเกณฑ์ราคา',
+        body: 'ยังคำนวณคำแนะนำไม่ได้ — ลองลดราคาขั้นต่ำในตัวกรองด้านบน',
+        actions: [{
+          label: 'ไปที่ตัวกรองราคา',
+          primary: true,
+          onClick: () => {
+            const el = document.getElementById('rfMin');
+            if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.focus(); el.select(); }
+          },
+        }],
+      })
+      : uxEmptyState({
+        icon: '🧭',
+        title: 'ไอเทมที่ผ่านเกณฑ์ยัง map กับ content ไม่ได้ในรอบนี้',
+        body: 'snapshot รอบนี้ไม่มีไอเทมที่ผูกกับ content bucket ใดเลย — ลองรีเฟรชข้อมูลตลาด',
+      }));
   } else {
     const grid = document.createElement('div');
     grid.className = 'reco-grid';
@@ -10080,15 +10586,33 @@ function renderRadar(data) {
   }
 }
 
+// วาด state กลาง (loading/empty/error) ลงในตัว radarBody
+function radarBodyState(node) {
+  const body = document.getElementById('radarBody');
+  if (!body) return;
+  body.innerHTML = '';
+  body.appendChild(node);
+}
+
 async function loadRadar() {
   radarSetStatus('missing', 'Loading…');
+  const body = document.getElementById('radarBody');
+  if (body) body.setAttribute('aria-busy', 'true');
+  radarBodyState(uxSkeleton(4)); // แทน "กำลังโหลดข้อมูลตลาด…" — บอกโครงหน้าที่กำลังจะมา
+  const doneLoading = () => { if (body) body.removeAttribute('aria-busy'); };
+  const missingState = () => uxEmptyState({
+    icon: '📡',
+    title: 'ยังไม่มีข้อมูล Market Radar',
+    bodyHtml: 'ไฟล์ <code>data/market-radar.json</code> ยังไม่ถูก generate — รัน GitHub Action หรือใช้การ์ดฟาร์มที่จดเองไปก่อน',
+    actions: [{ label: 'ลองโหลดใหม่', primary: true, onClick: loadRadar }],
+  });
   try {
     // cache-buster กัน GitHub Pages / browser cache ค้าง
     const res = await fetch(RADAR_URL + '?t=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) {
       radarSetStatus('missing', 'Missing');
-      document.getElementById('radarBody').innerHTML =
-        '<div class="radar-fallback">Market Farm Radar data is not generated yet. Run the GitHub Action or use manual farm cards.</div>';
+      doneLoading();
+      radarBodyState(missingState());
       document.getElementById('radarMeta').innerHTML = '';
       return;
     }
@@ -10097,20 +10621,31 @@ async function loadRadar() {
       data = await res.json();
     } catch (parseErr) {
       radarSetStatus('error', 'Error');
-      document.getElementById('radarBody').innerHTML =
-        '<div class="radar-fallback">อ่านไฟล์ข้อมูลไม่สำเร็จ (JSON เสียหาย) — ลองรัน GitHub Action ใหม่</div>';
+      doneLoading();
+      radarBodyState(uxEmptyState({
+        variant: 'error',
+        icon: '⚠',
+        title: 'อ่านไฟล์ข้อมูลไม่สำเร็จ',
+        body: 'ไฟล์ JSON เสียหาย — ลองรัน GitHub Action ใหม่',
+        actions: [{ label: 'ลองโหลดใหม่', onClick: loadRadar }],
+      }));
       return;
     }
     radarData = data || {};
+    doneLoading();
     renderRadar(radarData);
   } catch (netErr) {
     radarSetStatus('missing', 'Missing');
-    document.getElementById('radarBody').innerHTML =
-      '<div class="radar-fallback">Market Farm Radar data is not generated yet. Run the GitHub Action or use manual farm cards.</div>';
+    doneLoading();
+    radarBodyState(missingState());
   }
 }
 
-document.getElementById('radarRefreshBtn').addEventListener('click', loadRadar);
+document.getElementById('radarRefreshBtn').addEventListener('click', async () => {
+  await loadRadar();
+  // รีเฟรชอ่านไฟล์ static ตัวเดิม — ถ้าไม่บอกอะไรเลย ผู้ใช้จะไม่รู้ว่ากดติดไหม
+  if (radarData && Array.isArray(radarData.marketItems)) showSuccessToast('รีเฟรชข้อมูลตลาดแล้ว');
+});
 loadRadar();
 
 /* ---- Radar filter UI wiring ---- */
@@ -11089,6 +11624,12 @@ function renderDivineMarket() {
     else divinePoints.push(entry);
     renderDivineMarket();
     priceInput.value = '';
+    // เตือนความจริงข้อสำคัญ: จุดราคานี้อยู่ในหน่วยความจำของเซสชันเท่านั้น (ไม่บันทึกลงไฟล์/localStorage)
+    showInfoToast(
+      (existingIdx >= 0 ? 'อัปเดตราคา League Day ' : 'เพิ่มราคา League Day ') + dayVal +
+      ' แล้ว — ข้อมูลนี้อยู่ในเซสชันนี้เท่านั้น (รีเฟรชแล้วหาย)',
+      { key: 'divine-add' }
+    );
   });
 })();
 
@@ -11206,12 +11747,33 @@ function codexStatusChip(entry) {
   return `<span class="codex-status-chip ${cls}" title="หน้านี้ parse ได้ไม่ครบ — ดูบน wiki">${codexEsc(entry.status)}</span>`;
 }
 
+// ใส่ state กลาง (empty/loading/error) ลงในกล่องลิสต์ — ใช้ร่วมกันทั้ง Content Codex และ Keyword Codex
+function codexPanelState(el, node) {
+  if (!el) return;
+  el.innerHTML = '';
+  el.appendChild(node);
+}
+
 function renderCodexList() {
   const listEl = document.getElementById('codexList');
   if (!listEl) return;
   const visible = codexVisibleEntries();
   if (!visible.length) {
-    listEl.innerHTML = `<div class="codex-empty">ไม่พบรายการที่ตรงกับการค้นหา/ฟิลเตอร์<br>ลองล้างคำค้นหรือเปลี่ยนฟิลเตอร์</div>`;
+    codexPanelState(listEl, uxEmptyState({
+      icon: '🔍',
+      title: 'ไม่พบรายการที่ตรงกับการค้นหา/ฟิลเตอร์',
+      body: 'ลองล้างคำค้นหรือเปลี่ยนฟิลเตอร์',
+      actions: [{
+        label: 'ล้างคำค้น/ฟิลเตอร์',
+        onClick: () => {
+          codexSearchText = '';
+          const s = document.getElementById('codexSearch');
+          if (s) s.value = '';
+          codexFilter = CODEX_FILTERS[0].id;
+          renderCodex();
+        },
+      }],
+    }));
     return;
   }
   // การ์ดที่เลือกหายจาก view (ถูกกรองออก) → เลือกตัวแรกที่มองเห็นแทน
@@ -11397,14 +11959,22 @@ async function loadCodex() {
   codexSetBadge('missing', 'Loading…');
   const listEl = document.getElementById('codexList');
   const detailEl = document.getElementById('codexDetail');
+  if (listEl) { listEl.setAttribute('aria-busy', 'true'); codexPanelState(listEl, uxSkeleton(6)); }
+  if (detailEl) detailEl.innerHTML = '';
+  const doneLoading = () => { if (listEl) listEl.removeAttribute('aria-busy'); };
   try {
     // cache-buster กัน GitHub Pages / browser cache ค้าง (แนวเดียวกับ market radar)
     const res = await fetch(CODEX_URL + '?t=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) {
       codexLoadState = 'missing';
       codexSetBadge('missing', 'Missing');
-      if (listEl) listEl.innerHTML = `<div class="codex-empty">ยังไม่มีไฟล์ข้อมูล Codex<br>รัน <code>node scripts/update-content-codex.mjs</code> เพื่อ generate <code>data/content-codex.json</code></div>`;
-      if (detailEl) detailEl.innerHTML = '';
+      doneLoading();
+      codexPanelState(listEl, uxEmptyState({
+        icon: '📦',
+        title: 'ยังไม่มีไฟล์ข้อมูล Codex',
+        bodyHtml: 'รัน <code>node scripts/update-content-codex.mjs</code> เพื่อ generate <code>data/content-codex.json</code>',
+        actions: [{ label: 'ลองโหลดใหม่', onClick: loadCodex }],
+      }));
       return;
     }
     let data;
@@ -11412,20 +11982,33 @@ async function loadCodex() {
     catch (parseErr) {
       codexLoadState = 'error';
       codexSetBadge('error', 'Error');
-      if (listEl) listEl.innerHTML = `<div class="codex-empty">อ่านไฟล์ข้อมูลไม่สำเร็จ (JSON เสียหาย) — ลอง generate ใหม่</div>`;
-      if (detailEl) detailEl.innerHTML = '';
+      doneLoading();
+      codexPanelState(listEl, uxEmptyState({
+        variant: 'error',
+        icon: '⚠',
+        title: 'อ่านไฟล์ข้อมูลไม่สำเร็จ',
+        body: 'ไฟล์ JSON เสียหาย — ลอง generate ใหม่',
+        actions: [{ label: 'ลองโหลดใหม่', onClick: loadCodex }],
+      }));
       return;
     }
     codexData = data || {};
     if (!Array.isArray(codexData.entries)) codexData.entries = [];
     codexLoadState = 'ok';
     codexSetBadge('fresh', codexData.entries.length + ' entries');
+    doneLoading();
     renderCodex();
   } catch (netErr) {
     codexLoadState = 'missing';
     codexSetBadge('missing', 'Missing');
-    if (listEl) listEl.innerHTML = `<div class="codex-empty">โหลดข้อมูล Codex ไม่ได้ — ตรวจว่าเปิดผ่าน HTTP server และมี <code>data/content-codex.json</code></div>`;
-    if (detailEl) detailEl.innerHTML = '';
+    doneLoading();
+    codexPanelState(listEl, uxEmptyState({
+      variant: 'error',
+      icon: '⚠',
+      title: 'โหลดข้อมูล Codex ไม่ได้',
+      bodyHtml: 'ตรวจว่าเปิดผ่าน HTTP server และมี <code>data/content-codex.json</code>',
+      actions: [{ label: 'ลองโหลดใหม่', onClick: loadCodex }],
+    }));
   }
 }
 
@@ -11570,9 +12153,27 @@ function renderKwcList() {
   const countEl = document.getElementById('kwcCount');
   if (countEl) countEl.textContent = visible.length + ' รายการ';
   if (!visible.length) {
-    listEl.innerHTML = kwcFilter === 'fav' && !kwcSearchText
-      ? `<div class="codex-empty">ยังไม่มี keyword ที่ติดดาว<br>กด ☆ บนการ์ดเพื่อเก็บเข้า Favorites</div>`
-      : `<div class="codex-empty">ไม่พบ keyword ที่ตรงกับการค้นหา/ฟิลเตอร์<br>ลองล้างคำค้นหรือเปลี่ยนฟิลเตอร์</div>`;
+    const clearFilters = () => {
+      kwcSearchText = '';
+      const s = document.getElementById('kwcSearch');
+      if (s) s.value = '';
+      kwcFilter = KWC_FILTERS[0].id;
+      renderKwc();
+    };
+    // ไม่มี favorites ≠ ค้นหาไม่เจอ — สองสถานะนี้ต้องแนะนำคนละอย่าง
+    codexPanelState(listEl, (kwcFilter === 'fav' && !kwcSearchText)
+      ? uxEmptyState({
+        icon: '☆',
+        title: 'ยังไม่มี keyword ที่ติดดาว',
+        body: 'กด ☆ บนการ์ดใดก็ได้เพื่อเก็บเข้า Favorites — จะขึ้นมาอยู่บนสุดของลิสต์',
+        actions: [{ label: 'ดู keyword ทั้งหมด', primary: true, onClick: clearFilters }],
+      })
+      : uxEmptyState({
+        icon: '🔍',
+        title: 'ไม่พบ keyword ที่ตรงกับการค้นหา/ฟิลเตอร์',
+        body: 'ลองล้างคำค้นหรือเปลี่ยนฟิลเตอร์',
+        actions: [{ label: 'ล้างคำค้น/ฟิลเตอร์', onClick: clearFilters }],
+      }));
     return;
   }
   if (!visible.some(k => k.id === kwcSelectedId)) kwcSelectedId = visible[0].id;
@@ -11620,7 +12221,11 @@ function kwcToggleCompare(id) {
   const i = kwcCompare.indexOf(id);
   if (i >= 0) kwcCompare.splice(i, 1);
   else {
-    if (kwcCompare.length >= KWC_COMPARE_MAX) return; // เต็ม 3 — ปุ่มบนแถบ compare บอกไว้แล้ว
+    if (kwcCompare.length >= KWC_COMPARE_MAX) {
+      // เดิมเงียบไปเฉยๆ — ผู้ใช้กดแล้วไม่มีอะไรเกิดขึ้นเลย ไม่รู้ว่าทำไม
+      showWarningToast('เปรียบเทียบได้สูงสุด ' + KWC_COMPARE_MAX + ' คำ — เอาคำใดคำหนึ่งออกก่อน', { key: 'kwc-cmp' });
+      return;
+    }
     kwcCompare.push(id);
   }
   renderKwc();
@@ -11629,13 +12234,15 @@ function kwcToggleCompare(id) {
 // คัดลอกข้อความ (clipboard API + fallback แบบเดียวกับปุ่ม copy อีเมลใน Settings)
 function kwcCopyText(text, btn) {
   const done = () => {
+    showSuccessToast('คัดลอกแล้ว', { key: 'copy' }); // key เดียวกับปุ่ม copy อื่นๆ — กดรัวๆ ไม่กองซ้อน
     if (!btn) return;
     const old = btn.textContent;
     btn.textContent = '✓ คัดลอกแล้ว';
     setTimeout(() => { btn.textContent = old; }, 1200);
   };
+  const fail = () => showWarningToast('คัดลอกไม่สำเร็จ — เลือกข้อความแล้วคัดลอกเองได้', { key: 'copy' });
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(done).catch(() => { /* เงียบไว้ — ผู้ใช้เลือกคัดลอกเองได้ */ });
+    navigator.clipboard.writeText(text).then(done).catch(fail);
   } else {
     try {
       const ta = document.createElement('textarea');
@@ -11645,7 +12252,7 @@ function kwcCopyText(text, btn) {
       document.execCommand('copy');
       ta.remove();
       done();
-    } catch (e) { /* ignore */ }
+    } catch (e) { fail(); }
   }
 }
 
@@ -11780,13 +12387,21 @@ async function loadKwc() {
   setBadge('missing', 'Loading…');
   const listEl = document.getElementById('kwcList');
   const detailEl = document.getElementById('kwcDetail');
+  if (listEl) { listEl.setAttribute('aria-busy', 'true'); codexPanelState(listEl, uxSkeleton(6)); }
+  if (detailEl) detailEl.innerHTML = '';
+  const doneLoading = () => { if (listEl) listEl.removeAttribute('aria-busy'); };
   try {
     const res = await fetch(KWC_URL + '?t=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) {
       kwcLoadState = 'missing';
       setBadge('missing', 'Missing');
-      if (listEl) listEl.innerHTML = `<div class="codex-empty">ยังไม่มีไฟล์ข้อมูล Keyword Codex<br>รัน <code>node scripts/update-keyword-codex.mjs</code> เพื่อ generate <code>data/keyword-codex.json</code></div>`;
-      if (detailEl) detailEl.innerHTML = '';
+      doneLoading();
+      codexPanelState(listEl, uxEmptyState({
+        icon: '📦',
+        title: 'ยังไม่มีไฟล์ข้อมูล Keyword Codex',
+        bodyHtml: 'รัน <code>node scripts/update-keyword-codex.mjs</code> เพื่อ generate <code>data/keyword-codex.json</code>',
+        actions: [{ label: 'ลองโหลดใหม่', onClick: loadKwc }],
+      }));
       return;
     }
     let data;
@@ -11794,22 +12409,35 @@ async function loadKwc() {
     catch (parseErr) {
       kwcLoadState = 'error';
       setBadge('error', 'Error');
-      if (listEl) listEl.innerHTML = `<div class="codex-empty">อ่านไฟล์ข้อมูลไม่สำเร็จ (JSON เสียหาย) — ลอง generate ใหม่</div>`;
-      if (detailEl) detailEl.innerHTML = '';
+      doneLoading();
+      codexPanelState(listEl, uxEmptyState({
+        variant: 'error',
+        icon: '⚠',
+        title: 'อ่านไฟล์ข้อมูลไม่สำเร็จ',
+        body: 'ไฟล์ JSON เสียหาย — ลอง generate ใหม่',
+        actions: [{ label: 'ลองโหลดใหม่', onClick: loadKwc }],
+      }));
       return;
     }
     kwcData = data || {};
     if (!Array.isArray(kwcData.keywords)) kwcData.keywords = [];
     kwcLoadState = 'ok';
     setBadge('fresh', kwcData.keywords.length + ' keywords');
+    doneLoading();
     renderKwc();
     // บอก Keyword Help Bridge ว่าข้อมูลพร้อมแล้ว (ชิปในแท็บอื่นจะได้อัปเดต label เป็นชื่อไทย)
     document.dispatchEvent(new CustomEvent('poeassist:keywordsloaded'));
   } catch (netErr) {
     kwcLoadState = 'missing';
     setBadge('missing', 'Missing');
-    if (listEl) listEl.innerHTML = `<div class="codex-empty">โหลดข้อมูล Keyword Codex ไม่ได้ — ตรวจว่าเปิดผ่าน HTTP server และมี <code>data/keyword-codex.json</code></div>`;
-    if (detailEl) detailEl.innerHTML = '';
+    doneLoading();
+    codexPanelState(listEl, uxEmptyState({
+      variant: 'error',
+      icon: '⚠',
+      title: 'โหลดข้อมูล Keyword Codex ไม่ได้',
+      bodyHtml: 'ตรวจว่าเปิดผ่าน HTTP server และมี <code>data/keyword-codex.json</code>',
+      actions: [{ label: 'ลองโหลดใหม่', onClick: loadKwc }],
+    }));
   }
 }
 
