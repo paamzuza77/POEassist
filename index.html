@@ -221,6 +221,10 @@
   html[data-theme="trust-blue-pay"] .ux-state,
   html[data-theme="trust-blue-pay"] .ux-skel-row,
   html[data-theme="trust-blue-pay"] .game-thumb,
+  html[data-theme="trust-blue-pay"] .shop-bulkbar,
+  html[data-theme="trust-blue-pay"] .shop-row-menu,
+  html[data-theme="trust-blue-pay"] .density-btn,
+  html[data-theme="trust-blue-pay"] .shop-bulk-slot select,
   html[data-theme="trust-blue-pay"] .patch-panel,
   html[data-theme="trust-blue-pay"] .patch-close,
   html[data-theme="trust-blue-pay"] .mode-toggle,
@@ -253,6 +257,7 @@
   html[data-theme="trust-blue-pay"] .kw-tip-link,
   html[data-theme="trust-blue-pay"] .kwc-cmp-chip,
   html[data-theme="trust-blue-pay"] .sr-status,
+  html[data-theme="trust-blue-pay"] .budget-chip,
   html[data-theme="trust-blue-pay"] .farm-link-chip {
     border-width: 1px;
     border-radius: 999px;
@@ -284,6 +289,7 @@
   }
   html[data-theme="trust-blue-pay"] .patch-panel,
   html[data-theme="trust-blue-pay"] .toast,
+  html[data-theme="trust-blue-pay"] .shop-row-menu,
   html[data-theme="trust-blue-pay"] .kw-tip {
     box-shadow: 0 12px 32px rgba(0, 48, 135, 0.14);
   }
@@ -1300,7 +1306,7 @@
   table.shop-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 1010px;
+    min-width: 830px;
     /* table-layout: fixed ทำให้ความกว้างคอลัมน์ยึดตาม <colgroup> (ปรับเองแบบ Excel ได้) */
     table-layout: fixed;
   }
@@ -1358,8 +1364,11 @@
   .col-no { width: 56px; text-align: center; }
   .col-link { width: 210px; }
   .col-num { width: 96px; }
-  .col-deal { width: 320px; }
-  .col-actions { width: 78px; text-align: center; }
+  .col-actions { width: 92px; text-align: center; }
+  .col-actions .col-actions-lbl {
+    font-family: var(--font-mono); font-size: 9.5px; font-weight: 700;
+    letter-spacing: 0.1em; margin-left: 4px; vertical-align: middle;
+  }
 
   .shop-table td.col-no {
     font-family: var(--font-mono);
@@ -1440,11 +1449,6 @@
   .icon-btn:hover { background: var(--text); color: var(--void); }
   .icon-btn.danger:hover { background: var(--fire); border-color: var(--border); color: var(--void); }
 
-  .deal-cell { display: flex; align-items: center; gap: 5px; }
-  .deal-cell .link-cell { flex: 1; min-width: 0; }
-  .deal-cell .link-cell input { min-width: 150px; }
-  .deal-cell .link-cell a { max-width: 190px; flex: 1; }
-  .shop-table .deal-cell input.deal-price { width: 58px; flex-shrink: 0; padding: 5px 4px; font-size: 11.5px; }
 
   .shop-empty {
     text-align: center;
@@ -1518,7 +1522,6 @@
   .shop-table tbody tr.bought td:first-child { box-shadow: 3px 0 0 var(--ok) inset; }
   .shop-table tbody tr.missing-price td.col-num input { border-color: var(--lightning); }
   .bought-badge.miss { background: var(--lightning); }
-  .shop-table .deal-cell input.deal-price.good-deal { border-color: var(--ok); color: var(--ok); font-weight: 700; }
   .shop-table tbody tr.row-target { background: #e8e8e8; outline: 3px solid var(--border); outline-offset: -3px; }
 
   /* ---------- Build Shopping List: gear slot planner (RawBlock) ---------- */
@@ -3941,6 +3944,84 @@
   @media (max-width: 480px) {
     .toast-stack { right: 12px; left: 12px; bottom: 12px; width: auto; }
   }
+
+  /* ==================== Gear Planner table QoL (patch 0.33) ==================== */
+  /* Density toggle */
+  .shop-density { display: inline-flex; align-items: center; gap: 4px; }
+  .density-btn {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    background: var(--void); color: var(--text);
+    border: 2px solid var(--border); border-radius: 0;
+    padding: 4px 8px; cursor: pointer;
+  }
+  .density-btn:hover { background: var(--panel-sunken); }
+  .density-btn.active { background: var(--text); color: var(--void); }
+
+  /* Compact density — ลดความสูงแถว/ช่องกรอก แต่ยังกดง่าย */
+  .shop-table-wrap.density-compact .shop-table tbody td { padding: 3px 7px; font-size: 12px; }
+  .shop-table-wrap.density-compact .shop-table input[type="text"],
+  .shop-table-wrap.density-compact .shop-table input[type="number"] { padding: 3px 6px; font-size: 12px; }
+  .shop-table-wrap.density-compact .item-cell { gap: 2px; }
+  .shop-table-wrap.density-compact .shop-table thead th { padding: 7px 8px; }
+  .shop-table-wrap.density-compact .kw-help-cell { margin-top: 2px; }
+  .shop-table-wrap.density-compact .budget-chip { margin-top: 2px; }
+
+  /* Bulk actions toolbar */
+  .shop-bulkbar {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+    margin: 0 0 10px; padding: 8px 12px;
+    background: var(--panel-sunken); border: 2px solid var(--border);
+  }
+  .shop-bulkbar[hidden] { display: none; }
+  .shop-bulk-count { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.06em; }
+  .shop-bulk-slot { font-family: var(--font-mono); font-size: 11px; display: inline-flex; align-items: center; gap: 5px; }
+  .shop-bulk-slot select {
+    font-family: var(--font-body); font-size: 12px;
+    background: var(--void); color: var(--text);
+    border: 2px solid var(--border); border-radius: 0; padding: 4px 6px;
+  }
+
+  /* Actions / QoL cell: select checkbox + … menu button */
+  .shop-act-cell { display: inline-flex; align-items: center; gap: 6px; justify-content: center; }
+  .shop-row-select { width: 15px; height: 15px; accent-color: var(--border); cursor: pointer; flex-shrink: 0; }
+  .icon-btn.shop-menu-btn { font-size: 15px; font-weight: 700; }
+  .shop-table tbody tr.row-selected { background: rgba(46, 120, 200, 0.10); }
+  .shop-table tbody tr.row-selected:hover { background: rgba(46, 120, 200, 0.16); }
+
+  /* Floating row action menu (… popup) */
+  .shop-row-menu {
+    position: fixed; z-index: 210; /* เหนือ numpad(70)/kw-tip(200); ใต้ modal(300) */
+    min-width: 180px; max-width: min(240px, calc(100vw - 16px));
+    background: var(--void); border: 3px solid var(--border);
+    box-shadow: 4px 4px 0 var(--border);
+    display: flex; flex-direction: column; padding: 4px;
+  }
+  .shop-menu-item {
+    display: block; width: 100%; text-align: left;
+    font-family: var(--font-mono); font-size: 12px;
+    background: var(--void); color: var(--text);
+    border: none; border-radius: 0; padding: 7px 9px; cursor: pointer;
+  }
+  .shop-menu-item:hover:not(:disabled) { background: var(--text); color: var(--void); }
+  .shop-menu-item:disabled { color: var(--text-muted); cursor: not-allowed; opacity: 0.55; }
+  .shop-menu-item.danger:hover:not(:disabled) { background: var(--fire); color: var(--void); }
+  .shop-menu-sep { height: 2px; background: var(--border-soft); margin: 3px 2px; }
+
+  /* Budget status chip under Bought */
+  .budget-chip {
+    display: inline-block; margin-top: 4px;
+    font-family: var(--font-mono); font-size: 8.5px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 1px 5px; border: 1.5px solid var(--border); border-radius: 0;
+    color: var(--text); background: var(--void);
+  }
+  .budget-chip[hidden] { display: none; }
+  .budget-chip.bs-deal { color: var(--void); background: var(--ok); border-color: var(--ok); }
+  .budget-chip.bs-inplan { color: var(--ok); border-color: var(--ok); }
+  .budget-chip.bs-over { color: var(--void); background: var(--fire); border-color: var(--fire); }
+  .budget-chip.bs-noprice { color: var(--lightning); border-color: var(--lightning); }
+  .budget-chip.bs-bought { color: var(--text-muted); border-color: var(--border-soft); }
 </style>
 </head>
 <body>
@@ -4295,6 +4376,11 @@
         <button class="size-btn" type="button" id="shopRowHInc" title="เพิ่มความสูงแถว" aria-label="เพิ่มความสูงแถว">+</button>
         <button class="ocr-btn size-reset" type="button" id="shopSizeReset" title="รีเซ็ตความกว้างคอลัมน์และความสูงแถวกลับค่าเริ่มต้น">Reset size</button>
       </div>
+      <div class="shop-density" role="group" aria-label="ความหนาแน่นของตาราง">
+        <span class="shop-sizing-label">Density</span>
+        <button class="density-btn" type="button" data-density="comfortable" title="แถวโปร่ง (ค่าเริ่มต้น)">Comfortable</button>
+        <button class="density-btn" type="button" data-density="compact" title="แถวกระชับ ประหยัดพื้นที่">Compact</button>
+      </div>
     </div>
 
     <div class="shop-filters" id="shopQuickFilters">
@@ -4302,26 +4388,38 @@
       <button class="filter-chip" type="button" data-filter="need">ยังไม่ซื้อ</button>
       <button class="filter-chip" type="button" data-filter="bought">ซื้อแล้ว</button>
       <button class="filter-chip" type="button" data-filter="noprice">ไม่มีราคา</button>
+      <button class="filter-chip" type="button" data-filter="noname">ไม่มีชื่อ</button>
+      <button class="filter-chip" type="button" data-filter="haslink">มีลิงก์</button>
       <button class="filter-chip" type="button" data-filter="deal">มี Deal</button>
       <span class="rf-count" id="shopFilterCount"></span>
+    </div>
+
+    <div class="shop-bulkbar" id="shopBulkBar" hidden>
+      <span class="shop-bulk-count" id="shopBulkCount">0 เลือก</span>
+      <button class="ocr-btn" type="button" id="shopBulkBought">มาร์กว่าซื้อแล้ว</button>
+      <button class="ocr-btn" type="button" id="shopBulkUnbought">ยกเลิกซื้อแล้ว</button>
+      <label class="shop-bulk-slot">ย้ายไปช่อง
+        <select id="shopBulkSlot"></select>
+      </label>
+      <button class="ocr-btn danger" type="button" id="shopBulkDelete">ลบที่เลือก</button>
+      <button class="ocr-btn" type="button" id="shopBulkClear">ล้างการเลือก</button>
     </div>
 
     <div class="shop-table-wrap">
       <table class="shop-table">
         <colgroup>
-          <col data-col="check"><col data-col="no"><col data-col="item"><col data-col="option"><col data-col="min"><col data-col="max"><col data-col="bought"><col data-col="deal"><col data-col="actions">
+          <col data-col="check"><col data-col="no"><col data-col="item"><col data-col="option"><col data-col="min"><col data-col="max"><col data-col="bought"><col data-col="actions">
         </colgroup>
         <thead>
           <tr>
-            <th class="col-check" data-col="check"><span class="col-resize" data-col="check"></span></th>
+            <th class="col-check" data-col="check" title="มาร์กแถว (เป้าหมาย)"><span class="col-resize" data-col="check"></span></th>
             <th class="col-no" data-col="no">No.<span class="col-resize" data-col="no"></span></th>
             <th class="col-link" data-col="item">Item / Link<span class="col-resize" data-col="item"></span></th>
             <th data-col="option">Important Option<span class="col-resize" data-col="option"></span></th>
             <th class="col-num" data-col="min">Min (Div)<span class="col-resize" data-col="min"></span></th>
             <th class="col-num" data-col="max">Max (Div)<span class="col-resize" data-col="max"></span></th>
             <th class="col-num" data-col="bought">Bought (Div)<span class="col-resize" data-col="bought"></span></th>
-            <th class="col-deal" data-col="deal">Link Best Item<span class="col-resize" data-col="deal"></span></th>
-            <th class="col-actions" data-col="actions"></th>
+            <th class="col-actions" data-col="actions"><input type="checkbox" id="shopSelectAll" title="เลือก/ยกเลิกทุกแถวที่เห็น (สำหรับ bulk actions)" aria-label="เลือกทุกแถวที่เห็น"><span class="col-actions-lbl">QoL</span></th>
           </tr>
         </thead>
         <tbody id="shopTbody"></tbody>
@@ -6813,6 +6911,7 @@ const APP_DATA_KEYS = [
   'poe2ShopList.rows.v1',
   'poe2ShopList.rate.v1',
   'poe2ShopList.tableSizing.v1',
+  'poe2ShopList.density.v1',
   'poe2FarmPlanner.cards.v1',
   'poe2FarmPlanner.filter.v1',
   'poe2FarmPlanner.view.v1',
@@ -6834,6 +6933,7 @@ const UI_PREF_KEYS = [
   'poeAssist.divineFiatRates.v1', // เรทที่ผู้ใช้กรอกถือเป็น UI pref — เรท THB เดิมใน poe2ShopList.rate.v1 "ไม่" ถูกลบ (ตั้งใจ)
   'poeAssist.fontScale.v1',
   'poe2ShopList.tableSizing.v1',
+  'poe2ShopList.density.v1',
   'poe2FarmPlanner.view.v1',
 ];
 const BACKUP_KIND = 'exile-assistant-backup';
@@ -7398,6 +7498,24 @@ const SHOP_RATE_KEY = 'poe2ShopList.rate.v1';
 /* ---- Table sizing (Excel-like column width + row height) ---- */
 // เก็บแยก key (additive) — ไม่ยุ่งกับ poe2ShopList.rows.v1 / ไม่เก็บลงในข้อมูลแถว
 const SHOP_SIZING_KEY = 'poe2ShopList.tableSizing.v1';
+// ความหนาแน่นของตาราง (patch 0.33) — additive key แยก, UI pref (อยู่ใน backup + reset)
+const SHOP_DENSITY_KEY = 'poe2ShopList.density.v1';
+// โหลด tolerant: ค่าที่ไม่ใช่ 'compact' ตกเป็น 'comfortable' (ค่าเริ่มต้น = เหมือนเดิม)
+let shopDensity = (function loadShopDensity() {
+  try { return localStorage.getItem(SHOP_DENSITY_KEY) === 'compact' ? 'compact' : 'comfortable'; }
+  catch (e) { return 'comfortable'; }
+})();
+function applyShopDensity() {
+  const wrap = document.querySelector('.shop-table-wrap');
+  if (wrap) wrap.classList.toggle('density-compact', shopDensity === 'compact');
+  document.querySelectorAll('#pageShop .density-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.density === shopDensity));
+}
+function setShopDensity(mode) {
+  shopDensity = mode === 'compact' ? 'compact' : 'comfortable';
+  try { localStorage.setItem(SHOP_DENSITY_KEY, shopDensity); } catch (e) { /* storage unavailable */ }
+  applyShopDensity();
+}
 // id = ตรงกับ <col data-col> ในตาราง; def/min/max = px (clamp กันคอลัมน์แคบ/กว้างจนใช้ไม่ได้)
 const SHOP_COLS = [
   { id: 'check',   def: 40,  min: 30,  max: 90 },
@@ -7407,8 +7525,7 @@ const SHOP_COLS = [
   { id: 'min',     def: 96,  min: 60,  max: 200 },
   { id: 'max',     def: 96,  min: 60,  max: 200 },
   { id: 'bought',  def: 110, min: 68,  max: 220 },
-  { id: 'deal',    def: 300, min: 180, max: 620 },
-  { id: 'actions', def: 78,  min: 60,  max: 140 },
+  { id: 'actions', def: 92,  min: 72,  max: 160 },
 ];
 const SHOP_ROW_H = { def: 44, min: 30, max: 96, step: 6 };
 
@@ -7522,9 +7639,15 @@ let shopRows = (function loadShopRows() {
 let divineRate = getDivineFiatRate();
 
 let shopFilterText = '';
-let shopQuickFilter = 'all';   // all | need | bought | noprice | deal (in-memory เท่านั้น)
+let shopQuickFilter = 'all';   // all | need | bought | noprice | noname | haslink | deal (in-memory เท่านั้น)
 let shopSortMode = 'default';  // เรียงเฉพาะการแสดงผล — ไม่แตะลำดับจริงใน localStorage
 let shopSelectedSlot = 'all';  // all | unassigned | slot id — มุมมองบอร์ดฝั่งซ้าย (in-memory เท่านั้น)
+// การเลือกแถวสำหรับ bulk actions (patch 0.33) — เก็บ "ตัว object แถว" ไว้ตรงๆ ให้รอด re-render/กรอง
+// (in-memory เท่านั้น ไม่ persist); แถวที่ถูกลบจะถูกตัดออกจาก set โดย pruneShopSelection()
+const shopSelected = new Set();
+function pruneShopSelection() {
+  shopSelected.forEach(r => { if (!shopRows.includes(r)) shopSelected.delete(r); });
+}
 
 function persistShopRows() {
   try { localStorage.setItem(SHOP_ROWS_KEY, JSON.stringify(shopRows)); } catch (e) { /* storage unavailable */ }
@@ -7557,6 +7680,23 @@ function rowEstPrice(row) {
 function rowDisplayName(row) {
   return (row.name || '').trim() || (row.type || '').trim() || (row.option || '').trim() ||
     ('รายการที่ ' + (shopRows.indexOf(row) + 1));
+}
+
+// สถานะงบต่อแถว (patch 0.33) — บอกสั้นๆ ว่าราคาที่ซื้อ/วางแผนอยู่ในกรอบไหม (ไม่แตะการคำนวณสรุป)
+// คืน null เมื่อไม่มีอะไรต้องบอก (เช่น วางแผนไว้แล้วยังไม่ซื้อ — แถวปกติ ไม่ต้องรก)
+function rowBudgetStatus(row) {
+  const hasMin = typeof row.min === 'number' && !isNaN(row.min);
+  const hasMax = typeof row.max === 'number' && !isNaN(row.max);
+  const bought = isBought(row);
+  if (bought) {
+    const b = row.bought;
+    if (hasMax && b > row.max) return { key: 'over', label: 'เกินงบ', title: 'ราคาที่ซื้อสูงกว่า Max ที่วางแผนไว้' };
+    if (hasMin && b < row.min) return { key: 'deal', label: 'ได้ดีล', title: 'ราคาที่ซื้อต่ำกว่า Min ที่วางแผนไว้ — ได้ของถูก' };
+    if (hasMin || hasMax) return { key: 'inplan', label: 'ในงบ', title: 'ราคาที่ซื้ออยู่ในกรอบที่วางแผนไว้' };
+    return { key: 'bought', label: 'ซื้อแล้ว', title: 'ซื้อแล้ว (ไม่ได้ตั้งงบไว้เทียบ)' };
+  }
+  if (!hasMin && !hasMax) return { key: 'noprice', label: 'ไม่มีราคา', title: 'ยังไม่ได้ใส่ราคา Min/Max' };
+  return null; // วางแผนไว้แล้วยังไม่ซื้อ — ไม่ต้องแสดงชิป
 }
 
 // slot ของแถวแบบ normalize แล้ว — ค่าที่ไม่รู้จัก/ว่าง นับเป็น '' (Unassigned) เพื่อไม่ให้ข้อมูลเก่าหาย
@@ -7766,8 +7906,165 @@ function makeIconBtn(symbol, label, onClick, danger) {
   b.textContent = symbol;
   b.title = label;
   b.setAttribute('aria-label', label);
-  b.addEventListener('click', onClick);
+  if (onClick) b.addEventListener('click', onClick);
   return b;
+}
+
+// ---- Row QoL action menu (patch 0.33) — แทนคอลัมน์ "Link Best Item" เดิม ----
+let shopRowMenuEl = null;
+let shopRowMenuAnchor = null;
+
+function closeShopRowMenu() {
+  if (shopRowMenuEl) { shopRowMenuEl.remove(); shopRowMenuEl = null; }
+  shopRowMenuAnchor = null;
+}
+
+function shopMenuItem(label, onClick, opts) {
+  opts = opts || {};
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'shop-menu-item' + (opts.danger ? ' danger' : '');
+  b.textContent = label;
+  if (opts.disabled) { b.disabled = true; if (opts.disabledTitle) b.title = opts.disabledTitle; }
+  else b.addEventListener('click', () => { closeShopRowMenu(); onClick(); });
+  return b;
+}
+
+function shopMenuSep(menu) {
+  const s = document.createElement('div');
+  s.className = 'shop-menu-sep';
+  menu.appendChild(s);
+}
+
+// คัดลอกข้อความ — ใช้ Clipboard API ถ้ามี, ไม่งั้น fallback execCommand (เหมือนที่ Settings/Keyword Codex ใช้)
+function shopCopyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+  return new Promise((resolve, reject) => {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      const ok = document.execCommand('copy'); ta.remove();
+      ok ? resolve() : reject(new Error('execCommand copy failed'));
+    } catch (e) { reject(e); }
+  });
+}
+
+// ไฮไลต์แถวที่เพิ่งถูก action เปลี่ยน (ใช้ระบบ uxFlash เดิม) — หาแถวจาก index ปัจจุบัน
+function flashShopRow(row) {
+  const tr = document.querySelector('#shopTbody tr[data-row-no="' + shopRows.indexOf(row) + '"]');
+  if (tr) uxFlash(tr);
+}
+
+function positionShopRowMenu(anchor, menu) {
+  const z = uiZoom(); // font-scale (patch 0.27) — getBoundingClientRect เป็น viewport px ต้องหาร zoom ตอนเซ็ต
+  const r = anchor.getBoundingClientRect();
+  const w = menu.offsetWidth * z, h = menu.offsetHeight * z;
+  let left = Math.min(Math.max(8, r.right - w), window.innerWidth - w - 8);
+  let top = r.bottom + 4;
+  if (top + h > window.innerHeight - 8) top = r.top - h - 4; // ที่ด้านล่างไม่พอ → เปิดขึ้นบน
+  if (top < 8) top = 8;
+  menu.style.left = (left / z) + 'px';
+  menu.style.top = (top / z) + 'px';
+}
+
+function openShopRowMenu(anchorBtn, row) {
+  if (shopRowMenuAnchor === anchorBtn) { closeShopRowMenu(); return; } // คลิกซ้ำ = ปิด
+  closeShopRowMenu();
+  const menu = document.createElement('div');
+  menu.className = 'shop-row-menu';
+  menu.setAttribute('role', 'menu');
+
+  const hasMin = typeof row.min === 'number' && !isNaN(row.min);
+  const hasMax = typeof row.max === 'number' && !isNaN(row.max);
+  const hasDeal = typeof row.dealPrice === 'number' && !isNaN(row.dealPrice);
+  const bought = isBought(row);
+  const setBought = (val, msg) => { row.bought = val; persistShopRows(); renderShopTable(); flashShopRow(row); showSuccessToast(msg, { key: 'shop-row' }); };
+
+  menu.appendChild(shopMenuItem('⧉ คัดลอกแถว', () => {
+    const i = shopRows.indexOf(row);
+    shopRows.splice(i + 1, 0, JSON.parse(JSON.stringify(row)));
+    persistShopRows(); renderShopTable(); focusShopRowName(i + 1);
+    showSuccessToast('คัดลอกแถวแล้ว', { key: 'shop-row' });
+  }));
+  menu.appendChild(shopMenuItem(bought ? '↺ ยกเลิก "ซื้อแล้ว"' : '✓ มาร์กว่าซื้อแล้ว', () => {
+    if (bought) { setBought(null, 'ยกเลิกสถานะซื้อแล้ว'); return; }
+    const est = rowEstPrice(row);
+    setBought(est != null ? est : 0, est != null ? 'มาร์กว่าซื้อแล้ว (' + fmtNum(est) + ' Div)' : 'มาร์กว่าซื้อแล้ว — ยังไม่ระบุราคา');
+  }));
+
+  shopMenuSep(menu);
+  menu.appendChild(shopMenuItem('Bought = Min', () => setBought(row.min, 'ตั้ง Bought = Min'), { disabled: !hasMin, disabledTitle: 'ยังไม่มีค่า Min' }));
+  menu.appendChild(shopMenuItem('Bought = Max', () => setBought(row.max, 'ตั้ง Bought = Max'), { disabled: !hasMax, disabledTitle: 'ยังไม่มีค่า Max' }));
+  menu.appendChild(shopMenuItem('Bought = Deal', () => setBought(row.dealPrice, 'ตั้ง Bought = Deal (' + fmtNum(row.dealPrice) + ' Div)'), { disabled: !hasDeal, disabledTitle: 'ยังไม่มีราคา Deal ที่เซฟไว้' }));
+
+  shopMenuSep(menu);
+  menu.appendChild(shopMenuItem('⧉ คัดลอกลิงก์เทรด', () => {
+    shopCopyText(row.link)
+      .then(() => showSuccessToast('คัดลอกลิงก์เทรดแล้ว', { key: 'shop-copy' }))
+      .catch(() => showErrorToast('คัดลอกลิงก์ไม่สำเร็จ'));
+  }, { disabled: !rowHasLink(row), disabledTitle: 'แถวนี้ยังไม่มีลิงก์เทรด' }));
+  menu.appendChild(shopMenuItem('↗ เปิดลิงก์เทรด', () => {
+    window.open(row.link, '_blank', 'noopener,noreferrer');
+  }, { disabled: !rowHasLink(row), disabledTitle: 'แถวนี้ยังไม่มีลิงก์เทรด' }));
+
+  shopMenuSep(menu);
+  menu.appendChild(shopMenuItem('⌫ ล้างค่าทั้งแถว', () => {
+    // ลบข้อมูลในแถว = ยืนยันแบบบล็อก (คง slot ไว้ ไม่ลบทั้งแถว)
+    if (!confirm('ล้างค่าทั้งหมดในแถวนี้? (ยังคงแถวและช่อง/slot ไว้)')) return;
+    row.name = ''; row.link = ''; row.type = ''; row.option = '';
+    row.min = null; row.max = null; row.bought = null;
+    row.dealLink = ''; row.dealPrice = null; row.checked = false;
+    persistShopRows(); renderShopTable(); flashShopRow(row);
+    showSuccessToast('ล้างค่าในแถวแล้ว', { key: 'shop-row' });
+  }));
+  menu.appendChild(shopMenuItem('✕ ลบแถวนี้', () => {
+    // ลบแถว = ยืนยันแบบบล็อกเสมอ
+    if (!confirm('ลบแถวนี้ออกจากรายการ?')) return;
+    const i = shopRows.indexOf(row);
+    if (i !== -1) shopRows.splice(i, 1);
+    shopSelected.delete(row);
+    persistShopRows(); renderShopTable();
+    showSuccessToast('ลบแถวแล้ว', { key: 'shop-row' });
+  }, { danger: true }));
+
+  document.body.appendChild(menu);
+  shopRowMenuEl = menu;
+  shopRowMenuAnchor = anchorBtn;
+  positionShopRowMenu(anchorBtn, menu);
+}
+
+// ปิดเมนูเมื่อคลิกนอกเมนู/กด Esc/resize; scroll = เลื่อนตาม anchor (ไม่ปิด)
+document.addEventListener('pointerdown', (e) => {
+  if (shopRowMenuEl && shopRowMenuAnchor &&
+      !shopRowMenuEl.contains(e.target) && e.target !== shopRowMenuAnchor && !shopRowMenuAnchor.contains(e.target)) {
+    closeShopRowMenu();
+  }
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && shopRowMenuEl) closeShopRowMenu(); });
+window.addEventListener('resize', () => { if (shopRowMenuEl) closeShopRowMenu(); });
+document.addEventListener('scroll', () => {
+  if (shopRowMenuEl && shopRowMenuAnchor) positionShopRowMenu(shopRowMenuAnchor, shopRowMenuEl);
+}, true);
+
+// ---- Bulk actions (patch 0.33) ----
+let shopVisibleRows = []; // แถวที่ render ล่าสุด (ใช้กับ "เลือกทั้งหมดที่เห็น")
+
+function updateShopBulkBar() {
+  const bar = document.getElementById('shopBulkBar');
+  if (!bar) return;
+  const n = shopSelected.size;
+  bar.hidden = n === 0;
+  const c = document.getElementById('shopBulkCount');
+  if (c) c.textContent = n + ' เลือก';
+  // สถานะกล่อง select-all: ติ๊กเมื่อทุกแถวที่เห็นถูกเลือก, indeterminate เมื่อเลือกบางส่วน
+  const all = document.getElementById('shopSelectAll');
+  if (all) {
+    const vis = shopVisibleRows;
+    const selVis = vis.filter(r => shopSelected.has(r)).length;
+    all.checked = vis.length > 0 && selVis === vis.length;
+    all.indeterminate = selVis > 0 && selVis < vis.length;
+  }
 }
 
 // Link cell: stores the full URL but renders a short clickable chip;
@@ -7826,12 +8123,12 @@ function updateRowVisual(tr, row) {
     badge.classList.toggle('miss', !bought);
     badge.style.display = (bought || missing) ? 'inline-block' : 'none';
   }
-  const dp = tr.querySelector('.deal-price');
-  if (dp) {
-    const good = typeof row.dealPrice === 'number' && !isNaN(row.dealPrice) &&
-      typeof row.min === 'number' && !isNaN(row.min) && row.dealPrice < row.min;
-    dp.classList.toggle('good-deal', good);
-    dp.title = good ? 'deal นี้ถูกกว่าราคา Min ที่วางแผนไว้' : 'ราคาของ deal นี้ (Divine)';
+  // ชิปสถานะงบใต้ช่องราคาที่ซื้อ (patch 0.33) — deal/ในงบ/เกินงบ/ไม่มีราคา
+  const bc = tr.querySelector('.budget-chip');
+  if (bc) {
+    const st = rowBudgetStatus(row);
+    if (st) { bc.hidden = false; bc.textContent = st.label; bc.title = st.title; bc.className = 'budget-chip bs-' + st.key; }
+    else { bc.hidden = true; bc.textContent = ''; bc.className = 'budget-chip'; }
   }
 }
 
@@ -7842,18 +8139,24 @@ function rowMatchesFilter(row) {
   return [row.name, row.type, row.option, row.link, row.dealLink, slotDef ? slotDef.label : ''].join(' ').toLowerCase().includes(q);
 }
 
+function rowHasName(row) { return !!(row.name && row.name.trim()); }
+function rowHasLink(row) { return !!(row.link && row.link.trim()); }
+function rowHasDeal(row) { return !!row.dealLink || (typeof row.dealPrice === 'number' && !isNaN(row.dealPrice)); }
+
 function rowMatchesQuick(row) {
   switch (shopQuickFilter) {
     case 'need': return !isBought(row);
     case 'bought': return isBought(row);
     case 'noprice': return !isBought(row) && !rowHasPrice(row);
-    case 'deal': return !!row.dealLink || (typeof row.dealPrice === 'number' && !isNaN(row.dealPrice));
+    case 'noname': return !rowHasName(row);
+    case 'haslink': return rowHasLink(row);
+    case 'deal': return rowHasDeal(row);
     default: return true;
   }
 }
 
 // ป้ายชิป quick filter (ฐาน — ตัวเลขนับต่อท้ายตอน render) + ตัวนับต่อชิป
-const SHOP_QUICK_LABELS = { all: 'All', need: 'ยังไม่ซื้อ', bought: 'ซื้อแล้ว', noprice: 'ไม่มีราคา', deal: 'มี Deal' };
+const SHOP_QUICK_LABELS = { all: 'All', need: 'ยังไม่ซื้อ', bought: 'ซื้อแล้ว', noprice: 'ไม่มีราคา', noname: 'ไม่มีชื่อ', haslink: 'มีลิงก์', deal: 'มี Deal' };
 // นับจากแถวใน "มุมมองปัจจุบัน" (slot + คำค้นหา) — เห็นก่อนกดเลยว่าชิปไหนมีของกี่แถว
 function updateShopQuickFilterCounts(baseRows) {
   const counts = {
@@ -7861,7 +8164,9 @@ function updateShopQuickFilterCounts(baseRows) {
     need: baseRows.filter(r => !isBought(r)).length,
     bought: baseRows.filter(r => isBought(r)).length,
     noprice: baseRows.filter(r => !isBought(r) && !rowHasPrice(r)).length,
-    deal: baseRows.filter(r => !!r.dealLink || (typeof r.dealPrice === 'number' && !isNaN(r.dealPrice))).length,
+    noname: baseRows.filter(r => !rowHasName(r)).length,
+    haslink: baseRows.filter(r => rowHasLink(r)).length,
+    deal: baseRows.filter(r => rowHasDeal(r)).length,
   };
   document.querySelectorAll('#shopQuickFilters .filter-chip').forEach(c => {
     const k = c.dataset.filter;
@@ -7898,7 +8203,7 @@ function renderShopTable() {
   if (shopRows.length === 0) {
     const tr = document.createElement('tr');
     const td = document.createElement('td');
-    td.colSpan = 9;
+    td.colSpan = 8;
     td.className = 'shop-empty ux-empty-cell';
     td.appendChild(uxEmptyState({
       icon: '🛒',
@@ -7913,13 +8218,17 @@ function renderShopTable() {
     tbody.appendChild(tr);
     updateShopQuickFilterCounts([]);
     document.getElementById('shopFilterCount').textContent = '';
+    shopVisibleRows = [];
+    updateShopBulkBar();
     updateShopSummary();
     return;
   }
 
+  pruneShopSelection(); // ตัดแถวที่ถูกลบออกจาก selection ก่อน render
   const baseRows = shopRows.filter(r => rowMatchesSlot(r) && rowMatchesFilter(r));
   const visibleRows = baseRows.filter(r => rowMatchesQuick(r));
   sortShopRowsForDisplay(visibleRows);
+  shopVisibleRows = visibleRows;
   updateShopQuickFilterCounts(baseRows);
   // บอกด้วยว่ากำลังดูช่องไหนอยู่ — ตัวเลขบนชิป/จำนวนแถวจะได้ไม่งงว่านับจากอะไร
   const slotDefView = SHOP_SLOTS.find(s => s.id === shopSelectedSlot);
@@ -8033,51 +8342,45 @@ function renderShopTable() {
         updateRowVisual(tr, row);
       });
       td.appendChild(input);
+      // ชิปสถานะงบใต้ช่อง "ราคาที่ซื้อ" (patch 0.33) — updateRowVisual เติมข้อความ/สีให้สด
+      if (field === 'bought') {
+        const chip = document.createElement('span');
+        chip.className = 'budget-chip';
+        chip.hidden = true;
+        td.appendChild(chip);
+      }
       tr.appendChild(td);
     });
 
-    // Saved Deal / Good Item (link + price in one cell)
-    const tdDeal = document.createElement('td');
-    tdDeal.className = 'col-deal';
-    const dealWrap = document.createElement('div');
-    dealWrap.className = 'deal-cell';
-    dealWrap.appendChild(buildLinkCell(row, 'dealLink', 'Deal', 'วางลิงก์ deal…'));
-    const dealPrice = document.createElement('input');
-    dealPrice.type = 'text';
-    dealPrice.inputMode = 'decimal';
-    dealPrice.className = 'deal-price num-input';
-    dealPrice.placeholder = 'Div';
-    dealPrice.title = 'ราคาของ deal นี้ (Divine)';
-    dealPrice.value = row.dealPrice === null || row.dealPrice === undefined ? '' : row.dealPrice;
-    dealPrice.addEventListener('input', () => {
-      const v = parseFloat(dealPrice.value);
-      row.dealPrice = isNaN(v) ? null : v;
-      persistShopRows();
-      updateRowVisual(tr, row); // เช็ค good-deal (deal ถูกกว่า Min)
-      renderShopBuyNext();
-    });
-    dealWrap.appendChild(dealPrice);
-    tdDeal.appendChild(dealWrap);
-    tr.appendChild(tdDeal);
+    // หมายเหตุ: คอลัมน์ "Link Best Item" (deal) ถูกถอดออก (patch 0.33) — ตารางรองรับหลายแถว/ไอเทมต่อช่องแล้ว
+    // ฟิลด์ row.dealLink / row.dealPrice ยังอยู่ในข้อมูล/เก็บ/นำเข้า-ส่งออก เพื่อไม่ให้ข้อมูลเก่าหาย และยังใช้ใน
+    // rowEstPrice / แถบ "ซื้อต่อไป" / เมนู QoL "Bought = Deal" — เพียงไม่แสดงเป็นคอลัมน์แยกอีกต่อไป
 
-    // Row actions: duplicate / delete
+    // Actions / QoL: กล่องเลือกแถว (bulk) + ปุ่มเมนู … รวมทุกคำสั่งของแถว
     const tdActions = document.createElement('td');
     tdActions.className = 'col-actions';
-    tdActions.appendChild(makeIconBtn('⧉', 'คัดลอกแถวนี้', () => {
-      const i = shopRows.indexOf(row);
-      shopRows.splice(i + 1, 0, JSON.parse(JSON.stringify(row)));
-      persistShopRows();
-      renderShopTable();
-      focusShopRowName(i + 1); // โฟกัส + ไฮไลต์แถวที่เพิ่งก๊อป (จะได้เห็นว่าอันไหนคือของใหม่)
-      showSuccessToast('คัดลอกแถวแล้ว', { key: 'shop-row' });
-    }));
-    tdActions.appendChild(makeIconBtn('✕', 'ลบแถวนี้', () => {
-      const i = shopRows.indexOf(row);
-      if (i !== -1) shopRows.splice(i, 1);
-      persistShopRows();
-      renderShopTable();
-    }, true));
+    const actWrap = document.createElement('div');
+    actWrap.className = 'shop-act-cell';
+    const sel = document.createElement('input');
+    sel.type = 'checkbox';
+    sel.className = 'shop-row-select';
+    sel.checked = shopSelected.has(row);
+    sel.title = 'เลือกแถวนี้ (สำหรับ bulk actions)';
+    sel.setAttribute('aria-label', 'เลือกแถวนี้');
+    sel.addEventListener('change', () => {
+      if (sel.checked) shopSelected.add(row); else shopSelected.delete(row);
+      tr.classList.toggle('row-selected', sel.checked);
+      updateShopBulkBar();
+    });
+    actWrap.appendChild(sel);
+    const menuBtn = makeIconBtn('⋯', 'เมนูจัดการแถว (QoL)', null);
+    menuBtn.classList.add('shop-menu-btn');
+    menuBtn.setAttribute('aria-haspopup', 'menu');
+    menuBtn.addEventListener('click', () => openShopRowMenu(menuBtn, row));
+    actWrap.appendChild(menuBtn);
+    tdActions.appendChild(actWrap);
     tr.appendChild(tdActions);
+    tr.classList.toggle('row-selected', shopSelected.has(row));
 
     updateRowVisual(tr, row);
     tbody.appendChild(tr);
@@ -8086,7 +8389,7 @@ function renderShopTable() {
   if (visibleRows.length === 0) {
     const tr = document.createElement('tr');
     const td = document.createElement('td');
-    td.colSpan = 9;
+    td.colSpan = 8;
     td.className = 'shop-empty ux-empty-cell';
     const slotOnly = shopSelectedSlot !== 'all' && !shopFilterText.trim() && shopQuickFilter === 'all';
     if (slotOnly) {
@@ -8109,6 +8412,7 @@ function renderShopTable() {
     tbody.appendChild(tr);
   }
 
+  updateShopBulkBar(); // รีเฟรชตัวนับ/แถบ bulk + สถานะ select-all ให้ตรงหลัง re-render
   updateShopSummary();
 }
 
@@ -8509,6 +8813,62 @@ document.getElementById('shopRowHDec').addEventListener('click', () => stepShopR
 document.getElementById('shopRowHInc').addEventListener('click', () => stepShopRowHeight(SHOP_ROW_H.step));
 document.getElementById('shopSizeReset').addEventListener('click', resetShopSizing);
 
+// Density toggle (patch 0.33)
+document.querySelectorAll('#pageShop .density-btn').forEach(btn => {
+  btn.addEventListener('click', () => setShopDensity(btn.dataset.density));
+});
+
+// ---- Bulk actions wiring (patch 0.33) ----
+// เลือก/ยกเลิกทุกแถวที่ "เห็นอยู่ตอนนี้" (เคารพ slot + คำค้น + quick filter) — ไม่แตะแถวที่ถูกกรองออก
+document.getElementById('shopSelectAll').addEventListener('change', (e) => {
+  const on = e.target.checked;
+  shopVisibleRows.forEach(r => { if (on) shopSelected.add(r); else shopSelected.delete(r); });
+  renderShopTable();
+});
+
+function shopBulkSetBought(makeBought) {
+  const rows = shopRows.filter(r => shopSelected.has(r)); // ทุกแถวที่เลือกไว้จริง (แม้ถูกกรองซ่อน)
+  if (rows.length === 0) { showInfoToast('ยังไม่ได้เลือกแถว'); return; }
+  rows.forEach(r => {
+    if (makeBought) { if (!isBought(r)) { const est = rowEstPrice(r); r.bought = est != null ? est : 0; } }
+    else { r.bought = null; }
+  });
+  persistShopRows();
+  renderShopTable();
+  showSuccessToast((makeBought ? 'มาร์กว่าซื้อแล้ว ' : 'ยกเลิกซื้อแล้ว ') + rows.length + ' แถว', { key: 'shop-bulk' });
+}
+document.getElementById('shopBulkBought').addEventListener('click', () => shopBulkSetBought(true));
+document.getElementById('shopBulkUnbought').addEventListener('click', () => shopBulkSetBought(false));
+
+document.getElementById('shopBulkSlot').addEventListener('change', (e) => {
+  const slot = e.target.value;
+  const rows = shopRows.filter(r => shopSelected.has(r)); // ทุกแถวที่เลือกไว้จริง (แม้ถูกกรองซ่อน)
+  e.target.value = ''; // รีเซ็ต dropdown กลับหัวข้อ
+  if (rows.length === 0) { showInfoToast('ยังไม่ได้เลือกแถว'); return; }
+  rows.forEach(r => { r.slot = slot; }); // '' = ไม่ระบุช่อง
+  persistShopRows();
+  renderShopTable();
+  const label = slot === '' ? 'ไม่ระบุช่อง' : (SHOP_SLOTS.find(s => s.id === slot) || {}).label || slot;
+  showSuccessToast('ย้าย ' + rows.length + ' แถว → ' + label, { key: 'shop-bulk' });
+});
+
+document.getElementById('shopBulkDelete').addEventListener('click', () => {
+  const rows = shopRows.filter(r => shopSelected.has(r)); // ลบเฉพาะที่เลือกจริง (แม้ถูกกรองซ่อน)
+  if (rows.length === 0) { showInfoToast('ยังไม่ได้เลือกแถว'); return; }
+  // ลบข้อมูลผู้ใช้ = ยืนยันแบบบล็อกเสมอ
+  if (!confirm('ลบ ' + rows.length + ' แถวที่เลือก?\nการลบนี้ย้อนกลับไม่ได้')) return;
+  shopRows = shopRows.filter(r => !shopSelected.has(r));
+  shopSelected.clear();
+  persistShopRows();
+  renderShopTable();
+  showSuccessToast('ลบ ' + rows.length + ' แถวที่เลือกแล้ว', { key: 'shop-bulk' });
+});
+
+document.getElementById('shopBulkClear').addEventListener('click', () => {
+  shopSelected.clear();
+  renderShopTable();
+});
+
 /* ---- Shopping list: init ---- */
 
 (function initShop() {
@@ -8519,7 +8879,13 @@ document.getElementById('shopSizeReset').addEventListener('click', resetShopSizi
     dl.appendChild(opt);
   });
   document.getElementById('divineRateInput').value = divineRate || '';
+  // เติมตัวเลือกช่องใน dropdown "ย้ายไปช่อง" ของ bulk bar (patch 0.33)
+  const bulkSlot = document.getElementById('shopBulkSlot');
+  bulkSlot.appendChild(new Option('เลือกช่อง…', ''));
+  bulkSlot.appendChild(new Option('— ไม่ระบุช่อง —', ''));
+  SHOP_SLOTS.forEach(s => bulkSlot.appendChild(new Option(s.label, s.id)));
   buildShopGearPanel(); // บอร์ด slot ต้องมีก่อน renderShopTable (summary จะอัปเดตตัวเลขบนบอร์ด)
+  applyShopDensity();   // ตั้งคลาส density + ปุ่ม active จากค่าที่บันทึกไว้ (ก่อน render ก็ได้ — คลาสอยู่บน wrap)
   renderShopTable();
   applyShopSizing();    // ปรับความกว้างคอลัมน์/ความสูงแถวจากค่าที่บันทึกไว้ (colgroup เป็น markup คงที่)
   initShopColResize();  // ผูก handle ลากปรับความกว้างที่หัวคอลัมน์
@@ -8528,6 +8894,16 @@ document.getElementById('shopSizeReset').addEventListener('click', resetShopSizi
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.33',
+    date: '2026-07-15',
+    notes: [
+      'Gear Planner: ถอดคอลัมน์ "Link Best Item" (deal) ออกจากตาราง — ตารางรองรับหลายไอเทมต่อช่องแล้ว คอลัมน์ Item / Link จัดการลิงก์เทรดได้ครบ (ข้อมูล deal เดิมยังถูกเก็บไว้ครบ ใช้ในแถบ "ซื้อต่อไป" และเมนู "Bought = Deal")',
+      'Gear Planner: เพิ่มเมนู QoL ต่อแถว (ปุ่ม ⋯) — คัดลอกแถว / มาร์กซื้อแล้ว-ยกเลิก / ตั้ง Bought = Min·Max·Deal / คัดลอก-เปิดลิงก์เทรด / ล้างค่าทั้งแถว / ลบแถว (คำสั่งลบยืนยันทุกครั้ง)',
+      'Gear Planner: เลือกหลายแถว + แถบ bulk — เลือกทุกแถวที่เห็น, มาร์กซื้อแล้ว/ยกเลิก, ย้ายไปช่อง, ลบที่เลือก (ยืนยัน)',
+      'Gear Planner: ปุ่ม Density (Comfortable / Compact) จำค่าไว้, ชิปสถานะงบต่อแถว (ได้ดีล/ในงบ/เกินงบ/ไม่มีราคา), ฟิลเตอร์ด่วนเพิ่ม "ไม่มีชื่อ" และ "มีลิงก์", หัวตารางตรึงเวลาเลื่อน',
+    ],
+  },
   {
     version: '0.32',
     date: '2026-07-15',
