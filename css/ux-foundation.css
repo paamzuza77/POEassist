@@ -1,0 +1,177 @@
+/* ==================== Modern UX Foundation (patch 0.31) ====================
+   3 ระบบกลางที่ใช้ซ้ำได้ทั้งแอป — ไม่ผูกกับแท็บไหนเป็นพิเศษ:
+     1) Toast   .toast-stack / .toast          → showToast() ใน JS
+     2) States  .ux-state / .ux-skel*          → uxEmptyState() / uxSkeleton()
+     3) Micro   .ux-flash / .is-busy / focus   → uxFlash() / uxBusy()
+   สีสถานะใช้ token เดิม (--ok / --lightning / --fire / --link) จึงตามธีมทั้ง 4 ชุดเอง
+
+   ย้ายออกจาก index.html (inline <style>) เป็นไฟล์แยกในรอบ modularization Phase 1 (patch 0.34)
+   — เนื้อหา CSS เดิมไม่เปลี่ยน · จับคู่กับ js/ux-foundation.js
+   ================================================================== */
+
+/* ---------- 1 · Toasts ---------- */
+/* z-index 400 = เหนือ modal (300) โดยตั้งใจ — error ตอน Import ใน Settings ต้องอ่านได้ */
+.toast-stack {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 400;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 10px;
+  width: min(380px, calc(100vw - 40px));
+  pointer-events: none;
+}
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--panel);
+  border: 3px solid var(--border);
+  padding: 10px 12px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  line-height: 1.5;
+  animation: uxToastIn 0.18s ease-out;
+}
+.toast.leaving { animation: uxToastOut 0.16s ease-in forwards; }
+.toast-ico {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.35;
+  flex: 0 0 auto;
+}
+.toast-msg { flex: 1 1 auto; min-width: 0; word-break: break-word; }
+.toast-close {
+  flex: 0 0 auto;
+  border: none;
+  background: none;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1;
+  padding: 1px 2px;
+  cursor: pointer;
+}
+.toast-close:hover { color: var(--text); }
+.toast.success { border-color: var(--ok); }
+.toast.success .toast-ico { color: var(--ok); }
+.toast.warn { border-color: var(--lightning); }
+.toast.warn .toast-ico { color: var(--lightning); }
+.toast.error { border-color: var(--fire); }
+.toast.error .toast-ico { color: var(--fire); }
+.toast.info { border-color: var(--link); }
+.toast.info .toast-ico { color: var(--link); }
+@keyframes uxToastIn {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes uxToastOut {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateX(16px); }
+}
+
+/* ---------- 2 · Empty / loading / error states ---------- */
+.ux-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  padding: 28px 20px;
+  border: 3px dashed var(--border-soft);
+  color: var(--text-dim);
+}
+.ux-state-ico { font-size: 24px; line-height: 1; }
+.ux-state-title {
+  font-family: var(--font-head);
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text);
+}
+.ux-state-body {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.6;
+  max-width: 46ch;
+}
+.ux-state-body code {
+  font-family: var(--font-mono);
+  border: 1px solid var(--border-soft);
+  padding: 0 3px;
+}
+.ux-state-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 4px;
+}
+.ux-state.error { border-style: solid; border-color: var(--fire); }
+.ux-state.error .ux-state-title { color: var(--fire); }
+.ux-state.loading { border-style: solid; }
+
+/* Skeleton: ไม่ใช้ gradient (ผิดสเปก RawBlock) — ใช้แถบสีขอบจางเต้นเบาๆ แทน */
+.ux-skel-list { display: flex; flex-direction: column; gap: 8px; padding: 4px 0; }
+.ux-skel-row {
+  height: 44px;
+  border: 2px solid var(--border-soft);
+  background: var(--border-soft);
+  opacity: 0.35;
+  animation: uxSkelPulse 1.2s ease-in-out infinite;
+}
+.ux-skel-row:nth-child(2) { animation-delay: 0.12s; }
+.ux-skel-row:nth-child(3) { animation-delay: 0.24s; }
+.ux-skel-row:nth-child(4) { animation-delay: 0.36s; }
+.ux-skel-row:nth-child(5) { animation-delay: 0.48s; }
+@keyframes uxSkelPulse {
+  0%, 100% { opacity: 0.20; }
+  50% { opacity: 0.45; }
+}
+
+/* ---------- 3 · Micro-interactions ---------- */
+/* ไฮไลต์แถว/การ์ดที่เพิ่งเพิ่ม/แก้ — เปลี่ยนเฉพาะ background จึงไม่ทำให้ตารางกระตุก */
+@keyframes uxFlashBg {
+  0% { background-color: rgba(46, 160, 90, 0.30); }
+  100% { background-color: transparent; }
+}
+.ux-flash { animation: uxFlashBg 1.1s ease-out; }
+tr.ux-flash { animation: none; }               /* <tr> รับ background ไม่แน่นอน — ยิงที่ <td> แทน */
+tr.ux-flash > td { animation: uxFlashBg 1.1s ease-out; }
+
+/* ปุ่มกดแล้วยุบเล็กน้อย + สถานะกำลังทำงาน (import/export) */
+.ocr-btn:active:not(:disabled):not(.is-busy) { transform: translateY(1px); }
+.ocr-btn.is-busy,
+.ocr-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Focus ring กลาง — เดิมมีเฉพาะบางคลาส ทำให้เดินด้วย Tab แล้วหลุดสายตาเป็นช่วงๆ */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--border);
+  outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast,
+  .toast.leaving,
+  .ux-skel-row,
+  .ux-flash,
+  tr.ux-flash > td { animation: none; }
+  .ocr-btn:active:not(:disabled):not(.is-busy) { transform: none; }
+}
+
+@media (max-width: 480px) {
+  .toast-stack { right: 12px; left: 12px; bottom: 12px; width: auto; }
+}
