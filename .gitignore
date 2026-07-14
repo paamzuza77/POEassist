@@ -1,1 +1,14 @@
 .claude/
+
+# Unused image/ assets — kept on your disk, deliberately NOT published to the repo (patch 0.32).
+# The app never references either file; see PROJECT_INDEX.md → "Game asset registry".
+#   logo.png — the official Path of Exile 2 logo. Trademarked, reads as endorsement
+#              (especially next to the Donate section), and 905KB. If you ever decide to
+#              ship it, un-ignore it here AND revisit the fan-content note in Settings → ติดต่อ.
+#   the-divine-orb-art-*.webp — duplicate Divine Orb artwork with a junk filename.
+#   divine.png (145KB)        — duplicate of divine.webp (37KB), which the registry uses
+#                               because it's 4x smaller at the 14-16px we render it.
+# Only the 13 files the app actually loads are committed.
+image/logo.png
+image/the-divine-orb-art-*.webp
+image/divine.png

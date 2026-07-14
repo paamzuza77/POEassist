@@ -220,6 +220,7 @@
   html[data-theme="trust-blue-pay"] .toast,
   html[data-theme="trust-blue-pay"] .ux-state,
   html[data-theme="trust-blue-pay"] .ux-skel-row,
+  html[data-theme="trust-blue-pay"] .game-thumb,
   html[data-theme="trust-blue-pay"] .patch-panel,
   html[data-theme="trust-blue-pay"] .patch-close,
   html[data-theme="trust-blue-pay"] .mode-toggle,
@@ -1175,7 +1176,11 @@
     gap: 12px;
     padding: 4px 0;
   }
-  .sg-label { font-size: 12.5px; color: var(--text-muted); }
+  /* nowrap (0.32): คอลัมน์ป้ายเป็น 1fr — พอไอคอน Divine ทำให้ฝั่งตัวเลขกว้างขึ้น
+     ป้าย "รวม Min" จะถูกบีบจนตกบรรทัด ถ้าไม่ล็อกไว้ */
+  .sg-label { font-size: 12.5px; color: var(--text-muted); white-space: nowrap; }
+  /* การ์ดสรุปแน่นอยู่แล้ว — ไอคอนสกุลเงินตรงนี้เล็กกว่าปกติเล็กน้อย */
+  .sg-div .game-ico, .sg-mirror .game-ico { width: 14px; height: 14px; }
   .sg-div {
     font-family: var(--font-mono);
     font-size: 17px;
@@ -1951,7 +1956,9 @@
     gap: 10px;
     margin-bottom: 8px;
   }
-  .reco-name { font-family: var(--font-head); font-size: 13.5px; text-transform: uppercase; color: var(--text); }
+  /* flex:1 (0.32): หัวการ์ดเป็น space-between — พอมีไอคอน content เพิ่มเข้ามาเป็นลูกตัวแรก
+     ชื่อต้องกินที่ว่างเอง ไม่งั้นไอคอน/ชื่อ/คะแนนจะกระจายห่างกันคนละมุม */
+  .reco-name { font-family: var(--font-head); font-size: 13.5px; text-transform: uppercase; color: var(--text); flex: 1; min-width: 0; }
   .score-badge {
     font-family: var(--font-mono);
     font-size: 15px;
@@ -2751,6 +2758,8 @@
   .farm-list-item.is-active { border-left: 6px solid var(--ok); }
   .farm-list-item.muted { border-color: var(--border-soft); color: var(--text-dim); }
   .fl-row1 { display: flex; align-items: baseline; gap: 8px; }
+  /* ไอคอนกลไก (0.32): แถวนี้จัดตาม baseline ของข้อความ — รูปต้องกลับมา center เอง ไม่งั้นจมลงล่าง */
+  .fl-row1 .game-ico { align-self: center; }
   .fl-name {
     flex: 1;
     min-width: 0;
@@ -3730,6 +3739,33 @@
     text-decoration: none;
   }
   .kw-tip-link:hover { background: var(--link); color: var(--panel); }
+
+  /* ==================== Game asset icons (patch 0.32) ====================
+     ไอคอนจริงจากเกม (image/) วางข้าง label ที่เป็นข้อความ — ดู JS "Game asset registry"
+     ขนาดถูกล็อกไว้ทั้ง width/height เพื่อไม่ให้เกิด layout shift ตอนรูปโหลดเสร็จ
+     ================================================================== */
+  .game-ico {
+    display: inline-block;
+    object-fit: contain;       /* รูปสัดส่วนไม่เท่ากัน — ห้ามยืด */
+    vertical-align: middle;
+    flex: 0 0 auto;
+    image-rendering: auto;
+  }
+  .game-ico-sm { width: 16px; height: 16px; }
+  .game-ico-md { width: 22px; height: 22px; }
+  .game-ico-lg { width: 40px; height: 40px; }
+
+  /* thumbnail ในลิสต์/หัวการ์ด: มีกรอบ ให้ดูเป็น "ช่องไอเทม" ตามภาษา RawBlock (เหลี่ยม) */
+  .game-thumb {
+    border: 2px solid var(--border-soft);
+    background: var(--panel);
+    padding: 2px;
+  }
+  /* dark: งานศิลป์ส่วนใหญ่พื้นเข้ม — เพิ่มคอนทราสต์เล็กน้อยให้ยังอ่านออกบนพื้นดำ */
+  html[data-mode="dark"] .game-thumb { background: #1a1a1a; }
+
+  /* ไอคอนสกุลเงินอยู่ติดตัวเลข — ระยะห่างคงที่ ไม่ต้องพึ่ง gap ของ parent */
+  .game-ico-cur { margin-right: 5px; }
 
   /* ==================== Modern UX Foundation (patch 0.31) ====================
      3 ระบบกลางที่ใช้ซ้ำได้ทั้งแอป — ไม่ผูกกับแท็บไหนเป็นพิเศษ:
@@ -4945,6 +4981,115 @@ function uxBusy(btn, on, busyLabel) {
     }
   }
 }
+
+/* ==================== Game asset registry (patch 0.32) ====================
+   ไอคอนจริงจากเกมในโฟลเดอร์ image/ (สกุลเงิน + กลไก league) ใช้ประกอบ label ที่เป็นข้อความ
+
+   กติกา (สำคัญ — อย่าทำให้หลวมกว่านี้):
+   - **จับคู่ด้วยตารางที่ตรวจด้วยมือเท่านั้น** (ASSET_ALIASES) ห้ามเดา/ห้าม fuzzy match
+     ไม่มีในตาราง = ไม่มีไอคอน (UI เดิมทำงานต่อได้ปกติ — ข้อความยังอยู่ครบเสมอ)
+   - **รูปเป็นของประกอบ ไม่ใช่ตัวสื่อความหมาย** — ทุกที่ที่ใส่ไอคอนต้องมี label ข้อความอยู่แล้ว
+     ดังนั้น <img> เป็น aria-hidden + alt="" (ไม่งั้น screen reader จะอ่านซ้ำสองรอบ)
+   - โหลดรูปพังเมื่อไหร่ = ซ่อนรูปเงียบๆ (ตัว listener ด้านล่าง) — ห้ามโชว์ไอคอนรูปแตก
+   - ไม่ preload ทั้งโฟลเดอร์ · thumbnail ในลิสต์ใช้ loading="lazy"
+   - logo.png **ไม่ถูกใช้** โดยตั้งใจ (โลโก้ = เครื่องหมายการค้า + ไฟล์ใหญ่ 905KB)
+
+   ที่มา/ลิขสิทธิ์: งานศิลป์ทั้งหมดเป็นของ Grinding Gear Games ใช้แบบ fan content
+   (ดูหมายเหตุในหน้า Settings → ติดต่อ) — เราไม่ได้วาดเอง และไม่ได้อ้างว่าเป็นของเรา
+   =========================================================================== */
+
+const ASSET_BASE = 'image/';
+
+// key → ไฟล์จริงใน image/ (ชื่อไฟล์คงเดิม ไม่เปลี่ยนชื่อ/ย้าย)
+const GAME_ASSETS = {
+  divine:        { file: 'divine.webp',                 label: 'Divine Orb' },
+  chaos:         { file: 'chaos.png',                   label: 'Chaos Orb' },
+  exalted:       { file: 'exalt.png',                   label: 'Exalted Orb' },
+  mirror:        { file: 'mirror.png',                  label: 'Mirror of Kalandra' },
+  abyss:         { file: 'abyss.webp',                  label: 'Abyss' },
+  breach:        { file: 'breach.webp',                 label: 'Breach' },
+  ritual:        { file: 'ritual.webp',                 label: 'Ritual' },
+  delirium:      { file: 'delirium.webp',               label: 'Delirium' },
+  expedition:    { file: 'expedition.webp',             label: 'Expedition' },
+  waystone:      { file: 'waystone.webp',               label: 'Waystone' },
+  trialchaos:    { file: 'the trial of chaos.webp',     label: 'Trial of Chaos' },
+  trialsekhemas: { file: 'trial of the sekhemma.webp',  label: 'Trial of the Sekhemas' },
+  atziri:        { file: 'Atziri.webp',                 label: 'Atziri, the Red Queen' },
+};
+
+// ชื่อที่ยอมให้จับคู่ → key ด้านบน · ทุกบรรทัดตรวจกับข้อมูลจริงแล้ว (codex entries / radar buckets /
+// FARM_MECHANICS / FARM_CURRENCIES) — เพิ่มบรรทัดใหม่ได้ แต่ต้องเช็คก่อนว่าชื่อนั้นมีอยู่จริง
+const ASSET_ALIASES = {
+  // สกุลเงิน (Gear Planner / Farm Planner ใช้ตัวย่อ Dv/C/Ex)
+  'divine': 'divine', 'div': 'divine', 'dv': 'divine', 'divine orb': 'divine',
+  'chaos orb': 'chaos', 'c': 'chaos',
+  'exalted': 'exalted', 'exalt': 'exalted', 'ex': 'exalted', 'exalted orb': 'exalted',
+  'mirror': 'mirror', 'mirror of kalandra': 'mirror',
+  // กลไก league (ตรงกับ FARM_MECHANICS + radar buckets + Content Codex entry names)
+  'abyss': 'abyss',
+  'breach': 'breach',
+  'ritual': 'ritual',
+  'delirium': 'delirium',
+  'expedition': 'expedition',
+  'waystone': 'waystone', 'waystones mapping': 'waystone',
+  // บอส ↔ content ที่บอสนั้นอยู่ (ตรวจกับ data/content-codex.json แล้ว)
+  'the trialmaster': 'trialchaos', 'trial of chaos': 'trialchaos', 'the trial of chaos': 'trialchaos',
+  'zarokh the temporal': 'trialsekhemas', 'trial of the sekhemas': 'trialsekhemas',
+  'atziri': 'atziri', 'atziri the red queen': 'atziri',
+};
+
+// จงใจ "ไม่" จับคู่: chaos (คำเดียว) → คำว่า Chaos ใน Keyword Codex คือธาตุ Chaos ไม่ใช่ Chaos Orb
+//   (ใช้ 'chaos orb'/'c' แทน) · simulacrum / essence / strongbox / runes / fragments → ไม่มีไฟล์รูป
+//   · trial_soulcores ของ Market Radar → มีรูป trial สองใบ เลือกไม่ได้ว่าอันไหน จึงไม่ใส่ไอคอน
+
+// Market Radar: contentKey ของ bucket → key ใน GAME_ASSETS (ตรวจกับ data/market-radar.json แล้ว)
+// ที่ไม่มีในนี้ = ไม่มีไอคอน: essence / simulacrum / strongboxes / runes / fragments_bossing /
+// generic_currency (ไม่มีไฟล์รูป) และ trial_soulcores (มีรูป trial 2 ใบ — เลือกไม่ได้ว่าอันไหนตรง)
+const RADAR_ASSET_BY_KEY = {
+  ritual: 'ritual',
+  abyss: 'abyss',
+  expedition: 'expedition',
+  delirium: 'delirium',
+  breach: 'breach',
+  waystones_mapping: 'waystone',
+};
+
+function normalizeAssetKey(name) {
+  return String(name == null ? '' : name)
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]+/g, ' ') // ตัด comma/slash/จุด — "Atziri, the Red Queen" → "atziri the red queen"
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// คืน { key, file, label, src } ถ้าจับคู่ได้ · ไม่ได้ = null (caller ต้องคง UI เดิมไว้)
+function getLocalAssetForName(name) {
+  const key = ASSET_ALIASES[normalizeAssetKey(name)];
+  if (!key) return null;
+  const def = GAME_ASSETS[key];
+  if (!def) return null;
+  return { key, file: def.file, label: def.label, src: ASSET_BASE + encodeURIComponent(def.file) };
+}
+
+// คืน HTML ของ <img> หรือ '' ถ้าไม่มีรูป · size: 'sm' (16px) | 'md' (22px) | 'lg' (40px thumbnail)
+// ผู้เรียกต้องมี label ข้อความอยู่แล้วเสมอ — รูปนี้เป็นของประกอบ (aria-hidden)
+function renderAssetIcon(name, opts) {
+  const o = opts || {};
+  const asset = getLocalAssetForName(name);
+  if (!asset) return '';
+  const size = ['sm', 'md', 'lg'].includes(o.size) ? o.size : 'sm';
+  const lazy = o.lazy === false ? '' : ' loading="lazy" decoding="async"';
+  const cls = 'game-ico game-ico-' + size + (o.className ? ' ' + o.className : '');
+  return '<img class="' + cls + '" src="' + asset.src + '" alt="" aria-hidden="true"' + lazy +
+    ' title="' + asset.label.replace(/"/g, '&quot;') + '">';
+}
+
+// รูปโหลดไม่ขึ้น (ไฟล์หาย/พัง) → ซ่อนเงียบๆ ให้เหลือแต่ข้อความ ห้ามโชว์ไอคอนรูปแตก
+// ใช้ capture เพราะ error ของ <img> ไม่ bubble
+document.addEventListener('error', ev => {
+  const el = ev.target;
+  if (el && el.tagName === 'IMG' && el.classList.contains('game-ico')) el.style.display = 'none';
+}, true);
 
 const ICONS = {
   helmet: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 15c0-5.5 3.5-9 8-9s8 3.5 8 9v2H4v-2z"/><path d="M4 17h16v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2z"/><path d="M9 8.5V6"/><path d="M15 8.5V6"/></svg>`,
@@ -6511,6 +6656,8 @@ const I18N = {
     'contact.copy': 'คัดลอกอีเมล',
     'contact.copied': 'คัดลอกแล้ว ✓',
     'contact.copyfail': 'คัดลอกไม่สำเร็จ — คัดลอกเองจากลิงก์ได้เลย',
+    'sec.credits': 'เครดิต / ที่มาของรูป',
+    'credits.assets': 'ไอคอนสกุลเงินและกลไกในเว็บนี้เป็นงานศิลป์จากเกม Path of Exile 2 ลิขสิทธิ์ของ Grinding Gear Games ใช้ในลักษณะ fan content — เว็บนี้ไม่ได้เป็นเว็บทางการ ไม่ได้รับการรับรอง และไม่มีส่วนเกี่ยวข้องกับ GGG',
     'donate.placeholder': 'ยังไม่เปิดให้บริการ',
     'donate.note': 'ส่วนสนับสนุน/เลี้ยงกาแฟยังเป็น placeholder — ยังไม่มีช่องทางจ่ายเงินจริง จะเปิดให้บริการในอนาคต.',
     'danger.resetui': 'รีเซ็ตการตั้งค่า UI (ธีม/โหมด/ภาษา/สกุลเงิน/ขนาดตัวอักษร/ย่อเมนู/แท็บเริ่มต้น/ขนาดตาราง)',
@@ -6581,6 +6728,8 @@ const I18N = {
     'contact.copy': 'Copy email',
     'contact.copied': 'Copied ✓',
     'contact.copyfail': 'Copy failed — please copy from the link manually',
+    'sec.credits': 'Credits / image sources',
+    'credits.assets': 'The currency and mechanic icons in this app are Path of Exile 2 artwork, copyright Grinding Gear Games, used as fan content. This site is not official, not endorsed by, and not affiliated with GGG.',
     'donate.placeholder': 'Not available yet',
     'donate.note': 'The donate / coffee section is a placeholder — no payment links are live yet.',
     'danger.resetui': 'Reset UI preferences (theme/mode/language/currency/font size/sidebar/start tab/table sizing)',
@@ -7095,6 +7244,11 @@ function parseBackup(text) {
   contactRow.appendChild(copyBtn);
   pgContact.appendChild(contactRow);
 
+  // เครดิตงานศิลป์ (patch 0.32) — ไอคอนใน image/ เป็นทรัพย์สินของ GGG ใช้แบบ fan content
+  // ต้องแสดงคำปฏิเสธความเกี่ยวข้องให้ชัด เพราะหน้านี้อยู่ติดกับหมวด Donate
+  pgContact.appendChild(sectionTitle('sec.credits'));
+  pgContact.appendChild(noteP('credits.assets'));
+
   // ===== หมวด 5 · Donate (placeholder — ห้ามใส่ลิงก์จ่ายเงินจนกว่าจะเปิดให้บริการจริง) =====
   const pgDonate = pages.donate.page;
   pgDonate.appendChild(sectionTitle('sec.donate'));
@@ -7472,18 +7626,24 @@ function updateShopSummary() {
     }
   });
 
-  const set = (id, div) => { document.getElementById(id).textContent = fmtNum(div) + ' Div'; };
+  // ยอด Div: ไอคอน Divine Orb นำหน้าตัวเลข — ข้อความ "X Div" ยังอยู่ครบ (ไอคอนเป็นของประกอบ)
+  const divIco = renderAssetIcon('Divine', { size: 'sm', className: 'game-ico-cur', lazy: false });
+  const set = (id, div) => {
+    document.getElementById(id).innerHTML = divIco + fmtNum(div) + ' Div'; // fmtNum คืนตัวเลขล้วน — ปลอดภัย
+  };
   // ยอด fiat ตามสกุลเงินที่เลือกใน Settings — ไม่มีเรท = "—" (ห้ามแสดงเป็นเงิน 0 / ห้ามเดาเรท)
   const setThb = (id, div) => {
     document.getElementById(id).textContent = divineRate > 0 ? '= ' + fmtNum(div * divineRate) + ' ' + fiatSymbol() : '— ' + fiatSymbol();
   };
 
   // helper เทียบเป็น Mirror ใต้ยอด Div ที่วางแผน — ไม่มีราคา Mirror = ซ่อน, ไม่แตะการคำนวณเดิม
+  const mirrorIco = renderAssetIcon('Mirror of Kalandra', { size: 'sm', className: 'game-ico-cur', lazy: false });
   const setMirror = (id, div) => {
     const el = document.getElementById(id);
     const text = formatMirrorEquivalent(div);
     el.hidden = !text;
-    el.textContent = text;
+    // formatMirrorEquivalent คืนสตริงที่เราสร้างเองทั้งหมด (fmtNum + คำคงที่) — ไม่มีข้อมูลผู้ใช้
+    el.innerHTML = text ? mirrorIco + text : '';
     el.classList.toggle('reach', text !== '' && text !== 'Short of 1 Mirror');
   };
 
@@ -8368,6 +8528,18 @@ document.getElementById('shopSizeReset').addEventListener('click', resetShopSizi
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.32',
+    date: '2026-07-15',
+    notes: [
+      'ไอคอนจริงจากเกม — สกุลเงินและกลไก league มีรูปประกอบแล้ว: ยอด Div ทั้งหมดใน Gear Planner (รวมงบ/จ่ายจริง/ต้องใช้อีก) และตัวช่วยเทียบ Mirror ขึ้นไอคอน Divine Orb / Mirror of Kalandra · ตัวหนังสือเดิมยังอยู่ครบทุกที่ ไอคอนเป็นของประกอบเท่านั้น',
+      'Market Radar: การ์ดคำแนะนำของ Abyss / Ritual / Delirium / Breach / Expedition / Waystones ขึ้นไอคอน content · bucket ที่ยังไม่มีรูป (Essence, Simulacrum, Strongboxes, Runes, Fragments, Generic Currency, Trial) ไม่มีไอคอน — ไม่เดาให้',
+      'Content Codex: การ์ดในลิสต์และหัวรายละเอียดขึ้นไอคอนสำหรับ 8 รายการที่ตรงกันแน่ๆ (Abyss, Breach, Delirium, Expedition, Ritual, Atziri, The Trialmaster, Zarokh) · **นโยบายเดิมไม่เปลี่ยน — ยังไม่ดึงรูปจาก wiki มาแสดง** ส่วน Image ยังเป็นลิงก์ไปหน้า wiki เหมือนเดิม',
+      'Keyword Codex: ไอคอนเฉพาะ 5 คำที่เป็นกลไกจริง (Breach, Delirium, Ritual, Expedition, Abyss) — คำอย่าง "ความเสียหายเคออส" จะไม่ไปหยิบไอคอน Chaos Orb มาใส่ผิดความหมาย · Farm Planner: การ์ดที่เลือกกลไกไว้จะขึ้นไอคอนกลไกนั้นในลิสต์ซ้าย',
+      'จับคู่รูปด้วยตารางที่ตรวจด้วยมือเท่านั้น — ชื่อที่ไม่อยู่ในตารางจะไม่มีไอคอน (ไม่เดา) และถ้ารูปโหลดไม่ขึ้นจะซ่อนให้เอง เหลือแต่ข้อความเหมือนเดิม',
+      'เครดิต: งานศิลป์ไอคอนเป็นของ Grinding Gear Games (Path of Exile 2) ใช้แบบ fan content — เว็บนี้ไม่ใช่เว็บทางการและไม่มีส่วนเกี่ยวข้องกับ GGG (ดูหมายเหตุใน Settings → ติดต่อ)',
+    ],
+  },
   {
     version: '0.31',
     date: '2026-07-15',
@@ -9355,9 +9527,24 @@ function buildFarmListItem(card) {
   item.tabIndex = 0;
   item.dataset.farmId = card.id; // ให้ flashFarmListItem หาเจอหลังเพิ่ม/ก๊อปการ์ด (patch 0.31)
 
-  // แถว 1: ดาว + ชื่อ + เวลา H/M/S
+  // แถว 1: [ไอคอนกลไก] + ดาว + ชื่อ + เวลา H/M/S
   const row1 = document.createElement('div');
   row1.className = 'fl-row1';
+
+  // ไอคอนกลไกตัวแรกของการ์ดที่มีรูปจริง (patch 0.32) — ไม่มีกลไก/ไม่มีรูป = ไม่แสดงอะไรเลย
+  // อ่านอย่างเดียวจาก card.mechanics ที่มีอยู่แล้ว — ไม่เพิ่ม field, ไม่แตะการคำนวณ
+  const mechAsset = (card.mechanics || []).map(getLocalAssetForName).find(Boolean);
+  if (mechAsset) {
+    const ico = document.createElement('img');
+    ico.className = 'game-ico game-ico-sm game-thumb';
+    ico.src = mechAsset.src;
+    ico.alt = '';                 // ชื่อกลไกมีอยู่ในชิปด้านล่างการ์ดแล้ว — ไม่ต้องให้ SR อ่านซ้ำ
+    ico.setAttribute('aria-hidden', 'true');
+    ico.loading = 'lazy';
+    ico.title = mechAsset.label;
+    row1.appendChild(ico);
+  }
+
   const nm = document.createElement('span');
   nm.className = 'fl-name';
   nm.textContent = (card.favorite ? '★ ' : '') + (card.name || 'ไม่มีชื่อ');
@@ -10363,6 +10550,23 @@ function renderRadar(data) {
 
       const headEl = document.createElement('div');
       headEl.className = 'reco-head';
+
+      // ไอคอน content (patch 0.32): map จาก contentKey ของ bucket → รูปใน image/ ที่ตรวจแล้ว
+      // bucket ที่ไม่มีรูป (essence/simulacrum/strongboxes/runes/fragments/generic) = ไม่มีไอคอน
+      // trial_soulcores จงใจไม่ใส่ — มีรูป trial สองใบ เลือกไม่ได้ว่าอันไหนตรง
+      const rcAsset = RADAR_ASSET_BY_KEY[rc.contentKey]
+        ? getLocalAssetForName(GAME_ASSETS[RADAR_ASSET_BY_KEY[rc.contentKey]].label) : null;
+      if (rcAsset) {
+        const ico = document.createElement('img');
+        ico.className = 'game-ico game-ico-md game-thumb';
+        ico.src = rcAsset.src;
+        ico.alt = '';                     // ชื่อ content อยู่ใน .reco-name ข้างๆ แล้ว
+        ico.setAttribute('aria-hidden', 'true');
+        ico.loading = 'lazy';
+        ico.title = rcAsset.label;
+        headEl.appendChild(ico);
+      }
+
       const nm = document.createElement('span');
       nm.className = 'reco-name';
       nm.textContent = rc.content || '?';
@@ -11781,8 +11985,11 @@ function renderCodexList() {
   listEl.innerHTML = visible.map(e => {
     const fav = codexFavs.has(e.id);
     const dropCount = (e.drops || []).length;
+    // ไอคอนจาก image/ เฉพาะ entry ที่ชื่อตรงกับตารางที่ตรวจมือแล้ว (patch 0.32) — ที่เหลือไม่มีไอคอน
+    // นโยบายเดิมยังอยู่ครบ: **ไม่** ดึงรูปจาก wiki (ส่วน Image ยังเป็น placeholder + ลิงก์เหมือนเดิม)
     return `<div class="codex-list-item${e.id === codexSelectedId ? ' selected' : ''}" data-codex-id="${codexEsc(e.id)}" role="button" tabindex="0">
       <div class="cli-head">
+        ${renderAssetIcon(e.name, { size: 'sm', className: 'game-thumb' })}
         <span class="cli-name">${codexEsc(e.name)}</span>
         <button type="button" class="cli-star${fav ? ' on' : ''}" data-codex-fav="${codexEsc(e.id)}" title="${fav ? 'เอาออกจาก Favorites' : 'ติดดาวเก็บเข้า Favorites'}">${fav ? '★' : '☆'}</button>
       </div>
@@ -11899,8 +12106,11 @@ function renderCodexDetail() {
       Fetched: ${codexFmtDate(entry.fetchedAt)} · License: ${codexEsc((codexData && codexData.source && codexData.source.license) || 'CC BY-NC 3.0 unless otherwise noted')}</p>`),
   ].join('');
 
+  // ไอคอนหัวเรื่อง (0.32): เฉพาะชื่อที่อยู่ในตารางที่ตรวจมือแล้ว — ไม่ใช่รูปจาก wiki
+  // (กล่อง Image ด้านซ้ายยังเป็น placeholder + ลิงก์ wiki ตามนโยบายเดิมทุกประการ)
   el.innerHTML = `<div class="codex-detail-panel">
     <div class="codex-detail-head">
+      ${renderAssetIcon(entry.name, { size: 'lg', className: 'game-thumb', lazy: false })}
       <h3 class="codex-detail-name">${codexEsc(entry.name)}</h3>
       <button type="button" class="cli-star${fav ? ' on' : ''}" data-codex-fav-detail="${codexEsc(entry.id)}" title="${fav ? 'เอาออกจาก Favorites' : 'ติดดาวเก็บเข้า Favorites'}">${fav ? '★' : '☆'}</button>
       ${srcUrl ? `<a class="codex-link-chip" href="${srcUrl}" target="_blank" rel="noopener">Open Wiki Page</a>` : ''}
@@ -12146,6 +12356,18 @@ function kwcCatChips(kw, max) {
   }).join('');
 }
 
+// ไอคอน keyword (patch 0.32): allowlist ตาม **id ของ poe2db** เท่านั้น — ตรวจแล้วว่ามีจริงในไฟล์ข้อมูล
+// จงใจไม่ใช้ getLocalAssetForName(ชื่อ keyword) เพราะจะทำให้ keyword "Chaos" (ธาตุ Chaos)
+// ไปได้ไอคอน Chaos Orb ซึ่งผิดความหมาย · keyword ที่เหลืออีก ~761 คำไม่มีไอคอน โดยตั้งใจ
+const KWC_ASSET_IDS = {
+  Breach: 'breach', Delirium: 'delirium', Ritual: 'ritual', Expedition: 'expedition', Abyss: 'abyss',
+};
+function kwcAssetIcon(kw, size) {
+  const key = KWC_ASSET_IDS[kw && kw.id];
+  if (!key) return '';
+  return renderAssetIcon(GAME_ASSETS[key].label, { size: size || 'sm', className: 'game-thumb' });
+}
+
 function renderKwcList() {
   const listEl = document.getElementById('kwcList');
   if (!listEl) return;
@@ -12184,6 +12406,7 @@ function renderKwcList() {
     const preview = kwcDesc(k).text.split('\n')[0];
     return `<div class="codex-list-item${k.id === kwcSelectedId ? ' selected' : ''}" data-kwc-id="${kwcEsc(k.id)}" role="button" tabindex="0">
       <div class="cli-head">
+        ${kwcAssetIcon(k, 'sm')}
         <span class="kli-name-th">${kwcHl(k.nameTh || k.nameEn || k.id, kwcSearchText)}</span>
         <button type="button" class="kli-cmp${inCmp ? ' on' : ''}" data-kwc-cmp="${kwcEsc(k.id)}" title="${inCmp ? 'เอาออกจากการเปรียบเทียบ' : 'เพิ่มเข้าการเปรียบเทียบ (สูงสุด ' + KWC_COMPARE_MAX + ')'}">⇄</button>
         <button type="button" class="cli-star${fav ? ' on' : ''}" data-kwc-fav="${kwcEsc(k.id)}" title="${fav ? 'เอาออกจาก Favorites' : 'ติดดาวเก็บเข้า Favorites'}">${fav ? '★' : '☆'}</button>
@@ -12283,6 +12506,7 @@ function renderKwcDetail() {
 
   el.innerHTML = `<div class="codex-detail-panel">
     <div class="codex-detail-head">
+      ${kwcAssetIcon(kw, 'md')}
       <h3 class="codex-detail-name">${kwcEsc(kw.nameTh || kw.nameEn || kw.id)}</h3>
       <button type="button" class="cli-star${fav ? ' on' : ''}" data-kwc-fav-detail title="${fav ? 'เอาออกจาก Favorites' : 'ติดดาวเก็บเข้า Favorites'}">${fav ? '★' : '☆'}</button>
       ${urlTh ? `<a class="codex-link-chip" href="${kwcEsc(urlTh)}" target="_blank" rel="noopener">poe2db TH</a>` : ''}
