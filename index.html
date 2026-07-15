@@ -184,6 +184,7 @@
   html[data-theme="trust-blue-pay"] .score-bar,
   html[data-theme="trust-blue-pay"] .score-badge,
   html[data-theme="trust-blue-pay"] .radar-panel,
+  html[data-theme="trust-blue-pay"] .radar-hero,
   html[data-theme="trust-blue-pay"] .radar-item-card,
   html[data-theme="trust-blue-pay"] .radar-item-rows-wrap,
   html[data-theme="trust-blue-pay"] .radar-item-row,
@@ -279,6 +280,9 @@
   html[data-theme="trust-blue-pay"] .sr-status,
   html[data-theme="trust-blue-pay"] .budget-chip,
   html[data-theme="trust-blue-pay"] .todo-due,
+  html[data-theme="trust-blue-pay"] .radar-fresh-chip,
+  html[data-theme="trust-blue-pay"] .radar-why-chip,
+  html[data-theme="trust-blue-pay"] .radar-sum-chip,
   html[data-theme="trust-blue-pay"] .farm-link-chip {
     border-width: 1px;
     border-radius: 999px;
@@ -293,6 +297,7 @@
   html[data-theme="trust-blue-pay"] .link-card,
   html[data-theme="trust-blue-pay"] .reco-card,
   html[data-theme="trust-blue-pay"] .radar-panel,
+  html[data-theme="trust-blue-pay"] .radar-hero,
   html[data-theme="trust-blue-pay"] .radar-item-card,
   html[data-theme="trust-blue-pay"] .farm-card,
   html[data-theme="trust-blue-pay"] .farm-list-item,
@@ -2609,6 +2614,7 @@
      การ์ด App Status (Today) — ทั้งหมดเป็น "รายละเอียดเชิงลึก" ที่ยังเปิดดูได้ผ่านโหมด Advanced */
   html[data-display="simple"] .reco-breakdown,
   html[data-display="simple"] .radar-score-info,
+  html[data-display="simple"] .radar-debug, /* 0.43: บรรทัด debug counters เป็นของ power user */
   html[data-display="simple"] .aug-calc,
   html[data-display="simple"] #todayStatusCard,
   html[data-display="simple"] .shop-tool-display { display: none; } /* 0.42: Row H/Density เป็นของ power user — Advanced เท่านั้น */
@@ -4264,6 +4270,147 @@
   .shop-att-est { flex-shrink: 0; font-weight: 700; }
   .shop-att-issue { border-style: dashed; }
   .shop-att-clear { font-family: var(--font-mono); font-size: 11px; color: var(--ok); }
+
+  /* ==================== Market Radar planner-first reflow (patch 0.43) ====================
+     hero "ฟาร์มต่อไป" + แถบสรุปสัญญาณ + disclosure (ฟิลเตอร์/Evidence ใช้ .shop-disclosure ร่วม)
+     base เป็น RawBlock; Modern v2 มี override ใน css/modern-theme.css section 11 (sync กลุ่ม selector) */
+  .radar-hero {
+    background: var(--void);
+    border: 5px solid var(--border);
+    padding: 16px 18px;
+    margin: 0 0 12px;
+  }
+  /* display:flex ชนะกฎ [hidden] ของเบราว์เซอร์ — ต้อง override กลับเอง (บทเรียน 0.42) */
+  .radar-hero[hidden], .radar-summary[hidden] { display: none; }
+  .radar-hero-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .radar-hero-eyebrow {
+    font-family: var(--font-head);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0;
+  }
+  .radar-fresh-chip {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    border: 2px solid var(--ok);
+    color: var(--ok);
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+  .radar-fresh-chip.is-stale { border-color: var(--lightning); color: var(--lightning); }
+  .radar-hero-main {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .radar-hero-namewrap { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; min-width: 0; }
+  .radar-hero-name {
+    font-family: var(--font-head);
+    font-size: 22px;
+    line-height: 1.15;
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+  .radar-hero-score {
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 1;
+    color: var(--text);
+  }
+  .radar-hero-score small {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+  .radar-hero-why { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 12px; }
+  .radar-why-chip {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--text-muted);
+    border: 2px solid var(--border-soft, var(--border));
+    padding: 3px 8px;
+  }
+  .radar-why-best { color: var(--text); border-color: var(--border); font-weight: 700; }
+  .radar-hero-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .radar-hero-empty {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  /* แถบสรุปสัญญาณ — ชิปนับต่อกลุ่ม (คลิก = scroll ไปกลุ่ม / เปิดกลุ่มที่ซ่อน) + ทางเข้าฟิลเตอร์ */
+  .radar-summary {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 0 0 12px;
+  }
+  .radar-sum-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 2px solid var(--border);
+    background: var(--void);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 4px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .radar-sum-chip:hover { background: var(--text); color: var(--void); }
+  .radar-sum-chip .rsc-n { font-size: 12.5px; }
+  .radar-sum-muted { color: var(--text-dim); border-style: dashed; }
+  .radar-sum-filter { color: var(--text-muted); }
+  /* disclosure รายละเอียดต่อการ์ด — summary เป็นบรรทัดข้อความเล็กๆ ไม่ใช่กล่อง (การ์ดไม่รก) */
+  .reco-more { margin: 0 0 8px; }
+  .reco-more > summary {
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .reco-more > summary::-webkit-details-marker { display: none; }
+  .reco-more > summary::before { content: '▸ '; }
+  .reco-more[open] > summary::before { content: '▾ '; }
+  .reco-more > summary:hover { color: var(--text); }
+  .reco-more[open] > summary { margin-bottom: 6px; }
+  /* disclosure ใหญ่ (ฟิลเตอร์ / Evidence) ใช้สไตล์ .shop-disclosure ร่วม — เว้นระยะเฉพาะของหน้านี้ */
+  .radar-filter-box { margin-bottom: 14px; }
+  .radar-filter-box[open] > summary { margin-bottom: 10px; }
+  .radar-rising-box { margin-top: 18px; margin-bottom: 0; }
+  @media (max-width: 560px) {
+    .radar-hero-score { margin-left: 0; align-items: flex-start; }
+  }
 </style>
 <!-- Modularization Phase 1 (patch 0.34): helper CSS ที่แยกออกจาก inline <style> ด้านบน
      วางหลัง </style> เพื่อคงลำดับ cascade เดิม (rule พื้นฐาน specificity ต่ำ — override ของ Trust theme ชนะด้วย specificity อยู่แล้ว) -->
@@ -4414,6 +4561,14 @@
       </div>
       <p class="radar-sub">Hourly market snapshot from poe.ninja economy data — Farm Score is based on price trend, item value, liquidity, content mapping, and risk (not a drop rate)</p>
       <div class="radar-meta" id="radarMeta"></div>
+      <!-- Planner-first reflow (patch 0.43): hero "ฟาร์มต่อไป" + แถบสรุปสัญญาณ — JS วาดใน renderRadar
+           ทั้งคู่เป็น "การนำเสนอ" อ่านค่าจาก recos/groups ที่คำนวณอยู่แล้ว — ไม่มีคณิตใหม่ -->
+      <div class="radar-hero" id="radarHero" hidden></div>
+      <div class="radar-summary" id="radarSummary" hidden></div>
+      <!-- ฟิลเตอร์เดิมทั้งชุดย้ายเข้า disclosure (ข้างในไม่เปลี่ยน — id/การ wiring เดิมครบ)
+           Simple พับ / Advanced เปิด, ผู้ใช้เลือกเองถูกจำใน poeAssist.radarPanels.v1 -->
+      <details class="shop-disclosure radar-filter-box" id="radarFilterBox">
+        <summary><span class="shop-disc-ico">▸</span> ตัวกรองราคา / Filters <span class="shop-disc-hint" id="radarFilterHint"></span></summary>
       <div class="radar-filter" id="radarFilter">
         <label>Minimum item price to consider
           <input type="number" id="rfMin" min="0" step="0.1" value="1">
@@ -4438,6 +4593,7 @@
         <p class="rf-note">Only items worth at least this amount will be used to calculate farm recommendations.
           Divine filtering works by default. Other units require manual rates.</p>
       </div>
+      </details>
       <div id="radarBody">
         <div class="radar-fallback">กำลังโหลดข้อมูลตลาด…</div>
       </div>
@@ -7310,6 +7466,7 @@ const APP_DATA_KEYS = [
   'poe2TodayPlanningNote.v1', // Planning note ในหน้า Today (patch 0.38) — ข้อมูลผู้ใช้เช่นกัน ไม่ใช่ UI pref
   'poeAssist.radarFilter.v1',
   'poeAssist.radarRates.v1',
+  'poeAssist.radarPanels.v1', // สถานะพับ/เปิดกล่องฟิลเตอร์ + ส่วน Evidence ของ Market Radar (patch 0.43)
   'poeAssist.stashSale.manual.v1',
 ];
 // คีย์ที่ถือเป็น "การตั้งค่า UI" เท่านั้น (Reset UI แตะเฉพาะกลุ่มนี้ — ไม่แตะ rows/cards/presets)
@@ -7326,6 +7483,7 @@ const UI_PREF_KEYS = [
   'poe2ShopList.tableSizing.v1',
   'poe2ShopList.density.v1',
   'poe2ShopList.panels.v1', // UI pref (patch 0.42)
+  'poeAssist.radarPanels.v1', // UI pref (patch 0.43)
   'poe2FarmPlanner.view.v1',
 ];
 const BACKUP_KIND = 'exile-assistant-backup';
@@ -9575,6 +9733,17 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.43',
+    date: '2026-07-15',
+    notes: [
+      'Market Radar จัดหน้าใหม่แบบ "planner-first" (ต่อจาก Gear Planner 0.42): ด้านบนเป็น hero "ฟาร์มต่อไป" ตอบทันทีว่าควรฟาร์มอะไร — ชื่อ content + Farm Score + Confidence + เหตุผลท็อป + หลักฐานเด่น + ความสด snapshot + ปุ่ม 📖 ดูข้อมูล Content / ดูการ์ดเต็ม / ⧉ คัดลอกสรุป (ไม่มี Top Pick = บอกตรงๆ พร้อมปุ่มปรับตัวกรอง)',
+      'เพิ่มแถบสรุปสัญญาณใต้ hero: ชิปนับการ์ดต่อกลุ่ม (★ Top / 📈 Rising / 🪙 Stable / 👁 Watchlist / ⋯ No Signal) — กดแล้วเลื่อนไปกลุ่มนั้น, ชิป No Signal ที่ซ่อนอยู่กดเพื่อเปิดดูได้เลย + ปุ่มทางเข้าตัวกรอง',
+      'ฟิลเตอร์ราคาทั้งชุดและลิสต์ Evidence (Top Rising Items Used) กลายเป็นส่วนพับได้: โหมด Simple พับไว้ (เห็นคำตอบก่อน), Advanced เปิดครบ — ค่าที่เลือกเองถูกจำไว้ (คีย์ใหม่ poeAssist.radarPanels.v1 ติด backup แล้ว); หัวกล่องฟิลเตอร์โชว์ค่าขั้นต่ำ + จำนวนไอเทมที่ใช้แม้พับอยู่',
+      'การ์ดคำแนะนำโล่งขึ้น: เหตุผลเต็ม + score breakdown + รายชื่อไอเทมย้ายเข้า "รายละเอียด / Details" พับได้ต่อการ์ด (Advanced เปิดให้เอง) — บรรทัด "ทำไมอยู่กลุ่มนี้" + Confidence + ปุ่ม Content Codex ยังอยู่บนการ์ดเหมือนเดิม; โหมด Simple ซ่อนบรรทัด debug counters เพิ่ม',
+      'สูตร Farm Score / การจัดกลุ่ม 0.39 / toggle No Signal / deep-link Content Codex 0.40 / ฟิลเตอร์+เรททั้งหมดไม่เปลี่ยน — รอบนี้เป็นการจัดหน้า (presentation) ล้วนๆ; การ์ด Market Radar ในหน้า Today ไม่ถูกแตะ',
+    ],
+  },
+  {
     version: '0.42',
     date: '2026-07-15',
     notes: [
@@ -11500,6 +11669,36 @@ function persistRadarRates() {
   try { localStorage.setItem(RADAR_RATES_KEY, JSON.stringify(radarRates)); } catch (e) { /* storage unavailable */ }
 }
 
+/* ---- Planner-first panels (patch 0.43) ----
+   สถานะเปิด/ปิดของกล่องฟิลเตอร์ + ส่วน Evidence/Top Rising — additive UI pref
+   (อยู่ใน APP_DATA_KEYS + UI_PREF_KEYS) — null = ยังไม่เคยเลือกเอง → ตาม display mode
+   (Simple พับ / Advanced เปิด) แบบเดียวกับ poe2ShopList.panels.v1 ของ Gear Planner */
+const RADAR_PANELS_KEY = 'poeAssist.radarPanels.v1';
+let radarPanels = (function loadRadarPanels() {
+  try {
+    const v = JSON.parse(localStorage.getItem(RADAR_PANELS_KEY));
+    if (v && typeof v === 'object') {
+      return {
+        filterOpen: typeof v.filterOpen === 'boolean' ? v.filterOpen : null,
+        risingOpen: typeof v.risingOpen === 'boolean' ? v.risingOpen : null,
+      };
+    }
+  } catch (e) { /* malformed storage */ }
+  return { filterOpen: null, risingOpen: null };
+})();
+let radarPanelsReady = false; // กัน toggle event ตอน init เขียนค่า default ทับความตั้งใจผู้ใช้
+function persistRadarPanels() {
+  try { localStorage.setItem(RADAR_PANELS_KEY, JSON.stringify(radarPanels)); } catch (e) { /* storage unavailable */ }
+}
+function radarDisplayAdvanced() {
+  return document.documentElement.getAttribute('data-display') === 'advanced';
+}
+// เปิดกล่องฟิลเตอร์ (ใช้ก่อน focus ช่องกรอก — deep link จาก empty state/hero ต้องเห็นช่องจริง)
+function openRadarFilterBox() {
+  const d = document.getElementById('radarFilterBox');
+  if (d && !d.open) d.open = true; // toggle listener จะ persist ให้เอง (หลัง init)
+}
+
 // คืนค่า threshold ในหน่วย Divine / 0 = ไม่กรอง / null = หน่วยอื่นแต่ไม่มีเรท (ห้ามกรอง + เตือน)
 function radarMinDivine() {
   if (!(radarFilter.min > 0)) return 0;
@@ -11672,6 +11871,214 @@ const RADAR_GROUP_META = {
 };
 const RADAR_GROUP_ORDER = ['top', 'rising', 'stable', 'watch', 'nosignal'];
 
+/* ---- Planner-first hero + signal summary (patch 0.43) ----
+   ทั้งคู่เป็นการนำเสนอเท่านั้น: อ่าน recos/groupsMap ที่ renderRadar คำนวณด้วย pipeline เดิม
+   (radarItemScore/buildRadarRecos/radarSignalInfo/radarConfidenceInfo) — ไม่มีตัวเลขใหม่ */
+
+// ชิปความสด snapshot ใช้ร่วม hero/summary — ข้อความเดียวกับ badge สถานะด้านบน
+function radarFreshChip(updatedValid, ageH) {
+  const chip = document.createElement('span');
+  chip.className = 'radar-fresh-chip';
+  if (!updatedValid || ageH === null) {
+    chip.textContent = '⏱ snapshot: ไม่ทราบอายุ';
+    chip.classList.add('is-stale');
+  } else if (ageH <= RADAR_FRESH_HOURS) {
+    chip.textContent = '⏱ Fresh · updated ' + (ageH < 1 ? Math.max(0, Math.round(ageH * 60)) + 'm' : Math.round(ageH) + 'h') + ' ago';
+  } else {
+    chip.textContent = '⏱ Stale · ' + Math.round(ageH) + 'h ago';
+    chip.classList.add('is-stale');
+  }
+  return chip;
+}
+
+// สรุปข้อความสั้นๆ สำหรับปุ่มคัดลอก — ค่าทั้งหมดมาจากการ์ดที่วาดอยู่แล้ว
+function radarBuildSummaryText(top, groupsMap) {
+  const lines = ['Market Radar — ' + new Date().toLocaleString('th-TH')];
+  if (top) {
+    lines.push('Top Pick: ' + (top.content || '?') + ' — Farm Score ' + Math.round(top.score) + '% · Confidence: ' + radarConfidenceInfo(top).label);
+    (Array.isArray(top.reason) ? top.reason : []).forEach(r => lines.push('- ' + r));
+  } else {
+    lines.push('ยังไม่มี Top Pick ในรอบนี้ (ไม่มีสัญญาณเด่นผ่านเกณฑ์)');
+  }
+  const counts = RADAR_GROUP_ORDER
+    .map(g => (groupsMap && groupsMap[g] && groupsMap[g].length ? RADAR_GROUP_META[g].title + ' ' + groupsMap[g].length : null))
+    .filter(Boolean);
+  if (counts.length) lines.push('กลุ่ม: ' + counts.join(' · '));
+  return lines.join('\n');
+}
+
+// Hero "ฟาร์มต่อไป" — คำตอบแรกของหน้า: ฟาร์มอะไร / มั่นใจแค่ไหน / เพราะอะไร
+function renderRadarHero(recos, groupsMap, updatedValid, ageH) {
+  const hero = document.getElementById('radarHero');
+  if (!hero) return;
+  hero.hidden = false;
+  hero.innerHTML = '';
+  // Top Pick = ใบแรกที่มี evidence + score > 0 — กติกาเดียวกับป้าย ★ TOP PICK บนการ์ด
+  const top = (Array.isArray(recos) && recos.length && recos[0].hasEvidence && recos[0].score > 0) ? recos[0] : null;
+
+  const head = document.createElement('div');
+  head.className = 'radar-hero-head';
+  const eyebrow = document.createElement('p');
+  eyebrow.className = 'radar-hero-eyebrow';
+  eyebrow.textContent = '🎯 ฟาร์มต่อไป / Farm Next';
+  head.appendChild(eyebrow);
+  head.appendChild(radarFreshChip(updatedValid, ageH));
+  hero.appendChild(head);
+
+  if (!top) {
+    // ไม่มีสัญญาณเด่น — บอกตรงๆ + ให้ทางออก (เปิดกล่องฟิลเตอร์) แทนการ์ดว่างเปล่า
+    const empty = document.createElement('div');
+    empty.className = 'radar-hero-empty';
+    const msg = document.createElement('span');
+    msg.textContent = 'ยังไม่มีสัญญาณเด่นในรอบนี้ — ไม่มี content ที่หลักฐานราคาผ่านเกณฑ์และคะแนน > 0 (ไม่ได้แปลว่าไม่มีค่า แค่ยังไม่มีหลักฐาน)';
+    empty.appendChild(msg);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ocr-btn';
+    btn.textContent = 'ปรับตัวกรองราคา';
+    btn.addEventListener('click', () => {
+      openRadarFilterBox();
+      const el = document.getElementById('rfMin');
+      if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.focus(); el.select(); }
+    });
+    empty.appendChild(btn);
+    hero.appendChild(empty);
+    return;
+  }
+
+  const main = document.createElement('div');
+  main.className = 'radar-hero-main';
+  // ไอคอน content — ตาราง map มือเดิมของ registry เท่านั้น (ไม่มีรูป = ไม่มีไอคอน)
+  const rcAsset = RADAR_ASSET_BY_KEY[top.contentKey]
+    ? getLocalAssetForName(GAME_ASSETS[RADAR_ASSET_BY_KEY[top.contentKey]].label) : null;
+  if (rcAsset) {
+    const ico = document.createElement('img');
+    ico.className = 'game-ico game-ico-lg game-thumb';
+    ico.src = rcAsset.src;
+    ico.alt = '';
+    ico.setAttribute('aria-hidden', 'true');
+    ico.title = rcAsset.label;
+    main.appendChild(ico);
+  }
+  const nameWrap = document.createElement('div');
+  nameWrap.className = 'radar-hero-namewrap';
+  const nm = document.createElement('p');
+  nm.className = 'radar-hero-name';
+  nm.textContent = top.content || '?';
+  nameWrap.appendChild(nm);
+  const confInfo = radarConfidenceInfo(top);
+  const cf = document.createElement('span');
+  cf.className = 'conf-badge ' + confInfo.cls;
+  cf.textContent = 'Confidence: ' + confInfo.label;
+  cf.title = confInfo.why || '';
+  nameWrap.appendChild(cf);
+  main.appendChild(nameWrap);
+  const score = document.createElement('div');
+  score.className = 'radar-hero-score';
+  score.textContent = Math.round(top.score) + '%';
+  const sl = document.createElement('small');
+  sl.textContent = 'FARM SCORE';
+  score.appendChild(sl);
+  main.appendChild(score);
+  hero.appendChild(main);
+
+  // เหตุผลท็อป (บรรทัด reason เดิมของการ์ด — แสดงเป็นชิปสั้นๆ ครบทุกบรรทัด สูงสุด 3)
+  const whyRow = document.createElement('div');
+  whyRow.className = 'radar-hero-why';
+  (Array.isArray(top.reason) ? top.reason.slice(0, 3) : []).forEach(r => {
+    const c = document.createElement('span');
+    c.className = 'radar-why-chip';
+    c.textContent = r;
+    whyRow.appendChild(c);
+  });
+  if (Array.isArray(top.relatedItems) && top.relatedItems[0]) {
+    const best = document.createElement('span');
+    best.className = 'radar-why-chip radar-why-best';
+    best.textContent = '★ หลักฐานเด่น: ' + top.relatedItems[0];
+    whyRow.appendChild(best);
+  }
+  if (whyRow.childNodes.length) hero.appendChild(whyRow);
+
+  const actions = document.createElement('div');
+  actions.className = 'radar-hero-actions';
+  if (RADAR_CODEX_LINKS[top.contentKey]) {
+    const cx = document.createElement('button');
+    cx.type = 'button';
+    cx.className = 'ocr-btn primary';
+    cx.textContent = '📖 ' + t('radar.viewcontent');
+    cx.title = 'เปิดข้อมูล content นี้ใน Content Codex (วิธีฟาร์ม / ของที่ดรอป)';
+    cx.addEventListener('click', () => openRadarCodexEntry(top.contentKey, top.content));
+    actions.appendChild(cx);
+  }
+  const jump = document.createElement('button');
+  jump.type = 'button';
+  jump.className = 'ocr-btn' + (RADAR_CODEX_LINKS[top.contentKey] ? '' : ' primary');
+  jump.textContent = 'ดูการ์ดเต็ม ↓';
+  jump.addEventListener('click', () => {
+    const card = document.querySelector('#radarBody .reco-card.top-pick');
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+  actions.appendChild(jump);
+  const cp = document.createElement('button');
+  cp.type = 'button';
+  cp.className = 'ocr-btn';
+  cp.textContent = '⧉ คัดลอกสรุป';
+  cp.title = 'คัดลอกสรุป Top Pick + จำนวนการ์ดแต่ละกลุ่มเป็นข้อความ';
+  cp.addEventListener('click', () => todayCopyText(radarBuildSummaryText(top, groupsMap), 'คัดลอกสรุป Market Radar แล้ว'));
+  actions.appendChild(cp);
+  hero.appendChild(actions);
+}
+
+// แถบสรุปสัญญาณ — นับจาก groupsMap เดียวกับที่ใช้วาดการ์ด (จำนวนตรงกันเสมอ)
+function renderRadarSummary(groupsMap, hiddenNoSignal) {
+  const bar = document.getElementById('radarSummary');
+  if (!bar) return;
+  bar.hidden = false;
+  bar.innerHTML = '';
+  RADAR_GROUP_ORDER.forEach(g => {
+    const n = groupsMap && groupsMap[g] ? groupsMap[g].length : 0;
+    if (!n) return;
+    const meta = RADAR_GROUP_META[g];
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'radar-sum-chip' + (g === 'nosignal' ? ' radar-sum-muted' : '');
+    const nEl = document.createElement('span');
+    nEl.className = 'rsc-n';
+    nEl.textContent = String(n);
+    chip.appendChild(nEl);
+    const lb = document.createElement('span');
+    lb.textContent = g === 'nosignal' && hiddenNoSignal > 0 ? meta.title + ' (ซ่อนอยู่)' : meta.title;
+    chip.appendChild(lb);
+    chip.title = meta.desc;
+    chip.addEventListener('click', () => {
+      if (g === 'nosignal' && hiddenNoSignal > 0) {
+        // กลุ่มถูกซ่อนอยู่ — เปิดดูเลย (ทางเดียวกับปุ่ม "แสดง No Signal" / checkbox เดิม)
+        radarFilter.showNoSignal = true;
+        persistRadarFilter();
+        const cb = document.getElementById('rfShowNoSignal');
+        if (cb) cb.checked = true;
+        if (radarData) renderRadar(radarData);
+        return;
+      }
+      const target = document.getElementById('radarGroup-' + g);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    bar.appendChild(chip);
+  });
+  // ปุ่มเปิดกล่องฟิลเตอร์ — control กระจัดกระจายเดิมรวมทางเข้าไว้ที่แถบนี้
+  const fbtn = document.createElement('button');
+  fbtn.type = 'button';
+  fbtn.className = 'radar-sum-chip radar-sum-filter';
+  fbtn.textContent = '🎛 ตัวกรอง';
+  fbtn.title = 'เปิด/ไปที่กล่องตัวกรองราคา';
+  fbtn.addEventListener('click', () => {
+    openRadarFilterBox();
+    const box = document.getElementById('radarFilterBox');
+    if (box) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+  bar.appendChild(fbtn);
+}
+
 function radarSetStatus(kind, text) {
   const badge = document.getElementById('radarStatus');
   badge.className = 'radar-badge ' + kind;
@@ -11777,6 +12184,29 @@ function renderRadar(data) {
   // คำนวณใหม่จากไอเทมที่ผ่านฟิลเตอร์เท่านั้น: กรอง → ให้คะแนนไอเทม → จัดกลุ่มตาม content → เรียง Farm Score ใหม่
   // (ไม่ใช้ contentRecommendations สำเร็จรูปจาก JSON แล้ว — อันนั้นคิดจากไอเทมทุกตัวก่อนกรอง)
   const recos = buildRadarRecos(items, data.contentRecommendations);
+
+  // จัดกลุ่มการนำเสนอ (patch 0.39 — ย้ายขึ้นมาคำนวณก่อน hero ใน 0.43, คณิตเดิมทุกบรรทัด)
+  // การ์ดละกลุ่มเดียว ลำดับในกลุ่มคงตามลำดับ recos เดิม
+  const topKey = recos[0] && recos[0].hasEvidence && recos[0].score > 0 ? recos[0].contentKey : null;
+  const groupsMap = { top: [], rising: [], stable: [], watch: [], nosignal: [] };
+  recos.forEach(rc => {
+    const isTop = topKey !== null && rc.contentKey === topKey;
+    const sig = radarSignalInfo(rc, isTop);
+    groupsMap[sig.group].push({ rc, sig, isTop });
+  });
+  // การ์ด No Signal ถูกซ่อนโดย default (ลด noise) — โชว์โน้ตนับจำนวน + ปุ่มแสดงเสมอ
+  const hiddenNoSignal = radarFilter.showNoSignal ? 0 : groupsMap.nosignal.length;
+
+  // --- Hero "ฟาร์มต่อไป" + แถบสรุปสัญญาณ (patch 0.43 — การนำเสนอจากค่าที่คำนวณแล้วด้านบน) ---
+  renderRadarHero(recos, groupsMap, updatedValid, ageH);
+  renderRadarSummary(groupsMap, hiddenNoSignal);
+  // hint บนหัวกล่องฟิลเตอร์ — เห็นค่าฟิลเตอร์ปัจจุบันแม้กล่องพับอยู่
+  const filterHint = document.getElementById('radarFilterHint');
+  if (filterHint) {
+    filterHint.textContent = '(ขั้นต่ำ ' + radarFilter.min + ' ' + (radarFilter.unit === 'THB' ? fiatCode() : radarFilter.unit)
+      + (minDiv !== null && minDiv > 0 ? ' · ใช้ ' + items.length + '/' + allItems.length + ' รายการ' : '') + ')';
+  }
+
   const t2 = document.createElement('p');
   t2.className = 'radar-section-title';
   t2.textContent = 'Recommended Farm Now — Farm Score';
@@ -11808,6 +12238,7 @@ function renderRadar(data) {
           label: 'ไปที่ตัวกรองราคา',
           primary: true,
           onClick: () => {
+            openRadarFilterBox(); // กล่องฟิลเตอร์อาจพับอยู่ (patch 0.43) — เปิดก่อน focus
             const el = document.getElementById('rfMin');
             if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.focus(); el.select(); }
           },
@@ -11819,18 +12250,8 @@ function renderRadar(data) {
         body: 'snapshot รอบนี้ไม่มีไอเทมที่ผูกกับ content bucket ใดเลย — ลองรีเฟรชข้อมูลตลาด',
       }));
   } else {
-    // การ์ดอันดับ 1 (ที่มี evidence + คะแนน > 0) ติดป้าย TOP PICK ให้เห็นคำตอบทันทีว่าควรฟาร์มอะไร
-    const topKey = recos[0] && recos[0].hasEvidence && recos[0].score > 0 ? recos[0].contentKey : null;
-    // จัดกลุ่มการนำเสนอ (patch 0.39) — การ์ดละกลุ่มเดียว ลำดับในกลุ่มคงตามลำดับ recos เดิม
-    const groupsMap = { top: [], rising: [], stable: [], watch: [], nosignal: [] };
-    recos.forEach(rc => {
-      const isTop = topKey !== null && rc.contentKey === topKey;
-      const sig = radarSignalInfo(rc, isTop);
-      groupsMap[sig.group].push({ rc, sig, isTop });
-    });
-    // การ์ด No Signal ถูกซ่อนโดย default (ลด noise) — โชว์โน้ตนับจำนวน + ปุ่มแสดงเสมอ
-    const hiddenNoSignal = radarFilter.showNoSignal ? 0 : groupsMap.nosignal.length;
-
+    // การ์ดอันดับ 1 (ที่มี evidence + คะแนน > 0) ติดป้าย TOP PICK — topKey/groupsMap/hiddenNoSignal
+    // ถูกคำนวณไว้ข้างบนแล้ว (ใช้ร่วมกับ hero/summary, patch 0.43)
     const buildCard = (rc, sig, isTop) => {
       const cardEl = document.createElement('div');
       cardEl.className = 'reco-card' + (rc.hasEvidence === false ? ' dimmed' : '') + (isTop ? ' top-pick' : '');
@@ -11893,6 +12314,15 @@ function renderRadar(data) {
         cardEl.appendChild(sn);
       }
 
+      // รายละเอียดการ์ด (patch 0.43): เหตุผลเต็ม + breakdown + รายชื่อไอเทม ย้ายเข้า disclosure
+      // ต่อการ์ด — Simple พับไว้ (การ์ดโล่ง อ่านคำตอบก่อน), Advanced เปิดให้ครบ (default ตอน render)
+      const more = document.createElement('details');
+      more.className = 'reco-more';
+      if (radarDisplayAdvanced()) more.open = true;
+      const moreSummary = document.createElement('summary');
+      moreSummary.textContent = 'รายละเอียด / Details';
+      more.appendChild(moreSummary);
+
       if (Array.isArray(rc.reason) && rc.reason.length) {
         const ul = document.createElement('ul');
         ul.className = 'reason-list';
@@ -11901,7 +12331,7 @@ function renderRadar(data) {
           li.textContent = r;
           ul.appendChild(li);
         });
-        cardEl.appendChild(ul);
+        more.appendChild(ul);
       } else if (rc.status && rc.hasEvidence === false) {
         // สถานะดิบจาก snapshot (เช่น "No qualifying 1D+ items") — เก็บไว้เป็นบรรทัดรองแบบ muted
         const st = document.createElement('p');
@@ -11937,15 +12367,18 @@ function renderRadar(data) {
           + (rc.lowLiqCount > 0 ? ' · ' + rc.lowLiqCount + ' low-liq' : ''), 'จำนวนไอเทมที่ผ่านเกณฑ์ราคา (หลักฐานของการ์ดนี้)');
         bdRow('Risk', rc.risk ? '⚠ มี' : '—', rc.risk || 'ไม่มีความเสี่ยงเด่นจากข้อมูลชุดนี้');
         bdRow('Confidence', confInfo.label, confInfo.why);
-        cardEl.appendChild(bd);
+        more.appendChild(bd);
       }
 
       if (Array.isArray(rc.relatedItems) && rc.relatedItems.length) {
         const rel = document.createElement('div');
         rel.className = 'reco-related';
         rel.textContent = 'Items: ' + rc.relatedItems.join(', ');
-        cardEl.appendChild(rel);
+        more.appendChild(rel);
       }
+
+      // แนบ disclosure เฉพาะเมื่อมีเนื้อหาข้างในจริง (การ์ด No Signal ไม่มี — ไม่ต้องมีปุ่มเปล่า)
+      if (more.childNodes.length > 1) cardEl.appendChild(more);
 
       if (rc.risk) {
         const rk = document.createElement('div');
@@ -11995,6 +12428,7 @@ function renderRadar(data) {
       const meta2 = RADAR_GROUP_META[g];
       const gt = document.createElement('p');
       gt.className = 'radar-group-title';
+      gt.id = 'radarGroup-' + g; // anchor ให้ชิปในแถบสรุปสัญญาณ scroll มาหา (patch 0.43)
       gt.textContent = meta2.title + ' · ' + entries.length;
       gt.title = meta2.desc;
       body.appendChild(gt);
@@ -12028,15 +12462,36 @@ function renderRadar(data) {
 
   // --- B) Top Rising Items Used (secondary reference list — จาก marketItems ที่ผ่านฟิลเตอร์) ---
   // แสดงเป็น compact rows ไม่ใช่การ์ด — section นี้เป็นแค่ reference list, ไม่ใช่ต้นทางคำนวณคำแนะนำ (ดู A ด้านบน)
-  const t1 = document.createElement('p');
-  t1.className = 'radar-section-title';
-  t1.textContent = 'Top Rising Items Used';
-  body.appendChild(t1);
+  // patch 0.43: ทั้ง section ย้ายเข้า disclosure "Evidence" — Simple พับ / Advanced เปิด, ผู้ใช้เลือกเองถูกจำ
+  const risingBox = document.createElement('details');
+  risingBox.className = 'shop-disclosure radar-rising-box';
+  risingBox.id = 'radarRisingBox';
+  risingBox.open = typeof radarPanels.risingOpen === 'boolean' ? radarPanels.risingOpen : radarDisplayAdvanced();
+  const risingSummary = document.createElement('summary');
+  const rsIco = document.createElement('span');
+  rsIco.className = 'shop-disc-ico';
+  rsIco.textContent = '▸';
+  risingSummary.appendChild(rsIco);
+  risingSummary.appendChild(document.createTextNode(' Evidence — Top Rising Items Used '));
+  const rsHint = document.createElement('span');
+  rsHint.className = 'shop-disc-hint';
+  rsHint.textContent = '(' + items.length + ' รายการ · ลิสต์อ้างอิง ไม่ใช่ต้นทางคำนวณ)';
+  risingSummary.appendChild(rsHint);
+  risingBox.appendChild(risingSummary);
+  // สร้างใหม่ทุก render — เปิด persist หลังคิว toggle event ตอนตั้งค่า default ระบายแล้ว
+  let risingReady = false;
+  risingBox.addEventListener('toggle', () => {
+    if (!risingReady) return;
+    radarPanels.risingOpen = risingBox.open;
+    persistRadarPanels();
+  });
+  setTimeout(() => { risingReady = true; }, 0);
+  body.appendChild(risingBox);
   const risingNote = document.createElement('p');
   risingNote.className = 'rf-note';
-  risingNote.style.margin = '0 0 8px';
+  risingNote.style.margin = '8px 0';
   risingNote.textContent = 'Used as a rising-item reference list only. Farm recommendations above are calculated from filtered marketItems, not from this list.';
-  body.appendChild(risingNote);
+  risingBox.appendChild(risingNote);
 
   if (items.length === 0) {
     const none = document.createElement('div');
@@ -12046,7 +12501,7 @@ function renderRadar(data) {
     } else {
       none.textContent = 'No market items in the current local snapshot pass this filter. Try lowering the minimum price or update market-radar.json.';
     }
-    body.appendChild(none);
+    risingBox.appendChild(none);
   } else {
     const wrap = document.createElement('div');
     wrap.className = 'radar-item-rows-wrap';
@@ -12142,7 +12597,7 @@ function renderRadar(data) {
     });
 
     wrap.appendChild(rows);
-    body.appendChild(wrap);
+    risingBox.appendChild(wrap);
   }
 
   // หมายเหตุ: content ที่ไม่มี evidence (ไม่ว่าเพราะฟิลเตอร์ หรือไม่มีข้อมูลเลย) แสดงเป็น
@@ -12171,6 +12626,11 @@ function renderRadar(data) {
 function radarBodyState(node) {
   const body = document.getElementById('radarBody');
   if (!body) return;
+  // hero + แถบสรุป (patch 0.43) อยู่นอก radarBody — ซ่อนไว้ระหว่าง loading/error กันโชว์ค่าค้าง
+  const hero = document.getElementById('radarHero');
+  if (hero) { hero.hidden = true; hero.innerHTML = ''; }
+  const sum = document.getElementById('radarSummary');
+  if (sum) { sum.hidden = true; sum.innerHTML = ''; }
   body.innerHTML = '';
   body.appendChild(node);
 }
@@ -12233,6 +12693,20 @@ loadRadar();
 
 /* ---- Radar filter UI wiring ---- */
 (function initRadarFilter() {
+  // กล่องฟิลเตอร์แบบพับได้ (patch 0.43): ค่าที่ผู้ใช้เคยเลือก > ค่าเริ่มต้นตาม display mode
+  (function initRadarPanels() {
+    const box = document.getElementById('radarFilterBox');
+    if (!box) return;
+    box.open = typeof radarPanels.filterOpen === 'boolean' ? radarPanels.filterOpen : radarDisplayAdvanced();
+    box.addEventListener('toggle', () => {
+      if (!radarPanelsReady) return;
+      radarPanels.filterOpen = box.open;
+      persistRadarPanels();
+    });
+    // toggle event ยิงแบบ async — เปิดการ persist หลังคิว event ตอน init ระบายแล้ว
+    setTimeout(() => { radarPanelsReady = true; }, 0);
+  })();
+
   const minInput = document.getElementById('rfMin');
   const unitSelect = document.getElementById('rfUnit');
   const rateWrap = document.getElementById('rfRateWrap');
