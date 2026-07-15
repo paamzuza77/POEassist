@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <!-- ตั้ง data-theme / data-mode / data-font-scale บน <html> ให้เร็วที่สุด (กัน flash ธีม/โหมด/ขนาดตัวอักษรตอนโหลด) — ค่าเริ่มต้น modern/light/normal (patch 0.35: ธีมเริ่มต้นใหม่ 'modern'; ผู้ใช้ที่เคยเลือก rawblock/trust ไว้ยังได้ธีมเดิม) -->
+<!-- patch 0.44: unsaved Modern profiles start in dark mode; saved mode preferences still win. -->
 <script>
 (function () {
   try {
@@ -17,12 +18,12 @@
     var f = localStorage.getItem('poeAssist.fontScale.v1');
     var d = localStorage.getItem('poeAssist.displayMode.v1'); // patch 0.41: Simple/Advanced
     document.documentElement.setAttribute('data-theme', (t === 'trust-blue-pay' || t === 'rawblock') ? t : 'modern');
-    document.documentElement.setAttribute('data-mode', m === 'dark' ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-mode', m === 'light' ? 'light' : 'dark');
     document.documentElement.setAttribute('data-font-scale', (f === 'small' || f === 'large') ? f : 'normal');
     document.documentElement.setAttribute('data-display', d === 'advanced' ? 'advanced' : 'simple');
   } catch (e) {
     document.documentElement.setAttribute('data-theme', 'modern');
-    document.documentElement.setAttribute('data-mode', 'light');
+    document.documentElement.setAttribute('data-mode', 'dark');
     document.documentElement.setAttribute('data-font-scale', 'normal');
     document.documentElement.setAttribute('data-display', 'simple');
   }
@@ -2615,8 +2616,8 @@
   html[data-display="simple"] .reco-breakdown,
   html[data-display="simple"] .radar-score-info,
   html[data-display="simple"] .radar-debug, /* 0.43: บรรทัด debug counters เป็นของ power user */
-  html[data-display="simple"] .aug-calc,
-  html[data-display="simple"] #todayStatusCard,
+  html[data-display="simple"] .advanced-only,
+  /* whole panels stay available through disclosures */
   html[data-display="simple"] .shop-tool-display { display: none; } /* 0.42: Row H/Density เป็นของ power user — Advanced เท่านั้น */
 
   .appearance-group { margin-bottom: 16px; }
@@ -4428,6 +4429,7 @@
       <span class="sidebar-toggle-label">ย่อเมนู</span>
     </button>
     <div class="sidebar-brand">
+      <div class="sidebar-brand-mark" aria-hidden="true">EA</div>
       <div class="sidebar-brand-eyebrow">Path of Exile 2</div>
       <div class="sidebar-brand-name">Exile Assistant</div>
       <div class="sidebar-brand-sub">POE2 Assistant · by Usernotfoudme</div>
@@ -4470,9 +4472,11 @@
 
   <div class="main-col">
     <header class="topbar">
+      <div class="topbar-context">
       <span class="topbar-title" id="topbarTitle">Exile Hub</span>
       <span class="topbar-crumb" id="topbarCrumb">Main</span>
       <span class="topbar-sub" id="topbarSub"></span>
+      </div>
       <div class="topbar-actions">
         <button class="display-toggle" type="button" id="displayToggle" title="สลับโหมดแสดงผล Simple/Advanced" aria-pressed="false"></button>
         <button class="mode-toggle" type="button" id="modeToggle" title="สลับโหมดสว่าง/มืด" aria-label="สลับโหมดสว่าง/มืด" aria-pressed="false"></button>
@@ -4490,18 +4494,28 @@
       <div class="today-col today-col-main">
         <div class="hub-card today-card" id="todayFocusCard"></div>
         <div class="hub-card today-card" id="todayTodoCard"></div>
+        <details class="ux-disclosure today-signals" data-command-panel="todaySignals">
+          <summary><span data-i18n="today.disclosure.signals">Planner signals</span><span class="ux-disclosure-hint" data-i18n="today.disclosure.signalsHint">Gear / Market / Resistance</span></summary>
+          <div class="today-signal-grid ux-disclosure-body">
         <div class="hub-card today-card" id="todayGearCard"></div>
         <div class="hub-card today-card" id="todayRadarCard"></div>
         <div class="hub-card today-card" id="todayForgeCard"></div>
+          </div>
+        </details>
       </div>
       <div class="today-col today-col-side">
         <div class="hub-card today-card" id="todayNoteCard"></div>
         <div class="hub-card today-card" id="todayAttentionCard"></div>
         <div class="hub-card today-card" id="todayTimelineCard"></div>
         <div class="hub-card today-card" id="todayContinueCard"></div>
+        <details class="ux-disclosure today-library" data-command-panel="todayLibrary">
+          <summary><span data-i18n="today.disclosure.more">More signals</span><span class="ux-disclosure-hint" data-i18n="today.disclosure.moreHint">Farm / Knowledge / System</span></summary>
+          <div class="today-signal-grid ux-disclosure-body">
         <div class="hub-card today-card" id="todayFarmCard"></div>
         <div class="hub-card today-card" id="todayCodexCard"></div>
         <div class="hub-card today-card today-status-card" id="todayStatusCard"></div>
+          </div>
+        </details>
       </div>
     </div>
   </div><!-- /pageToday -->
@@ -4544,9 +4558,13 @@
         </div>
       </div>
     </div>
-
-    <h2 class="hub-section-title">Exile Resources</h2>
-    <div class="link-grid" id="linkGrid"></div>
+    <details class="ux-disclosure hub-resources-disclosure" data-command-panel="homeResources">
+      <summary><span>Exile resources</span><span class="ux-disclosure-hint">Official tools and community references</span></summary>
+      <div class="ux-disclosure-body">
+        <h2 class="hub-section-title">Exile Resources</h2>
+        <div class="link-grid" id="linkGrid"></div>
+      </div>
+    </details>
   </div><!-- /pageHome -->
 
   <div id="pageRadar" hidden>
@@ -4563,7 +4581,7 @@
       <div class="radar-meta" id="radarMeta"></div>
       <!-- Planner-first reflow (patch 0.43): hero "ฟาร์มต่อไป" + แถบสรุปสัญญาณ — JS วาดใน renderRadar
            ทั้งคู่เป็น "การนำเสนอ" อ่านค่าจาก recos/groups ที่คำนวณอยู่แล้ว — ไม่มีคณิตใหม่ -->
-      <div class="radar-hero" id="radarHero" hidden></div>
+      <div class="radar-hero ux-command-surface ux-elevate" id="radarHero" hidden></div>
       <div class="radar-summary" id="radarSummary" hidden></div>
       <!-- ฟิลเตอร์เดิมทั้งชุดย้ายเข้า disclosure (ข้างในไม่เปลี่ยน — id/การ wiring เดิมครบ)
            Simple พับ / Advanced เปิด, ผู้ใช้เลือกเองถูกจำใน poeAssist.radarPanels.v1 -->
@@ -4604,6 +4622,12 @@
     <!-- ===== Farm strategy cards — master/detail (patch 0.18) =====
          ซ้าย = รายการการ์ดแบบย่อ (ค้นหา/เลือกได้) / ขวา = รายละเอียดการ์ดที่เลือก (ฟิลด์เดิมครบ + Run Tracker)
          Project runs ด้านบน = ตัวคูณสำหรับ "สรุปคาดการณ์" ในลิสต์ซ้ายเท่านั้น — ไม่แตะข้อมูลการ์ด ไม่แตะ Run Tracker -->
+    <section class="ux-command-surface farm-command">
+      <div class="farm-command-copy">
+        <span class="farm-command-kicker">Run command</span>
+        <h2>Plan the next farm</h2>
+        <p>Choose a strategy, project the run, then log the result without leaving this workspace.</p>
+      </div>
     <div class="farm-project-bar">
       <span class="farm-project-label">Project runs</span>
       <input type="text" inputmode="decimal" class="num-input" id="farmProjectRuns" value="1" title="จำนวนรันที่อยากประเมิน (แผน) — มีผลกับสรุปคาดการณ์ในลิสต์ซ้ายเท่านั้น">
@@ -4618,13 +4642,20 @@
       <button class="ocr-btn danger" type="button" id="farmClearBtn">Clear All</button>
     </div>
     <div class="farm-filters" id="farmFilters"></div>
+    </section>
     <div class="farm-layout">
       <div class="farm-list" id="farmList"></div>
       <div class="farm-detail-col" id="farmDetail"></div>
     </div>
   </div><!-- /pageFarm -->
 
-  <div id="pageForge">
+  <div id="pageForge" hidden>
+  <section class="ux-command-surface forge-command">
+    <div class="forge-command-copy">
+      <span class="forge-command-kicker">Loadout intake</span>
+      <h2>Check resistance readiness</h2>
+      <p>Paste a captured item, apply it to a slot, and see the build gap immediately.</p>
+    </div>
   <p class="penalty-readout">บทลงโทษต้านทานธาตุ (fixed): <strong>−40%</strong></p>
   <p class="penalty-note">* ค่ามาตรฐานตอนจบแคมเปญเต็มในเกมจริงคือ −60% — ค่า −40% มาจากการที่เราเก็บ Quest Rewards ครบทั้งหมด</p>
 
@@ -4645,8 +4676,12 @@
     </div>
     <div class="ocr-review" id="ocrReview" hidden></div>
   </div>
+  </section>
 
   <div class="gear-layout">
+    <details class="ux-disclosure forge-workbench" data-command-panel="forgeWorkbench">
+      <summary><span>Equipment workbench</span><span class="ux-disclosure-hint">Paperdoll / Item editor / Augment calculator</span></summary>
+      <div class="forge-workbench-grid ux-disclosure-body">
     <div class="paperdoll-frame ornate">
       <div class="paperdoll" id="paperdoll"></div>
 
@@ -4698,6 +4733,8 @@
         </div>
       </div>
     </div>
+      </div>
+    </details>
 
     <div class="stat-radar ornate" id="statRadar">
       <h2 class="sr-title">Missing Stat Radar</h2>
@@ -4728,6 +4765,9 @@
     </div>
   </div>
 
+  <details class="ux-disclosure forge-totals" data-command-panel="forgeTotals">
+    <summary><span>Resistance totals</span><span class="ux-disclosure-hint">Gauges / overcap / magic find</span></summary>
+    <div class="ux-disclosure-body">
   <div class="totals-panel ornate">
     <p class="totals-title">Total Resistance <span class="totals-cap-count" id="resCapCount" title="จำนวนธาตุที่ถึง cap 75% แล้ว"></span></p>
     <div id="gaugesRes"></div>
@@ -4739,12 +4779,14 @@
       Preset ที่เลือกจะถูกบันทึกไว้ในเบราว์เซอร์นี้อัตโนมัติ (localStorage)
     </p>
   </div>
+    </div>
+  </details>
   </div><!-- /pageForge -->
 
   <div id="pageShop" hidden>
     <!-- Planner-first hero (patch 0.42): คำตอบแรกของหน้า — ซื้ออะไรต่อ / งบเหลือเท่าไหร่ / อะไรต้องดู
          ตัวเลขทั้งหมด render โดย JS จากยอดเดิมของ updateShopSummary (ไม่มีสูตรใหม่) -->
-    <section class="shop-hero" id="shopHero">
+    <section class="shop-hero ux-command-surface ux-elevate" id="shopHero">
       <div class="shop-hero-head">
         <p class="shop-hero-title">Gear Planner</p>
         <span class="shop-hero-slotctx" id="shopSlotContext" hidden></span>
@@ -4908,19 +4950,21 @@
          ข้อมูลทั้งหมดอ่านจาก data/content-codex.json (generate ด้วย scripts/update-content-codex.mjs จาก poe2wiki)
          เบราว์เซอร์ไม่เรียก poe2wiki ตรงๆ เด็ดขาด — rate มาจาก wiki เท่านั้น (estimated/unknown ติดป้ายชัดเจน)
          รูปภาพ: ไม่ฝังรูปจาก wiki (license game asset ไม่ชัด) — แสดง placeholder + ลิงก์ไปหน้า wiki แทน -->
+    <section class="ux-command-surface codex-command">
     <div class="codex-head">
       <div class="codex-title-row">
         <h2 class="codex-title">Boss &amp; Content Drop Codex</h2>
         <span class="codex-dev-badge">Wiki Data · In Development</span>
         <span class="radar-badge missing" id="codexBadge">Loading…</span>
       </div>
-      <div class="codex-source-line" id="codexSourceLine"></div>
+      <div class="codex-source-line advanced-only" id="codexSourceLine"></div>
     </div>
     <div class="codex-toolbar">
       <input type="text" class="shop-filter" id="codexSearch" placeholder="ค้นหา: ชื่อ boss / content / tag / ไอเทมที่ดรอป…">
       <button class="ocr-btn" type="button" id="codexRefreshBtn">Reload Data</button>
     </div>
     <div class="codex-filters" id="codexFilters"></div>
+    </section>
     <div class="codex-layout">
       <div class="codex-list" id="codexList"></div>
       <div class="codex-detail" id="codexDetail"></div>
@@ -4932,19 +4976,21 @@
          ข้อมูลทั้งหมดอ่านจาก data/keyword-codex.json (generate ด้วย scripts/update-keyword-codex.mjs จาก poe2db.tw)
          กติกา: ชื่อไทยมาจากหน้า TH ของ poe2db / ชื่ออังกฤษมาจากหน้า US — "ไม่แปลชื่อเอง"
          คำอธิบายรอบแรกเป็นไทยอย่างเดียว · entry ที่จับคู่ TH/EN ไม่ครบติดป้าย needs review (ไม่เดา) -->
+    <section class="ux-command-surface codex-command">
     <div class="codex-head">
       <div class="codex-title-row">
         <h2 class="codex-title">Keyword Codex</h2>
         <span class="codex-dev-badge">poe2db Data</span>
         <span class="radar-badge missing" id="kwcBadge">Loading…</span>
       </div>
-      <div class="codex-source-line" id="kwcSourceLine"></div>
+      <div class="codex-source-line advanced-only" id="kwcSourceLine"></div>
     </div>
     <div class="codex-toolbar">
       <input type="text" class="shop-filter" id="kwcSearch" placeholder="ค้นหา: ชื่อ keyword ไทย / อังกฤษ / คำอธิบายไทย… (เช่น bleed, เลือดไหล)">
       <span class="kwc-count" id="kwcCount"></span>
     </div>
     <div class="codex-filters" id="kwcFilters"></div>
+    </section>
     <div class="kwc-compare-bar" id="kwcCompareBar" hidden></div>
     <div class="kwc-compare-grid" id="kwcCompareGrid" hidden></div>
     <div class="codex-layout kwc-layout">
@@ -6059,7 +6105,8 @@ function updateForgeRadar(totals) {
   document.getElementById('srStatList').innerHTML = missing.map(m => {
     const name = m.label.replace(' Resistance', '').replace('Item ', '');
     const cur = m.group === 'res' ? formatResValue(m.current) : (m.current > 0 ? '+' : '') + m.current + '%';
-    return '<div class="sr-row">' +
+    const tone = m.cls === 'ready' ? 'success' : (m.cls === 'short' ? 'danger' : 'warn');
+    return '<div class="sr-row ux-highlight ux-highlight-' + tone + '">' +
       '<span class="sr-name ' + m.key + '">' + kwHelpEsc(name) + renderKeywordHelpBadge(KW_HELP_STAT_IDS[m.key], m.label) + '</span>' +
       '<span class="sr-vals">' + cur + ' → ' + m.target + '%</span>' +
       '<span class="sr-status sr-' + m.cls + '">' + m.status + '</span>' +
@@ -6658,8 +6705,11 @@ const SIDEBAR_KEY = 'poeAssist.sidebarCollapsed.v1';
   const shell = document.querySelector('.app-shell');
   const toggle = document.getElementById('sidebarToggle');
   const label = toggle.querySelector('.sidebar-toggle-label');
-  let collapsed = false;
-  try { collapsed = localStorage.getItem(SIDEBAR_KEY) === '1'; } catch (e) { /* storage unavailable */ }
+  let collapsed = document.documentElement.getAttribute('data-theme') === 'modern';
+  try {
+    const savedSidebar = localStorage.getItem(SIDEBAR_KEY);
+    if (savedSidebar !== null) collapsed = savedSidebar === '1';
+  } catch (e) { /* storage unavailable */ }
   const apply = () => {
     shell.classList.toggle('collapsed', collapsed);
     toggle.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
@@ -6695,8 +6745,8 @@ function loadThemePreference() {
   catch (e) { return 'modern'; }
 }
 function loadColorModePreference() {
-  try { return localStorage.getItem(MODE_KEY) === 'dark' ? 'dark' : 'light'; }
-  catch (e) { return 'light'; }
+  try { return localStorage.getItem(MODE_KEY) === 'light' ? 'light' : 'dark'; }
+  catch (e) { return 'dark'; }
 }
 let appTheme = loadThemePreference();
 let appMode = loadColorModePreference();
@@ -6771,6 +6821,7 @@ function setAppDisplayMode(m) {
   try { localStorage.setItem(DISPLAY_KEY, appDisplay); } catch (e) { /* storage unavailable */ }
   applyDisplayMode();
   syncDisplayToggle();
+  document.dispatchEvent(new CustomEvent('poeassist:displaychange', { detail: { mode: appDisplay } }));
 }
 applyDisplayMode(); // ยืนยัน attribute เผื่อ head script ถูกบล็อก
 (function initDisplayToggle() {
@@ -6778,6 +6829,88 @@ applyDisplayMode(); // ยืนยัน attribute เผื่อ head script 
   if (btn) btn.addEventListener('click', () => setAppDisplayMode(appDisplay === 'advanced' ? 'simple' : 'advanced'));
   syncDisplayToggle();
 })();
+
+/* ==================== Shared command disclosures (patch 0.44) ====================
+   Dense page sections follow Simple/Advanced until the user explicitly toggles
+   that section. One additive UI key keeps choices across page re-renders. */
+const COMMAND_PANELS_KEY = 'poeAssist.commandPanels.v1';
+let commandPanels = {};
+try {
+  const savedCommandPanels = JSON.parse(localStorage.getItem(COMMAND_PANELS_KEY));
+  if (savedCommandPanels && typeof savedCommandPanels === 'object' && !Array.isArray(savedCommandPanels)) {
+    commandPanels = savedCommandPanels;
+  }
+} catch (e) { commandPanels = {}; }
+
+function commandPanelHasChoice(key) {
+  return Object.prototype.hasOwnProperty.call(commandPanels, key);
+}
+function commandPanelOpen(key) {
+  return commandPanelHasChoice(key) ? !!commandPanels[key] : appDisplay === 'advanced';
+}
+function persistCommandPanels() {
+  try { localStorage.setItem(COMMAND_PANELS_KEY, JSON.stringify(commandPanels)); } catch (e) { /* storage unavailable */ }
+}
+function setCommandDisclosureOpen(el, open) {
+  const desired = !!open;
+  if (!el || el.open === desired) return;
+  el.dataset.commandSync = '1';
+  el.open = desired;
+}
+function initCommandDisclosure(el, key) {
+  if (!el || !key) return el;
+  el.dataset.commandPanel = key;
+  if (el.dataset.commandReady === '1') {
+    if (!commandPanelHasChoice(key)) setCommandDisclosureOpen(el, appDisplay === 'advanced');
+    return el;
+  }
+  el.dataset.commandReady = '1';
+  el.addEventListener('toggle', () => {
+    if (el.dataset.commandSync === '1') {
+      delete el.dataset.commandSync;
+      return;
+    }
+    commandPanels[key] = el.open;
+    persistCommandPanels();
+  });
+  setCommandDisclosureOpen(el, commandPanelOpen(key));
+  return el;
+}
+function makeCommandDisclosure(key, title, hint) {
+  const details = document.createElement('details');
+  details.className = 'ux-disclosure';
+  const summary = document.createElement('summary');
+  const label = document.createElement('span');
+  label.textContent = title;
+  summary.appendChild(label);
+  if (hint) {
+    const meta = document.createElement('span');
+    meta.className = 'ux-disclosure-hint';
+    meta.textContent = hint;
+    summary.appendChild(meta);
+  }
+  details.appendChild(summary);
+  initCommandDisclosure(details, key);
+  return details;
+}
+function syncCommandDisclosures() {
+  document.querySelectorAll('details[data-command-panel]').forEach(el => {
+    const key = el.dataset.commandPanel;
+    if (!commandPanelHasChoice(key)) setCommandDisclosureOpen(el, appDisplay === 'advanced');
+  });
+}
+function openCommandDisclosure(key) {
+  const el = document.querySelector('details[data-command-panel="' + key + '"]');
+  if (!el) return null;
+  setCommandDisclosureOpen(el, true);
+  commandPanels[key] = true;
+  persistCommandPanels();
+  return el;
+}
+document.querySelectorAll('details[data-command-panel]').forEach(el => initCommandDisclosure(el, el.dataset.commandPanel));
+document.addEventListener('poeassist:displaychange', syncCommandDisclosures);
+syncCommandDisclosures();
+
 
 /* ==================== Display preferences: language / fiat currency / font size (patch 0.27) ====================
    คีย์ใหม่ทั้งหมด additive:
@@ -6977,6 +7110,10 @@ const I18N = {
     'today.card.attention': 'Needs Attention',
     'today.card.status': 'App Status',
     'today.card.continue': 'ทำต่อจากที่ค้างไว้',
+    'today.disclosure.signals': '\u0e2a\u0e31\u0e0d\u0e0d\u0e32\u0e13\u0e41\u0e1c\u0e19\u0e27\u0e31\u0e19\u0e19\u0e35\u0e49',
+    'today.disclosure.signalsHint': '\u0e2d\u0e38\u0e1b\u0e01\u0e23\u0e13\u0e4c / \u0e15\u0e25\u0e32\u0e14 / \u0e15\u0e49\u0e32\u0e19\u0e17\u0e32\u0e19',
+    'today.disclosure.more': '\u0e2a\u0e31\u0e0d\u0e0d\u0e32\u0e13\u0e40\u0e1e\u0e34\u0e48\u0e21\u0e40\u0e15\u0e34\u0e21',
+    'today.disclosure.moreHint': '\u0e1f\u0e32\u0e23\u0e4c\u0e21 / \u0e04\u0e27\u0e32\u0e21\u0e23\u0e39\u0e49 / \u0e23\u0e30\u0e1a\u0e1a',
     'today.gear.bought': 'ซื้อแล้ว',
     'today.gear.progress': '{a} / {b} รายการ ({p}%)',
     'today.gear.need': 'ต้องใช้อีก (Min–Max)',
@@ -7226,6 +7363,10 @@ const I18N = {
     'today.card.attention': 'Needs Attention',
     'today.card.status': 'App Status',
     'today.card.continue': 'Continue where you left off',
+    'today.disclosure.signals': 'Planner signals',
+    'today.disclosure.signalsHint': 'Gear / Market / Resistance',
+    'today.disclosure.more': 'More signals',
+    'today.disclosure.moreHint': 'Farm / Knowledge / System',
     'today.gear.bought': 'Bought',
     'today.gear.progress': '{a} / {b} items ({p}%)',
     'today.gear.need': 'Still needed (Min–Max)',
@@ -7451,6 +7592,7 @@ const APP_DATA_KEYS = [
   'poeAssist.divineFiatRates.v1',
   'poeAssist.fontScale.v1',
   'poeAssist.displayMode.v1', // โหมดแสดงผล Simple/Advanced (patch 0.41)
+  'poeAssist.commandPanels.v1', // shared command-surface disclosure choices (patch 0.44)
   'poe2ShopList.rows.v1',
   'poe2ShopList.rate.v1',
   'poe2ShopList.tableSizing.v1',
@@ -7480,6 +7622,7 @@ const UI_PREF_KEYS = [
   'poeAssist.divineFiatRates.v1', // เรทที่ผู้ใช้กรอกถือเป็น UI pref — เรท THB เดิมใน poe2ShopList.rate.v1 "ไม่" ถูกลบ (ตั้งใจ)
   'poeAssist.fontScale.v1',
   'poeAssist.displayMode.v1', // Simple/Advanced เป็น UI pref (patch 0.41)
+  'poeAssist.commandPanels.v1', // shared disclosure UI preference (patch 0.44)
   'poe2ShopList.tableSizing.v1',
   'poe2ShopList.density.v1',
   'poe2ShopList.panels.v1', // UI pref (patch 0.42)
@@ -8652,7 +8795,7 @@ function renderShopAttention() {
     queue.forEach((row, i) => {
       const b = document.createElement('button');
       b.type = 'button';
-      b.className = 'shop-att-item shop-att-buy';
+      b.className = 'shop-att-item shop-att-buy ux-highlight ux-highlight-info';
       b.title = 'ไปที่แถวนี้ในตาราง';
       const rank = document.createElement('span');
       rank.className = 'shop-att-rank';
@@ -8679,7 +8822,7 @@ function renderShopAttention() {
     issueCount++;
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = 'shop-att-item shop-att-issue';
+    b.className = 'shop-att-item shop-att-issue ux-highlight ux-highlight-warn';
     b.title = titleText;
     const ic = document.createElement('span');
     ic.className = 'shop-att-ico';
@@ -9721,6 +9864,13 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
     table.open = typeof shopPanels.tableOpen === 'boolean' ? shopPanels.tableOpen : adv;
     ledger.addEventListener('toggle', () => { if (!shopPanelsReady) return; shopPanels.ledgerOpen = ledger.open; persistShopPanels(); });
     table.addEventListener('toggle', () => { if (!shopPanelsReady) return; shopPanels.tableOpen = table.open; persistShopPanels(); });
+    document.addEventListener('poeassist:displaychange', event => {
+      const advNow = event.detail && event.detail.mode === 'advanced';
+      shopPanelsReady = false;
+      if (typeof shopPanels.ledgerOpen !== 'boolean') ledger.open = advNow;
+      if (typeof shopPanels.tableOpen !== 'boolean') table.open = advNow;
+      setTimeout(() => { shopPanelsReady = true; }, 0);
+    });
     // toggle event ยิงแบบ async — เปิดการ persist หลังคิว event ตอน init ระบายแล้ว
     setTimeout(() => { shopPanelsReady = true; }, 0);
   })();
@@ -9732,6 +9882,17 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.44',
+    date: '2026-07-15',
+    notes: [
+      'Visual Identity Rebuild: Modern is now dark-first for users without a saved mode, with a floating glass shell, atmospheric canvas, and a compact icon rail by default on fresh Modern profiles. Saved theme, mode, and sidebar choices still win.',
+      'Added shared command-center primitives: one focal command surface, tone-aware highlighted rows, persisted disclosures, and obvious hover elevation with reduced-motion protection.',
+      'Recomposed Today, Exile Hub, Gear Planner, Market Radar, Farm Planner, Resistance Checker, both Codex pages, and Settings around clear primary answers and quieter secondary data.',
+      'Simple and Advanced now live-sync new disclosures through the additive poeAssist.commandPanels.v1 preference; explicit panel choices remain remembered.',
+      'All existing calculations, Market Radar scoring, OCR/paste/drop, local data, imports/exports, tab ids, and deep links remain intact.',
+    ],
+  },
   {
     version: '0.43',
     date: '2026-07-15',
@@ -11100,6 +11261,16 @@ function updateFarmRunSummary(card, box) {
   title.className = 'frs-title';
   title.textContent = 'สรุปรันจริง (Run Tracker ของการ์ดนี้)';
   box.appendChild(title);
+  const logBtn = document.createElement('button');
+  logBtn.type = 'button';
+  logBtn.className = 'ocr-btn primary frs-log-run';
+  logBtn.textContent = '+ Log run';
+  logBtn.addEventListener('click', () => {
+    const panel = openCommandDisclosure('farmTracker');
+    const add = panel && panel.querySelector('.ftr-add');
+    if (add) add.click();
+  });
+  title.appendChild(logBtn);
 
   const a = computeFarmRunAnalytics(card);
   const n = a.n;
@@ -11176,7 +11347,8 @@ function updateFarmRunSummary(card, box) {
   // insight บรรทัดเดียว (โปร่งใส ไม่โอเวอร์เคลม)
   if (a.trend) {
     const ins = document.createElement('div');
-    ins.className = 'frs-insight frs-insight-' + a.trend.kind;
+    const tone = a.trend.kind === 'down' ? 'danger' : (a.trend.kind === 'up' ? 'success' : (a.trend.kind === 'warn' ? 'warn' : 'info'));
+    ins.className = 'frs-insight frs-insight-' + a.trend.kind + ' ux-highlight ux-highlight-' + tone;
     ins.textContent = '↪ ' + a.trend.text;
     box.appendChild(ins);
   }
@@ -11460,7 +11632,7 @@ function renderFarmDetail() {
 
   // สรุปรันจริงอยู่บนสุด (เหนือข้อมูลการ์ดเดิม) — refresh in-place ตอนแก้ tracker/ทุน/เวลา ไม่ rebuild ทั้ง detail
   const summary = document.createElement('div');
-  summary.className = 'farm-run-summary';
+  summary.className = 'farm-run-summary ux-command-surface';
   const refresh = () => { updateFarmRunSummary(card, summary); renderFarmList(); };
   updateFarmRunSummary(card, summary);
   col.appendChild(summary);
@@ -11468,6 +11640,23 @@ function renderFarmDetail() {
   col.appendChild(buildFarmEconPanel(card, refresh));
   col.appendChild(buildFarmCard(card)); // ฟิลด์การ์ดเดิมทั้งหมด — ไม่ตัดอะไรออก
   col.appendChild(buildFarmRunTracker(card, refresh));
+  const detailPanels = Array.from(col.children).slice(-3);
+  const setup = makeCommandDisclosure('farmSetup', 'Farm setup', 'Economics / mechanics / links / notes');
+  setup.classList.add('farm-detail-disclosure', 'farm-setup-disclosure');
+  const setupBody = document.createElement('div');
+  setupBody.className = 'ux-disclosure-body';
+  setupBody.appendChild(detailPanels[0]);
+  setupBody.appendChild(detailPanels[1]);
+  setup.appendChild(setupBody);
+  col.appendChild(setup);
+
+  const tracker = makeCommandDisclosure('farmTracker', 'Run tracker', 'Log runs / compare results / keep history');
+  tracker.classList.add('farm-detail-disclosure', 'farm-tracker-disclosure');
+  const trackerBody = document.createElement('div');
+  trackerBody.className = 'ux-disclosure-body';
+  trackerBody.appendChild(detailPanels[2]);
+  tracker.appendChild(trackerBody);
+  col.appendChild(tracker);
 
   // แก้ชื่อ/สถานะในการ์ดเดิม → ลิสต์ซ้ายต้องตามทัน (ลิสต์ไม่มี input จึง re-render ได้ไม่เสียโฟกัส)
   col.addEventListener('input', () => renderFarmList());
@@ -12703,6 +12892,17 @@ loadRadar();
       radarPanels.filterOpen = box.open;
       persistRadarPanels();
     });
+    document.addEventListener('poeassist:displaychange', event => {
+      const syncFilter = typeof radarPanels.filterOpen !== 'boolean';
+      const syncRising = typeof radarPanels.risingOpen !== 'boolean';
+      if (!syncFilter && !syncRising) return;
+      if (syncFilter) {
+        radarPanelsReady = false;
+        box.open = !!(event.detail && event.detail.mode === 'advanced');
+        setTimeout(() => { radarPanelsReady = true; }, 0);
+      }
+      if (syncRising && radarData) renderRadar(radarData);
+    });
     // toggle event ยิงแบบ async — เปิดการ persist หลังคิว event ตอน init ระบายแล้ว
     setTimeout(() => { radarPanelsReady = true; }, 0);
   })();
@@ -13355,6 +13555,29 @@ function codexSection(title, innerHtml, extraClass) {
   return `<div class="codex-section${extraClass ? ' ' + extraClass : ''}">
     <h3 class="codex-section-title">${codexEsc(title)}</h3>${innerHtml}</div>`;
 }
+function initCodexDenseDisclosures(root, prefix) {
+  if (!root) return;
+  const dense = {
+    Drops: { key: 'Drops', hint: 'Guaranteed drops / rates / source notes' },
+    'Version History': { key: 'VersionHistory', hint: 'Changes by game version' },
+    Source: { key: 'Source', hint: 'Provenance / fetched date / license' },
+  };
+  Array.from(root.querySelectorAll('.codex-section')).forEach(section => {
+    const titleEl = section.querySelector(':scope > .codex-section-title');
+    if (!titleEl) return;
+    const meta = dense[titleEl.textContent.trim()];
+    if (!meta) return;
+    const details = makeCommandDisclosure(prefix + meta.key, titleEl.textContent.trim(), meta.hint);
+    details.classList.add('codex-inline-disclosure');
+    const body = document.createElement('div');
+    body.className = 'ux-disclosure-body';
+    titleEl.remove();
+    while (section.firstChild) body.appendChild(section.firstChild);
+    details.appendChild(body);
+    section.replaceWith(details);
+  });
+}
+
 function codexBulletList(lines) {
   if (!lines || !lines.length) return '';
   return `<ul>${lines.map(l => `<li>${codexEsc(l)}</li>`).join('')}</ul>`;
@@ -13462,6 +13685,7 @@ function renderCodexDetail() {
       <div class="codex-col">${rightCol}</div>
     </div>
   </div>`;
+  initCodexDenseDisclosures(el, 'codex');
 
   const favBtn = el.querySelector('[data-codex-fav-detail]');
   if (favBtn) favBtn.addEventListener('click', () => {
@@ -13864,6 +14088,7 @@ function renderKwcDetail() {
       <p class="codex-rate-note" style="margin:0">ชื่อ/คำอธิบายคัดจาก poe2db.tw ตรงตามต้นทาง (TH: หน้า th · EN: หน้า us) — ไม่มีการแปลเอง · Fetched: ${kwcFmtDate(kwcData && kwcData.updatedAt)}</p>
     </div>
   </div>`;
+  initCodexDenseDisclosures(el, 'kwc');
 
   const favBtn = el.querySelector('[data-kwc-fav-detail]');
   if (favBtn) favBtn.addEventListener('click', () => kwcToggleFav(kw.id));
@@ -14682,16 +14907,17 @@ function renderTodayAttentionCard() {
   const items = [];
   const s = shopRows.length ? todayShopSummary() : null;
   if (s && s.missingCount > 0) {
-    items.push({ text: tFmt('today.attn.noprice', { n: s.missingCount }), action: todayOpenShopNoPrice });
+    items.push({ text: tFmt('today.attn.noprice', { n: s.missingCount }), tone: 'warn', action: todayOpenShopNoPrice });
   }
   const readiness = computeForgeReadiness(todayForgeTotals());
   if (readiness.filled > 0 && readiness.score < 50) {
-    items.push({ text: tFmt('today.attn.lowres', { n: readiness.score }), action: () => switchTab('forge') });
+    items.push({ text: tFmt('today.attn.lowres', { n: readiness.score }), tone: 'danger', action: () => switchTab('forge') });
   }
   const fresh = todayRadarFreshness();
   if (fresh.kind !== 'fresh') {
     items.push({
       text: fresh.kind === 'missing' ? t('today.attn.radar.missing') : tFmt('today.attn.radar.stale', { t: fresh.text }),
+      tone: 'warn',
       action: () => switchTab('radar'),
     });
   }
@@ -14699,6 +14925,7 @@ function renderTodayAttentionCard() {
   if (p1Active > 0) {
     items.push({
       text: tFmt('today.attn.p1', { n: p1Active }),
+      tone: 'danger',
       action: () => {
         todayTodoFilter = 'p1';
         renderTodayTodoCard();
@@ -14710,7 +14937,7 @@ function renderTodayAttentionCard() {
 
   if (!items.length) {
     const row = document.createElement('div');
-    row.className = 'today-attn-item ok';
+    row.className = 'today-attn-item ok ux-highlight ux-highlight-success';
     const dot = document.createElement('span');
     dot.className = 'today-attn-dot';
     row.appendChild(dot);
@@ -14724,7 +14951,7 @@ function renderTodayAttentionCard() {
   items.forEach(it => {
     // ทั้งแถวกดได้ (patch 0.37) — ปุ่ม "ดู ›" ยังอยู่เพื่อ affordance/คีย์บอร์ด
     const row = document.createElement('div');
-    row.className = 'today-attn-item clickable';
+    row.className = 'today-attn-item clickable ux-highlight ux-highlight-' + (it.tone || 'warn');
     row.setAttribute('role', 'button');
     row.tabIndex = 0;
     const dot = document.createElement('span');
@@ -15330,7 +15557,7 @@ function renderTodayFocusCard() {
   const pri = { p1: 1, p2: 2, p3: 3, p4: 4 };
   const mkRow = (todo, suggested) => {
     const row = document.createElement('div');
-    row.className = 'today-attn-item clickable today-focus-item';
+    row.className = 'today-attn-item clickable today-focus-item ux-highlight ux-highlight-' + (todo.priority === 'p1' ? 'danger' : 'info');
     row.setAttribute('role', 'button');
     row.tabIndex = 0;
     const dot = document.createElement('span');
@@ -15491,7 +15718,8 @@ function renderTodayTimelineCard() {
   }
   items.forEach(it => {
     const row = document.createElement('div');
-    row.className = 'today-attn-item clickable';
+    const tone = it.tag === 'overdue' ? 'danger' : (it.tag === 'duetoday' ? 'warn' : (it.tag === 'farm' ? 'success' : 'info'));
+    row.className = 'today-attn-item clickable ux-highlight ux-highlight-' + tone;
     row.setAttribute('role', 'button');
     row.tabIndex = 0;
     const tag = document.createElement('span');

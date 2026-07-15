@@ -2,6 +2,15 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-15 (14)
+
+- **Visual Identity Rebuild — command-center composition (patch 0.44)** (`index.html` + `css/modern-theme.css` + `css/ux-foundation.css` + docs): rebuilt Modern as a dark-first premium dashboard rather than another skin pass. Fresh Modern profiles use the compact icon rail; saved theme/mode/sidebar choices still win. The shell is now a floating glass frame with an atmospheric canvas, stronger focal surfaces, and a responsive horizontal navigation island.
+  - **Shared visual system:** new `.ux-command-surface`, tone-aware `.ux-highlight*`, persisted `.ux-disclosure`, and `.ux-elevate` primitives. Modern hover always responds with border/shadow emphasis and adds a −4px lift only when reduced motion is not requested.
+  - **Page composition:** Today is a mission-control grid; Gear and Radar have stronger focal heroes; Farm leads with the selected-run summary and Log Run action; Resistance leads with Readiness/Missing Stat Radar; both Codex pages are search-first with detail focus; Exile Hub resources and dense workbench/tracker/totals sections sit behind disclosures; Settings is styled as a modern system-preferences frame.
+  - **Simple/Advanced:** new cross-page disclosures follow the live display mode until the user explicitly toggles a panel, then persist in the additive UI key `poeAssist.commandPanels.v1`. Existing Gear/Radar page-specific disclosure keys remain unchanged.
+  - **Compatibility:** all eight tabs, public ids, calculations, Market Radar scoring/confidence/No Signal behavior, Farm analytics, Resistance OCR/stat math, Codex safety rules, local data, imports/exports, deep links, toasts, and numpad behavior remain owned by their existing paths.
+  - Verification completed so far: both inline scripts parse; duplicate-id scan found none; CSS brace balance passed; shell markup balance passed; `git diff --check` passed. Browser workflow checks and the requested Today/Gear/Radar/Resistance screenshots are pending deployment.
+
 ## 2026-07-15 (13)
 
 - **Market Radar planner-first reflow — page-reflow round 2 (patch 0.43)** (`index.html` + `css/modern-theme.css` + docs): applied the EDIT_GUIDE "Planner-first page reflow pattern" to `#pageRadar`. **Presentation only — `radarItemScore`/`buildRadarRecos`, the 0.39 grouping/confidence rules, the No Signal toggle, the 0.40 codex deep-link, and all filter/rate logic are untouched**, and Today's radar card was not touched.

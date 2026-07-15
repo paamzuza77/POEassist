@@ -175,3 +175,115 @@ textarea:focus-visible {
 @media (max-width: 480px) {
   .toast-stack { right: 12px; left: 12px; bottom: 12px; width: auto; }
 }
+
+/* ---------- 4 - Command surfaces / highlights / disclosures (patch 0.44) ----------
+   Shared structural primitives. Base rules stay RawBlock-safe; Modern glass,
+   tints, and elevation live in css/modern-theme.css. */
+.ux-command-surface {
+  position: relative;
+  border: 5px solid var(--border);
+  background: var(--panel);
+  padding: 20px;
+}
+
+.ux-highlight {
+  --ux-highlight-color: var(--link);
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px 12px 10px 16px;
+  border: 3px solid var(--border);
+  border-left: 6px solid var(--ux-highlight-color);
+  background: var(--panel);
+  color: var(--text);
+}
+.ux-highlight-info { --ux-highlight-color: var(--link); }
+.ux-highlight-success { --ux-highlight-color: var(--ok); }
+.ux-highlight-warn { --ux-highlight-color: var(--lightning); }
+.ux-highlight-danger { --ux-highlight-color: var(--fire); }
+.ux-highlight-muted { --ux-highlight-color: var(--text-dim); }
+.ux-highlight-ico { color: var(--ux-highlight-color); font-weight: 800; }
+.ux-highlight-copy { min-width: 0; }
+.ux-highlight-title { color: var(--text); font-weight: 800; line-height: 1.35; }
+.ux-highlight-note { color: var(--text-muted); font-size: 11.5px; line-height: 1.45; }
+.ux-highlight-meta { color: var(--ux-highlight-color); font-family: var(--font-mono); font-weight: 700; }
+
+.ux-disclosure {
+  border: 3px solid var(--border);
+  background: var(--panel);
+}
+.ux-disclosure > summary {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 10px 14px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ux-disclosure > summary::-webkit-details-marker { display: none; }
+.ux-disclosure > summary::before { content: '>'; color: var(--gold); }
+.ux-disclosure[open] > summary::before { content: 'v'; }
+.ux-disclosure > summary:hover { background: var(--panel-sunken); }
+.ux-disclosure[open] > summary { border-bottom: 2px solid var(--border-soft); }
+.ux-disclosure-body { padding: 14px; }
+.ux-disclosure-hint {
+  margin-left: auto;
+  color: var(--text-dim);
+  font-size: 10px;
+  letter-spacing: 0.03em;
+  text-transform: none;
+}
+
+.ux-elevate { position: relative; }
+
+@media (max-width: 640px) {
+  .ux-command-surface { padding: 15px; }
+  .ux-highlight { grid-template-columns: auto minmax(0, 1fr); }
+  .ux-highlight-meta { grid-column: 2; }
+  .ux-disclosure-hint { display: none; }
+}
+
+/* Cross-theme structure for patch 0.44 wrappers. */
+.sidebar-brand-mark { display: none; }
+.topbar-context { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
+.today-signal-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+.farm-command-copy h2,
+.forge-command-copy h2 { margin: 4px 0 6px; }
+.farm-command-copy p,
+.forge-command-copy p { margin: 0; color: var(--text-muted); }
+.farm-command-kicker,
+.forge-command-kicker { color: var(--gold); font-family: var(--font-mono); font-size: 10px; font-weight: 800; text-transform: uppercase; }
+.forge-workbench-grid { display: grid; grid-template-columns: minmax(280px,350px) minmax(0,1fr); gap: 14px; align-items: start; }
+.codex-command { margin-bottom: 14px; }
+html[data-theme="trust-blue-pay"] .ux-command-surface,
+html[data-theme="trust-blue-pay"] .ux-disclosure {
+  border-width: 1px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+html[data-theme="trust-blue-pay"] .ux-highlight {
+  border-width: 1px;
+  border-left-width: 4px;
+  border-radius: 10px;
+}
+html[data-theme="trust-blue-pay"] .ux-disclosure > summary {
+  font-family: var(--font-body);
+  letter-spacing: 0;
+  text-transform: none;
+}
+@media (max-width: 900px) {
+  .today-signal-grid,
+  .forge-workbench-grid { grid-template-columns: minmax(0,1fr); }
+  .topbar-context { gap: 8px; }
+}
