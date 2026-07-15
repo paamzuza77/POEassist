@@ -164,6 +164,11 @@
   html[data-theme="trust-blue-pay"] .sr-bar,
   html[data-theme="trust-blue-pay"] .totals-panel,
   html[data-theme="trust-blue-pay"] .gauge-track,
+  html[data-theme="trust-blue-pay"] .today-hero,
+  html[data-theme="trust-blue-pay"] .today-open,
+  html[data-theme="trust-blue-pay"] .today-buynext,
+  html[data-theme="trust-blue-pay"] .today-bar,
+  html[data-theme="trust-blue-pay"] .todo-item,
   html[data-theme="trust-blue-pay"] .hub-card,
   html[data-theme="trust-blue-pay"] .link-card,
   html[data-theme="trust-blue-pay"] .link-open,
@@ -269,6 +274,7 @@
   html[data-theme="trust-blue-pay"][data-mode="dark"] .reco-top-badge { color: #0b1220; }
 
   /* 3 · Modals get a proper elevation; cards/panels a subtle navy-tinted lift */
+  html[data-theme="trust-blue-pay"] .today-hero,
   html[data-theme="trust-blue-pay"] .hub-card,
   html[data-theme="trust-blue-pay"] .link-card,
   html[data-theme="trust-blue-pay"] .reco-card,
@@ -295,6 +301,7 @@
   html[data-theme="trust-blue-pay"] .kw-tip {
     box-shadow: 0 12px 32px rgba(0, 48, 135, 0.14);
   }
+  html[data-theme="trust-blue-pay"][data-mode="dark"] .today-hero,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .hub-card,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .link-card,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .reco-card,
@@ -3836,6 +3843,92 @@
   .budget-chip.bs-over { color: var(--void); background: var(--fire); border-color: var(--fire); }
   .budget-chip.bs-noprice { color: var(--lightning); border-color: var(--lightning); }
   .budget-chip.bs-bought { color: var(--text-muted); border-color: var(--border-soft); }
+
+  /* ==================== Today Dashboard (patch 0.36) ====================
+     หน้า Today: hero + grid การ์ดสรุป + Todo list — ใช้ token เดิมทั้งหมด (รอดทุกธีม/โหมด)
+     การ์ดหลักใช้คลาส .hub-card เดิม (ลงทะเบียนในธีม Trust/Modern อยู่แล้ว) */
+  .today-hero {
+    background: var(--void);
+    border: 3px solid var(--border);
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px 24px;
+  }
+  .today-hero-main { flex: 1 1 300px; min-width: 0; }
+  .today-hero-greeting { font-family: var(--font-head); font-size: 20px; text-transform: uppercase; margin: 0 0 4px; color: var(--text); }
+  .today-hero-date { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); }
+  .today-hero-league { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  .today-hero-league strong { color: var(--text); }
+  .today-hero-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .today-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+  .today-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .today-card { min-width: 0; }
+  .today-open {
+    margin-left: auto; flex-shrink: 0;
+    font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    background: var(--void); color: var(--text);
+    border: 2px solid var(--border); border-radius: 0;
+    padding: 3px 8px; cursor: pointer;
+  }
+  .today-open:hover { background: var(--text); color: var(--void); }
+  .today-sub { font-size: 12px; color: var(--text-muted); margin: 0 0 8px; }
+  .today-buynext {
+    border: 2px solid var(--border); background: var(--panel-sunken);
+    padding: 8px 10px; margin-top: 8px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px;
+    font-size: 13px;
+  }
+  .today-buynext .tb-name { font-weight: 700; color: var(--text); overflow-wrap: anywhere; }
+  .today-buynext .tb-est { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); }
+  .today-bar { height: 8px; border: 2px solid var(--border); background: var(--void); margin-top: 8px; }
+  .today-bar-fill { height: 100%; background: var(--ok); width: 0; }
+  /* checklist ธาตุในการ์ด Resistance */
+  .today-res-list { display: flex; flex-direction: column; margin-top: 6px; }
+  .today-res-row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; padding: 3px 0; color: var(--text-muted); }
+  .today-res-row b { margin-left: auto; font-family: var(--font-mono); font-weight: 700; }
+  .today-res-row .trr-ok { color: var(--ok); }
+  .today-res-row .trr-short { color: var(--lightning); }
+  .today-res-row .trr-opt { color: var(--text-dim); }
+  /* Needs attention rows */
+  .today-attn-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border-soft); }
+  .today-attn-item:last-child { border-bottom: none; }
+  .today-attn-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lightning); flex-shrink: 0; }
+  .today-attn-item.ok .today-attn-dot { background: var(--ok); }
+  .today-attn-item span { min-width: 0; overflow-wrap: anywhere; }
+  .today-attn-item .today-open { margin-left: auto; }
+  /* Codex favorite shortcut chips (ใช้ .filter-chip เดิมเป็นปุ่ม) */
+  .today-fav-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 8px; }
+
+  /* ---- Todo list (Todoist-ish · คีย์ additive poe2TodayTodos.v1) ---- */
+  .todo-add { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+  .todo-add .shop-filter { flex: 1 1 160px; min-width: 0; }
+  .todo-add select { font-family: var(--font-mono); font-size: 11px; background: var(--void); color: var(--text); border: 2px solid var(--border); border-radius: 0; padding: 4px 6px; }
+  .todo-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .todo-list { display: flex; flex-direction: column; gap: 6px; }
+  .todo-item {
+    display: flex; align-items: center; gap: 8px;
+    border: 2px solid var(--border); background: var(--void);
+    padding: 7px 10px; min-width: 0;
+  }
+  .todo-item.done { border-color: var(--border-soft); background: var(--panel-sunken); }
+  .todo-check { width: 15px; height: 15px; accent-color: var(--border); cursor: pointer; flex-shrink: 0; }
+  .todo-flag { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; border: none; padding: 0; cursor: pointer; }
+  .todo-flag.p1 { background: var(--fire); }
+  .todo-flag.p2 { background: var(--lightning); }
+  .todo-flag.p3 { background: var(--link); }
+  .todo-flag.p4 { background: var(--text-dim); }
+  .todo-title { flex: 1; min-width: 0; font-size: 13px; color: var(--text); overflow-wrap: anywhere; }
+  .todo-item.done .todo-title { color: var(--text-muted); text-decoration: line-through; }
+  .todo-counts { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+  .todo-edit { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+  .todo-edit-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .todo-edit-row .shop-filter { flex: 1 1 140px; min-width: 0; }
+  .todo-edit-row select { font-family: var(--font-mono); font-size: 11px; background: var(--void); color: var(--text); border: 2px solid var(--border); border-radius: 0; padding: 4px 6px; }
+
+  @media (max-width: 1023px) {
+    .today-grid { grid-template-columns: minmax(0, 1fr); }
+  }
 </style>
 <!-- Modularization Phase 1 (patch 0.34): helper CSS ที่แยกออกจาก inline <style> ด้านบน
      วางหลัง </style> เพื่อคงลำดับ cascade เดิม (rule พื้นฐาน specificity ต่ำ — override ของ Trust theme ชนะด้วย specificity อยู่แล้ว) -->
@@ -3861,6 +3954,7 @@
     <nav class="sidebar-nav" role="tablist">
       <div class="nav-group">
         <div class="nav-group-label">Main</div>
+        <button class="nav-item" type="button" id="tabBtnToday" role="tab"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 2h12v3H2zM2 6h5v8H2zM8.5 6H14v3H8.5zM8.5 10.5H14V14H8.5z"/></svg></span>Today</button>
         <button class="nav-item" type="button" id="tabBtnHome" role="tab"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 7 8 1l6 6v8H9v-4H7v4H2z"/></svg></span>Exile Hub</button>
         <button class="nav-item" type="button" id="tabBtnRadar" role="tab"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1 1h6v2H3v4H1zM9 1h6v6h-2V3H9zM1 9h2v4h4v2H1zM13 9h2v6H9v-2h4zM6 6h4v4H6z"/></svg></span>Market Radar</button>
         <button class="nav-item" type="button" id="tabBtnDivine" role="tab"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l7 7-7 7-7-7z"/></svg></span>Divine Market</button>
@@ -3899,6 +3993,28 @@
     </header>
 
     <main class="content">
+  <div id="pageToday" hidden>
+    <!-- ===== Today Dashboard (patch 0.36) =====
+         หน้ารวมสถานะจากทุกแท็บ ("ควรทำอะไรต่อ?") + Todo list เบาๆ สไตล์ Todoist
+         ทุกการ์ด render ด้วย JS (บล็อก "Today Dashboard" ท้ายสคริปต์หลัก) — อ่านจาก global/ helper เดิม
+         ของแต่ละแท็บเท่านั้น ไม่ fetch เพิ่ม ไม่แตะสูตรคำนวณใดๆ · todo เก็บในคีย์ additive poe2TodayTodos.v1 -->
+    <div class="today-hero" id="todayHero"></div>
+    <div class="today-grid">
+      <div class="today-col today-col-main">
+        <div class="hub-card today-card" id="todayTodoCard"></div>
+        <div class="hub-card today-card" id="todayGearCard"></div>
+        <div class="hub-card today-card" id="todayRadarCard"></div>
+        <div class="hub-card today-card" id="todayForgeCard"></div>
+      </div>
+      <div class="today-col today-col-side">
+        <div class="hub-card today-card" id="todayAttentionCard"></div>
+        <div class="hub-card today-card" id="todayFarmCard"></div>
+        <div class="hub-card today-card" id="todayCodexCard"></div>
+        <div class="hub-card today-card today-status-card" id="todayStatusCard"></div>
+      </div>
+    </div>
+  </div><!-- /pageToday -->
+
   <div id="pageHome" hidden>
     <div class="hub-hero">
       <h2>Exile Assistant</h2>
@@ -6012,12 +6128,13 @@ addCorners(document.querySelector('.totals-panel'));
 
 const TAB_KEY = 'poeAssist.activeTab.v1';
 // หมายเหตุ: internal id ยังเป็น farm/shop/forge เหมือนเดิม (ผูกกับ storage/startup tab) — เปลี่ยนแค่ชื่อที่แสดง
-const TAB_IDS = { home: 'pageHome', radar: 'pageRadar', farm: 'pageFarm', forge: 'pageForge', shop: 'pageShop', divine: 'pageDivine', codex: 'pageCodex', keyword: 'pageKeyword' };
-const TAB_BTNS = { home: 'tabBtnHome', radar: 'tabBtnRadar', farm: 'tabBtnFarm', forge: 'tabBtnForge', shop: 'tabBtnShop', divine: 'tabBtnDivine', codex: 'tabBtnCodex', keyword: 'tabBtnKeyword' };
-const TAB_TITLES = { home: 'Exile Hub', radar: 'Market Radar', farm: 'Farm Planner', forge: 'Resistance Checker', shop: 'Gear Planner', divine: 'Divine Market', codex: 'Content Codex', keyword: 'Keyword Codex' };
-const TAB_GROUPS = { home: 'Main', radar: 'Main', divine: 'Main', farm: 'Planning', shop: 'Planning', forge: 'Tools', codex: 'Tools', keyword: 'Tools' };
+const TAB_IDS = { today: 'pageToday', home: 'pageHome', radar: 'pageRadar', farm: 'pageFarm', forge: 'pageForge', shop: 'pageShop', divine: 'pageDivine', codex: 'pageCodex', keyword: 'pageKeyword' };
+const TAB_BTNS = { today: 'tabBtnToday', home: 'tabBtnHome', radar: 'tabBtnRadar', farm: 'tabBtnFarm', forge: 'tabBtnForge', shop: 'tabBtnShop', divine: 'tabBtnDivine', codex: 'tabBtnCodex', keyword: 'tabBtnKeyword' };
+const TAB_TITLES = { today: 'Today', home: 'Exile Hub', radar: 'Market Radar', farm: 'Farm Planner', forge: 'Resistance Checker', shop: 'Gear Planner', divine: 'Divine Market', codex: 'Content Codex', keyword: 'Keyword Codex' };
+const TAB_GROUPS = { today: 'Main', home: 'Main', radar: 'Main', divine: 'Main', farm: 'Planning', shop: 'Planning', forge: 'Tools', codex: 'Tools', keyword: 'Tools' };
 // คำอธิบายสั้นๆ ต่อแท็บ แสดงบน topbar (patch 0.35) — ข้อความล้วน อัปเดตใน switchTab
 const TAB_SUBTITLES = {
+  today: 'Daily command view — status summary, next actions & todos',
   home: 'League status, stash sale watch & quick resources',
   radar: 'Hourly poe.ninja snapshot → what to farm now',
   divine: 'Divine price analytics & phase timeline',
@@ -6038,7 +6155,8 @@ function loadStartTabPreference() {
 }
 
 let activeTab = localStorage.getItem(TAB_KEY);
-if (!TAB_IDS[activeTab]) activeTab = 'home';
+// ผู้ใช้ใหม่ (ไม่มีแท็บที่บันทึกไว้) เริ่มที่ Today (patch 0.36) — ผู้ใช้เดิมยังได้แท็บล่าสุด/ตาม startup pref เหมือนเดิม
+if (!TAB_IDS[activeTab]) activeTab = 'today';
 // ถ้าตั้งแท็บเริ่มต้นแบบตายตัวไว้ ใช้แท็บนั้นตอนโหลด (ไม่งั้นคงพฤติกรรมเดิม = แท็บล่าสุด)
 const startTabPref = loadStartTabPreference();
 if (startTabPref !== 'last' && TAB_IDS[startTabPref]) activeTab = startTabPref;
@@ -6491,6 +6609,7 @@ const APP_DATA_KEYS = [
   'poe2FarmLabV2.runs.v1', // แท็บ Atlas V.2 ถูกถอดออกแล้ว — คงคีย์ไว้ให้ backup เก็บข้อมูลเดิมของผู้ใช้ไว้ได้
   'poe2ContentCodex.favorites.v1',
   'poe2KeywordCodex.favorites.v1',
+  'poe2TodayTodos.v1', // Todo list ในหน้า Today (patch 0.36) — ข้อมูลผู้ใช้ ไม่ใช่ UI pref (Reset UI ไม่ลบ)
   'poeAssist.radarFilter.v1',
   'poeAssist.radarRates.v1',
   'poeAssist.stashSale.manual.v1',
@@ -8467,6 +8586,18 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.36',
+    date: '2026-07-15',
+    notes: [
+      'แท็บใหม่ "Today" — หน้า dashboard รวมสถานะจากทุกแท็บ ตอบคำถามว่า "วันนี้ควรทำอะไรต่อ": สรุป Gear Planner (ความคืบหน้า/งบที่เหลือ/ซื้อต่อไป), Market Radar TOP PICK พร้อม Farm Score, Resistance Readiness + เช็กลิสต์ธาตุ, สรุปการ์ด Farm Planner, ทางลัดรายการโปรดจาก Codex ทั้งสอง, การ์ด Needs Attention และ App Status',
+      'Todo list ในหน้า Today (สไตล์ Todoist): เพิ่มงานด่วนด้วย Enter, ความสำคัญ P1-P4 (จุดสี แดง/ส้ม/น้ำเงิน/เทา — คลิกจุดเพื่อเปลี่ยน), แนบลิงก์ต่อบรรทัด (เปิดแท็บใหม่ + คัดลอกได้), แก้ไขชื่อ/ลิงก์ในแถว, ติ๊กเสร็จ, ลบ (ยืนยันก่อน), ฟิลเตอร์ ทั้งหมด/ค้างอยู่/เสร็จแล้ว/P1 พร้อมจำนวนสด',
+      'Todo เก็บในเครื่องด้วยคีย์ใหม่ (additive) poe2TodayTodos.v1 — ติดไปกับ Backup Export/Import ใน Settings และ "ไม่" ถูกลบตอน Reset UI preferences',
+      'ตัวเลขทุกการ์ดในหน้า Today อ่านจากการคำนวณเดิมของแต่ละแท็บโดยตรง — ไม่มีสูตร/คะแนนใหม่ ไม่แปลงหน่วยข้ามสกุลให้เอง (การ์ดฟาร์มหน่วยผสมแสดงแยกหน่วยเหมือนเดิม)',
+      'ผู้ใช้ใหม่เปิดแอปครั้งแรกจะเริ่มที่หน้า Today (ผู้ใช้เดิมยังได้แท็บล่าสุด/แท็บเริ่มต้นที่ตั้งไว้เหมือนเดิม) และ Today เลือกเป็น Startup tab ใน Settings ได้',
+      'แท็บ/ฟีเจอร์เดิมทั้งหมดทำงานเหมือนเดิม — การ์ดหน้า Today เป็นมุมมองอ่านอย่างเดียว + ปุ่มลัดกระโดดไปแท็บจริง',
+    ],
+  },
   {
     version: '0.35',
     date: '2026-07-15',
@@ -10809,6 +10940,8 @@ async function loadRadar() {
     radarData = data || {};
     doneLoading();
     renderRadar(radarData);
+    // แจ้งหน้าที่สนใจ (เช่น Today Dashboard) ว่า snapshot ตลาดพร้อมแล้ว — additive, ไม่มีใครบังคับต้องฟัง
+    document.dispatchEvent(new CustomEvent('poeassist:radarloaded'));
   } catch (netErr) {
     radarSetStatus('missing', 'Missing');
     doneLoading();
@@ -11235,6 +11368,8 @@ async function loadHomeStatus() {
   renderLeagueCard('divineLeagueBody', 'divineLeagueBadge', 'divineLeagueRunningVal');
   renderStashCard();
   if (typeof renderDivineMarket === 'function') renderDivineMarket(); // รีเฟรช "เวลาที่ลีกเปิดมาแล้ว" หลังโหลด home-status.json
+  // แจ้ง Today Dashboard ให้รีเฟรชข้อมูลลีก (additive event — patch 0.36)
+  document.dispatchEvent(new CustomEvent('poeassist:homestatusloaded'));
 }
 loadHomeStatus();
 
@@ -12179,6 +12314,8 @@ async function loadCodex() {
     codexSetBadge('fresh', codexData.entries.length + ' entries');
     doneLoading();
     renderCodex();
+    // แจ้ง Today Dashboard ว่ารายชื่อ Content Codex พร้อมแล้ว (additive event — patch 0.36)
+    document.dispatchEvent(new CustomEvent('poeassist:codexloaded'));
   } catch (netErr) {
     codexLoadState = 'missing';
     codexSetBadge('missing', 'Missing');
@@ -12640,6 +12777,922 @@ async function loadKwc() {
   const search = document.getElementById('kwcSearch');
   if (search) search.addEventListener('input', () => { kwcSearchText = search.value.trim(); renderKwc(); });
   loadKwc();
+})();
+
+/* ==================== Today Dashboard (patch 0.36) ====================
+   หน้า "Today" — command view รวมสถานะจากทุกแท็บ + Todo list เบาๆ สไตล์ Todoist
+
+   กติกา (สำคัญ):
+   - อ่านอย่างเดียวจาก global/helper เดิมของแต่ละแท็บ (shopRows/rowEstPrice, radarData/buildRadarRecos,
+     state/computeForgeReadiness, farmCards/computeFarmRunAnalytics, codexFavs/kwcFavs, homeStatus)
+     — "ไม่" แก้สูตร/คะแนน/การคำนวณของแท็บไหนทั้งสิ้น ตัวเลขบนการ์ดต้องตรงกับแท็บจริงเสมอ
+   - ไม่ fetch เพิ่ม — รอ event additive (poeassist:radarloaded / homestatusloaded / codexloaded /
+     keywordsloaded) แล้ว re-render; เปิดแท็บ Today เมื่อไหร่ก็ re-render ใหม่ (ผ่าน listener ของปุ่ม nav
+     — ไม่แตะ switchTab เอง)
+   - Todo เก็บในคีย์ additive poe2TodayTodos.v1 (อยู่ใน APP_DATA_KEYS → ติด backup Export/Import;
+     "ไม่" อยู่ใน UI_PREF_KEYS — Reset UI prefs จะไม่ลบงานของผู้ใช้)
+   - ทุกข้อความผู้ใช้ (ชื่องาน/ลิงก์/ชื่อการ์ดฟาร์ม/ชื่อ codex) เข้า DOM ผ่าน textContent เท่านั้น
+     ลิงก์ todo ยอมเฉพาะ http(s) (todayTodoSafeUrl) — บล็อกนี้ต้องอยู่ "ท้ายสคริปต์" (หลัง let kwcData ฯลฯ) */
+
+const TODAY_TODO_KEY = 'poe2TodayTodos.v1';
+const TODAY_TODO_PRIORITIES = ['p1', 'p2', 'p3', 'p4'];
+const TODAY_TODO_PRI_LABELS = { p1: 'P1 ด่วนสุด', p2: 'P2 สำคัญ', p3: 'P3 ปกติ', p4: 'P4 ไว้ก่อน' };
+
+// โหลดแบบ tolerant — ข้อมูลเสีย/ฟิลด์หาย = ค่า default ไม่ทำให้หน้าเจ๊ง
+function normalizeTodayTodo(raw) {
+  const t = (raw && typeof raw === 'object') ? raw : {};
+  return {
+    id: typeof t.id === 'string' && t.id ? t.id : ('td' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7)),
+    title: typeof t.title === 'string' ? t.title : '',
+    done: t.done === true,
+    priority: TODAY_TODO_PRIORITIES.includes(t.priority) ? t.priority : 'p4',
+    link: typeof t.link === 'string' ? t.link : '',
+    note: typeof t.note === 'string' ? t.note : '',
+    createdAt: Number.isFinite(t.createdAt) ? t.createdAt : Date.now(),
+    updatedAt: Number.isFinite(t.updatedAt) ? t.updatedAt : Date.now(),
+  };
+}
+let todayTodos = (function loadTodayTodos() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(TODAY_TODO_KEY));
+    if (Array.isArray(raw)) return raw.map(normalizeTodayTodo).filter(t => t.title !== '' || t.link !== '');
+  } catch (e) { /* malformed storage */ }
+  return [];
+})();
+function persistTodayTodos() {
+  try { localStorage.setItem(TODAY_TODO_KEY, JSON.stringify(todayTodos)); } catch (e) { /* storage unavailable */ }
+}
+
+let todayTodoFilter = 'all';    // all | active | done | p1 — in-memory โดยตั้งใจ
+let todayTodoEditId = null;     // id ของแถวที่กำลังแก้ไข (in-memory)
+let todayTodoAddPri = 'p4';     // priority ที่เลือกไว้ในแถวเพิ่มงาน — จำข้าม re-render
+let todayFlashTodoId = null;    // แถวที่เพิ่งเพิ่ม → uxFlash หลัง render
+
+// ลิงก์ todo: ยอมเฉพาะ http(s) เท่านั้น — อย่างอื่นถือว่าไม่มีลิงก์ (กัน javascript: ฯลฯ)
+function todayTodoSafeUrl(u) {
+  u = String(u || '').trim();
+  return /^https?:\/\//i.test(u) ? u : '';
+}
+
+function todayCopyText(text, okMsg) {
+  const ok = () => showSuccessToast(okMsg || 'คัดลอกแล้ว', { key: 'today-copy' });
+  const fallback = () => {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      ok();
+    } catch (e) { showErrorToast('คัดลอกไม่สำเร็จ', { key: 'today-copy' }); }
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, fallback);
+  else fallback();
+}
+
+/* ---- ตัวอ่านสรุปจากแท็บอื่น (mirror การคำนวณเดิมแบบอ่านอย่างเดียว) ---- */
+
+// กติกา min??max เดียวกับ updateShopSummary ทุกบรรทัด — แหล่งความจริงคือ Gear Planner
+function todayShopSummary() {
+  let totalMin = 0, totalMax = 0, totalBought = 0, boughtCount = 0;
+  let needMin = 0, needMax = 0, missingCount = 0;
+  shopRows.forEach(r => {
+    const hasMin = typeof r.min === 'number' && !isNaN(r.min);
+    const hasMax = typeof r.max === 'number' && !isNaN(r.max);
+    const lo = hasMin ? r.min : (hasMax ? r.max : 0);
+    const hi = hasMax ? r.max : (hasMin ? r.min : 0);
+    totalMin += lo; totalMax += hi;
+    if (isBought(r)) { totalBought += r.bought; boughtCount++; }
+    else { needMin += lo; needMax += hi; if (!hasMin && !hasMax) missingCount++; }
+  });
+  const pct = shopRows.length ? Math.round((boughtCount / shopRows.length) * 100) : 0;
+  return { totalMin, totalMax, totalBought, boughtCount, needMin, needMax, missingCount, pct };
+}
+// ตัวเลือก "ซื้อต่อไป" เดียวกับ renderShopBuyNext: ติ๊กมาร์กก่อน แล้วถูกสุด (rowEstPrice: deal > min > max)
+function todayShopBuyNext() {
+  const unbought = shopRows.filter(r => !isBought(r));
+  const candidates = unbought.filter(r => rowEstPrice(r) !== null);
+  if (!candidates.length) return { unbought: unbought.length, pick: null };
+  candidates.sort((a, b) => ((b.checked === true) - (a.checked === true)) || (rowEstPrice(a) - rowEstPrice(b)));
+  return { unbought: unbought.length, pick: candidates[0] };
+}
+
+// pipeline เดียวกับ renderRadar: กรองด้วย radarMinDivine → buildRadarRecos → อันดับ 1 ที่มี evidence + score > 0
+function todayRadarTopPick() {
+  if (!radarData || !Array.isArray(radarData.marketItems)) return null;
+  const allItems = radarData.marketItems;
+  const minDiv = radarMinDivine();
+  let items = allItems;
+  if (minDiv !== null && minDiv > 0) {
+    items = allItems
+      .filter(it => typeof it.value === 'number' && it.value >= minDiv)
+      .sort((a, b) => (b.value || 0) - (a.value || 0));
+  }
+  const recos = buildRadarRecos(items, radarData.contentRecommendations);
+  const top = recos[0];
+  return (top && top.hasEvidence && top.score > 0) ? top : null;
+}
+function todayRadarFreshness() {
+  const updated = radarData && radarData.updatedAt ? new Date(radarData.updatedAt) : null;
+  if (!updated || isNaN(updated)) return { kind: 'missing', text: 'Missing', updated: null };
+  const ageH = (Date.now() - updated.getTime()) / 3600000;
+  return ageH <= RADAR_FRESH_HOURS
+    ? { kind: 'fresh', text: 'Fresh', updated }
+    : { kind: 'stale', text: 'Stale · ' + Math.round(ageH) + 'h', updated };
+}
+
+// loop เดียวกับต้น recalc() เป๊ะๆ (รวม PENALTY) — ไม่มีสูตรต้านทานใหม่
+function todayForgeTotals() {
+  const totals = { fire: PENALTY, cold: PENALTY, lightning: PENALTY, chaos: 0, rarity: 0 };
+  ALL_SLOTS.forEach(slot => {
+    state[slot.key].forEach(row => { totals[row.stat] += (row.value || 0); });
+  });
+  return totals;
+}
+
+/* ---- ตัวช่วยประกอบการ์ด ---- */
+
+function todayCardHead(card, title, opts) {
+  opts = opts || {};
+  const head = document.createElement('div');
+  head.className = 'hub-card-head';
+  const h = document.createElement('h3');
+  h.textContent = title;
+  head.appendChild(h);
+  if (opts.countText) {
+    const c = document.createElement('span');
+    c.className = 'todo-counts';
+    c.textContent = opts.countText;
+    head.appendChild(c);
+  }
+  if (opts.badge) {
+    const b = document.createElement('span');
+    b.className = 'radar-badge ' + opts.badge.kind;
+    b.textContent = opts.badge.text;
+    head.appendChild(b);
+  }
+  if (opts.openTab) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'today-open';
+    btn.textContent = opts.openLabel || 'เปิด ›';
+    btn.addEventListener('click', () => switchTab(opts.openTab));
+    head.appendChild(btn);
+  }
+  card.appendChild(head);
+  return head;
+}
+
+// เปิด Content Codex ที่ entry ที่เลือก (แบบเดียวกับ openKeywordCodexEntry ฝั่ง keyword)
+function todayOpenCodexEntry(id) {
+  switchTab('codex');
+  codexFilter = 'all';
+  codexSearchText = '';
+  const search = document.getElementById('codexSearch');
+  if (search) search.value = '';
+  codexSelectedId = id;
+  if (typeof renderCodex === 'function') renderCodex();
+  const sel = document.querySelector('#codexList .codex-list-item.selected');
+  if (sel && sel.scrollIntoView) sel.scrollIntoView({ block: 'nearest' });
+}
+
+/* ---- Hero ---- */
+
+function renderTodayHero() {
+  const el = document.getElementById('todayHero');
+  if (!el) return;
+  el.innerHTML = '';
+
+  const main = document.createElement('div');
+  main.className = 'today-hero-main';
+  const hr = new Date().getHours();
+  const greet = hr < 5 ? 'สวัสดียามดึก, Exile' : hr < 12 ? 'สวัสดีตอนเช้า, Exile' : hr < 17 ? 'สวัสดีตอนบ่าย, Exile' : hr < 21 ? 'สวัสดีตอนเย็น, Exile' : 'สวัสดียามค่ำ, Exile';
+  const g = document.createElement('h2');
+  g.className = 'today-hero-greeting';
+  g.textContent = greet;
+  main.appendChild(g);
+
+  const d = document.createElement('div');
+  d.className = 'today-hero-date';
+  const active = todayTodos.filter(t => !t.done).length;
+  d.textContent = new Date().toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+    + (todayTodos.length ? ' · งานค้าง ' + active + ' · เสร็จแล้ว ' + (todayTodos.length - active) : '');
+  main.appendChild(d);
+
+  const lg = homeStatus && homeStatus.league;
+  const lgLine = document.createElement('div');
+  lgLine.className = 'today-hero-league';
+  if (lg && lg.name) {
+    const start = parseIso(lg.startAt);
+    const end = parseIso(lg.endAt);
+    lgLine.textContent = 'League: ';
+    const nm = document.createElement('strong');
+    nm.textContent = lg.name;
+    lgLine.appendChild(nm);
+    const tail = document.createElement('span');
+    tail.textContent = (start ? ' · เปิดมาแล้ว ' + fmtDuration(Date.now() - start.getTime()) : '')
+      + (end && end.getTime() > Date.now() ? ' · เหลืออีก ' + fmtDuration(end.getTime() - Date.now()) : '');
+    lgLine.appendChild(tail);
+  } else {
+    lgLine.textContent = 'League: ยังไม่มีข้อมูล (data/home-status.json)';
+  }
+  main.appendChild(lgLine);
+  el.appendChild(main);
+
+  const actions = document.createElement('div');
+  actions.className = 'today-hero-actions';
+  const mkBtn = (label, onClick, primary) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'ocr-btn' + (primary ? ' primary' : '');
+    b.textContent = label;
+    b.addEventListener('click', onClick);
+    actions.appendChild(b);
+  };
+  mkBtn('+ เพิ่ม Todo', () => {
+    const inp = document.getElementById('todoAddInput');
+    if (inp) { inp.scrollIntoView({ behavior: 'smooth', block: 'center' }); inp.focus(); }
+  }, true);
+  mkBtn('Gear Planner', () => switchTab('shop'));
+  mkBtn('Market Radar', () => switchTab('radar'));
+  mkBtn('Resistance', () => switchTab('forge'));
+  el.appendChild(actions);
+}
+
+/* ---- การ์ด A: Gear Planner ---- */
+
+function renderTodayGearCard() {
+  const card = document.getElementById('todayGearCard');
+  if (!card) return;
+  card.innerHTML = '';
+  todayCardHead(card, 'Gear Planner', { openTab: 'shop' });
+
+  if (!shopRows.length) {
+    card.appendChild(uxEmptyState({
+      icon: '🛒',
+      title: 'ยังไม่มีรายการของที่วางแผนซื้อ',
+      body: 'เพิ่มรายการใน Gear Planner ก่อน แล้วการ์ดนี้จะสรุปงบ + แนะนำว่าควรซื้ออะไรต่อ',
+      actions: [{ label: 'เปิด Gear Planner', primary: true, onClick: () => switchTab('shop') }],
+    }));
+    return;
+  }
+
+  const s = todayShopSummary();
+  card.appendChild(hubLine('ซื้อแล้ว', s.boughtCount + ' / ' + shopRows.length + ' รายการ (' + s.pct + '%)'));
+  const bar = document.createElement('div');
+  bar.className = 'today-bar';
+  const fill = document.createElement('div');
+  fill.className = 'today-bar-fill';
+  fill.style.width = s.pct + '%';
+  bar.appendChild(fill);
+  card.appendChild(bar);
+
+  card.appendChild(hubLine('ต้องใช้อีก (Min–Max)', fmtNum(s.needMin) + ' – ' + fmtNum(s.needMax) + ' Div'));
+  if (divineRate > 0) card.appendChild(hubLine('คิดเป็นเงิน (Max)', fmtNum(s.needMax * divineRate) + ' ' + fiatSymbol()));
+  const mirrorText = formatMirrorEquivalent(s.totalMax);
+  if (mirrorText) card.appendChild(hubLine('งบรวม Max เทียบ Mirror', mirrorText));
+  if (s.missingCount > 0) card.appendChild(hubLine('ยังไม่มีราคา', s.missingCount + ' รายการ', 'divine-warn'));
+
+  const bn = todayShopBuyNext();
+  if (bn.pick) {
+    const box = document.createElement('div');
+    box.className = 'today-buynext';
+    const tag = document.createElement('span');
+    tag.className = 'shop-buynext-tag';
+    tag.textContent = 'ซื้อต่อไป';
+    box.appendChild(tag);
+    const nm = document.createElement('span');
+    nm.className = 'tb-name';
+    nm.textContent = rowDisplayName(bn.pick);
+    box.appendChild(nm);
+    const est = document.createElement('span');
+    est.className = 'tb-est';
+    est.textContent = '~' + fmtNum(rowEstPrice(bn.pick)) + ' Div';
+    box.appendChild(est);
+    const go = document.createElement('button');
+    go.type = 'button';
+    go.className = 'today-open';
+    go.textContent = 'ไปที่แถว ›';
+    go.addEventListener('click', () => { switchTab('shop'); goToShopRow(bn.pick); });
+    box.appendChild(go);
+    card.appendChild(box);
+  } else if (bn.unbought === 0) {
+    const p = document.createElement('p');
+    p.className = 'today-sub';
+    p.style.marginTop = '8px';
+    p.textContent = '✓ ซื้อครบทุกรายการแล้ว — เก็บงบที่เหลือไว้ craft/upgrade ต่อได้เลย';
+    card.appendChild(p);
+  } else {
+    const p = document.createElement('p');
+    p.className = 'today-sub';
+    p.style.marginTop = '8px';
+    p.textContent = 'ยังแนะนำ "ซื้อต่อไป" ไม่ได้ — ใส่ราคา Min/Max ให้รายการที่เหลืออย่างน้อย 1 แถวก่อน';
+    card.appendChild(p);
+  }
+}
+
+/* ---- การ์ด B: Market Radar TOP PICK ---- */
+
+function renderTodayRadarCard() {
+  const card = document.getElementById('todayRadarCard');
+  if (!card) return;
+  card.innerHTML = '';
+  const fresh = todayRadarFreshness();
+  todayCardHead(card, 'Market Radar', { openTab: 'radar', badge: { kind: fresh.kind, text: fresh.text } });
+
+  if (!radarData) {
+    card.appendChild(uxEmptyState({
+      icon: '📡',
+      title: 'ยังไม่มีข้อมูลตลาด',
+      body: 'รอ snapshot จาก data/market-radar.json — เปิดแท็บ Market Radar เพื่อลองโหลดใหม่ได้',
+      actions: [{ label: 'เปิด Market Radar', primary: true, onClick: () => switchTab('radar') }],
+    }));
+    return;
+  }
+
+  const top = todayRadarTopPick();
+  if (!top) {
+    card.appendChild(uxEmptyState({
+      icon: '🎯',
+      title: 'รอบนี้ยังไม่มี TOP PICK',
+      body: 'ไม่มี content ที่มีหลักฐานราคาผ่านเกณฑ์ใน snapshot/ฟิลเตอร์ปัจจุบัน',
+      actions: [{ label: 'เปิด Market Radar', onClick: () => switchTab('radar') }],
+    }));
+    return;
+  }
+
+  const headRow = document.createElement('div');
+  headRow.className = 'today-buynext';
+  // ไอคอน content: lookup แบบเดียวกับ reco card ของ Market Radar (ตารางที่ตรวจแล้วเท่านั้น)
+  const asset = RADAR_ASSET_BY_KEY[top.contentKey]
+    ? getLocalAssetForName(GAME_ASSETS[RADAR_ASSET_BY_KEY[top.contentKey]].label) : null;
+  if (asset) {
+    const ico = document.createElement('img');
+    ico.className = 'game-ico game-ico-md game-thumb';
+    ico.src = asset.src;
+    ico.alt = '';
+    ico.setAttribute('aria-hidden', 'true');
+    headRow.appendChild(ico);
+  }
+  const tp = document.createElement('span');
+  tp.className = 'reco-top-badge';
+  tp.textContent = '★ TOP PICK';
+  headRow.appendChild(tp);
+  const nm = document.createElement('span');
+  nm.className = 'tb-name';
+  nm.textContent = top.content || '?';
+  headRow.appendChild(nm);
+  const sc = document.createElement('span');
+  sc.className = 'tb-est';
+  sc.textContent = 'Farm Score ' + Math.round(top.score) + '%';
+  headRow.appendChild(sc);
+  card.appendChild(headRow);
+
+  if (Array.isArray(top.reason) && top.reason.length) {
+    const ul = document.createElement('ul');
+    ul.className = 'reason-list';
+    top.reason.slice(0, 2).forEach(r => {
+      const li = document.createElement('li');
+      li.textContent = r;
+      ul.appendChild(li);
+    });
+    card.appendChild(ul);
+  }
+  if (fresh.updated) {
+    const p = document.createElement('p');
+    p.className = 'today-sub';
+    p.style.margin = '6px 0 0';
+    p.textContent = 'ข้อมูลอัปเดต: ' + fresh.updated.toLocaleString('th-TH');
+    card.appendChild(p);
+  }
+}
+
+/* ---- การ์ด C: Resistance Readiness ---- */
+
+function renderTodayForgeCard() {
+  const card = document.getElementById('todayForgeCard');
+  if (!card) return;
+  card.innerHTML = '';
+  const totals = todayForgeTotals();
+  const readiness = computeForgeReadiness(totals);
+  const missing = computeForgeMissing(totals);
+  todayCardHead(card, 'Resistance Readiness', {
+    openTab: 'forge',
+    badge: { kind: readiness.score >= 80 ? 'fresh' : readiness.score >= 50 ? 'stale' : 'missing', text: readiness.score + '/100' },
+  });
+
+  const bar = document.createElement('div');
+  bar.className = 'today-bar';
+  const fill = document.createElement('div');
+  fill.className = 'today-bar-fill';
+  fill.style.width = readiness.score + '%';
+  if (readiness.score < 50) fill.style.background = 'var(--lightning)';
+  bar.appendChild(fill);
+  card.appendChild(bar);
+
+  const list = document.createElement('div');
+  list.className = 'today-res-list';
+  missing.forEach(m => {
+    const row = document.createElement('div');
+    row.className = 'today-res-row';
+    const lab = document.createElement('span');
+    lab.textContent = m.label.replace(' Resistance', '');
+    row.appendChild(lab);
+    const val = document.createElement('b');
+    val.className = m.cls === 'ready' ? 'trr-ok' : m.cls === 'short' ? 'trr-short' : 'trr-opt';
+    val.textContent = m.current + '%' + (m.cls === 'ready' ? ' ✓' : m.key === 'rarity' && m.target <= 0 ? '' : ' (' + m.status + ')');
+    row.appendChild(val);
+    list.appendChild(row);
+  });
+  card.appendChild(list);
+
+  const recos = buildForgeRecos(missing, readiness);
+  if (recos.length) {
+    const p = document.createElement('p');
+    p.className = 'today-sub';
+    p.style.margin = '8px 0 0';
+    p.textContent = readiness.filled === 0
+      ? 'ยังไม่มีข้อมูลอุปกรณ์ในเพรเซ็ตที่ใช้อยู่ — กรอกค่าหรือวางรูปไอเทมในแท็บ Resistance Checker'
+      : recos[0].text;
+    card.appendChild(p);
+  }
+}
+
+/* ---- การ์ด D: Farm Planner snapshot ---- */
+
+function renderTodayFarmCard() {
+  const card = document.getElementById('todayFarmCard');
+  if (!card) return;
+  card.innerHTML = '';
+  todayCardHead(card, 'Farm Planner', { openTab: 'farm' });
+
+  if (!farmCards.length) {
+    card.appendChild(uxEmptyState({
+      icon: '🗺',
+      title: 'ยังไม่มีการ์ดฟาร์ม',
+      body: 'สร้างการ์ดกลยุทธ์ฟาร์มใบแรก แล้วการ์ดนี้จะสรุปรัน/กำไรให้',
+      actions: [{ label: 'เปิด Farm Planner', primary: true, onClick: () => switchTab('farm') }],
+    }));
+    return;
+  }
+
+  const sel = farmCards.find(c => c.id === farmSelectedId) || farmCards.find(c => c.favorite) || farmCards[0];
+  const favCount = farmCards.filter(c => c.favorite).length;
+  card.appendChild(hubLine('การ์ดทั้งหมด', farmCards.length + ' ใบ' + (favCount ? ' · ★ ' + favCount : '')));
+  card.appendChild(hubLine('การ์ดที่ดูอยู่', (sel.name || '').trim() || 'ไม่มีชื่อ'));
+
+  const a = computeFarmRunAnalytics(sel);
+  card.appendChild(hubLine('รันที่บันทึก', a.n + ' รัน'));
+  if (a.n && a.grossUnits.length) card.appendChild(hubLine('ผลรวม (gross)', farmFmtGross(a.gross)));
+  if (a.netCompatible) {
+    card.appendChild(hubLine('Net หลังหักทุน', (a.totalNet > 0 ? '+' : '') + farmFmtNum(a.totalNet) + ' ' + a.costUnit,
+      a.totalNet >= 0 ? 'divine-up' : 'divine-down'));
+    if (a.netPerHour !== null) card.appendChild(hubLine('Net / ชั่วโมง', (a.netPerHour > 0 ? '+' : '') + farmFmtNum(a.netPerHour) + ' ' + a.costUnit + '/hr'));
+  } else if (a.grossPerHour) {
+    card.appendChild(hubLine('ผลรวม / ชั่วโมง', farmFmtNum(a.grossPerHour.value) + ' ' + a.grossPerHour.unit + '/hr'));
+  }
+  if (a.mixed) {
+    const p = document.createElement('p');
+    p.className = 'today-sub';
+    p.style.margin = '6px 0 0';
+    p.textContent = 'หน่วยผสม — แสดงยอดแยกหน่วยตามจริง ไม่แปลงข้ามหน่วยให้ (Mixed units)';
+    card.appendChild(p);
+  }
+}
+
+/* ---- การ์ด E: Codex shortcuts (favorites) ---- */
+
+function renderTodayCodexCard() {
+  const card = document.getElementById('todayCodexCard');
+  if (!card) return;
+  card.innerHTML = '';
+  todayCardHead(card, 'Codex Shortcuts');
+
+  const codexEntries = (codexData && Array.isArray(codexData.entries)) ? codexData.entries : [];
+  const kwList = (kwcData && Array.isArray(kwcData.keywords)) ? kwcData.keywords : [];
+  const favEntries = codexEntries.filter(e => codexFavs.has(e.id)).slice(0, 4);
+  const favKeywords = kwList.filter(k => kwcFavs.has(k.id)).slice(0, 4);
+
+  if (!codexFavs.size && !kwcFavs.size) {
+    card.appendChild(uxEmptyState({
+      icon: '⭐',
+      title: 'ยังไม่มีรายการโปรด',
+      body: 'กดดาว ★ ใน Content Codex / Keyword Codex แล้วทางลัดจะมาโผล่ที่นี่',
+      actions: [
+        { label: 'Content Codex', onClick: () => switchTab('codex') },
+        { label: 'Keyword Codex', onClick: () => switchTab('keyword') },
+      ],
+    }));
+    return;
+  }
+
+  const addSection = (label, chips) => {
+    const p = document.createElement('p');
+    p.className = 'today-sub';
+    p.style.margin = '0 0 2px';
+    p.textContent = label;
+    card.appendChild(p);
+    const row = document.createElement('div');
+    row.className = 'today-fav-row';
+    chips.forEach(ch => row.appendChild(ch));
+    card.appendChild(row);
+  };
+  const mkChip = (label, onClick) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'filter-chip';
+    b.textContent = '★ ' + label;
+    b.addEventListener('click', onClick);
+    return b;
+  };
+
+  if (codexFavs.size) {
+    const chips = favEntries.map(e => mkChip(e.name || e.id, () => todayOpenCodexEntry(e.id)));
+    if (!chips.length) {
+      // มีดาวแต่ข้อมูลยังไม่โหลด/entry หาย — บอกจำนวนไว้ก่อน ไม่เดาชื่อ
+      chips.push(mkChip(codexFavs.size + ' รายการ (เปิดดู)', () => switchTab('codex')));
+    }
+    addSection('Content Codex (' + codexFavs.size + ')', chips);
+  }
+  if (kwcFavs.size) {
+    const chips = favKeywords.map(k => mkChip(k.nameTh || k.nameEn || k.id, () => openKeywordCodexEntry(k.id)));
+    if (!chips.length) {
+      chips.push(mkChip(kwcFavs.size + ' คำ (เปิดดู)', () => switchTab('keyword')));
+    }
+    addSection('Keyword Codex (' + kwcFavs.size + ')', chips);
+  }
+}
+
+/* ---- การ์ด F: Needs attention ---- */
+
+function renderTodayAttentionCard() {
+  const card = document.getElementById('todayAttentionCard');
+  if (!card) return;
+  card.innerHTML = '';
+  todayCardHead(card, 'Needs Attention');
+
+  const items = [];
+  const s = shopRows.length ? todayShopSummary() : null;
+  if (s && s.missingCount > 0) {
+    items.push({ text: 'Gear Planner: ' + s.missingCount + ' รายการยังไม่มีราคา — ยอดที่ต้องใช้จริงอาจสูงกว่าที่เห็น', tab: 'shop' });
+  }
+  const readiness = computeForgeReadiness(todayForgeTotals());
+  if (readiness.filled > 0 && readiness.score < 50) {
+    items.push({ text: 'Resistance readiness ต่ำ (' + readiness.score + '/100) — ค่าต้านทานยังขาดเยอะ', tab: 'forge' });
+  }
+  const fresh = todayRadarFreshness();
+  if (fresh.kind !== 'fresh') {
+    items.push({
+      text: fresh.kind === 'missing' ? 'ยังไม่มีข้อมูล Market Radar' : 'ข้อมูลตลาดเก่าแล้ว (' + fresh.text + ') — เช็ก GitHub Actions',
+      tab: 'radar',
+    });
+  }
+  const p1Active = todayTodos.filter(t => !t.done && t.priority === 'p1').length;
+  if (p1Active > 0) {
+    items.push({ text: 'มีงาน P1 ค้างอยู่ ' + p1Active + ' งาน', focusTodo: true });
+  }
+
+  if (!items.length) {
+    const row = document.createElement('div');
+    row.className = 'today-attn-item ok';
+    const dot = document.createElement('span');
+    dot.className = 'today-attn-dot';
+    row.appendChild(dot);
+    const txt = document.createElement('span');
+    txt.textContent = 'ทุกอย่างเรียบร้อย — ไม่มีเรื่องด่วนตอนนี้';
+    row.appendChild(txt);
+    card.appendChild(row);
+    return;
+  }
+
+  items.forEach(it => {
+    const row = document.createElement('div');
+    row.className = 'today-attn-item';
+    const dot = document.createElement('span');
+    dot.className = 'today-attn-dot';
+    row.appendChild(dot);
+    const txt = document.createElement('span');
+    txt.textContent = it.text;
+    row.appendChild(txt);
+    const go = document.createElement('button');
+    go.type = 'button';
+    go.className = 'today-open';
+    go.textContent = 'ดู ›';
+    go.addEventListener('click', () => {
+      if (it.focusTodo) {
+        todayTodoFilter = 'p1';
+        renderTodayTodoCard();
+        const cardEl = document.getElementById('todayTodoCard');
+        if (cardEl) cardEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (it.tab) switchTab(it.tab);
+    });
+    row.appendChild(go);
+    card.appendChild(row);
+  });
+}
+
+/* ---- การ์ด G: App status / data freshness ---- */
+
+function renderTodayStatusCard() {
+  const card = document.getElementById('todayStatusCard');
+  if (!card) return;
+  card.innerHTML = '';
+  todayCardHead(card, 'App Status');
+
+  const radarFresh = todayRadarFreshness();
+  card.appendChild(hubLine('Market data', radarFresh.updated ? radarFresh.updated.toLocaleString('th-TH') : '—'));
+  const homeUpd = homeStatus && parseIso(homeStatus.updatedAt);
+  card.appendChild(hubLine('League data', homeUpd ? homeUpd.toLocaleString('th-TH') : '—'));
+  card.appendChild(hubLine('Content Codex', (codexData && Array.isArray(codexData.entries)) ? codexData.entries.length + ' entries' : '—'));
+  card.appendChild(hubLine('Keyword Codex', (kwcData && Array.isArray(kwcData.keywords)) ? kwcData.keywords.length + ' keywords' : '—'));
+  const themeLabel = (APP_THEMES.find(t => t.id === appTheme) || {}).label || appTheme;
+  card.appendChild(hubLine('Theme', themeLabel + ' · ' + (appMode === 'dark' ? 'Dark' : 'Light')));
+  card.appendChild(hubLine('สกุลเงินที่แสดง', fiatCode() + (divineRate > 0 ? ' (1 Div = ' + fmtNum(divineRate) + ' ' + fiatSymbol() + ')' : ' (ยังไม่ตั้งเรท)')));
+  const p = document.createElement('p');
+  p.className = 'today-sub';
+  p.style.margin = '8px 0 0';
+  p.textContent = 'ข้อมูลตลาด/ลีกอัปเดตอัตโนมัติรายชั่วโมงโดย GitHub Actions · ข้อมูลผู้ใช้ทั้งหมดอยู่ในเบราว์เซอร์นี้เท่านั้น';
+  card.appendChild(p);
+}
+
+/* ---- Todo list ---- */
+
+function todayVisibleTodos() {
+  const pri = { p1: 1, p2: 2, p3: 3, p4: 4 };
+  const sorted = todayTodos.slice().sort((a, b) =>
+    ((a.done === true) - (b.done === true)) || (pri[a.priority] - pri[b.priority]) || (b.createdAt - a.createdAt));
+  if (todayTodoFilter === 'active') return sorted.filter(t => !t.done);
+  if (todayTodoFilter === 'done') return sorted.filter(t => t.done);
+  if (todayTodoFilter === 'p1') return sorted.filter(t => t.priority === 'p1');
+  return sorted;
+}
+
+function todayAddTodo(title) {
+  title = String(title || '').trim();
+  if (!title) { showWarningToast('พิมพ์ชื่องานก่อน', { key: 'today-todo' }); return false; }
+  const t = normalizeTodayTodo({ title, priority: todayTodoAddPri });
+  todayTodos.push(t);
+  persistTodayTodos();
+  todayFlashTodoId = t.id;
+  renderTodayTodoCard();
+  renderTodayHero();
+  renderTodayAttentionCard();
+  showSuccessToast('เพิ่มงานแล้ว', { key: 'today-todo' });
+  return true;
+}
+
+function todayMutateTodo(id, fn, toastMsg) {
+  const t = todayTodos.find(x => x.id === id);
+  if (!t) return;
+  fn(t);
+  t.updatedAt = Date.now();
+  persistTodayTodos();
+  renderTodayTodoCard();
+  renderTodayHero();
+  renderTodayAttentionCard();
+  if (toastMsg) showSuccessToast(toastMsg, { key: 'today-todo' });
+}
+
+function buildTodayTodoItem(t) {
+  const row = document.createElement('div');
+  row.className = 'todo-item' + (t.done ? ' done' : '');
+  row.dataset.todoId = t.id;
+
+  if (todayTodoEditId === t.id) {
+    // โหมดแก้ไข: ชื่อ + ลิงก์ + priority + บันทึก/ยกเลิก (Enter บันทึก · Esc ยกเลิก)
+    const form = document.createElement('div');
+    form.className = 'todo-edit';
+    const row1 = document.createElement('div');
+    row1.className = 'todo-edit-row';
+    const titleInp = document.createElement('input');
+    titleInp.type = 'text';
+    titleInp.className = 'shop-filter';
+    titleInp.value = t.title;
+    titleInp.placeholder = 'ชื่องาน';
+    row1.appendChild(titleInp);
+    const priSel = document.createElement('select');
+    TODAY_TODO_PRIORITIES.forEach(p => priSel.appendChild(new Option(TODAY_TODO_PRI_LABELS[p], p)));
+    priSel.value = t.priority;
+    row1.appendChild(priSel);
+    form.appendChild(row1);
+    const row2 = document.createElement('div');
+    row2.className = 'todo-edit-row';
+    const linkInp = document.createElement('input');
+    linkInp.type = 'text';
+    linkInp.className = 'shop-filter';
+    linkInp.value = t.link;
+    linkInp.placeholder = 'ลิงก์ https://… (เว้นว่างได้)';
+    row2.appendChild(linkInp);
+    const save = document.createElement('button');
+    save.type = 'button';
+    save.className = 'ocr-btn primary';
+    save.textContent = 'บันทึก';
+    const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.className = 'ocr-btn';
+    cancel.textContent = 'ยกเลิก';
+    row2.appendChild(save);
+    row2.appendChild(cancel);
+    form.appendChild(row2);
+    row.appendChild(form);
+
+    const doSave = () => {
+      const newTitle = titleInp.value.trim();
+      if (!newTitle) { showWarningToast('ชื่องานห้ามว่าง', { key: 'today-todo' }); titleInp.focus(); return; }
+      const rawLink = linkInp.value.trim();
+      if (rawLink && !todayTodoSafeUrl(rawLink)) {
+        showWarningToast('ลิงก์ต้องขึ้นต้นด้วย http:// หรือ https://', { key: 'today-todo' });
+        linkInp.focus();
+        return;
+      }
+      todayTodoEditId = null;
+      todayMutateTodo(t.id, x => { x.title = newTitle; x.link = rawLink; x.priority = priSel.value; }, 'อัปเดตงานแล้ว');
+    };
+    const doCancel = () => { todayTodoEditId = null; renderTodayTodoCard(); };
+    save.addEventListener('click', doSave);
+    cancel.addEventListener('click', doCancel);
+    [titleInp, linkInp].forEach(inp => inp.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter') { ev.preventDefault(); doSave(); }
+      if (ev.key === 'Escape') { ev.preventDefault(); doCancel(); }
+    }));
+    setTimeout(() => titleInp.focus(), 0);
+    return row;
+  }
+
+  const check = document.createElement('input');
+  check.type = 'checkbox';
+  check.className = 'todo-check';
+  check.checked = t.done;
+  check.title = t.done ? 'มาร์กว่ายังไม่เสร็จ' : 'มาร์กว่าเสร็จแล้ว';
+  check.addEventListener('change', () => {
+    todayMutateTodo(t.id, x => { x.done = check.checked; }, check.checked ? 'เสร็จไป 1 งาน 🎉' : 'ย้ายกลับไปงานค้างแล้ว');
+  });
+  row.appendChild(check);
+
+  const flag = document.createElement('button');
+  flag.type = 'button';
+  flag.className = 'todo-flag ' + t.priority;
+  flag.title = 'ความสำคัญ: ' + TODAY_TODO_PRI_LABELS[t.priority] + ' (คลิกเพื่อเปลี่ยน)';
+  flag.setAttribute('aria-label', flag.title);
+  flag.addEventListener('click', () => {
+    const next = TODAY_TODO_PRIORITIES[(TODAY_TODO_PRIORITIES.indexOf(t.priority) + 1) % TODAY_TODO_PRIORITIES.length];
+    todayMutateTodo(t.id, x => { x.priority = next; }, 'ปรับเป็น ' + TODAY_TODO_PRI_LABELS[next]);
+  });
+  row.appendChild(flag);
+
+  const title = document.createElement('span');
+  title.className = 'todo-title';
+  title.textContent = t.title;
+  title.title = t.title;
+  row.appendChild(title);
+
+  const url = todayTodoSafeUrl(t.link);
+  if (url) {
+    const a = document.createElement('a');
+    a.className = 'link-open';
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.textContent = 'ลิงก์';
+    row.appendChild(a);
+    row.appendChild(makeIconBtn('⧉', 'คัดลอกลิงก์', () => todayCopyText(url, 'คัดลอกลิงก์แล้ว')));
+  }
+  row.appendChild(makeIconBtn('✎', 'แก้ไขงาน', () => { todayTodoEditId = t.id; renderTodayTodoCard(); }));
+  row.appendChild(makeIconBtn('✕', 'ลบงาน', () => {
+    if (!confirm('ลบงาน "' + t.title + '" ?')) return;
+    todayTodos = todayTodos.filter(x => x.id !== t.id);
+    persistTodayTodos();
+    renderTodayTodoCard();
+    renderTodayHero();
+    renderTodayAttentionCard();
+    showSuccessToast('ลบงานแล้ว', { key: 'today-todo' });
+  }, true));
+
+  return row;
+}
+
+function renderTodayTodoCard() {
+  const card = document.getElementById('todayTodoCard');
+  if (!card) return;
+  card.innerHTML = '';
+  const activeN = todayTodos.filter(t => !t.done).length;
+  const doneN = todayTodos.length - activeN;
+  todayCardHead(card, 'Today Todos', { countText: activeN + ' ค้าง · ' + doneN + ' เสร็จ' });
+
+  // แถวเพิ่มงานด่วน — Enter เพื่อเพิ่ม, Esc ล้างช่อง
+  const add = document.createElement('div');
+  add.className = 'todo-add';
+  const inp = document.createElement('input');
+  inp.type = 'text';
+  inp.className = 'shop-filter';
+  inp.id = 'todoAddInput';
+  inp.placeholder = 'เพิ่มงาน… เช่น "ฟาร์ม Breach 10 รอบ" (Enter เพื่อบันทึก)';
+  add.appendChild(inp);
+  const priSel = document.createElement('select');
+  priSel.title = 'ความสำคัญของงานใหม่';
+  TODAY_TODO_PRIORITIES.forEach(p => priSel.appendChild(new Option(TODAY_TODO_PRI_LABELS[p], p)));
+  priSel.value = todayTodoAddPri;
+  priSel.addEventListener('change', () => { todayTodoAddPri = priSel.value; });
+  add.appendChild(priSel);
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.className = 'ocr-btn primary';
+  addBtn.textContent = '+ เพิ่ม';
+  add.appendChild(addBtn);
+  card.appendChild(add);
+  const submitAdd = () => {
+    if (todayAddTodo(inp.value)) {
+      const again = document.getElementById('todoAddInput');
+      if (again) again.focus();
+    }
+  };
+  addBtn.addEventListener('click', submitAdd);
+  inp.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter') { ev.preventDefault(); submitAdd(); }
+    if (ev.key === 'Escape') { inp.value = ''; }
+  });
+
+  // ฟิลเตอร์ (นับสดเสมอ)
+  const filters = document.createElement('div');
+  filters.className = 'todo-filters';
+  const p1N = todayTodos.filter(t => t.priority === 'p1').length;
+  [
+    { id: 'all', label: 'ทั้งหมด (' + todayTodos.length + ')' },
+    { id: 'active', label: 'ค้างอยู่ (' + activeN + ')' },
+    { id: 'done', label: 'เสร็จแล้ว (' + doneN + ')' },
+    { id: 'p1', label: 'P1 (' + p1N + ')' },
+  ].forEach(f => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'filter-chip' + (todayTodoFilter === f.id ? ' active' : '');
+    chip.textContent = f.label;
+    chip.addEventListener('click', () => { todayTodoFilter = f.id; renderTodayTodoCard(); });
+    filters.appendChild(chip);
+  });
+  card.appendChild(filters);
+
+  const visible = todayVisibleTodos();
+  if (!todayTodos.length) {
+    card.appendChild(uxEmptyState({
+      icon: '📝',
+      title: 'ยังไม่มีงานวันนี้',
+      body: 'จดงานฟาร์ม/ของที่ต้องซื้อ/สิ่งที่ต้อง craft ไว้ที่นี่ — เก็บในเครื่องเท่านั้น และติดไปกับ backup',
+      actions: [{ label: '+ เพิ่มงานแรก', primary: true, onClick: () => { const i = document.getElementById('todoAddInput'); if (i) i.focus(); } }],
+    }));
+    return;
+  }
+  if (!visible.length) {
+    card.appendChild(uxEmptyState({
+      icon: '🔍',
+      title: 'ไม่มีงานตามฟิลเตอร์นี้',
+      body: 'ลองสลับกลับไปดูทั้งหมด',
+      actions: [{ label: 'แสดงทั้งหมด', primary: true, onClick: () => { todayTodoFilter = 'all'; renderTodayTodoCard(); } }],
+    }));
+    return;
+  }
+  const list = document.createElement('div');
+  list.className = 'todo-list';
+  visible.forEach(t => list.appendChild(buildTodayTodoItem(t)));
+  card.appendChild(list);
+
+  if (todayFlashTodoId) {
+    const flashEl = list.querySelector('[data-todo-id="' + todayFlashTodoId + '"]');
+    if (flashEl && typeof uxFlash === 'function') uxFlash(flashEl);
+    todayFlashTodoId = null;
+  }
+}
+
+/* ---- orchestrator + init ---- */
+
+function renderToday() {
+  renderTodayHero();
+  renderTodayTodoCard();
+  renderTodayGearCard();
+  renderTodayRadarCard();
+  renderTodayForgeCard();
+  renderTodayFarmCard();
+  renderTodayCodexCard();
+  renderTodayAttentionCard();
+  renderTodayStatusCard();
+}
+
+(function initToday() {
+  // re-render ตอนกดเปิดแท็บ Today (listener เพิ่มบนปุ่ม nav — ไม่แตะ switchTab ที่เป็น generic)
+  const btn = document.getElementById('tabBtnToday');
+  if (btn) btn.addEventListener('click', renderToday);
+  // ข้อมูล async มาถึงทีหลัง → รีเฟรช แต่ "ไม่" ทับตอนผู้ใช้กำลังพิมพ์ในหน้า Today
+  const safeRerender = () => {
+    const ae = document.activeElement;
+    const page = document.getElementById('pageToday');
+    if (ae && page && page.contains(ae) &&
+      (ae.tagName === 'INPUT' || ae.tagName === 'SELECT' || ae.tagName === 'TEXTAREA')) return;
+    renderToday();
+  };
+  ['poeassist:radarloaded', 'poeassist:homestatusloaded', 'poeassist:codexloaded', 'poeassist:keywordsloaded']
+    .forEach(ev => document.addEventListener(ev, safeRerender));
+  renderToday();
 })();
 </script>
 </body>
