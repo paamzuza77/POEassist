@@ -107,6 +107,9 @@ html[data-theme="modern"] .today-open,
 html[data-theme="modern"] .today-buynext,
 html[data-theme="modern"] .today-bar,
 html[data-theme="modern"] .todo-item,
+html[data-theme="modern"] .todo-kan-col,
+html[data-theme="modern"] .todo-kcard,
+html[data-theme="modern"] .today-note-input,
 html[data-theme="modern"] .hub-card,
 html[data-theme="modern"] .link-card,
 html[data-theme="modern"] .link-open,
@@ -602,3 +605,26 @@ html[data-theme="modern"] .today-attn-item.clickable:hover {
 }
 html[data-theme="modern"] .todo-item:hover { border-color: var(--border); }
 html[data-theme="modern"] .today-card-ico { color: var(--gold); }
+
+/* Today Smart Planning (patch 0.38) — Kanban/modal/note polish (สี+รัศมี ไม่ใช่ motion) */
+html[data-theme="modern"] .todo-kan-col { background: var(--panel-sunken); border-radius: 12px; }
+html[data-theme="modern"] .todo-kan-head { border-bottom-width: 1px; }
+html[data-theme="modern"] .todo-kcard {
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(23, 24, 28, 0.04);
+}
+html[data-theme="modern"][data-mode="dark"] .todo-kcard { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35); }
+html[data-theme="modern"] .todo-kcard:hover { border-color: var(--gold); }
+html[data-theme="modern"] .todo-kan-col.drop-hint {
+  border-color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 8%, var(--panel));
+}
+html[data-theme="modern"] .tk-status,
+html[data-theme="modern"] .today-tl-tag,
+html[data-theme="modern"] .todo-due { border-radius: 999px; }
+@media (prefers-reduced-motion: no-preference) {
+  html[data-theme="modern"] .todo-kcard,
+  html[data-theme="modern"] .todo-kan-col {
+    transition: box-shadow 0.16s ease, border-color 0.16s ease, background-color 0.16s ease, opacity 0.16s ease;
+  }
+}

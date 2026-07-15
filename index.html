@@ -169,6 +169,9 @@
   html[data-theme="trust-blue-pay"] .today-buynext,
   html[data-theme="trust-blue-pay"] .today-bar,
   html[data-theme="trust-blue-pay"] .todo-item,
+  html[data-theme="trust-blue-pay"] .todo-kan-col,
+  html[data-theme="trust-blue-pay"] .todo-kcard,
+  html[data-theme="trust-blue-pay"] .today-note-input,
   html[data-theme="trust-blue-pay"] .hub-card,
   html[data-theme="trust-blue-pay"] .link-card,
   html[data-theme="trust-blue-pay"] .link-open,
@@ -3958,6 +3961,99 @@
   @media (max-width: 1023px) {
     .today-grid { grid-template-columns: minmax(0, 1fr); }
   }
+
+  /* ==================== Today Smart Planning (patch 0.38) ====================
+     Todo Kanban 3 คอลัมน์ + popup รายละเอียดงาน + Today Focus + Planning Note + Timeline
+     ใช้ token เดิมทั้งหมด — รอดทุกธีม/โหมด · คลาสเด่นลงทะเบียนในกลุ่ม Trust + Modern แล้ว */
+  .todo-kanban { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; align-items: start; }
+  .todo-kan-col { border: 2px solid var(--border-soft); background: var(--panel-sunken); min-width: 0; display: flex; flex-direction: column; }
+  .todo-kan-col.drop-hint { border-color: var(--gold); background: var(--void); }
+  .todo-kan-head {
+    display: flex; align-items: center; gap: 6px; padding: 6px 8px;
+    border-bottom: 2px solid var(--border-soft);
+    font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);
+  }
+  .todo-kan-head .tk-count { margin-left: auto; }
+  .todo-kan-body { display: flex; flex-direction: column; gap: 6px; padding: 8px; min-height: 64px; flex: 1; }
+  .todo-kan-empty { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-dim); text-align: center; padding: 12px 4px; }
+  .todo-kcard {
+    border: 2px solid var(--border); background: var(--void);
+    padding: 6px 8px; cursor: pointer; min-width: 0;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .todo-kcard:hover { border-color: var(--text); }
+  .todo-kcard.dragging { opacity: 0.5; }
+  .todo-kcard.done { border-color: var(--border-soft); background: var(--panel-sunken); }
+  .tk-top { display: flex; align-items: flex-start; gap: 6px; min-width: 0; }
+  .tk-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+  .tk-dot.p1 { background: var(--fire); }
+  .tk-dot.p2 { background: var(--lightning); }
+  .tk-dot.p3 { background: var(--link); }
+  .tk-dot.p4 { background: var(--text-dim); }
+  .tk-title { flex: 1; min-width: 0; font-size: 12px; line-height: 1.35; color: var(--text); overflow-wrap: anywhere; }
+  .todo-kcard.done .tk-title { color: var(--text-muted); text-decoration: line-through; }
+  .tk-pin { flex-shrink: 0; font-size: 10px; }
+  .tk-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; min-width: 0; }
+  .tk-link { flex-shrink: 0; font-size: 10px; }
+  .tk-note { font-size: 10.5px; color: var(--text-muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+  .todo-kcard.done .tk-note { text-decoration: line-through; }
+  .tk-status {
+    flex-shrink: 0; font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 1px 6px; border: 1.5px solid var(--border-soft); color: var(--text-muted);
+    background: var(--void); border-radius: 0;
+  }
+  .tk-status.progress { color: var(--lightning); border-color: var(--lightning); }
+  .tk-status.done { color: var(--ok); border-color: var(--ok); }
+  .todo-filters .filter-chip:disabled { cursor: default; }
+  .todo-filters .filter-chip.wl-warn { color: var(--fire); border-color: var(--fire); }
+  @media (max-width: 640px) {
+    .todo-kanban { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  /* popup รายละเอียดงาน (ใช้ .patch-overlay/.patch-panel เดิม) */
+  .today-todo-modal { max-width: 460px; }
+  .ttm-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .ttm-field { flex: 1 1 120px; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .ttm-field > span {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);
+  }
+  .ttm-field input, .ttm-field select, .ttm-field textarea {
+    font: inherit; font-size: 12.5px; background: var(--void); color: var(--text);
+    border: 2px solid var(--border); border-radius: 0; padding: 5px 7px; min-width: 0; width: 100%;
+  }
+  .ttm-field textarea { resize: vertical; min-height: 56px; }
+  .ttm-linkbtns { display: flex; gap: 6px; margin-top: 4px; }
+  .ttm-pin { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text); cursor: pointer; margin: 2px 0 0; }
+  .ttm-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; flex-wrap: wrap; }
+  .ttm-actions .ttm-del { margin-right: auto; color: var(--fire); border-color: var(--fire); }
+
+  /* Today Focus */
+  .today-focus-item .today-focus-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+
+  /* Planning note */
+  .today-note-input {
+    width: 100%; min-height: 84px; resize: vertical;
+    font: inherit; font-size: 12.5px; line-height: 1.5;
+    background: var(--void); color: var(--text);
+    border: 2px solid var(--border); border-radius: 0; padding: 7px 9px;
+  }
+  .today-note-meta { display: flex; gap: 8px; margin-top: 5px; font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); min-height: 13px; }
+  .today-note-meta .saved { color: var(--ok); }
+
+  /* Timeline tag chips */
+  .today-tl-tag {
+    flex-shrink: 0; font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 1px 6px; border: 1.5px solid var(--border-soft); color: var(--text-muted);
+    background: var(--void); border-radius: 0;
+  }
+  .today-tl-tag.overdue { color: var(--fire); border-color: var(--fire); }
+  .today-tl-tag.duetoday { color: var(--lightning); border-color: var(--lightning); }
+  .today-tl-tag.buy { color: var(--gold); border-color: var(--gold); }
+  .today-tl-tag.farm { color: var(--ok); border-color: var(--ok); }
 </style>
 <!-- Modularization Phase 1 (patch 0.34): helper CSS ที่แยกออกจาก inline <style> ด้านบน
      วางหลัง </style> เพื่อคงลำดับ cascade เดิม (rule พื้นฐาน specificity ต่ำ — override ของ Trust theme ชนะด้วย specificity อยู่แล้ว) -->
@@ -4030,13 +4126,16 @@
     <div class="today-hero" id="todayHero"></div>
     <div class="today-grid">
       <div class="today-col today-col-main">
+        <div class="hub-card today-card" id="todayFocusCard"></div>
         <div class="hub-card today-card" id="todayTodoCard"></div>
         <div class="hub-card today-card" id="todayGearCard"></div>
         <div class="hub-card today-card" id="todayRadarCard"></div>
         <div class="hub-card today-card" id="todayForgeCard"></div>
       </div>
       <div class="today-col today-col-side">
+        <div class="hub-card today-card" id="todayNoteCard"></div>
         <div class="hub-card today-card" id="todayAttentionCard"></div>
+        <div class="hub-card today-card" id="todayTimelineCard"></div>
         <div class="hub-card today-card" id="todayContinueCard"></div>
         <div class="hub-card today-card" id="todayFarmCard"></div>
         <div class="hub-card today-card" id="todayCodexCard"></div>
@@ -6614,6 +6713,56 @@ const I18N = {
     'today.due.overdue': 'เลยกำหนด {n} วัน',
     'today.due.today': 'ครบกำหนดวันนี้',
     'today.due.upcoming': 'อีก {n} วัน',
+    /* ---- Today Smart Planning (patch 0.38) ---- */
+    'today.card.focus': 'Today Focus',
+    'today.card.note': 'โน้ตวางแผน',
+    'today.card.timeline': 'Timeline วันนี้',
+    'today.kan.todo': 'ต้องทำ',
+    'today.kan.progress': 'กำลังทำ',
+    'today.kan.done': 'เสร็จแล้ว',
+    'today.kan.empty': '— ว่าง —',
+    'today.toast.moved': 'ย้ายไป "{col}" แล้ว',
+    'today.modal.title': 'รายละเอียดงาน',
+    'today.modal.close': '✕ ปิด',
+    'today.modal.name': 'ชื่องาน',
+    'today.modal.status': 'สถานะ',
+    'today.modal.priority': 'ความสำคัญ',
+    'today.modal.due': 'กำหนดเสร็จ',
+    'today.modal.link': 'ลิงก์',
+    'today.modal.note': 'โน้ต',
+    'today.modal.pinned': 'ปักหมุดไว้ที่ Today Focus',
+    'today.modal.openlink': 'เปิดลิงก์',
+    'today.modal.delete': 'ลบงาน',
+    'today.focus.pin': 'ปักหมุด',
+    'today.focus.unpin': 'เอาหมุดออก',
+    'today.focus.pinnedmark': 'ปักหมุดอยู่ (Today Focus)',
+    'today.focus.suggest': 'ยังไม่มีงานปักหมุด — แนะนำงานความสำคัญสูงสุดให้ก่อน:',
+    'today.focus.empty.title': 'ยังไม่มีงานให้โฟกัส',
+    'today.focus.empty.body': 'เพิ่มงานในบอร์ดด้านล่าง แล้วปักหมุด 📌 งานสำคัญไว้ที่นี่',
+    'today.toast.pinned': 'ปักหมุดแล้ว 📌',
+    'today.toast.unpinned': 'เอาหมุดออกแล้ว',
+    'today.act.copysummary': '⧉ คัดลอกสรุป',
+    'today.toast.summarycopied': 'คัดลอกสรุป dashboard แล้ว',
+    'today.sum.title': 'สรุป Exile Assistant',
+    'today.sum.topfarm': 'ฟาร์มแนะนำ',
+    'today.sum.buynext': 'ซื้อต่อไป',
+    'today.sum.readiness': 'Resistance readiness',
+    'today.sum.farm': 'Farm Planner',
+    'today.sum.todos': 'งาน',
+    'today.sum.todosline': 'ค้าง {a} · P1 {p} · เลยกำหนด {o} · ครบวันนี้ {d} · กำลังทำ {g}',
+    'today.note.ph': 'โน้ตวางแผนวันนี้… (บันทึกอัตโนมัติ เก็บในเครื่อง + ติด backup)',
+    'today.note.saved': 'บันทึกแล้ว ✓',
+    'today.note.lastedit': 'แก้ล่าสุด {t}',
+    'today.wl.active': 'ค้าง {n}',
+    'today.wl.overdue': 'เลยกำหนด {n}',
+    'today.wl.duetoday': 'ครบวันนี้ {n}',
+    'today.wl.progress': 'กำลังทำ {n}',
+    'today.wl.done': 'เสร็จ {n}',
+    'today.tl.overdue': 'เลยกำหนด',
+    'today.tl.duetoday': 'วันนี้',
+    'today.tl.buy': 'ซื้อ',
+    'today.tl.farm': 'ฟาร์ม',
+    'today.tl.empty': 'ยังไม่มีรายการ — ใส่กำหนดเสร็จให้งาน หรือรอข้อมูลตลาด/รายการซื้อ แล้วจะโผล่ที่นี่',
   },
   en: {
     'settings.title': 'Settings',
@@ -6811,6 +6960,56 @@ const I18N = {
     'today.due.overdue': 'Overdue {n}d',
     'today.due.today': 'Due today',
     'today.due.upcoming': 'In {n} days',
+    /* ---- Today Smart Planning (patch 0.38) ---- */
+    'today.card.focus': 'Today Focus',
+    'today.card.note': 'Planning Note',
+    'today.card.timeline': 'Today Timeline',
+    'today.kan.todo': 'TODO',
+    'today.kan.progress': 'On Progress',
+    'today.kan.done': 'Done',
+    'today.kan.empty': '— empty —',
+    'today.toast.moved': 'Moved to "{col}"',
+    'today.modal.title': 'Task details',
+    'today.modal.close': '✕ Close',
+    'today.modal.name': 'Task name',
+    'today.modal.status': 'Status',
+    'today.modal.priority': 'Priority',
+    'today.modal.due': 'Due date',
+    'today.modal.link': 'Link',
+    'today.modal.note': 'Note',
+    'today.modal.pinned': 'Pin to Today Focus',
+    'today.modal.openlink': 'Open link',
+    'today.modal.delete': 'Delete task',
+    'today.focus.pin': 'Pin',
+    'today.focus.unpin': 'Unpin',
+    'today.focus.pinnedmark': 'Pinned (Today Focus)',
+    'today.focus.suggest': 'Nothing pinned yet — suggesting your top-priority task:',
+    'today.focus.empty.title': 'Nothing to focus on yet',
+    'today.focus.empty.body': 'Add tasks to the board below, then pin 📌 the important ones here',
+    'today.toast.pinned': 'Pinned 📌',
+    'today.toast.unpinned': 'Unpinned',
+    'today.act.copysummary': '⧉ Copy summary',
+    'today.toast.summarycopied': 'Dashboard summary copied',
+    'today.sum.title': 'Exile Assistant summary',
+    'today.sum.topfarm': 'Top farm',
+    'today.sum.buynext': 'Buy next',
+    'today.sum.readiness': 'Resistance readiness',
+    'today.sum.farm': 'Farm Planner',
+    'today.sum.todos': 'Tasks',
+    'today.sum.todosline': '{a} active · P1 {p} · overdue {o} · due today {d} · in progress {g}',
+    'today.note.ph': 'Plan today… (autosaves, stored locally + included in backups)',
+    'today.note.saved': 'Saved ✓',
+    'today.note.lastedit': 'Last edited {t}',
+    'today.wl.active': 'Active {n}',
+    'today.wl.overdue': 'Overdue {n}',
+    'today.wl.duetoday': 'Due today {n}',
+    'today.wl.progress': 'In progress {n}',
+    'today.wl.done': 'Done {n}',
+    'today.tl.overdue': 'Overdue',
+    'today.tl.duetoday': 'Today',
+    'today.tl.buy': 'Buy',
+    'today.tl.farm': 'Farm',
+    'today.tl.empty': 'Nothing yet — add due dates to tasks, or wait for market/shopping data to appear here',
   },
 };
 
@@ -6892,6 +7091,7 @@ const APP_DATA_KEYS = [
   'poe2ContentCodex.favorites.v1',
   'poe2KeywordCodex.favorites.v1',
   'poe2TodayTodos.v1', // Todo list ในหน้า Today (patch 0.36) — ข้อมูลผู้ใช้ ไม่ใช่ UI pref (Reset UI ไม่ลบ)
+  'poe2TodayPlanningNote.v1', // Planning note ในหน้า Today (patch 0.38) — ข้อมูลผู้ใช้เช่นกัน ไม่ใช่ UI pref
   'poeAssist.radarFilter.v1',
   'poeAssist.radarRates.v1',
   'poeAssist.stashSale.manual.v1',
@@ -8868,6 +9068,20 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.38',
+    date: '2026-07-15',
+    notes: [
+      'Today Todos กลายเป็นบอร์ด Kanban 3 คอลัมน์: ต้องทำ / กำลังทำ / เสร็จแล้ว — ลากการ์ดข้ามคอลัมน์ได้เลย (มีไฮไลต์ช่องปลายทาง) และงานเก่าทั้งหมดย้ายเข้าคอลัมน์ให้อัตโนมัติ',
+      'คลิกการ์ดงานเพื่อเปิดหน้าต่างรายละเอียด — แก้ชื่อ/สถานะ/ความสำคัญ/กำหนดเสร็จ/ลิงก์/โน้ต/ปักหมุด ได้ในที่เดียว (Esc หรือคลิกนอกหน้าต่างเพื่อปิด, ลบงานยังยืนยันก่อนเสมอ)',
+      'การ์ดใหม่ "Today Focus" — ปักหมุด 📌 งานสำคัญจากหน้าต่างรายละเอียด แล้วงานจะขึ้นบนสุดของหน้า; ยังไม่ปักหมุดจะเสนองานความสำคัญสูงสุดให้พร้อมปุ่มปักหมุด',
+      'การ์ดใหม่ "โน้ตวางแผน" — จดแผนประจำวันได้เลย บันทึกอัตโนมัติ (คีย์ใหม่ poe2TodayPlanningNote.v1 — ติด backup Export/Import, Reset UI ไม่ลบ)',
+      'การ์ดใหม่ "Timeline วันนี้" — งานเลยกำหนด/ครบกำหนดวันนี้, ของชิ้นถัดไปที่ควรซื้อ, content ที่น่าฟาร์มสุด — กดแล้วกระโดดไปที่งาน/แถว/แท็บนั้นเลย',
+      'ชิปสรุป workload บนการ์ด Todo: ค้าง / P1 / เลยกำหนด / ครบวันนี้ / กำลังทำ / เสร็จ — กดชิปเพื่อกรองบอร์ดได้ (กดซ้ำเพื่อดูทั้งหมด)',
+      'ปุ่ม "⧉ คัดลอกสรุป" ใน hero — คัดลอกสรุป dashboard เป็นข้อความ (ฟาร์มแนะนำ, ซื้อต่อไป, readiness, ฟาร์มการ์ด, ยอดงาน) ตามภาษาที่เลือก',
+      'ข้อมูลเดิมปลอดภัย: todo ยังอยู่คีย์เดิม poe2TodayTodos.v1 (เพิ่มฟิลด์ status/pinned แบบ additive, done boolean ยังถูกเขียนคู่เพื่อ compat) — ไม่มีการแตะสูตรคำนวณของแท็บใดๆ',
+    ],
+  },
   {
     version: '0.37',
     date: '2026-07-15',
@@ -13092,6 +13306,10 @@ async function loadKwc() {
 
 const TODAY_TODO_KEY = 'poe2TodayTodos.v1';
 const TODAY_TODO_PRIORITIES = ['p1', 'p2', 'p3', 'p4'];
+// สถานะบอร์ด Kanban (patch 0.38) — additive: todo เก่า done:true → 'done', ที่เหลือ → 'todo'
+// `done` boolean ยังถูกเขียนคู่กันเสมอ (done = status === 'done') เพื่อ compat กับ data/export เก่า
+const TODAY_TODO_STATUSES = ['todo', 'progress', 'done'];
+function todayStatusLabel(s) { return t('today.kan.' + s); }
 // ป้าย priority ผ่าน t() (patch 0.37) — เปลี่ยนตามภาษาที่เลือกใน Settings
 function todayPriLabel(p) { return t('today.pri.' + p); }
 // locale สำหรับวันที่/เวลาในหน้า Today — ตามภาษาแอป (ผู้ใช้ข้อความยังไม่ถูกแปลแน่นอน)
@@ -13101,10 +13319,14 @@ function todayLocale() { return appLang === 'en' ? 'en-GB' : 'th-TH'; }
 // patch 0.37: เพิ่มฟิลด์ additive `due` (YYYY-MM-DD หรือ '' — todo เก่าไม่มีฟิลด์ก็โหลดได้เหมือนเดิม)
 function normalizeTodayTodo(raw) {
   const t = (raw && typeof raw === 'object') ? raw : {};
+  // patch 0.38: additive `status` (kanban) + `pinned` (Today Focus) — todo เก่า done:true = 'done', ที่เหลือ 'todo'
+  const status = TODAY_TODO_STATUSES.includes(t.status) ? t.status : (t.done === true ? 'done' : 'todo');
   return {
     id: typeof t.id === 'string' && t.id ? t.id : ('td' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7)),
     title: typeof t.title === 'string' ? t.title : '',
-    done: t.done === true,
+    status,
+    done: status === 'done', // เขียนคู่เสมอ — data/export เก่าที่อ่านแค่ done ยังใช้ได้
+    pinned: t.pinned === true,
     priority: TODAY_TODO_PRIORITIES.includes(t.priority) ? t.priority : 'p4',
     link: typeof t.link === 'string' ? t.link : '',
     note: typeof t.note === 'string' ? t.note : '',
@@ -13112,6 +13334,12 @@ function normalizeTodayTodo(raw) {
     createdAt: Number.isFinite(t.createdAt) ? t.createdAt : Date.now(),
     updatedAt: Number.isFinite(t.updatedAt) ? t.updatedAt : Date.now(),
   };
+}
+// เปลี่ยนสถานะให้ status + done ไปด้วยกันเสมอ — ทุกที่ที่แก้สถานะต้องผ่านตัวนี้
+function todaySetTodoStatus(todo, status) {
+  if (!TODAY_TODO_STATUSES.includes(status)) status = 'todo';
+  todo.status = status;
+  todo.done = status === 'done';
 }
 
 // สถานะกำหนดเสร็จ: overdue (แดง) / today (ส้ม) / upcoming (จาง) — เทียบวันแบบ local ไม่ยุ่ง timezone แปลกๆ
@@ -13137,10 +13365,31 @@ function persistTodayTodos() {
   try { localStorage.setItem(TODAY_TODO_KEY, JSON.stringify(todayTodos)); } catch (e) { /* storage unavailable */ }
 }
 
-let todayTodoFilter = 'all';    // all | active | done | p1 — in-memory โดยตั้งใจ
-let todayTodoEditId = null;     // id ของแถวที่กำลังแก้ไข (in-memory)
+let todayTodoFilter = 'all';    // all | p1 | overdue | duetoday — in-memory โดยตั้งใจ (patch 0.38: กรองผ่านชิป workload)
 let todayTodoAddPri = 'p4';     // priority ที่เลือกไว้ในแถวเพิ่มงาน — จำข้าม re-render
 let todayFlashTodoId = null;    // แถวที่เพิ่งเพิ่ม → uxFlash หลัง render
+let todayDragTodoId = null;     // id ของการ์ดที่กำลังลากข้ามคอลัมน์ Kanban (in-memory)
+
+/* ---- Planning note (patch 0.38) — คีย์ additive poe2TodayPlanningNote.v1 ----
+   ข้อมูลผู้ใช้ (อยู่ใน APP_DATA_KEYS → ติด backup, "ไม่" อยู่ใน UI_PREF_KEYS — Reset UI ไม่ลบ)
+   เก็บ {text, updatedAt} — โหลด tolerant: สตริงเปล่าๆ เก่าก็รับ */
+const TODAY_NOTE_KEY = 'poe2TodayPlanningNote.v1';
+let todayNote = (function loadTodayNote() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(TODAY_NOTE_KEY));
+    if (typeof raw === 'string') return { text: raw, updatedAt: null };
+    if (raw && typeof raw === 'object') {
+      return {
+        text: typeof raw.text === 'string' ? raw.text : '',
+        updatedAt: Number.isFinite(raw.updatedAt) ? raw.updatedAt : null,
+      };
+    }
+  } catch (e) { /* malformed storage */ }
+  return { text: '', updatedAt: null };
+})();
+function persistTodayNote() {
+  try { localStorage.setItem(TODAY_NOTE_KEY, JSON.stringify(todayNote)); } catch (e) { /* storage unavailable */ }
+}
 
 // ลิงก์ todo: ยอมเฉพาะ http(s) เท่านั้น — อย่างอื่นถือว่าไม่มีลิงก์ (กัน javascript: ฯลฯ)
 function todayTodoSafeUrl(u) {
@@ -13258,7 +13507,7 @@ function todayCardHead(card, title, opts) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'today-open';
-    btn.textContent = opts.openLabel || 'เปิด ›';
+    btn.textContent = opts.openLabel || t('today.open');
     btn.addEventListener('click', () => switchTab(opts.openTab));
     head.appendChild(btn);
   }
@@ -13292,6 +13541,9 @@ const TODAY_ICONS = {
   attention: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1.5 15 14H1zM7 6h2v4H7zM7 11h2v2H7z"/></svg>',
   status: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm-1 3h2v2H7zm0 3h2v5H7z"/></svg>',
   cont: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 2h2v12H2zM6 2l8 6-8 6z"/></svg>',
+  focus: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3 1h2v14H3zM5 2h9l-2.5 3L14 8H5z"/></svg>',
+  note: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 2h12v12H2zm2 3h8v1.5H4zm0 3h8v1.5H4zm0 3h5v1.5H4z" fill-rule="evenodd"/></svg>',
+  timeline: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 3h2v2H2zM6 3h8v2H6zM2 7h2v2H2zM6 7h8v2H6zM2 11h2v2H2zM6 11h8v2H6z"/></svg>',
 };
 
 // เก็บช่วงเวลาลีกไว้ให้ ticker (อัปเดตตอน render hero — interval เดียวใน initToday อ่านค่านี้)
@@ -13365,6 +13617,7 @@ function renderTodayHero() {
     const inp = document.getElementById('todoAddInput');
     if (inp) { inp.scrollIntoView({ behavior: 'smooth', block: 'center' }); inp.focus(); }
   }, true);
+  mkBtn(t('today.act.copysummary'), todayCopySummary); // patch 0.38 — คัดลอกสรุป dashboard เป็นข้อความ
   mkBtn('Gear Planner', () => switchTab('shop'));
   mkBtn('Market Radar', () => switchTab('radar'));
   mkBtn('Resistance', () => switchTab('forge'));
@@ -13862,16 +14115,42 @@ function renderTodayContinueCard() {
   });
 }
 
-/* ---- Todo list ---- */
+/* ---- Todo Kanban (patch 0.38: 3 คอลัมน์ TODO / On Progress / Done) ---- */
 
-function todayVisibleTodos() {
+// เรียงในคอลัมน์: ปักหมุดก่อน → priority → ใหม่สุดก่อน; ฟิลเตอร์จากชิป workload ใช้ทับทุกคอลัมน์
+function todayKanbanTodos() {
   const pri = { p1: 1, p2: 2, p3: 3, p4: 4 };
   const sorted = todayTodos.slice().sort((a, b) =>
-    ((a.done === true) - (b.done === true)) || (pri[a.priority] - pri[b.priority]) || (b.createdAt - a.createdAt));
-  if (todayTodoFilter === 'active') return sorted.filter(t => !t.done);
-  if (todayTodoFilter === 'done') return sorted.filter(t => t.done);
+    ((b.pinned === true) - (a.pinned === true)) || (pri[a.priority] - pri[b.priority]) || (b.createdAt - a.createdAt));
   if (todayTodoFilter === 'p1') return sorted.filter(t => t.priority === 'p1');
+  if (todayTodoFilter === 'overdue') return sorted.filter(t => { const d = todayDueInfo(t); return !!d && d.cls === 'overdue'; });
+  if (todayTodoFilter === 'duetoday') return sorted.filter(t => { const d = todayDueInfo(t); return !!d && d.cls === 'due-today'; });
   return sorted;
+}
+
+// สรุป workload (Part F) — นับจากงานจริงทุกครั้ง ไม่ cache
+function todayWorkload() {
+  const w = { active: 0, p1: 0, overdue: 0, dueToday: 0, progress: 0, done: 0 };
+  todayTodos.forEach(x => {
+    if (x.status === 'done') { w.done++; return; }
+    w.active++;
+    if (x.priority === 'p1') w.p1++;
+    if (x.status === 'progress') w.progress++;
+    const d = todayDueInfo(x);
+    if (d && d.cls === 'overdue') w.overdue++;
+    if (d && d.cls === 'due-today') w.dueToday++;
+  });
+  return w;
+}
+
+// ทุกจุดที่แตะ todo ต้อง refresh การ์ดชุดเดียวกันเสมอ — รวมไว้กันหลุด (focus/timeline มาใหม่ใน 0.38)
+function renderTodayTodoSurfaces() {
+  renderTodayTodoCard();
+  renderTodayFocusCard();
+  renderTodayTimelineCard();
+  renderTodayHero();
+  renderTodayAttentionCard();
+  renderTodayContinueCard();
 }
 
 function todayAddTodo(title) {
@@ -13881,10 +14160,7 @@ function todayAddTodo(title) {
   todayTodos.push(todo);
   persistTodayTodos();
   todayFlashTodoId = todo.id;
-  renderTodayTodoCard();
-  renderTodayHero();
-  renderTodayAttentionCard();
-  renderTodayContinueCard();
+  renderTodayTodoSurfaces();
   showSuccessToast(t('today.toast.added'), { key: 'today-todo' });
   return true;
 }
@@ -13895,139 +14171,45 @@ function todayMutateTodo(id, fn, toastMsg) {
   fn(todo);
   todo.updatedAt = Date.now();
   persistTodayTodos();
-  renderTodayTodoCard();
-  renderTodayHero();
-  renderTodayAttentionCard();
-  renderTodayContinueCard();
+  renderTodayTodoSurfaces();
   if (toastMsg) showSuccessToast(toastMsg, { key: 'today-todo' });
 }
 
-function buildTodayTodoItem(todo) {
-  const row = document.createElement('div');
-  row.className = 'todo-item' + (todo.done ? ' done' : '');
-  row.dataset.todoId = todo.id;
+/* การ์ดงานแบบย่อในบอร์ด — คลิก/Enter เปิด popup รายละเอียด · ลากข้ามคอลัมน์ได้
+   (การ์ดไม่มี input ข้างใน — draggable ไม่ชนกับการเลือกข้อความ/พิมพ์) */
+function buildTodayKanbanCard(todo) {
+  const el = document.createElement('div');
+  el.className = 'todo-kcard' + (todo.status === 'done' ? ' done' : '');
+  el.dataset.todoId = todo.id;
+  el.draggable = true;
+  el.tabIndex = 0;
+  el.setAttribute('role', 'button');
+  el.title = todo.title;
 
-  if (todayTodoEditId === todo.id) {
-    // โหมดแก้ไข: ชื่อ + priority / ลิงก์ / โน้ต + กำหนดเสร็จ + บันทึก/ยกเลิก (Enter บันทึก · Esc ยกเลิก)
-    const form = document.createElement('div');
-    form.className = 'todo-edit';
-    const row1 = document.createElement('div');
-    row1.className = 'todo-edit-row';
-    const titleInp = document.createElement('input');
-    titleInp.type = 'text';
-    titleInp.className = 'shop-filter';
-    titleInp.value = todo.title;
-    titleInp.placeholder = t('today.todo.name.ph');
-    row1.appendChild(titleInp);
-    const priSel = document.createElement('select');
-    TODAY_TODO_PRIORITIES.forEach(p => priSel.appendChild(new Option(todayPriLabel(p), p)));
-    priSel.value = todo.priority;
-    row1.appendChild(priSel);
-    form.appendChild(row1);
-
-    const row2 = document.createElement('div');
-    row2.className = 'todo-edit-row';
-    const linkInp = document.createElement('input');
-    linkInp.type = 'text';
-    linkInp.className = 'shop-filter';
-    linkInp.value = todo.link;
-    linkInp.placeholder = t('today.todo.link.ph');
-    row2.appendChild(linkInp);
-    form.appendChild(row2);
-
-    const row3 = document.createElement('div');
-    row3.className = 'todo-edit-row';
-    const noteInp = document.createElement('input');
-    noteInp.type = 'text';
-    noteInp.className = 'shop-filter';
-    noteInp.value = todo.note;
-    noteInp.placeholder = t('today.todo.note.ph');
-    row3.appendChild(noteInp);
-    const dueWrap = document.createElement('label');
-    dueWrap.className = 'todo-due-edit';
-    const dueLab = document.createElement('span');
-    dueLab.textContent = t('today.todo.due.label');
-    dueWrap.appendChild(dueLab);
-    const dueInp = document.createElement('input');
-    dueInp.type = 'date'; // ไม่เข้าเงื่อนไข NUMPAD_INPUT_SELECTOR — numpad ไม่เด้ง
-    dueInp.value = todo.due;
-    dueWrap.appendChild(dueInp);
-    row3.appendChild(dueWrap);
-    form.appendChild(row3);
-
-    const row4 = document.createElement('div');
-    row4.className = 'todo-edit-row todo-edit-actions';
-    const save = document.createElement('button');
-    save.type = 'button';
-    save.className = 'ocr-btn primary';
-    save.textContent = t('today.todo.save');
-    const cancel = document.createElement('button');
-    cancel.type = 'button';
-    cancel.className = 'ocr-btn';
-    cancel.textContent = t('today.todo.cancel');
-    row4.appendChild(save);
-    row4.appendChild(cancel);
-    form.appendChild(row4);
-    row.appendChild(form);
-
-    const doSave = () => {
-      const newTitle = titleInp.value.trim();
-      if (!newTitle) { showWarningToast(t('today.toast.titleempty'), { key: 'today-todo' }); titleInp.focus(); return; }
-      const rawLink = linkInp.value.trim();
-      if (rawLink && !todayTodoSafeUrl(rawLink)) {
-        showWarningToast(t('today.toast.badlink'), { key: 'today-todo' });
-        linkInp.focus();
-        return;
-      }
-      const newNote = noteInp.value.trim();
-      const newDue = /^\d{4}-\d{2}-\d{2}$/.test(dueInp.value) ? dueInp.value : '';
-      todayTodoEditId = null;
-      todayMutateTodo(todo.id, x => { x.title = newTitle; x.link = rawLink; x.note = newNote; x.due = newDue; x.priority = priSel.value; }, t('today.toast.updated'));
-    };
-    const doCancel = () => { todayTodoEditId = null; renderTodayTodoCard(); };
-    save.addEventListener('click', doSave);
-    cancel.addEventListener('click', doCancel);
-    [titleInp, linkInp, noteInp, dueInp].forEach(inp => inp.addEventListener('keydown', ev => {
-      if (ev.key === 'Enter') { ev.preventDefault(); doSave(); }
-      if (ev.key === 'Escape') { ev.preventDefault(); doCancel(); }
-    }));
-    setTimeout(() => titleInp.focus(), 0);
-    return row;
-  }
-
-  const check = document.createElement('input');
-  check.type = 'checkbox';
-  check.className = 'todo-check';
-  check.checked = todo.done;
-  check.title = todo.done ? t('today.todo.markundone') : t('today.todo.markdone');
-  check.addEventListener('change', () => {
-    todayMutateTodo(todo.id, x => { x.done = check.checked; }, check.checked ? t('today.toast.done') : t('today.toast.undone'));
-  });
-  row.appendChild(check);
-
-  const flag = document.createElement('button');
-  flag.type = 'button';
-  flag.className = 'todo-flag ' + todo.priority;
-  flag.title = tFmt('today.todo.pri.title', { label: todayPriLabel(todo.priority) });
-  flag.setAttribute('aria-label', flag.title);
-  flag.addEventListener('click', () => {
-    const next = TODAY_TODO_PRIORITIES[(TODAY_TODO_PRIORITIES.indexOf(todo.priority) + 1) % TODAY_TODO_PRIORITIES.length];
-    todayMutateTodo(todo.id, x => { x.priority = next; }, tFmt('today.toast.prichanged', { label: todayPriLabel(next) }));
-  });
-  row.appendChild(flag);
-
-  // คอลัมน์เนื้อหา: ชื่องาน + แถว meta (ชิปกำหนดเสร็จ / โน้ตย่อ) — ข้อความผู้ใช้ทั้งหมดผ่าน textContent
-  const main = document.createElement('div');
-  main.className = 'todo-main';
+  const top = document.createElement('div');
+  top.className = 'tk-top';
+  const dot = document.createElement('span');
+  dot.className = 'tk-dot ' + todo.priority;
+  dot.title = todayPriLabel(todo.priority);
+  top.appendChild(dot);
   const title = document.createElement('span');
-  title.className = 'todo-title';
-  title.textContent = todo.title;
-  title.title = todo.title;
-  main.appendChild(title);
+  title.className = 'tk-title';
+  title.textContent = todo.title; // ข้อความผู้ใช้ — textContent เท่านั้น
+  top.appendChild(title);
+  if (todo.pinned) {
+    const pin = document.createElement('span');
+    pin.className = 'tk-pin';
+    pin.textContent = '📌';
+    pin.title = t('today.focus.pinnedmark');
+    top.appendChild(pin);
+  }
+  el.appendChild(top);
+
   const due = todayDueInfo(todo);
-  if (due || todo.note) {
+  const hasLink = !!todayTodoSafeUrl(todo.link);
+  if (due || todo.note || hasLink) {
     const meta = document.createElement('div');
-    meta.className = 'todo-meta';
+    meta.className = 'tk-meta';
     if (due) {
       const chip = document.createElement('span');
       chip.className = 'todo-due ' + due.cls;
@@ -14035,50 +14217,279 @@ function buildTodayTodoItem(todo) {
       chip.title = due.full;
       meta.appendChild(chip);
     }
+    if (hasLink) {
+      const lk = document.createElement('span');
+      lk.className = 'tk-link';
+      lk.textContent = '🔗';
+      lk.title = t('today.todo.link');
+      meta.appendChild(lk);
+    }
     if (todo.note) {
       const note = document.createElement('span');
-      note.className = 'todo-note';
+      note.className = 'tk-note';
       note.textContent = todo.note;
       note.title = todo.note;
       meta.appendChild(note);
     }
-    main.appendChild(meta);
+    el.appendChild(meta);
   }
-  row.appendChild(main);
 
-  const url = todayTodoSafeUrl(todo.link);
-  if (url) {
-    const a = document.createElement('a');
-    a.className = 'link-open';
-    a.href = url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.textContent = t('today.todo.link');
-    row.appendChild(a);
-    row.appendChild(makeIconBtn('⧉', t('today.todo.copylink'), () => todayCopyText(url, t('today.toast.copied'))));
+  el.addEventListener('click', () => openTodayTodoModal(todo.id));
+  el.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openTodayTodoModal(todo.id); }
+  });
+  el.addEventListener('dragstart', ev => {
+    todayDragTodoId = todo.id;
+    el.classList.add('dragging');
+    if (ev.dataTransfer) {
+      ev.dataTransfer.setData('text/plain', todo.id);
+      ev.dataTransfer.effectAllowed = 'move';
+    }
+  });
+  el.addEventListener('dragend', () => {
+    todayDragTodoId = null;
+    el.classList.remove('dragging');
+    document.querySelectorAll('.todo-kan-col.drop-hint').forEach(c => c.classList.remove('drop-hint'));
+  });
+  return el;
+}
+
+function buildTodayKanbanColumn(status, todos) {
+  const col = document.createElement('div');
+  col.className = 'todo-kan-col kan-' + status;
+  col.dataset.status = status;
+
+  const head = document.createElement('div');
+  head.className = 'todo-kan-head';
+  const nm = document.createElement('span');
+  nm.textContent = todayStatusLabel(status);
+  head.appendChild(nm);
+  const count = document.createElement('span');
+  count.className = 'tk-count';
+  count.textContent = String(todos.length);
+  head.appendChild(count);
+  col.appendChild(head);
+
+  const body = document.createElement('div');
+  body.className = 'todo-kan-body';
+  if (!todos.length) {
+    const empty = document.createElement('div');
+    empty.className = 'todo-kan-empty';
+    empty.textContent = t('today.kan.empty');
+    body.appendChild(empty);
+  } else {
+    todos.forEach(x => body.appendChild(buildTodayKanbanCard(x)));
   }
-  row.appendChild(makeIconBtn('✎', t('today.todo.edit'), () => { todayTodoEditId = todo.id; renderTodayTodoCard(); }));
-  row.appendChild(makeIconBtn('✕', t('today.todo.del'), () => {
-    if (!confirm(tFmt('today.todo.delconfirm', { title: todo.title }))) return;
-    todayTodos = todayTodos.filter(x => x.id !== todo.id);
+  col.appendChild(body);
+
+  // drop target ทั้งคอลัมน์ (หัว+ตัว) — ไฮไลต์ตอนลากทับ, ปล่อยแล้วเปลี่ยน status + persist
+  col.addEventListener('dragover', ev => {
+    if (!todayDragTodoId) return;
+    ev.preventDefault();
+    if (ev.dataTransfer) ev.dataTransfer.dropEffect = 'move';
+    col.classList.add('drop-hint');
+  });
+  col.addEventListener('dragleave', ev => {
+    if (!col.contains(ev.relatedTarget)) col.classList.remove('drop-hint');
+  });
+  col.addEventListener('drop', ev => {
+    ev.preventDefault();
+    col.classList.remove('drop-hint');
+    const id = (ev.dataTransfer && ev.dataTransfer.getData('text/plain')) || todayDragTodoId;
+    todayDragTodoId = null;
+    const todo = todayTodos.find(x => x.id === id);
+    if (!todo || todo.status === status) return;
+    todayFlashTodoId = todo.id;
+    todayMutateTodo(id, x => todaySetTodoStatus(x, status), tFmt('today.toast.moved', { col: todayStatusLabel(status) }));
+  });
+  return col;
+}
+
+/* ---- Task detail popup (patch 0.38) — overlay สไตล์เดียวกับ Settings/Patch Notes ----
+   สร้างใหม่ทุกครั้งที่เปิด (ถูกเปิดไม่บ่อย) — ป้ายข้อความเลยตามภาษาปัจจุบันเสมอ
+   คีย์บอร์ด: แก้สถานะผ่าน dropdown ในนี้ = ทางเลือกแทนการลากเมาส์ */
+
+let todayTodoModal = null;   // {overlay, titleInp, ...} ของ modal ที่เปิดอยู่
+let todayTodoModalId = null; // id งานที่กำลังดู (in-memory)
+
+function closeTodayTodoModal() {
+  if (todayTodoModal) todayTodoModal.overlay.remove();
+  todayTodoModal = null;
+  todayTodoModalId = null;
+}
+
+function openTodayTodoModal(id) {
+  const todo = todayTodos.find(x => x.id === id);
+  if (!todo) return;
+  closeTodayTodoModal();
+  todayTodoModalId = id;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'patch-overlay';
+  const panel = document.createElement('div');
+  panel.className = 'patch-panel today-todo-modal';
+
+  const h = document.createElement('h2');
+  const hTitle = document.createElement('span');
+  hTitle.textContent = t('today.modal.title');
+  h.appendChild(hTitle);
+  const close = document.createElement('button');
+  close.className = 'patch-close';
+  close.type = 'button';
+  close.textContent = t('today.modal.close');
+  h.appendChild(close);
+  panel.appendChild(h);
+
+  const field = (labelKey, input) => {
+    const wrap = document.createElement('label');
+    wrap.className = 'ttm-field';
+    const lab = document.createElement('span');
+    lab.textContent = t(labelKey);
+    wrap.appendChild(lab);
+    wrap.appendChild(input);
+    return wrap;
+  };
+  const row = (...kids) => {
+    const r = document.createElement('div');
+    r.className = 'ttm-row';
+    kids.forEach(k => r.appendChild(k));
+    panel.appendChild(r);
+    return r;
+  };
+
+  const titleInp = document.createElement('input');
+  titleInp.type = 'text';
+  titleInp.placeholder = t('today.todo.name.ph');
+  titleInp.value = todo.title;
+  row(field('today.modal.name', titleInp));
+
+  const statusSel = document.createElement('select');
+  TODAY_TODO_STATUSES.forEach(s => statusSel.appendChild(new Option(todayStatusLabel(s), s)));
+  statusSel.value = todo.status;
+  const priSel = document.createElement('select');
+  TODAY_TODO_PRIORITIES.forEach(p => priSel.appendChild(new Option(todayPriLabel(p), p)));
+  priSel.value = todo.priority;
+  const dueInp = document.createElement('input');
+  dueInp.type = 'date'; // ไม่เข้าเงื่อนไข NUMPAD_INPUT_SELECTOR — numpad ไม่เด้ง
+  dueInp.value = todo.due;
+  row(field('today.modal.status', statusSel), field('today.modal.priority', priSel), field('today.modal.due', dueInp));
+
+  const linkInp = document.createElement('input');
+  linkInp.type = 'text';
+  linkInp.placeholder = t('today.todo.link.ph');
+  linkInp.value = todo.link;
+  const linkField = field('today.modal.link', linkInp);
+  const linkBtns = document.createElement('div');
+  linkBtns.className = 'ttm-linkbtns';
+  const openLink = document.createElement('button');
+  openLink.type = 'button';
+  openLink.className = 'ocr-btn';
+  openLink.textContent = t('today.modal.openlink');
+  const copyLink = document.createElement('button');
+  copyLink.type = 'button';
+  copyLink.className = 'ocr-btn';
+  copyLink.textContent = t('today.todo.copylink');
+  linkBtns.appendChild(openLink);
+  linkBtns.appendChild(copyLink);
+  linkField.appendChild(linkBtns);
+  row(linkField);
+
+  const noteInp = document.createElement('textarea');
+  noteInp.rows = 3;
+  noteInp.placeholder = t('today.todo.note.ph');
+  noteInp.value = todo.note;
+  row(field('today.modal.note', noteInp));
+
+  const pinWrap = document.createElement('label');
+  pinWrap.className = 'ttm-pin';
+  const pinChk = document.createElement('input');
+  pinChk.type = 'checkbox';
+  pinChk.checked = todo.pinned === true;
+  pinWrap.appendChild(pinChk);
+  const pinLab = document.createElement('span');
+  pinLab.textContent = t('today.modal.pinned');
+  pinWrap.appendChild(pinLab);
+  panel.appendChild(pinWrap);
+
+  const actions = document.createElement('div');
+  actions.className = 'ttm-actions';
+  const del = document.createElement('button');
+  del.type = 'button';
+  del.className = 'ocr-btn ttm-del';
+  del.textContent = t('today.modal.delete');
+  const cancel = document.createElement('button');
+  cancel.type = 'button';
+  cancel.className = 'ocr-btn';
+  cancel.textContent = t('today.todo.cancel');
+  const save = document.createElement('button');
+  save.type = 'button';
+  save.className = 'ocr-btn primary';
+  save.textContent = t('today.todo.save');
+  actions.appendChild(del);
+  actions.appendChild(cancel);
+  actions.appendChild(save);
+  panel.appendChild(actions);
+
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+
+  close.addEventListener('click', closeTodayTodoModal);
+  cancel.addEventListener('click', closeTodayTodoModal);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeTodayTodoModal(); });
+
+  openLink.addEventListener('click', () => {
+    const url = todayTodoSafeUrl(linkInp.value.trim());
+    if (!url) { showWarningToast(t('today.toast.badlink'), { key: 'today-todo' }); return; }
+    window.open(url, '_blank', 'noopener'); // http(s) เท่านั้น — ผ่าน todayTodoSafeUrl แล้ว
+  });
+  copyLink.addEventListener('click', () => {
+    const url = todayTodoSafeUrl(linkInp.value.trim());
+    if (!url) { showWarningToast(t('today.toast.badlink'), { key: 'today-todo' }); return; }
+    todayCopyText(url, t('today.toast.copied'));
+  });
+
+  save.addEventListener('click', () => {
+    const newTitle = titleInp.value.trim();
+    if (!newTitle) { showWarningToast(t('today.toast.titleempty'), { key: 'today-todo' }); titleInp.focus(); return; }
+    const rawLink = linkInp.value.trim();
+    if (rawLink && !todayTodoSafeUrl(rawLink)) { showWarningToast(t('today.toast.badlink'), { key: 'today-todo' }); linkInp.focus(); return; }
+    const newDue = /^\d{4}-\d{2}-\d{2}$/.test(dueInp.value) ? dueInp.value : '';
+    const targetId = todayTodoModalId;
+    closeTodayTodoModal();
+    todayFlashTodoId = targetId;
+    todayMutateTodo(targetId, x => {
+      x.title = newTitle;
+      x.link = rawLink;
+      x.note = noteInp.value.trim();
+      x.due = newDue;
+      x.priority = priSel.value;
+      x.pinned = pinChk.checked;
+      todaySetTodoStatus(x, statusSel.value);
+    }, t('today.toast.updated'));
+  });
+  titleInp.addEventListener('keydown', ev => { if (ev.key === 'Enter') { ev.preventDefault(); save.click(); } });
+
+  del.addEventListener('click', () => {
+    const target = todayTodos.find(x => x.id === todayTodoModalId);
+    if (!target) { closeTodayTodoModal(); return; }
+    if (!confirm(tFmt('today.todo.delconfirm', { title: target.title }))) return;
+    closeTodayTodoModal();
+    todayTodos = todayTodos.filter(x => x.id !== target.id);
     persistTodayTodos();
-    renderTodayTodoCard();
-    renderTodayHero();
-    renderTodayAttentionCard();
-    renderTodayContinueCard();
+    renderTodayTodoSurfaces();
     showSuccessToast(t('today.toast.deleted'), { key: 'today-todo' });
-  }, true));
+  });
 
-  return row;
+  todayTodoModal = { overlay };
+  setTimeout(() => titleInp.focus(), 0);
 }
 
 function renderTodayTodoCard() {
   const card = document.getElementById('todayTodoCard');
   if (!card) return;
   card.innerHTML = '';
-  const activeN = todayTodos.filter(x => !x.done).length;
-  const doneN = todayTodos.length - activeN;
-  todayCardHead(card, t('today.card.todos'), { icon: TODAY_ICONS.todos, countText: tFmt('today.todo.counts', { a: activeN, b: doneN }) });
+  const w = todayWorkload();
+  todayCardHead(card, t('today.card.todos'), { icon: TODAY_ICONS.todos, countText: tFmt('today.todo.counts', { a: w.active, b: w.done }) });
 
   // แถวเพิ่มงานด่วน — Enter เพื่อเพิ่ม, Esc ล้างช่อง
   const add = document.createElement('div');
@@ -14112,42 +14523,41 @@ function renderTodayTodoCard() {
     if (ev.key === 'Escape') { inp.value = ''; }
   });
 
-  // ฟิลเตอร์ (นับสดเสมอ) + ปุ่มล้างงานที่เสร็จแล้ว (confirm — ปุ่มทำลายข้อมูลต้องยืนยันเสมอ)
+  // ชิป workload (Part F — นับสดเสมอ): บางชิปกดเพื่อกรองบอร์ด (กดซ้ำ = กลับมาดูทั้งหมด)
+  // + ปุ่มล้างงานที่เสร็จแล้ว (confirm — ปุ่มทำลายข้อมูลต้องยืนยันเสมอ)
   const filters = document.createElement('div');
   filters.className = 'todo-filters';
-  const p1N = todayTodos.filter(x => x.priority === 'p1').length;
-  [
-    { id: 'all', label: t('today.todo.f.all') + ' (' + todayTodos.length + ')' },
-    { id: 'active', label: t('today.todo.f.active') + ' (' + activeN + ')' },
-    { id: 'done', label: t('today.todo.f.done') + ' (' + doneN + ')' },
-    { id: 'p1', label: 'P1 (' + p1N + ')' },
-  ].forEach(f => {
+  const mkWlChip = (fid, label, warn) => {
     const chip = document.createElement('button');
     chip.type = 'button';
-    chip.className = 'filter-chip' + (todayTodoFilter === f.id ? ' active' : '');
-    chip.textContent = f.label;
-    chip.addEventListener('click', () => { todayTodoFilter = f.id; renderTodayTodoCard(); });
+    chip.className = 'filter-chip' + (fid && todayTodoFilter === fid ? ' active' : '') + (warn ? ' wl-warn' : '');
+    chip.textContent = label;
+    if (fid) chip.addEventListener('click', () => { todayTodoFilter = (todayTodoFilter === fid && fid !== 'all') ? 'all' : fid; renderTodayTodoCard(); });
+    else chip.disabled = true; // ชิปข้อมูลล้วน (คอลัมน์แสดงอยู่แล้ว) — ไม่ต้องกด
     filters.appendChild(chip);
-  });
-  if (doneN > 0) {
+  };
+  mkWlChip('all', tFmt('today.wl.active', { n: w.active }));
+  mkWlChip('p1', 'P1 (' + w.p1 + ')');
+  mkWlChip('overdue', tFmt('today.wl.overdue', { n: w.overdue }), w.overdue > 0);
+  mkWlChip('duetoday', tFmt('today.wl.duetoday', { n: w.dueToday }), false);
+  mkWlChip(null, tFmt('today.wl.progress', { n: w.progress }));
+  mkWlChip(null, tFmt('today.wl.done', { n: w.done }));
+  if (w.done > 0) {
     const clearBtn = document.createElement('button');
     clearBtn.type = 'button';
     clearBtn.className = 'today-open todo-cleardone';
     clearBtn.textContent = t('today.todo.cleardone');
     clearBtn.addEventListener('click', () => {
-      if (!confirm(tFmt('today.todo.cleardone.confirm', { n: doneN }))) return;
-      todayTodos = todayTodos.filter(x => !x.done);
+      if (!confirm(tFmt('today.todo.cleardone.confirm', { n: w.done }))) return;
+      todayTodos = todayTodos.filter(x => x.status !== 'done');
       persistTodayTodos();
-      renderTodayTodoCard();
-      renderTodayHero();
-      renderTodayContinueCard();
-      showSuccessToast(tFmt('today.todo.cleared', { n: doneN }), { key: 'today-todo' });
+      renderTodayTodoSurfaces();
+      showSuccessToast(tFmt('today.todo.cleared', { n: w.done }), { key: 'today-todo' });
     });
     filters.appendChild(clearBtn);
   }
   card.appendChild(filters);
 
-  const visible = todayVisibleTodos();
   if (!todayTodos.length) {
     card.appendChild(uxEmptyState({
       icon: '📝',
@@ -14157,6 +14567,7 @@ function renderTodayTodoCard() {
     }));
     return;
   }
+  const visible = todayKanbanTodos();
   if (!visible.length) {
     card.appendChild(uxEmptyState({
       icon: '🔍',
@@ -14166,29 +14577,260 @@ function renderTodayTodoCard() {
     }));
     return;
   }
-  const list = document.createElement('div');
-  list.className = 'todo-list';
-  visible.forEach(x => list.appendChild(buildTodayTodoItem(x)));
-  card.appendChild(list);
+  // บอร์ด 3 คอลัมน์ — ทุกคอลัมน์ render เสมอ (คอลัมน์ว่างโชว์ empty แบบย่อ เป็น drop target ได้)
+  const board = document.createElement('div');
+  board.className = 'todo-kanban';
+  TODAY_TODO_STATUSES.forEach(st => board.appendChild(buildTodayKanbanColumn(st, visible.filter(x => x.status === st))));
+  card.appendChild(board);
 
   if (todayFlashTodoId) {
-    const flashEl = list.querySelector('[data-todo-id="' + todayFlashTodoId + '"]');
+    const flashEl = board.querySelector('[data-todo-id="' + todayFlashTodoId + '"]');
     if (flashEl && typeof uxFlash === 'function') uxFlash(flashEl);
     todayFlashTodoId = null;
   }
+}
+
+/* ---- การ์ด Today Focus (patch 0.38, Part C) — งานที่ปักหมุด / งานแนะนำ ---- */
+
+function renderTodayFocusCard() {
+  const card = document.getElementById('todayFocusCard');
+  if (!card) return;
+  card.innerHTML = '';
+  todayCardHead(card, t('today.card.focus'), { icon: TODAY_ICONS.focus });
+
+  const pri = { p1: 1, p2: 2, p3: 3, p4: 4 };
+  const mkRow = (todo, suggested) => {
+    const row = document.createElement('div');
+    row.className = 'today-attn-item clickable today-focus-item';
+    row.setAttribute('role', 'button');
+    row.tabIndex = 0;
+    const dot = document.createElement('span');
+    dot.className = 'tk-dot ' + todo.priority;
+    dot.title = todayPriLabel(todo.priority);
+    row.appendChild(dot);
+    const txt = document.createElement('span');
+    txt.className = 'today-focus-title';
+    txt.textContent = todo.title; // ข้อความผู้ใช้ — textContent เท่านั้น
+    row.appendChild(txt);
+    const due = todayDueInfo(todo);
+    if (due) {
+      const chip = document.createElement('span');
+      chip.className = 'todo-due ' + due.cls;
+      chip.textContent = due.text;
+      row.appendChild(chip);
+    }
+    const st = document.createElement('span');
+    st.className = 'tk-status ' + todo.status;
+    st.textContent = todayStatusLabel(todo.status);
+    row.appendChild(st);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'today-open';
+    btn.textContent = suggested ? t('today.focus.pin') : t('today.focus.unpin');
+    btn.addEventListener('click', ev => {
+      ev.stopPropagation();
+      todayMutateTodo(todo.id, x => { x.pinned = suggested; }, suggested ? t('today.toast.pinned') : t('today.toast.unpinned'));
+    });
+    row.appendChild(btn);
+    row.addEventListener('click', () => openTodayTodoModal(todo.id));
+    row.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openTodayTodoModal(todo.id); } });
+    return row;
+  };
+
+  const pinned = todayTodos.filter(x => x.pinned && x.status !== 'done')
+    .sort((a, b) => (pri[a.priority] - pri[b.priority]) || (b.updatedAt - a.updatedAt));
+  if (pinned.length) {
+    pinned.slice(0, 5).forEach(x => card.appendChild(mkRow(x, false)));
+    return;
+  }
+
+  // ไม่มีงานปักหมุด → เสนองาน active ที่ priority สูงสุดพร้อมปุ่มปักหมุด (ไม่ปักให้เอง)
+  const candidates = todayTodos.filter(x => x.status !== 'done')
+    .sort((a, b) => (pri[a.priority] - pri[b.priority]) || (b.updatedAt - a.updatedAt));
+  if (candidates.length) {
+    const p = document.createElement('p');
+    p.className = 'today-sub';
+    p.style.margin = '0 0 4px';
+    p.textContent = t('today.focus.suggest');
+    card.appendChild(p);
+    card.appendChild(mkRow(candidates[0], true));
+    return;
+  }
+  card.appendChild(uxEmptyState({
+    icon: '📌',
+    title: t('today.focus.empty.title'),
+    body: t('today.focus.empty.body'),
+  }));
+}
+
+/* ---- การ์ด Planning Note (patch 0.38, Part E) — autosave เงียบๆ ผ่าน debounce + blur ---- */
+
+let todayNoteSaveTimer = null;
+
+function todayNoteMetaText() {
+  return todayNote.updatedAt
+    ? tFmt('today.note.lastedit', { t: new Date(todayNote.updatedAt).toLocaleString(todayLocale()) }) : '';
+}
+
+function renderTodayNoteCard() {
+  const card = document.getElementById('todayNoteCard');
+  if (!card) return;
+  // กัน rebuild ทับตอนกำลังพิมพ์ (safeRerender กันระดับ event อยู่แล้ว — กันซ้ำเผื่อ path อื่นเรียก renderToday)
+  const existing = document.getElementById('todayNoteInput');
+  if (existing && document.activeElement === existing) return;
+  card.innerHTML = '';
+  todayCardHead(card, t('today.card.note'), { icon: TODAY_ICONS.note });
+
+  const ta = document.createElement('textarea');
+  ta.className = 'today-note-input';
+  ta.id = 'todayNoteInput';
+  ta.placeholder = t('today.note.ph');
+  ta.value = todayNote.text;
+  card.appendChild(ta);
+
+  const meta = document.createElement('div');
+  meta.className = 'today-note-meta';
+  const savedTag = document.createElement('span');
+  savedTag.className = 'saved';
+  const stamp = document.createElement('span');
+  stamp.textContent = todayNoteMetaText();
+  meta.appendChild(savedTag);
+  meta.appendChild(stamp);
+  card.appendChild(meta);
+
+  // บันทึกเมื่อหยุดพิมพ์ ~0.7s หรือออกจากช่อง — microcopy "บันทึกแล้ว" แทน toast (ไม่รกจอ)
+  const flush = () => {
+    todayNoteSaveTimer = null;
+    if (ta.value === todayNote.text) return;
+    todayNote.text = ta.value;
+    todayNote.updatedAt = Date.now();
+    persistTodayNote();
+    savedTag.textContent = t('today.note.saved');
+    stamp.textContent = todayNoteMetaText();
+    setTimeout(() => { savedTag.textContent = ''; }, 2000);
+  };
+  ta.addEventListener('input', () => {
+    if (todayNoteSaveTimer) clearTimeout(todayNoteSaveTimer);
+    todayNoteSaveTimer = setTimeout(flush, 700);
+  });
+  ta.addEventListener('blur', () => {
+    if (todayNoteSaveTimer) clearTimeout(todayNoteSaveTimer);
+    flush();
+  });
+}
+
+/* ---- การ์ด Timeline (patch 0.38, Part G) — deep link ล้วน ไม่มีการคำนวณใหม่ ---- */
+
+function renderTodayTimelineCard() {
+  const card = document.getElementById('todayTimelineCard');
+  if (!card) return;
+  card.innerHTML = '';
+  todayCardHead(card, t('today.card.timeline'), { icon: TODAY_ICONS.timeline });
+
+  const items = [];
+  const active = todayTodos.filter(x => x.status !== 'done');
+  active.filter(x => { const d = todayDueInfo(x); return !!d && d.cls === 'overdue'; }).slice(0, 3)
+    .forEach(x => items.push({ tag: 'overdue', tagText: t('today.tl.overdue'), text: x.title, action: () => openTodayTodoModal(x.id) }));
+  active.filter(x => { const d = todayDueInfo(x); return !!d && d.cls === 'due-today'; }).slice(0, 3)
+    .forEach(x => items.push({ tag: 'duetoday', tagText: t('today.tl.duetoday'), text: x.title, action: () => openTodayTodoModal(x.id) }));
+  if (shopRows.length) {
+    const bn = todayShopBuyNext();
+    if (bn.pick) {
+      items.push({
+        tag: 'buy', tagText: t('today.tl.buy'),
+        text: rowDisplayName(bn.pick) + ' ~' + fmtNum(rowEstPrice(bn.pick)) + ' Div',
+        action: () => { switchTab('shop'); goToShopRow(bn.pick); },
+      });
+    }
+  }
+  const top = todayRadarTopPick();
+  if (top) {
+    items.push({
+      tag: 'farm', tagText: t('today.tl.farm'),
+      text: (top.content || '?') + ' · Farm Score ' + Math.round(top.score) + '%',
+      action: () => switchTab('radar'),
+    });
+  }
+
+  if (!items.length) {
+    const p = document.createElement('p');
+    p.className = 'today-sub';
+    p.style.margin = '0';
+    p.textContent = t('today.tl.empty');
+    card.appendChild(p);
+    return;
+  }
+  items.forEach(it => {
+    const row = document.createElement('div');
+    row.className = 'today-attn-item clickable';
+    row.setAttribute('role', 'button');
+    row.tabIndex = 0;
+    const tag = document.createElement('span');
+    tag.className = 'today-tl-tag ' + it.tag;
+    tag.textContent = it.tagText;
+    row.appendChild(tag);
+    const txt = document.createElement('span');
+    txt.textContent = it.text; // อาจมีข้อความผู้ใช้ (ชื่องาน/ชื่อไอเทม) — textContent เท่านั้น
+    row.appendChild(txt);
+    const go = document.createElement('button');
+    go.type = 'button';
+    go.className = 'today-open';
+    go.textContent = t('today.open');
+    go.addEventListener('click', ev => { ev.stopPropagation(); it.action(); });
+    row.appendChild(go);
+    row.addEventListener('click', () => it.action());
+    row.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); it.action(); } });
+    card.appendChild(row);
+  });
+}
+
+/* ---- Copy dashboard summary (patch 0.38, Part D) — ข้อความล้วนตามภาษาปัจจุบัน
+   ทุกตัวเลขมาจาก mirror helper เดิม (todayShopSummary/todayRadarTopPick/computeForgeReadiness/
+   computeFarmRunAnalytics) — ไม่มีสูตรใหม่ ---- */
+
+function todayBuildSummaryText() {
+  const L = [];
+  L.push(t('today.sum.title') + ' — ' + new Date().toLocaleDateString(todayLocale(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }));
+  const lg = homeStatus && homeStatus.league;
+  if (lg && lg.name) L.push('League: ' + lg.name);
+  const top = todayRadarTopPick();
+  L.push(t('today.sum.topfarm') + ': ' + (top ? (top.content || '?') + ' (Farm Score ' + Math.round(top.score) + '%)' : '—'));
+  if (shopRows.length) {
+    const s = todayShopSummary();
+    const bn = todayShopBuyNext();
+    L.push(t('today.sum.buynext') + ': ' + (bn.pick ? rowDisplayName(bn.pick) + ' ~' + fmtNum(rowEstPrice(bn.pick)) + ' Div' : '—')
+      + ' · ' + t('today.gear.need') + ' ' + fmtNum(s.needMin) + '–' + fmtNum(s.needMax) + ' Div');
+  }
+  L.push(t('today.sum.readiness') + ': ' + computeForgeReadiness(todayForgeTotals()).score + '/100');
+  if (farmCards.length) {
+    const sel = farmCards.find(c => c.id === farmSelectedId) || farmCards.find(c => c.favorite) || farmCards[0];
+    const a = computeFarmRunAnalytics(sel);
+    let line = t('today.sum.farm') + ': ' + ((sel.name || '').trim() || t('today.farm.noname')) + ' · ' + tFmt('today.farm.runsn', { n: a.n });
+    if (a.netCompatible) line += ' · Net ' + (a.totalNet > 0 ? '+' : '') + farmFmtNum(a.totalNet) + ' ' + a.costUnit;
+    L.push(line);
+  }
+  const w = todayWorkload();
+  L.push(t('today.sum.todos') + ': ' + tFmt('today.sum.todosline', { a: w.active, p: w.p1, o: w.overdue, d: w.dueToday, g: w.progress }));
+  return L.join('\n');
+}
+function todayCopySummary() {
+  todayCopyText(todayBuildSummaryText(), t('today.toast.summarycopied'));
 }
 
 /* ---- orchestrator + init ---- */
 
 function renderToday() {
   renderTodayHero();
+  renderTodayFocusCard();
   renderTodayTodoCard();
   renderTodayGearCard();
   renderTodayRadarCard();
   renderTodayForgeCard();
+  renderTodayNoteCard();
   renderTodayFarmCard();
   renderTodayCodexCard();
   renderTodayAttentionCard();
+  renderTodayTimelineCard();
   renderTodayContinueCard();
   renderTodayStatusCard();
 }
@@ -14213,6 +14855,8 @@ function renderToday() {
   };
   ['poeassist:radarloaded', 'poeassist:homestatusloaded', 'poeassist:codexloaded', 'poeassist:keywordsloaded', 'poeassist:prefschange']
     .forEach(ev => document.addEventListener(ev, safeRerender));
+  // Esc ปิด popup รายละเอียดงาน (patch 0.38) — listener เดียวระดับ document, modal ถูกสร้างใหม่ทุกครั้งที่เปิด
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && todayTodoModal) closeTodayTodoModal(); });
   // ticker เวลาลีกแบบ live (patch 0.37) — interval "เดียว" ต่อหน้า สร้างครั้งเดียวตรงนี้เท่านั้น
   // (ไม่สร้างใหม่ตอน re-render/สลับแท็บ) · อัปเดตแค่ textContent ของ span เดียว — ไม่มี layout shift
   setInterval(() => {
