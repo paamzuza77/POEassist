@@ -249,6 +249,7 @@ html[data-theme="modern"] .kw-tip-link,
 html[data-theme="modern"] .kwc-cmp-chip,
 html[data-theme="modern"] .sr-status,
 html[data-theme="modern"] .budget-chip,
+html[data-theme="modern"] .todo-due,
 html[data-theme="modern"] .farm-link-chip {
   border-width: 1px;
   border-radius: 999px;
@@ -573,9 +574,11 @@ html[data-theme="modern"] :focus-visible {
 
   /* Today Dashboard (patch 0.36): การ์ดยกตัวเบาๆ ตอน hover + todo-item ทรานซิชันนุ่ม */
   html[data-theme="modern"] .today-card,
-  html[data-theme="modern"] .todo-item {
+  html[data-theme="modern"] .todo-item,
+  html[data-theme="modern"] .today-open,
+  html[data-theme="modern"] .today-attn-item {
     transition: box-shadow 0.16s ease, transform 0.12s ease, border-color 0.16s ease,
-      background-color 0.16s ease;
+      background-color 0.16s ease, color 0.16s ease;
   }
   html[data-theme="modern"] .today-card:hover {
     transform: translateY(-1px);
@@ -585,3 +588,17 @@ html[data-theme="modern"] :focus-visible {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45), 0 8px 22px rgba(0, 0, 0, 0.4);
   }
 }
+
+/* Today polish (patch 0.37) — นอก media query (สี ไม่ใช่ motion): hover เป็น accent แบบ Linear */
+html[data-theme="modern"] .today-open:hover {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #ffffff;
+}
+html[data-theme="modern"][data-mode="dark"] .today-open:hover { color: #0b1220; }
+html[data-theme="modern"] .today-attn-item.clickable:hover {
+  background: color-mix(in srgb, var(--gold) 6%, var(--panel));
+  border-radius: 8px;
+}
+html[data-theme="modern"] .todo-item:hover { border-color: var(--border); }
+html[data-theme="modern"] .today-card-ico { color: var(--gold); }
