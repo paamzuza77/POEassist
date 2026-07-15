@@ -2,6 +2,15 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-16 (3)
+
+- **Boot Performance Pass (patch 0.47)** (`index.html` + `background/` + docs): faster app open, **no visible product change, no formula/storage-key change**. Three deferrals:
+  - **Lazy Codex JSON** — `content-codex.json` (~197KB) + `keyword-codex.json` (~613KB) no longer load at boot. `loadCodex`/`loadKwc` are wrapped by idempotent `ensureCodexLoaded()`/`ensureKwcLoaded()` (shared-promise guard). Triggers: opening the Content/Keyword Codex tab, the startup-tab check, the deep-link openers, the topbar global search (warm on focus/input + re-run results on the loaded events), the keyword-help bridge, and a `requestIdleCallback` background warmup after the `load` event. All existing consumers already tolerated null data and refresh via the unchanged `poeassist:codexloaded`/`keywordsloaded` events.
+  - **Theme-conditional fonts** — head loads only `Inter`+`JetBrains Mono` at boot (Modern default + Trust); RawBlock's `Archivo Black`/`Work Sans`/`Space Mono` load lazily via `window.ensureRawblockFonts()` (from the pre-paint script when the saved theme is RawBlock, and from `applyThemePreference()` on switch).
+  - **Optimized backgrounds** — `4.jpg` (4K, 1129KB → `4.optimized.jpg` 1080p **109KB**) and `5.jpg` (518KB → `5.optimized.jpg` **197KB**); originals kept. `APP_BACKGROUNDS` gained an additive `file:` render field (with `appBgRenderSrc()`); `src:` stays the stable storage identity so saved selections still resolve. Re-encoded with PowerShell + `System.Drawing` (no local `cwebp`/ImageMagick).
+  - Verification: **headless Chrome via CDP (Node 24 global WebSocket) — 0 console errors, 0 uncaught exceptions.** Timing proof of deferral: `market-radar`/`home-status` requests fire ~1.3s *before* the load event; `content-codex`/`keyword-codex` fire ~100ms *after* it. Content Codex opens → 34 entries render; Keyword Codex opens → 766 keywords (200-capped list); Modern default doesn't request RawBlock fonts, switching to RawBlock injects `#fontRawblock`; bg4 renders `4.optimized.jpg` and legacy `background/4.jpg` still maps to it; all 8 tabs cycle clean.
+  - Deferred: currency-icon webp (`exalt.png` 161KB / `mirror.png` 108KB) — no local webp encoder; exact `cwebp` commands recorded in `TODO.md`. Inline scripts syntax-checked (`vm.Script`).
+
 ## 2026-07-16 (2)
 
 - **Settings background image picker (patch 0.46)** (`index.html` + `css/modern-theme.css` + docs): optional subtle app background chosen in Settings → Appearance, default "no background".

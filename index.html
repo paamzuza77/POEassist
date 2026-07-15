@@ -7,7 +7,23 @@
 <!-- favicon: original inline "E" monogram (Exile Assistant), self-contained data URI so /favicon.ico isn't requested. Not POE/POE2 artwork. -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23003087'/%3E%3Crect x='9' y='8' width='14' height='3.4' fill='%23fff'/%3E%3Crect x='9' y='14.3' width='11' height='3.4' fill='%23fff'/%3E%3Crect x='9' y='20.6' width='14' height='3.4' fill='%23fff'/%3E%3Crect x='9' y='8' width='3.4' height='16' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- patch 0.47 (boot perf): โหลดเฉพาะฟอนต์หลักของธีม Modern/Trust ตอนบูต (Inter + JetBrains Mono).
+     ฟอนต์ของ RawBlock (Archivo Black / Work Sans / Space Mono) โหลดแบบมีเงื่อนไขเฉพาะเมื่อธีมเป็น rawblock
+     ผ่าน window.ensureRawblockFonts() — เรียกใน pre-paint script ด้านล่าง + ใน applyThemePreference() -->
+<link id="fontPrimary" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script>
+window.ensureRawblockFonts = function () {
+  try {
+    if (document.getElementById('fontRawblock')) return;
+    var l = document.createElement('link');
+    l.id = 'fontRawblock';
+    l.rel = 'stylesheet';
+    l.href = 'https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap';
+    (document.head || document.documentElement).appendChild(l);
+  } catch (e) { /* ปล่อยผ่าน — ธีมยังใช้ฟอนต์ fallback ของระบบได้ */ }
+};
+</script>
 <!-- ตั้ง data-theme / data-mode / data-font-scale บน <html> ให้เร็วที่สุด (กัน flash ธีม/โหมด/ขนาดตัวอักษรตอนโหลด) — ค่าเริ่มต้น modern/light/normal (patch 0.35: ธีมเริ่มต้นใหม่ 'modern'; ผู้ใช้ที่เคยเลือก rawblock/trust ไว้ยังได้ธีมเดิม) -->
 <!-- patch 0.44: unsaved Modern profiles start in dark mode; saved mode preferences still win. -->
 <script>
@@ -17,10 +33,13 @@
     var m = localStorage.getItem('poeAssist.colorMode.v1');
     var f = localStorage.getItem('poeAssist.fontScale.v1');
     var d = localStorage.getItem('poeAssist.displayMode.v1'); // patch 0.41: Simple/Advanced
-    document.documentElement.setAttribute('data-theme', (t === 'trust-blue-pay' || t === 'rawblock') ? t : 'modern');
+    var theme = (t === 'trust-blue-pay' || t === 'rawblock') ? t : 'modern';
+    document.documentElement.setAttribute('data-theme', theme);
     document.documentElement.setAttribute('data-mode', m === 'light' ? 'light' : 'dark');
     document.documentElement.setAttribute('data-font-scale', (f === 'small' || f === 'large') ? f : 'normal');
     document.documentElement.setAttribute('data-display', d === 'advanced' ? 'advanced' : 'simple');
+    // patch 0.47: ผู้ใช้ที่บันทึกธีม RawBlock ไว้ → โหลดฟอนต์ RawBlock ทันทีตั้งแต่บูต (กัน flash ฟอนต์)
+    if (theme === 'rawblock' && typeof window.ensureRawblockFonts === 'function') window.ensureRawblockFonts();
   } catch (e) {
     document.documentElement.setAttribute('data-theme', 'modern');
     document.documentElement.setAttribute('data-mode', 'dark');
@@ -5289,8 +5308,9 @@ function kwHelpReady() { return !!kwHelpEntry(KW_HELP_TERMS[0].id); }
 // เรียกซ้ำได้ปลอดภัย: ถ้ายังไม่มีข้อมูลค่อยสั่งโหลด
 function loadKeywordHelp() {
   if (kwHelpReady()) return Promise.resolve(true);
-  if (typeof loadKwc !== 'function') return Promise.resolve(false);
-  return Promise.resolve(loadKwc()).then(() => kwHelpReady());
+  // patch 0.47: ผ่าน ensureKwcLoaded (โหลดครั้งเดียว) แทนการเรียก loadKwc ตรงๆ กัน fetch ซ้ำกับ lazy warmup
+  if (typeof ensureKwcLoaded !== 'function') return Promise.resolve(false);
+  return Promise.resolve(ensureKwcLoaded()).then(() => kwHelpReady());
 }
 // สเตตัสในแท็บ Resistance Checker → keyword id ที่ตรงกับหน้า poe2db
 const KW_HELP_STAT_IDS = {
@@ -5453,6 +5473,8 @@ function closeKeywordTooltip() {
 // เปิดแท็บ Keyword Codex แล้วเลือก/ค้นหา keyword นั้น (ใช้ได้จากทุกแท็บ)
 // ไม่แตะ favorites/compare — แค่ล้าง filter/search เท่าที่จำเป็นให้ entry มองเห็น
 function openKeywordCodexEntry(id) {
+  // patch 0.47: keyword-codex.json อาจยังโหลดไม่เสร็จ (lazy) — สั่งโหลด แล้ว loadKwc จะ renderKwc ให้เองเมื่อข้อมูลมาถึง
+  if (typeof ensureKwcLoaded === 'function') ensureKwcLoaded();
   if (typeof switchTab === 'function') switchTab('keyword');
   const search = document.getElementById('kwcSearch');
   const entry = kwHelpEntry(id);
@@ -6961,7 +6983,11 @@ let appMode = loadColorModePreference();
 const SUN_SVG = '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM7 0h2v3H7zM7 13h2v3H7zM0 7h3v2H0zM13 7h3v2h-3zM2.2 3.6 3.6 2.2l2.1 2.1-1.4 1.4zM10.3 11.7l1.4-1.4 2.1 2.1-1.4 1.4zM11.7 5.7 10.3 4.3l2.1-2.1 1.4 1.4zM3.6 13.8 2.2 12.4l2.1-2.1 1.4 1.4z"/></svg>';
 const MOON_SVG = '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6 1a7 7 0 1 0 9 9A5.5 5.5 0 0 1 6 1z"/></svg>';
 
-function applyThemePreference() { document.documentElement.setAttribute('data-theme', appTheme); }
+function applyThemePreference() {
+  document.documentElement.setAttribute('data-theme', appTheme);
+  // patch 0.47: RawBlock ใช้ฟอนต์คนละชุด (Archivo Black/Work Sans/Space Mono) — โหลดตอนสลับมาเท่านั้น
+  if (appTheme === 'rawblock' && typeof window.ensureRawblockFonts === 'function') window.ensureRawblockFonts();
+}
 function applyColorModePreference() { document.documentElement.setAttribute('data-mode', appMode); }
 
 function syncAppearanceControls() {
@@ -7049,13 +7075,20 @@ const APP_BG_KEY = 'poeAssist.background.v1';
 const APP_BG_OPACITY_DEFAULT = 0.08;
 const APP_BG_OPACITY_MAX = 0.2;
 // ทะเบียนไฟล์ใน background/ — ชื่อไฟล์ตรงตามจริง (ไม่มีช่องว่าง; ใส่ผ่าน encodeURI ตอนใช้เสมอ)
+// src = identity คงที่ (เก็บใน localStorage/backup) — ห้ามเปลี่ยน ไม่งั้น selection เก่าของผู้ใช้พัง
+// file (patch 0.47) = ไฟล์จริงที่จะ "วาด" ถ้ามี variant ที่ optimize แล้ว (default = src)
 const APP_BACKGROUNDS = [
   { id: 'bg1', src: 'background/1.jfif' },
   { id: 'bg2', src: 'background/2.webp' },
   { id: 'bg3', src: 'background/3.jfif' },
-  { id: 'bg4', src: 'background/4.jpg' },
-  { id: 'bg5', src: 'background/5.jpg' },
+  { id: 'bg4', src: 'background/4.jpg', file: 'background/4.optimized.jpg' }, // ต้นฉบับ 4K 1.1MB → 1080p ~109KB
+  { id: 'bg5', src: 'background/5.jpg', file: 'background/5.optimized.jpg' }, // ต้นฉบับ ~518KB → ~197KB
 ];
+// แปลง identity src → ไฟล์ที่จะวาดจริง (ใช้ variant optimize ถ้ามี) — คงความเข้ากันได้กับค่าที่เก็บไว้เดิม
+function appBgRenderSrc(src) {
+  const bg = APP_BACKGROUNDS.find(b => b.src === src);
+  return (bg && bg.file) ? bg.file : src;
+}
 let appBackground = (function loadAppBackground() {
   const def = { mode: 'none', src: '', opacity: APP_BG_OPACITY_DEFAULT };
   try {
@@ -7075,7 +7108,7 @@ function applyAppBackground() {
   const layer = document.getElementById('appBgLayer');
   if (!layer) return;
   if (appBackground.mode === 'image' && appBackground.src) {
-    layer.style.backgroundImage = 'url("' + encodeURI(appBackground.src) + '")';
+    layer.style.backgroundImage = 'url("' + encodeURI(appBgRenderSrc(appBackground.src)) + '")';
     layer.style.opacity = String(appBackground.opacity);
   } else {
     layer.style.backgroundImage = '';
@@ -8203,7 +8236,7 @@ function parseBackup(text) {
     b.type = 'button';
     b.className = 'bg-thumb';
     b.dataset.bgsrc = bg.src;
-    b.style.backgroundImage = 'url("' + encodeURI(bg.src) + '")'; // ทะเบียนคงที่ในไฟล์
+    b.style.backgroundImage = 'url("' + encodeURI(appBgRenderSrc(bg.src)) + '")'; // ทะเบียนคงที่ + วาดด้วย variant optimize
     b.title = tFmt('bg.image', { n: i + 1 });
     b.setAttribute('aria-label', tFmt('bg.image', { n: i + 1 }));
     b.addEventListener('click', () => { setAppBackground({ mode: 'image', src: bg.src }); syncBgControls(); });
@@ -10288,6 +10321,17 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.47',
+    date: '2026-07-16',
+    notes: [
+      'เปิดแอปเร็วขึ้น (Boot Performance Pass): ข้อมูล Content Codex + Keyword Codex (~810KB รวมกัน) ไม่โหลดตอนเปิดแอปอีกต่อไป — เลื่อนไปโหลดตอนที่จำเป็น (เปิดแท็บ Codex, พิมพ์ค้นหา หรืออุ่นเงียบๆ หลังหน้าจอแรกแสดงผล)',
+      'ทุกอย่างยังทำงานเหมือนเดิม: การ์ด Today, คำแนะนำ Keyword ในแท็บอื่น และช่องค้นหาด้านบน จะอัปเดตให้เองเมื่อข้อมูลมาถึง (ระหว่างรอจะไม่ค้าง/ไม่พัง)',
+      'โหลดฟอนต์ตามธีม: ตอนบูตโหลดเฉพาะฟอนต์ของธีม Modern/Trust (Inter + JetBrains Mono); ฟอนต์ของธีม RawBlock จะโหลดเฉพาะเมื่อเลือกธีมนั้น',
+      'ลดขนาดภาพพื้นหลังที่ใหญ่เกินจำเป็น: ภาพ 4 (4K ~1.1MB → ~109KB) และภาพ 5 (~518KB → ~197KB) มีเวอร์ชันที่บีบอัดแล้ว ใช้แสดงผลแทน (ภาพต้นฉบับยังเก็บไว้) — ตัวเลือกพื้นหลังที่เคยบันทึกไว้ยังใช้ได้ปกติ',
+      'ไม่มีการแก้สูตร/คะแนน/คีย์ข้อมูล และไม่เปลี่ยนพฤติกรรมที่เห็นได้ของฟีเจอร์ใด — เป็นการปรับความเร็วล้วนๆ',
+    ],
+  },
   {
     version: '0.46',
     date: '2026-07-16',
@@ -14209,12 +14253,24 @@ async function loadCodex() {
   }
 }
 
+// patch 0.47 (boot perf): โหลด content-codex.json แบบ lazy — ไม่บล็อก first paint ของแท็บ Today/Gear/Market
+// โหลดครั้งเดียว (กันเรียกซ้ำด้วย promise ที่แชร์กัน); trigger = เปิดแท็บ / deep link / ค้นหา / warmup ตอน idle
+let codexLoadPromise = null;
+function ensureCodexLoaded() {
+  if (!codexLoadPromise) codexLoadPromise = Promise.resolve(loadCodex());
+  return codexLoadPromise;
+}
+
 (function initCodex() {
   const search = document.getElementById('codexSearch');
   if (search) search.addEventListener('input', () => { codexSearchText = search.value.trim(); renderCodex(); });
   const refresh = document.getElementById('codexRefreshBtn');
-  if (refresh) refresh.addEventListener('click', loadCodex);
-  loadCodex();
+  // Refresh = โหลดใหม่จริง (bypass guard) + mark ว่าเริ่มโหลดแล้วเพื่อไม่ให้ warmup ยิงซ้ำ
+  if (refresh) refresh.addEventListener('click', () => { codexLoadPromise = Promise.resolve(loadCodex()); });
+  const btn = document.getElementById('tabBtnCodex');
+  if (btn) btn.addEventListener('click', ensureCodexLoaded);
+  // ถ้าแท็บเริ่มต้นคือ Content Codex ต้องโหลดทันที (switchTab(activeTab) รันไปก่อนถึงบรรทัดนี้แล้ว)
+  if (activeTab === 'codex') ensureCodexLoaded();
 })();
 
 /* ==================== Keyword Codex ====================
@@ -14653,10 +14709,20 @@ async function loadKwc() {
   }
 }
 
+// patch 0.47 (boot perf): โหลด keyword-codex.json แบบ lazy เช่นเดียวกับ Content Codex
+let kwcLoadPromise = null;
+function ensureKwcLoaded() {
+  if (!kwcLoadPromise) kwcLoadPromise = Promise.resolve(loadKwc());
+  return kwcLoadPromise;
+}
+
 (function initKwc() {
   const search = document.getElementById('kwcSearch');
   if (search) search.addEventListener('input', () => { kwcSearchText = search.value.trim(); renderKwc(); });
-  loadKwc();
+  const btn = document.getElementById('tabBtnKeyword');
+  if (btn) btn.addEventListener('click', ensureKwcLoaded);
+  // แท็บเริ่มต้นเป็น Keyword Codex → โหลดทันที
+  if (activeTab === 'keyword') ensureKwcLoaded();
 })();
 
 /* ==================== Today Dashboard (patch 0.36) ====================
@@ -14887,6 +14953,8 @@ function todayCardHead(card, title, opts) {
 
 // เปิด Content Codex ที่ entry ที่เลือก (แบบเดียวกับ openKeywordCodexEntry ฝั่ง keyword)
 function todayOpenCodexEntry(id) {
+  // patch 0.47: content-codex.json อาจยังไม่โหลด (lazy) — สั่งโหลด; loadCodex จะ renderCodex ให้เองเมื่อข้อมูลพร้อม (คง codexSelectedId ไว้)
+  if (typeof ensureCodexLoaded === 'function') ensureCodexLoaded();
   switchTab('codex');
   codexFilter = 'all';
   codexSearchText = '';
@@ -16544,10 +16612,21 @@ function renderToday() {
     if (rows[active].scrollIntoView) rows[active].scrollIntoView({ block: 'nearest' });
   }
 
-  input.addEventListener('input', () => { results = buildResults(input.value); renderResults(); });
+  // patch 0.47: โฟกัส/พิมพ์ในช่องค้นหา = กำลังจะค้นหา → สั่งโหลด Codex JSON แบบ lazy
+  // (ผล Content/Keyword จะโผล่เมื่อข้อมูลมาถึง ผ่าน rerunIfOpen ด้านล่าง)
+  const warmSearchData = () => {
+    try { if (typeof ensureCodexLoaded === 'function') ensureCodexLoaded(); } catch (e) { /* ยังไม่พร้อม */ }
+    try { if (typeof ensureKwcLoaded === 'function') ensureKwcLoaded(); } catch (e) { /* ยังไม่พร้อม */ }
+  };
+  input.addEventListener('input', () => { warmSearchData(); results = buildResults(input.value); renderResults(); });
   input.addEventListener('focus', () => {
+    warmSearchData();
     if (input.value.trim()) { results = buildResults(input.value); renderResults(); }
   });
+  // ข้อมูล Codex โหลดเสร็จระหว่างที่ dropdown เปิดอยู่ → สร้างผลใหม่ให้เจอ entry ที่เพิ่งมาถึง
+  const rerunIfOpen = () => { if (!box.hidden && input.value.trim()) { results = buildResults(input.value); renderResults(); } };
+  document.addEventListener('poeassist:codexloaded', rerunIfOpen);
+  document.addEventListener('poeassist:keywordsloaded', rerunIfOpen);
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       // Esc ครั้งแรกปิด dropdown — ครั้งถัดไปล้างคำค้น (ไม่ปล่อยทะลุไปปิด modal อื่น)
@@ -16568,6 +16647,23 @@ function renderToday() {
     }
   });
   document.addEventListener('click', (e) => { if (!wrap.contains(e.target)) closeResults(); });
+})();
+
+/* ==================== Codex background warmup (patch 0.47, boot perf) ====================
+   หลัง first paint (event 'load') + ตอน browser ว่าง (requestIdleCallback) ค่อยอุ่นข้อมูล
+   Content/Keyword Codex แบบเงียบๆ เพื่อไม่ให้บล็อกการเปิดแอปครั้งแรก แต่ยังพร้อมใช้เร็ว
+   (เปิดแท็บ / ค้นหา / deep link ก็สั่งโหลดทันทีอยู่แล้ว — อันนี้เป็น fallback เชิงรุก) */
+(function warmupCodexData() {
+  const warm = () => {
+    try { if (typeof ensureCodexLoaded === 'function') ensureCodexLoaded(); } catch (e) { /* ข้าม */ }
+    try { if (typeof ensureKwcLoaded === 'function') ensureKwcLoaded(); } catch (e) { /* ข้าม */ }
+  };
+  const schedule = () => {
+    if (typeof requestIdleCallback === 'function') requestIdleCallback(warm, { timeout: 3000 });
+    else setTimeout(warm, 1200);
+  };
+  if (document.readyState === 'complete') schedule();
+  else window.addEventListener('load', schedule, { once: true });
 })();
 </script>
 </body>
