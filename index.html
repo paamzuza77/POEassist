@@ -177,6 +177,7 @@
   html[data-theme="trust-blue-pay"] .link-open,
   html[data-theme="trust-blue-pay"] .stash-manual,
   html[data-theme="trust-blue-pay"] .reco-card,
+  html[data-theme="trust-blue-pay"] .radar-hidden-note,
   html[data-theme="trust-blue-pay"] .score-bar,
   html[data-theme="trust-blue-pay"] .score-badge,
   html[data-theme="trust-blue-pay"] .radar-panel,
@@ -198,10 +199,7 @@
   html[data-theme="trust-blue-pay"] .farm-tracker,
   html[data-theme="trust-blue-pay"] .frs-cell,
   html[data-theme="trust-blue-pay"] .add-link-btn,
-  html[data-theme="trust-blue-pay"] .divine-metric-card,
-  html[data-theme="trust-blue-pay"] .divine-chart-wrap,
   html[data-theme="trust-blue-pay"] .divine-table-wrap,
-  html[data-theme="trust-blue-pay"] .divine-disclaimer,
   html[data-theme="trust-blue-pay"] .shop-summary .summary-group,
   html[data-theme="trust-blue-pay"] .shop-toolbar,
   html[data-theme="trust-blue-pay"] .shop-filter,
@@ -251,8 +249,8 @@
   html[data-theme="trust-blue-pay"] .filter-chip,
   html[data-theme="trust-blue-pay"] .mech-tag,
   html[data-theme="trust-blue-pay"] .bought-badge,
-  html[data-theme="trust-blue-pay"] .divine-reco-badge,
   html[data-theme="trust-blue-pay"] .reco-top-badge,
+  html[data-theme="trust-blue-pay"] .conf-badge,
   html[data-theme="trust-blue-pay"] .codex-dev-badge,
   html[data-theme="trust-blue-pay"] .codex-type-chip,
   html[data-theme="trust-blue-pay"] .codex-status-chip,
@@ -291,7 +289,6 @@
   html[data-theme="trust-blue-pay"] .stat-radar,
   html[data-theme="trust-blue-pay"] .aug-calc,
   html[data-theme="trust-blue-pay"] .farm-tracker,
-  html[data-theme="trust-blue-pay"] .divine-metric-card,
   html[data-theme="trust-blue-pay"] .codex-list-item,
   html[data-theme="trust-blue-pay"] .codex-detail-panel,
   html[data-theme="trust-blue-pay"] .kwc-compare-card,
@@ -316,7 +313,6 @@
   html[data-theme="trust-blue-pay"][data-mode="dark"] .farm-run-summary,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .farm-econ,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .farm-tracker,
-  html[data-theme="trust-blue-pay"][data-mode="dark"] .divine-metric-card,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .codex-list-item,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .codex-detail-panel,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .kwc-compare-card,
@@ -2640,83 +2636,12 @@
   .settings-danger { display: flex; flex-direction: column; gap: 8px; }
   .settings-danger .ocr-btn.danger { text-align: left; }
 
-  /* ---------- Divine Market ---------- */
-  .divine-disclaimer {
-    font-size: 11.5px;
-    color: var(--text-dim);
-    background: var(--void);
-    border: 2px dashed var(--border);
-    border-radius: 0;
-    padding: 10px 14px;
-    margin-bottom: 16px;
-    line-height: 1.6;
-  }
+  /* ---------- Divine utilities + shared table (แท็บ Divine Market ถูกถอดออกใน 0.39 —
+       คลาสด้านล่างนี้ยังถูกใช้ร่วมทั้งแอป: .divine-up/down/warn เป็น utility สี,
+       .divine-table* ใช้โดย Content Codex drop/version tables) ---------- */
   .divine-up { color: var(--ok); }
   .divine-down { color: var(--fire); }
   .divine-warn { color: var(--lightning); }
-  .divine-metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  .divine-metric-card {
-    background: var(--void);
-    border: 2px solid var(--border);
-    border-radius: 0;
-    padding: 10px 12px;
-    min-width: 0;
-  }
-  .divine-metric-label {
-    font-family: var(--font-mono);
-    font-size: 9.5px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-  .divine-metric-value { font-size: 15px; font-weight: 700; color: var(--text); font-family: var(--font-mono); }
-  .divine-chart-wrap { position: relative; margin-bottom: 10px; border: 3px solid var(--border); background: var(--void); padding: 8px; }
-  .divine-chart-svg { width: 100%; height: 260px; display: block; }
-  .divine-tooltip {
-    position: absolute;
-    z-index: 5;
-    background: var(--text);
-    border: none;
-    border-radius: 0;
-    padding: 8px 12px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    line-height: 1.6;
-    color: var(--void);
-    pointer-events: none;
-    white-space: nowrap;
-    max-width: 260px;
-  }
-  .divine-pt { cursor: pointer; }
-  .divine-legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-bottom: 18px;
-  }
-  .divine-legend span { display: flex; align-items: center; gap: 5px; }
-  .divine-legend i { width: 10px; height: 10px; border-radius: 0; display: inline-block; }
-  .divine-legend i.forecast { background: none; border: 1px dashed var(--cold); }
-  .divine-reco-badge {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 3px 12px;
-    border-radius: 0;
-    border: 2px solid var(--border);
-    color: var(--text);
-  }
   .divine-table-wrap { overflow-x: auto; margin-bottom: 18px; border: 2px solid var(--border); }
   .divine-table { border-collapse: collapse; width: 100%; font-size: 12px; }
   .divine-table th, .divine-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap; }
@@ -2724,8 +2649,6 @@
   .divine-table th { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--void); background: var(--text); }
   .divine-table tr.current-phase { background: var(--panel-sunken); }
   .divine-table td.divine-td-wrap { white-space: normal; min-width: 160px; }
-  .divine-form-error { font-size: 11px; color: var(--fire); flex-basis: 100%; min-height: 14px; }
-  .divine-form-note { font-size: 10.5px; color: var(--text-dim); }
 
   @media (max-width: 640px) {
     .farm-grid { grid-template-columns: 1fr; }
@@ -3436,7 +3359,7 @@
   /* ==================== Settings redesign + display prefs (patch 0.27) ====================
      - ขนาดตัวอักษรทั้งเว็บ: zoom บน <body> ตาม data-font-scale บน <html> (ตั้งไว้ตั้งแต่ <head> กัน flash)
        ใช้ zoom (ไม่ใช่ font-size) เพราะ CSS ทั้งไฟล์เป็น px — สัดส่วน layout/ตาราง/ไอคอนคงเดิมทั้งหมด
-       โค้ด JS ที่วางตำแหน่งด้วย getBoundingClientRect ต้องหารด้วย uiZoom() (ดู numpad / ac-tip / divine tooltip)
+       โค้ด JS ที่วางตำแหน่งด้วย getBoundingClientRect ต้องหารด้วย uiZoom() (ดู numpad / ac-tip)
      - Settings modal: layout 2 ฝั่ง (เมนูหมวดซ้าย / แผงขวา) — จอแคบเมนูกลายเป็นแถวแนวนอน */
   html[data-font-scale="small"] body { zoom: 0.92; }
   html[data-font-scale="large"] body { zoom: 1.08; }
@@ -4054,6 +3977,69 @@
   .today-tl-tag.duetoday { color: var(--lightning); border-color: var(--lightning); }
   .today-tl-tag.buy { color: var(--gold); border-color: var(--gold); }
   .today-tl-tag.farm { color: var(--ok); border-color: var(--ok); }
+
+  /* ==================== Market Radar V2 presentation (patch 0.39) ====================
+     กลุ่มคำแนะนำ + confidence badge + score breakdown + โน้ตการ์ดที่ถูกซ่อน
+     ทั้งหมดเป็นการนำเสนอเท่านั้น — สูตร Farm Score เดิมไม่เปลี่ยน */
+  .radar-group-title {
+    font-family: var(--font-head);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    margin: 18px 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 2px solid var(--border);
+  }
+  /* ค่าหลักแบบป้ายสถานะ (No signal / Low confidence) — เล็กกว่าเลข % และเป็นสี dim ไม่ให้เด่นเกิน */
+  .score-badge.score-badge-label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; }
+  .reco-signal-note { font-size: 11.5px; color: var(--text-muted); margin: 0 0 6px; line-height: 1.5; }
+  .reco-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+    gap: 4px 10px;
+    border-top: 1px solid var(--border-soft, var(--border));
+    padding-top: 7px;
+    margin-bottom: 8px;
+  }
+  .reco-breakdown .bd-row { min-width: 0; }
+  .reco-breakdown .bd-k {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .reco-breakdown .bd-v { display: block; font-family: var(--font-mono); font-size: 11.5px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .conf-badge {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: 2px solid var(--border);
+    padding: 2px 7px;
+    white-space: nowrap;
+  }
+  .conf-badge.conf-high { color: var(--ok); border-color: var(--ok); }
+  .conf-badge.conf-med { color: var(--text); }
+  .conf-badge.conf-low { color: var(--lightning); border-color: var(--lightning); }
+  .conf-badge.conf-none { color: var(--text-dim); border-style: dashed; }
+  .radar-hidden-note {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    padding: 9px 12px;
+    border: 2px dashed var(--border);
+    font-size: 11.5px;
+    color: var(--text-dim);
+  }
+  .rf-nosignal-toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-muted); cursor: pointer; }
+  .rf-nosignal-toggle input { cursor: pointer; }
 </style>
 <!-- Modularization Phase 1 (patch 0.34): helper CSS ที่แยกออกจาก inline <style> ด้านบน
      วางหลัง </style> เพื่อคงลำดับ cascade เดิม (rule พื้นฐาน specificity ต่ำ — override ของ Trust theme ชนะด้วย specificity อยู่แล้ว) -->
@@ -4082,7 +4068,6 @@
         <button class="nav-item" type="button" id="tabBtnToday" role="tab"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 2h12v3H2zM2 6h5v8H2zM8.5 6H14v3H8.5zM8.5 10.5H14V14H8.5z"/></svg></span>Today</button>
         <button class="nav-item" type="button" id="tabBtnHome" role="tab"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 7 8 1l6 6v8H9v-4H7v4H2z"/></svg></span>Exile Hub</button>
         <button class="nav-item" type="button" id="tabBtnRadar" role="tab"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1 1h6v2H3v4H1zM9 1h6v6h-2V3H9zM1 9h2v4h4v2H1zM13 9h2v6H9v-2h4zM6 6h4v4H6z"/></svg></span>Market Radar</button>
-        <button class="nav-item" type="button" id="tabBtnDivine" role="tab"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l7 7-7 7-7-7z"/></svg></span>Divine Market</button>
       </div>
       <div class="nav-group">
         <div class="nav-group-label">Planning</div>
@@ -4216,6 +4201,8 @@
         </label>
         <button class="ocr-btn primary" type="button" id="rfApplyBtn">Apply filters</button>
         <button class="ocr-btn" type="button" id="rfResetBtn">Reset filters</button>
+        <!-- patch 0.39: การ์ดกลุ่ม No Signal ซ่อนโดย default — checkbox นี้เปิดดูได้ (จำค่าใน radarFilter) -->
+        <label class="rf-nosignal-toggle"><input type="checkbox" id="rfShowNoSignal"> Show "No Signal" cards</label>
         <span class="rf-warn" id="rfWarn" hidden></span>
         <span class="rf-count" id="rfCount"></span>
         <p class="rf-note">Only items worth at least this amount will be used to calculate farm recommendations.
@@ -4497,77 +4484,6 @@
     </div><!-- /shop-layout -->
     <datalist id="itemTypeList"></datalist>
   </div><!-- /pageShop -->
-
-  <div id="pageDivine" hidden>
-    <div class="hub-hero">
-      <h2>Divine Market</h2>
-      <p class="hub-tagline">POE2 Divine Market Analytics</p>
-      <p class="hub-desc">วิเคราะห์ราคา Divine Orb เป็นเงินบาทสำหรับ POE2 League Economy</p>
-    </div>
-
-    <div class="divine-disclaimer">
-      ⚠ ข้อมูลเริ่มต้นเป็นชุดข้อมูลตัวอย่าง (mock) สำหรับสาธิตการวิเคราะห์เท่านั้น ยังไม่ได้ต่อ API ราคาจริง — ใช้สำหรับติดตาม/วิเคราะห์ตลาดย้อนหลังเพื่อประกอบการตัดสินใจส่วนตัวเท่านั้น ไม่ใช่บริการซื้อขายเงินจริง
-    </div>
-
-    <div class="hub-grid">
-      <div class="hub-card">
-        <div class="hub-card-head">
-          <span class="hub-card-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13 1h2v2l-6.5 6.5 1 1-2 2-1-1L3 15H1v-2l3.5-3.5-1-1 2-2 1 1z"/></svg></span>
-          <h3>League Status</h3>
-          <span class="radar-badge missing" id="divineLeagueBadge">Loading…</span>
-        </div>
-        <div id="divineLeagueBody"><div class="hub-missing">Loading league info…</div></div>
-      </div>
-
-      <div class="hub-card">
-        <div class="hub-card-head">
-          <span class="hub-card-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><rect x="2" y="9" width="3" height="6"/><rect x="6.5" y="5" width="3" height="10"/><rect x="11" y="1" width="3" height="14"/></svg></span>
-          <h3>Market Health Score</h3>
-        </div>
-        <div id="divineHealthBody"><div class="hub-missing">กำลังคำนวณ…</div></div>
-      </div>
-    </div>
-
-    <h2 class="hub-section-title">Summary</h2>
-    <div class="divine-metrics-grid" id="divineMetricsGrid"></div>
-
-    <h2 class="hub-section-title">Divine Price Chart (THB)</h2>
-    <div class="divine-chart-wrap" id="divineChartWrap"></div>
-
-    <h2 class="hub-section-title">Market Recommendation</h2>
-    <div class="reco-card divine-reco-card" id="divineRecoCard"></div>
-
-    <h2 class="hub-section-title">What Changed Today?</h2>
-    <div id="divineWhatChanged" class="hub-missing"></div>
-
-    <!-- ฟอร์มกรอกราคาย้ายมาไว้หลังส่วนวิเคราะห์ — ดูข้อสรุปก่อน แล้วค่อยเพิ่มข้อมูลวันใหม่ -->
-    <h2 class="hub-section-title">Add / Update Price Point</h2>
-    <form class="radar-filter" id="divineForm">
-      <label>Date
-        <input type="date" id="divineInputDate" required>
-      </label>
-      <label>League Day
-        <input type="number" id="divineInputDay" min="1" step="1" required>
-      </label>
-      <label>Price (THB)
-        <input type="number" id="divineInputPrice" min="0.01" step="0.01" required>
-      </label>
-      <button class="ocr-btn primary" type="submit">Save Price</button>
-      <span class="divine-form-error" id="divineFormError"></span>
-      <p class="rf-note">วันที่และ League Day ถูกเติมให้อัตโนมัติ (แก้ได้) — ข้อมูลที่เพิ่มในหน้านี้เป็นข้อมูลชั่วคราวใน session นี้ ยังไม่ได้บันทึกลงฐานข้อมูล</p>
-    </form>
-
-    <h2 class="hub-section-title">Market Phase Timeline</h2>
-    <div class="divine-table-wrap">
-      <table class="divine-table" id="divinePhaseTable"></table>
-    </div>
-
-    <h2 class="hub-section-title">Forecast</h2>
-    <div class="divine-table-wrap">
-      <table class="divine-table" id="divineForecastTable"></table>
-    </div>
-    <div class="divine-disclaimer">การคาดการณ์นี้อิงจากข้อมูลย้อนหลังเท่านั้น ไม่ใช่ราคาการันตีจริง ราคาจริงอาจเปลี่ยนจาก patch, meta build, league event, supply, demand หรือพฤติกรรมผู้เล่น</div>
-  </div><!-- /pageDivine -->
 
   <div id="pageCodex" hidden>
     <!-- ===== Content Codex — ฐานความรู้ drop ของ boss/content PoE2 =====
@@ -6257,16 +6173,16 @@ addCorners(document.querySelector('.totals-panel'));
 
 const TAB_KEY = 'poeAssist.activeTab.v1';
 // หมายเหตุ: internal id ยังเป็น farm/shop/forge เหมือนเดิม (ผูกกับ storage/startup tab) — เปลี่ยนแค่ชื่อที่แสดง
-const TAB_IDS = { today: 'pageToday', home: 'pageHome', radar: 'pageRadar', farm: 'pageFarm', forge: 'pageForge', shop: 'pageShop', divine: 'pageDivine', codex: 'pageCodex', keyword: 'pageKeyword' };
-const TAB_BTNS = { today: 'tabBtnToday', home: 'tabBtnHome', radar: 'tabBtnRadar', farm: 'tabBtnFarm', forge: 'tabBtnForge', shop: 'tabBtnShop', divine: 'tabBtnDivine', codex: 'tabBtnCodex', keyword: 'tabBtnKeyword' };
-const TAB_TITLES = { today: 'Today', home: 'Exile Hub', radar: 'Market Radar', farm: 'Farm Planner', forge: 'Resistance Checker', shop: 'Gear Planner', divine: 'Divine Market', codex: 'Content Codex', keyword: 'Keyword Codex' };
-const TAB_GROUPS = { today: 'Main', home: 'Main', radar: 'Main', divine: 'Main', farm: 'Planning', shop: 'Planning', forge: 'Tools', codex: 'Tools', keyword: 'Tools' };
+// Divine Market (divine/pageDivine) ถูกถอดออกใน patch 0.39 — แท็บเก่าที่ผู้ใช้บันทึกไว้ fallback เป็น today เอง (เช็ค !TAB_IDS[...] ด้านล่าง)
+const TAB_IDS = { today: 'pageToday', home: 'pageHome', radar: 'pageRadar', farm: 'pageFarm', forge: 'pageForge', shop: 'pageShop', codex: 'pageCodex', keyword: 'pageKeyword' };
+const TAB_BTNS = { today: 'tabBtnToday', home: 'tabBtnHome', radar: 'tabBtnRadar', farm: 'tabBtnFarm', forge: 'tabBtnForge', shop: 'tabBtnShop', codex: 'tabBtnCodex', keyword: 'tabBtnKeyword' };
+const TAB_TITLES = { today: 'Today', home: 'Exile Hub', radar: 'Market Radar', farm: 'Farm Planner', forge: 'Resistance Checker', shop: 'Gear Planner', codex: 'Content Codex', keyword: 'Keyword Codex' };
+const TAB_GROUPS = { today: 'Main', home: 'Main', radar: 'Main', farm: 'Planning', shop: 'Planning', forge: 'Tools', codex: 'Tools', keyword: 'Tools' };
 // คำอธิบายสั้นๆ ต่อแท็บ แสดงบน topbar (patch 0.35) — ข้อความล้วน อัปเดตใน switchTab
 const TAB_SUBTITLES = {
   today: 'Daily command view — status summary, next actions & todos',
   home: 'League status, stash sale watch & quick resources',
   radar: 'Hourly poe.ninja snapshot → what to farm now',
-  divine: 'Divine price analytics & phase timeline',
   farm: 'Plan farm strategies, track runs & profit',
   shop: 'Build shopping list, budget & trade links',
   forge: 'Resistance / stat check with OCR import',
@@ -6551,7 +6467,6 @@ const I18N = {
     'lang.note': 'ตอนนี้การแปลครอบคลุมหน้า Settings + Contact/Donate เป็นหลัก — เนื้อหาแท็บอื่นยังเป็นภาษาไทยตามเดิม (จะทยอยย้ายเข้าดิกชันนารีภายหลัง).',
     'fiat.label': 'สกุลเงินแสดงผล / Display currency',
     'fiat.note': 'มีผลกับยอดเงิน fiat ทุกจุด เช่นการ์ดเรท/งบใน Gear Planner และหน่วย fiat ใน Market Radar — หน่วยในเกม (Divine/Chaos/Exalted) ไม่เปลี่ยน.',
-    'fiat.divinenote': 'หมายเหตุ: แท็บ Divine Market เป็นข้อมูลตัวอย่างสกุล THB — ไม่ถูกแปลงตามสกุลเงินที่เลือก (ไม่มีเรทจริงให้แปลง จึงไม่เดาให้).',
     'fiat.rate.prefix': '1 Divine =',
     'fiat.rate.note': 'เรทกรอกเอง แยกจำต่อสกุลเงิน — เว็บนี้เป็น static site ไม่ดึงเรทอัตโนมัติ.',
     'fiat.unset': 'ยังไม่ตั้งเรทของสกุลเงินนี้ — ยอด fiat จะแสดงเป็น "—" จนกว่าจะกรอกเรท',
@@ -6798,7 +6713,6 @@ const I18N = {
     'lang.note': 'Translation currently covers the Settings window + Contact/Donate — other tabs remain in Thai for now (more strings will migrate into the dictionary gradually).',
     'fiat.label': 'Display currency',
     'fiat.note': 'Affects every fiat amount, e.g. the Gear Planner rate/budget lines and the Market Radar fiat unit — in-game currencies (Divine/Chaos/Exalted) are unchanged.',
-    'fiat.divinenote': 'Note: the Divine Market tab is THB-denominated sample data and is not converted to the selected currency (no real rate exists, so none is guessed).',
     'fiat.rate.prefix': '1 Divine =',
     'fiat.rate.note': 'Rates are user-entered and remembered per currency — this static site never fetches live exchange rates.',
     'fiat.unset': 'No rate saved for this currency yet — fiat amounts show "—" until you enter one',
@@ -7388,7 +7302,6 @@ function parseBackup(text) {
   });
   pgLang.appendChild(noteP('fiat.rate.note'));
   pgLang.appendChild(noteP('fiat.note'));
-  pgLang.appendChild(noteP('fiat.divinenote'));
 
   // ===== หมวด 3 · ข้อมูล / Backup =====
   const pgData = pages.data.page;
@@ -9068,6 +8981,19 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.39',
+    date: '2026-07-15',
+    notes: [
+      'ถอดแท็บ Divine Market ออกจากแอปทั้งหมด — เป็นข้อมูลตัวอย่าง (mock) มาตลอดและไม่ได้ต่อราคาจริง; ใครที่ตั้งแท็บเริ่มต้น/แท็บล่าสุดไว้ที่ Divine จะถูกพาไปหน้า Today แทนโดยอัตโนมัติ (ข้อมูลอื่นไม่ถูกแตะ)',
+      'Market Radar V2: การ์ดที่ไม่มีหลักฐานราคาไม่โชว์ "0%" โตๆ อีกแล้ว — แสดงป้ายสถานะแทน (No signal / Insufficient data / Low confidence) เพราะ 0 หมายถึง "ยังไม่มีข้อมูล" ไม่ใช่ "content นี้ไม่มีค่า"',
+      'Market Radar: การ์ดคำแนะนำถูกจัดกลุ่มใหม่เป็น ★ Top Pick / 📈 Rising / 🪙 Stable Income / 👁 Watchlist / ⋯ No Signal — พร้อมคำอธิบายสั้นๆ ว่าทำไมการ์ดอยู่กลุ่มนั้น',
+      'Market Radar: เพิ่ม Confidence badge ต่อการ์ด (High / Medium / Low / No signal) จากกติกาโปร่งใส: จำนวนไอเทมหลักฐาน + mapping confidence + ความสด snapshot (hover เพื่อดูเหตุผล)',
+      'Market Radar: เพิ่ม score breakdown ในการ์ด — Profit / Trend / Coverage / Risk / Confidence จากค่าที่คำนวณอยู่แล้ว (ไม่มีตัวเลขปลอม ค่าที่ไม่มีแสดง "—") — สูตร Farm Score เดิมไม่เปลี่ยน',
+      'Market Radar: การ์ดกลุ่ม No Signal ถูกซ่อนโดย default เพื่อลด noise — มีโน้ตบอกจำนวนที่ซ่อน + checkbox "Show No Signal cards" ในแถวฟิลเตอร์ (จำค่าไว้ให้)',
+      'Today: บรรทัด Farm Score ของการ์ด Market Radar แนบระดับ Confidence ด้วยกติกาเดียวกัน',
+    ],
+  },
   {
     version: '0.38',
     date: '2026-07-15',
@@ -10887,10 +10813,12 @@ let radarFilter = (function loadRadarFilter() {
       return {
         min: isNaN(min) || min < 0 ? 1 : min,
         unit: RADAR_UNITS.includes(raw.unit) ? raw.unit : 'Divine',
+        // additive (patch 0.39): แสดงการ์ดกลุ่ม No Signal ไหม — ค่าเก่าที่ไม่มี field นี้ = false (ซ่อน)
+        showNoSignal: raw.showNoSignal === true,
       };
     }
   } catch (e) { /* malformed storage */ }
-  return { min: 1, unit: 'Divine' };
+  return { min: 1, unit: 'Divine', showNoSignal: false };
 })();
 
 // เรทต่อ 1 Divine เช่น { Exalted: 60, Chaos: 900, THB: 35 } — ค่าที่ผู้ใช้กรอกเองเท่านั้น
@@ -10971,6 +10899,7 @@ function buildRadarRecos(items, allBuckets) {
         risk: '',
         sourceUrls: [],
         hasEvidence: false,
+        itemCount: 0, // additive display field (patch 0.39)
       });
       return;
     }
@@ -10995,6 +10924,13 @@ function buildRadarRecos(items, allBuckets) {
       risk: lowLiq > list.length / 2 ? 'ไอเทมส่วนใหญ่สภาพคล่องต่ำ — ราคา spike อาจย่อ' : '',
       sourceUrls: [...new Set(list.map(x => x.sourceUrl).filter(Boolean))].slice(0, 2),
       hasEvidence: true,
+      // additive display fields (patch 0.39) — ค่าที่คำนวณอยู่แล้วด้านบน แค่แนบมากับการ์ด
+      // เพื่อใช้ทำ score breakdown / confidence / จัดกลุ่ม — "ไม่" กระทบสูตร score เดิม
+      itemCount: list.length,
+      avgTrend: avgTrend,
+      avgValue: avgValue,
+      lowLiqCount: lowLiq,
+      trendKnownCount: list.filter(x => typeof x.trend7d === 'number').length,
     });
   });
   recos.sort((a, b) => {
@@ -11003,6 +10939,75 @@ function buildRadarRecos(items, allBuckets) {
   });
   return recos;
 }
+
+/* ---- Radar V2 presentation helpers (patch 0.39) ----
+   ทั้งหมดเป็น "การนำเสนอ" เท่านั้น — สูตร Farm Score เดิมใน radarItemScore/buildRadarRecos ไม่ถูกแตะ
+   เป้าหมาย: การ์ดที่คะแนน 0 ต้องไม่โชว์ "0%" โตๆ เหมือนเป็นคำแนะนำ — บอกสถานะจริงแทน
+   (No signal / Insufficient data / Stable / Low confidence) + confidence + จัดกลุ่ม */
+
+function radarSnapshotAgeHours() {
+  const updated = radarData && radarData.updatedAt ? new Date(radarData.updatedAt) : null;
+  if (!updated || isNaN(updated)) return null;
+  return (Date.now() - updated.getTime()) / 3600000;
+}
+
+/* Confidence ต่อการ์ด — กติกาโปร่งใสจากข้อมูลที่มีอยู่แล้วเท่านั้น (เอกสารเต็มใน EDIT_GUIDE.md):
+   - ไม่มี evidence (ไม่มีไอเทมผ่านเกณฑ์)                → No signal (missing data)
+   - itemCount ≥ 3 และ mapping confidence ≥ 0.8 และ snapshot สด → High
+   - itemCount < 2 หรือ mapping confidence < 0.6 หรือ snapshot เก่า/ไม่รู้อายุ → Low
+   - ที่เหลือ → Medium */
+function radarConfidenceInfo(rc) {
+  if (!rc || rc.hasEvidence === false) {
+    return { level: 'none', label: 'No signal', cls: 'conf-none', why: 'ไม่มีไอเทมผ่านเกณฑ์ราคาใน snapshot นี้' };
+  }
+  const ageH = radarSnapshotAgeHours();
+  const fresh = ageH !== null && ageH <= RADAR_FRESH_HOURS;
+  const conf = typeof rc.confidence === 'number' ? rc.confidence : 0;
+  const n = typeof rc.itemCount === 'number' ? rc.itemCount : 0;
+  if (n >= 3 && conf >= 0.8 && fresh) {
+    return { level: 'high', label: 'High', cls: 'conf-high', why: n + ' items · mapping ' + Math.round(conf * 100) + '% · snapshot fresh' };
+  }
+  if (n < 2 || conf < 0.6 || !fresh) {
+    const why = [];
+    if (n < 2) why.push('มีหลักฐานแค่ ' + n + ' item');
+    if (conf < 0.6) why.push('mapping confidence ต่ำ (' + Math.round(conf * 100) + '%)');
+    if (!fresh) why.push('snapshot เก่า');
+    return { level: 'low', label: 'Low', cls: 'conf-low', why: why.join(' · ') };
+  }
+  return { level: 'medium', label: 'Medium', cls: 'conf-med', why: n + ' items · mapping ' + Math.round(conf * 100) + '%' };
+}
+
+/* กลุ่ม/สัญญาณต่อการ์ด — การ์ดหนึ่งใบอยู่กลุ่มหลักกลุ่มเดียว:
+   - TOP PICK (ใบแรกที่มี evidence + score > 0)     → top
+   - ไม่มี evidence                                  → nosignal ("No signal" ไม่ใช่ "ไม่มีค่า")
+   - มี evidence แต่ score ปัดเป็น 0                 → watch (Low confidence)
+   - เทรนด์เฉลี่ยไอเทมท็อป ≥ +5%                     → rising
+   - เทรนด์เฉลี่ย ≤ −5%                              → watch (ราคากำลังลง)
+   - ที่เหลือ (−5%..+5%)                             → stable (ราคานิ่ง = รายได้สม่ำเสมอ ไม่ใช่ศูนย์) */
+function radarSignalInfo(rc, isTopPick) {
+  if (!rc || rc.hasEvidence === false) {
+    return { group: 'nosignal', label: 'No signal', sub: 'INSUFFICIENT DATA',
+      note: 'ไม่มีไอเทมราคาผ่านเกณฑ์ใน snapshot ปัจจุบัน — ไม่ได้แปลว่า content นี้ไม่มีค่า แค่ยังไม่มีหลักฐานราคา' };
+  }
+  if (isTopPick) return { group: 'top', label: null, sub: 'FARM SCORE', note: '' };
+  const trend = typeof rc.avgTrend === 'number' ? rc.avgTrend : 0;
+  if (!(rc.score > 0)) {
+    return { group: 'watch', label: 'Low confidence', sub: 'WEAK SIGNAL',
+      note: 'มีหลักฐานราคาแต่สัญญาณอ่อนจนคะแนนปัดเป็น 0 — จับตาไว้ก่อน' };
+  }
+  if (trend >= 5) return { group: 'rising', label: null, sub: 'FARM SCORE', note: 'ราคาไอเทมท็อปกำลังขึ้น (+' + trend.toFixed(1) + '% 7d)' };
+  if (trend <= -5) return { group: 'watch', label: null, sub: 'FARM SCORE', note: 'ราคาไอเทมท็อปกำลังลง (' + trend.toFixed(1) + '% 7d) — จับตาก่อนลงแรง' };
+  return { group: 'stable', label: null, sub: 'FARM SCORE', note: 'ราคาแทบไม่ขยับใน 7 วัน (' + (trend >= 0 ? '+' : '') + trend.toFixed(1) + '%) — รายได้ค่อนข้างนิ่ง' };
+}
+
+const RADAR_GROUP_META = {
+  top: { title: '★ Top Pick', desc: 'คอนเทนต์ที่หลักฐานตลาดสนับสนุนแรงที่สุดตอนนี้' },
+  rising: { title: '📈 Rising', desc: 'ราคาไอเทมหลักกำลังขึ้น' },
+  stable: { title: '🪙 Stable Income', desc: 'ราคานิ่ง — ฟาร์มได้รายได้สม่ำเสมอ' },
+  watch: { title: '👁 Watchlist', desc: 'สัญญาณอ่อนหรือราคากำลังลง — จับตาไว้' },
+  nosignal: { title: '⋯ No Signal / Needs Data', desc: 'ยังไม่มีหลักฐานราคาใน snapshot นี้ — ไม่ใช่ว่าไม่มีค่า' },
+};
+const RADAR_GROUP_ORDER = ['top', 'rising', 'stable', 'watch', 'nosignal'];
 
 function radarSetStatus(kind, text) {
   const badge = document.getElementById('radarStatus');
@@ -11151,14 +11156,21 @@ function renderRadar(data) {
         body: 'snapshot รอบนี้ไม่มีไอเทมที่ผูกกับ content bucket ใดเลย — ลองรีเฟรชข้อมูลตลาด',
       }));
   } else {
-    const grid = document.createElement('div');
-    grid.className = 'reco-grid';
     // การ์ดอันดับ 1 (ที่มี evidence + คะแนน > 0) ติดป้าย TOP PICK ให้เห็นคำตอบทันทีว่าควรฟาร์มอะไร
     const topKey = recos[0] && recos[0].hasEvidence && recos[0].score > 0 ? recos[0].contentKey : null;
+    // จัดกลุ่มการนำเสนอ (patch 0.39) — การ์ดละกลุ่มเดียว ลำดับในกลุ่มคงตามลำดับ recos เดิม
+    const groupsMap = { top: [], rising: [], stable: [], watch: [], nosignal: [] };
     recos.forEach(rc => {
+      const isTop = topKey !== null && rc.contentKey === topKey;
+      const sig = radarSignalInfo(rc, isTop);
+      groupsMap[sig.group].push({ rc, sig, isTop });
+    });
+    // การ์ด No Signal ถูกซ่อนโดย default (ลด noise) — โชว์โน้ตนับจำนวน + ปุ่มแสดงเสมอ
+    const hiddenNoSignal = radarFilter.showNoSignal ? 0 : groupsMap.nosignal.length;
+
+    const buildCard = (rc, sig, isTop) => {
       const cardEl = document.createElement('div');
-      cardEl.className = 'reco-card' + (rc.hasEvidence === false ? ' dimmed' : '')
-        + (topKey !== null && rc.contentKey === topKey ? ' top-pick' : '');
+      cardEl.className = 'reco-card' + (rc.hasEvidence === false ? ' dimmed' : '') + (isTop ? ' top-pick' : '');
 
       const headEl = document.createElement('div');
       headEl.className = 'reco-head';
@@ -11183,18 +11195,21 @@ function renderRadar(data) {
       nm.className = 'reco-name';
       nm.textContent = rc.content || '?';
       headEl.appendChild(nm);
-      if (topKey !== null && rc.contentKey === topKey) {
+      if (isTop) {
         const tp = document.createElement('span');
         tp.className = 'reco-top-badge';
         tp.textContent = '★ TOP PICK';
         headEl.appendChild(tp);
       }
+      // ค่าหลักของการ์ด (patch 0.39): คะแนน > 0 → "N%" / คะแนน 0 หรือไม่มีสัญญาณ → ป้ายสถานะ
+      // ("No signal"/"Low confidence") — ห้ามโชว์ "0%" โตๆ เพราะอ่านเหมือนคำแนะนำฟาร์มที่ไร้ค่า
       const score = document.createElement('span');
-      score.className = 'score-badge';
       const sVal = typeof rc.score === 'number' ? Math.round(rc.score) : null;
-      score.textContent = sVal === null ? '—' : sVal + '%';
+      const showLabel = sig.label !== null && sig.label !== undefined;
+      score.className = 'score-badge' + (showLabel ? ' score-badge-label' : '');
+      score.textContent = showLabel ? sig.label : (sVal === null ? '—' : sVal + '%');
       const sLabel = document.createElement('small');
-      sLabel.textContent = 'FARM SCORE';
+      sLabel.textContent = showLabel ? sig.sub : 'FARM SCORE';
       score.appendChild(sLabel);
       headEl.appendChild(score);
       cardEl.appendChild(headEl);
@@ -11207,6 +11222,14 @@ function renderRadar(data) {
       bar.appendChild(fill);
       cardEl.appendChild(bar);
 
+      // "ทำไมการ์ดนี้อยู่กลุ่มนี้" (patch 0.39) — คำอธิบายสัญญาณสั้นๆ โปร่งใสจากข้อมูลเดิม
+      if (sig.note) {
+        const sn = document.createElement('p');
+        sn.className = 'reco-signal-note';
+        sn.textContent = sig.note;
+        cardEl.appendChild(sn);
+      }
+
       if (Array.isArray(rc.reason) && rc.reason.length) {
         const ul = document.createElement('ul');
         ul.className = 'reason-list';
@@ -11216,12 +11239,42 @@ function renderRadar(data) {
           ul.appendChild(li);
         });
         cardEl.appendChild(ul);
-      } else if (rc.status) {
+      } else if (rc.status && rc.hasEvidence === false) {
+        // สถานะดิบจาก snapshot (เช่น "No qualifying 1D+ items") — เก็บไว้เป็นบรรทัดรองแบบ muted
         const st = document.createElement('p');
         st.className = 'rf-note';
         st.style.margin = '4px 0';
         st.textContent = rc.status;
         cardEl.appendChild(st);
+      }
+
+      // Score breakdown (patch 0.39) — เฉพาะการ์ดที่มี evidence และใช้แค่ค่าที่คำนวณอยู่แล้ว
+      // (avgValue/avgTrend/itemCount/lowLiq/risk/confidence) — ไม่มีตัวเลขใหม่ ไม่มี fake precision
+      if (rc.hasEvidence) {
+        const confInfo = radarConfidenceInfo(rc);
+        const bd = document.createElement('div');
+        bd.className = 'reco-breakdown';
+        const bdRow = (k, v, title) => {
+          const row = document.createElement('div');
+          row.className = 'bd-row';
+          const kEl = document.createElement('span');
+          kEl.className = 'bd-k';
+          kEl.textContent = k;
+          const vEl = document.createElement('span');
+          vEl.className = 'bd-v';
+          vEl.textContent = v;
+          if (title) row.title = title;
+          row.appendChild(kEl);
+          row.appendChild(vEl);
+          bd.appendChild(row);
+        };
+        bdRow('Profit', typeof rc.avgValue === 'number' ? rc.avgValue.toFixed(2) + ' Div' : '—', 'มูลค่าเฉลี่ยไอเทมท็อป (จาก snapshot)');
+        bdRow('Trend', typeof rc.avgTrend === 'number' ? (rc.avgTrend >= 0 ? '+' : '') + rc.avgTrend.toFixed(1) + '% 7d' : '—', 'เทรนด์ราคาเฉลี่ยไอเทมท็อป 7 วัน');
+        bdRow('Coverage', (typeof rc.itemCount === 'number' ? rc.itemCount : 0) + ' items'
+          + (rc.lowLiqCount > 0 ? ' · ' + rc.lowLiqCount + ' low-liq' : ''), 'จำนวนไอเทมที่ผ่านเกณฑ์ราคา (หลักฐานของการ์ดนี้)');
+        bdRow('Risk', rc.risk ? '⚠ มี' : '—', rc.risk || 'ไม่มีความเสี่ยงเด่นจากข้อมูลชุดนี้');
+        bdRow('Confidence', confInfo.label, confInfo.why);
+        cardEl.appendChild(bd);
       }
 
       if (Array.isArray(rc.relatedItems) && rc.relatedItems.length) {
@@ -11240,11 +11293,13 @@ function renderRadar(data) {
 
       const footEl = document.createElement('div');
       footEl.className = 'reco-foot';
-      if (typeof rc.confidence === 'number') {
-        const cf = document.createElement('span');
-        cf.textContent = 'confidence ' + Math.round(rc.confidence * 100) + '%';
-        footEl.appendChild(cf);
-      }
+      // Confidence badge (patch 0.39) แทนข้อความ "confidence NN%" เดิม — hover ดูเหตุผลของระดับ
+      const confBadgeInfo = radarConfidenceInfo(rc);
+      const cf = document.createElement('span');
+      cf.className = 'conf-badge ' + confBadgeInfo.cls;
+      cf.textContent = 'Confidence: ' + confBadgeInfo.label;
+      cf.title = confBadgeInfo.why || '';
+      footEl.appendChild(cf);
       (Array.isArray(rc.sourceUrls) ? rc.sourceUrls : []).forEach((u, i) => {
         if (!u) return;
         const a = document.createElement('a');
@@ -11256,9 +11311,46 @@ function renderRadar(data) {
         footEl.appendChild(a);
       });
       cardEl.appendChild(footEl);
-      grid.appendChild(cardEl);
+      return cardEl;
+    };
+
+    // วาดทีละกลุ่มตามลำดับคงที่ — กลุ่มว่างไม่วาดหัวข้อ / No Signal วาดเฉพาะตอนผู้ใช้เลือกแสดง
+    RADAR_GROUP_ORDER.forEach(g => {
+      if (g === 'nosignal' && !radarFilter.showNoSignal) return;
+      const entries = groupsMap[g];
+      if (!entries.length) return;
+      const meta2 = RADAR_GROUP_META[g];
+      const gt = document.createElement('p');
+      gt.className = 'radar-group-title';
+      gt.textContent = meta2.title + ' · ' + entries.length;
+      gt.title = meta2.desc;
+      body.appendChild(gt);
+      const grid = document.createElement('div');
+      grid.className = 'reco-grid';
+      entries.forEach(e => grid.appendChild(buildCard(e.rc, e.sig, e.isTop)));
+      body.appendChild(grid);
     });
-    body.appendChild(grid);
+
+    if (hiddenNoSignal > 0) {
+      const note = document.createElement('div');
+      note.className = 'radar-hidden-note';
+      const txt = document.createElement('span');
+      txt.textContent = 'ซ่อนไว้ ' + hiddenNoSignal + ' การ์ด No Signal (ยังไม่มีหลักฐานราคาใน snapshot นี้ — ไม่ใช่ว่า content ไม่มีค่า)';
+      note.appendChild(txt);
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ocr-btn';
+      btn.textContent = 'แสดง No Signal';
+      btn.addEventListener('click', () => {
+        radarFilter.showNoSignal = true;
+        persistRadarFilter();
+        const cb = document.getElementById('rfShowNoSignal');
+        if (cb) cb.checked = true;
+        if (radarData) renderRadar(radarData);
+      });
+      note.appendChild(btn);
+      body.appendChild(note);
+    }
   }
 
   // --- B) Top Rising Items Used (secondary reference list — จาก marketItems ที่ผ่านฟิลเตอร์) ---
@@ -11497,6 +11589,17 @@ loadRadar();
 
   unitSelect.addEventListener('change', syncRateUi);
 
+  // patch 0.39: toggle แสดง/ซ่อนการ์ด No Signal — persist ใน radarFilter (additive field) + re-render ทันที
+  const noSignalCb = document.getElementById('rfShowNoSignal');
+  if (noSignalCb) {
+    noSignalCb.checked = radarFilter.showNoSignal === true;
+    noSignalCb.addEventListener('change', () => {
+      radarFilter.showNoSignal = noSignalCb.checked;
+      persistRadarFilter();
+      if (radarData) renderRadar(radarData);
+    });
+  }
+
   // กด Enter ในช่องกรอกฟิลเตอร์ = Apply ทันที (ไม่ต้องเอื้อมไปคลิกปุ่ม)
   [minInput, rateInput].forEach(inp => inp.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); document.getElementById('rfApplyBtn').click(); }
@@ -11517,10 +11620,11 @@ loadRadar();
   });
 
   document.getElementById('rfResetBtn').addEventListener('click', () => {
-    radarFilter = { min: 1, unit: 'Divine' };
+    radarFilter = { min: 1, unit: 'Divine', showNoSignal: false };
     persistRadarFilter();
     minInput.value = 1;
     unitSelect.value = 'Divine';
+    if (noSignalCb) noSignalCb.checked = false;
     syncRateUi();
     if (radarData) renderRadar(radarData);
   });
@@ -11875,9 +11979,7 @@ async function loadHomeStatus() {
     if (res.ok) homeStatus = await res.json();
   } catch (e) { /* ไฟล์หาย/เน็ตพัง → การ์ดแสดงสถานะ Missing เอง */ }
   renderLeagueCard();
-  renderLeagueCard('divineLeagueBody', 'divineLeagueBadge', 'divineLeagueRunningVal');
   renderStashCard();
-  if (typeof renderDivineMarket === 'function') renderDivineMarket(); // รีเฟรช "เวลาที่ลีกเปิดมาแล้ว" หลังโหลด home-status.json
   // แจ้ง Today Dashboard ให้รีเฟรชข้อมูลลีก (additive event — patch 0.36)
   document.dispatchEvent(new CustomEvent('poeassist:homestatusloaded'));
 }
@@ -11891,24 +11993,23 @@ let hubTickTimer = null;
 function startHubTicker() {
   if (hubTickTimer !== null) clearInterval(hubTickTimer); // กัน interval ซ้อน
   hubTickTimer = setInterval(() => {
-    if (activeTab !== 'home' && activeTab !== 'divine') return; // แท็บอื่นไม่ต้องคำนวณ
+    if (activeTab !== 'home') return; // แท็บอื่นไม่ต้องคำนวณ (Divine Market ถูกถอดออกใน 0.39)
     const now = Date.now();
 
-    // League: Running for = เวลาปัจจุบัน - league.startAt (การ์ดใน Exile Hub และ Divine Market ใช้ค่าเดียวกัน)
+    // League: Running for = เวลาปัจจุบัน - league.startAt
     const lg = homeStatus && homeStatus.league;
     const leagueStart = lg && parseIso(lg.startAt);
     if (leagueStart) {
-      const runEl = document.getElementById(activeTab === 'home' ? 'leagueRunningVal' : 'divineLeagueRunningVal');
+      const runEl = document.getElementById('leagueRunningVal');
       if (runEl) runEl.textContent = fmtDuration(now - leagueStart.getTime());
     }
     // League: Ends in = league.endAt - เวลาปัจจุบัน (บรรทัดนี้มีเฉพาะเมื่อ endAt มีค่า)
     const leagueEnd = lg && parseIso(lg.endAt);
     if (leagueEnd) {
-      const endEl = document.getElementById((activeTab === 'home' ? 'leagueRunningVal' : 'divineLeagueRunningVal') + 'Ends');
+      const endEl = document.getElementById('leagueRunningValEnds');
       if (endEl) endEl.textContent = leagueEnd.getTime() > now ? fmtDuration(leagueEnd.getTime() - now) : 'Ended';
     }
 
-    if (activeTab !== 'home') return; // Stash Sale Watch มีเฉพาะในแท็บ Exile Hub
 
     // Stash: เฟสเปลี่ยน → วาดการ์ดใหม่ / เฟสเดิม → อัปเดตแค่ตัวเลข
     if (stashPhaseNow() !== stashPhase) {
@@ -11924,536 +12025,6 @@ function startHubTicker() {
   }, 1000);
 }
 startHubTicker();
-
-/* ==================== Divine Market ==================== */
-// วิเคราะห์ราคา 1 Divine Orb เป็นเงินบาท — mock/local data เท่านั้น ยังไม่ได้ต่อ API ราคาจริง
-// ใช้ homeStatus.league (โหลดจาก data/home-status.json โดยโค้ด Exile Hub ด้านบน) ร่วมกับการ์ด League Status ที่นี่
-const DIVINE_MOCK_DATA = [
-  { date: '2026-05-30', leagueDay: 1, priceTHB: 55 },
-  { date: '2026-05-31', leagueDay: 2, priceTHB: 25 },
-  { date: '2026-06-01', leagueDay: 3, priceTHB: 18 },
-  { date: '2026-06-02', leagueDay: 4, priceTHB: 11 },
-  { date: '2026-06-03', leagueDay: 5, priceTHB: 8 },
-  { date: '2026-06-04', leagueDay: 6, priceTHB: 8 },
-  { date: '2026-06-05', leagueDay: 7, priceTHB: 8 },
-  { date: '2026-06-06', leagueDay: 8, priceTHB: 6.8 },
-  { date: '2026-06-07', leagueDay: 9, priceTHB: 4.5 },
-  { date: '2026-06-08', leagueDay: 10, priceTHB: 4.5 },
-  { date: '2026-06-09', leagueDay: 11, priceTHB: 4.5 },
-  { date: '2026-06-10', leagueDay: 12, priceTHB: 3.9 },
-  { date: '2026-06-11', leagueDay: 13, priceTHB: 3.5 },
-  { date: '2026-06-12', leagueDay: 14, priceTHB: 3.5 },
-  { date: '2026-06-13', leagueDay: 15, priceTHB: 2.6 },
-  { date: '2026-06-14', leagueDay: 16, priceTHB: 2.1 },
-  { date: '2026-06-15', leagueDay: 17, priceTHB: 1.9 },
-  { date: '2026-06-16', leagueDay: 18, priceTHB: 1.9 },
-  { date: '2026-06-17', leagueDay: 19, priceTHB: 1.7 },
-  { date: '2026-06-18', leagueDay: 20, priceTHB: 1.6 },
-  { date: '2026-06-19', leagueDay: 21, priceTHB: 1.5 },
-  { date: '2026-06-20', leagueDay: 22, priceTHB: 1.5 },
-  { date: '2026-06-21', leagueDay: 23, priceTHB: 1.1 },
-  { date: '2026-06-22', leagueDay: 24, priceTHB: 1.1 },
-  { date: '2026-06-23', leagueDay: 25, priceTHB: 1 },
-  { date: '2026-06-24', leagueDay: 26, priceTHB: 1 },
-  { date: '2026-06-25', leagueDay: 27, priceTHB: 1 },
-  { date: '2026-06-26', leagueDay: 28, priceTHB: 1 },
-  { date: '2026-06-27', leagueDay: 29, priceTHB: 0.95 },
-  { date: '2026-06-28', leagueDay: 30, priceTHB: 0.75 },
-  { date: '2026-06-29', leagueDay: 31, priceTHB: 0.75 },
-  { date: '2026-06-30', leagueDay: 32, priceTHB: 0.7 },
-  { date: '2026-07-01', leagueDay: 33, priceTHB: 0.65 },
-  { date: '2026-07-02', leagueDay: 34, priceTHB: 0.65 },
-  { date: '2026-07-03', leagueDay: 35, priceTHB: 0.6 },
-  { date: '2026-07-04', leagueDay: 36, priceTHB: 0.58 },
-  { date: '2026-07-05', leagueDay: 37, priceTHB: 0.58 },
-];
-
-// ข้อมูลที่เพิ่ม/แก้ผ่านฟอร์มเก็บใน memory ของ session นี้เท่านั้น — ไม่ persist ลง localStorage/ฐานข้อมูล
-let divinePoints = DIVINE_MOCK_DATA.slice();
-
-const DIVINE_PHASES = [
-  { key: 'launch', name: 'Launch Panic', dayMin: 1, dayMax: 7, color: 'var(--fire-glow)',
-    behavior: 'ราคาพุ่งสูงสุดของลีกแล้วร่วงลงเร็วมากในไม่กี่วันแรก', meaning: 'ช่วงที่ Divine หายากที่สุด ผู้เล่นส่วนใหญ่ยังไม่มีสต็อกเยอะ',
-    advice: 'ถ้ามี Divine ติดมือ ควรรีบขายช่วงนี้ ได้ราคาบาทดีที่สุดของลีก', action: 'Sell' },
-  { key: 'early', name: 'Early Stabilization', dayMin: 8, dayMax: 14, color: 'var(--lightning-glow)',
-    behavior: 'ราคายังลดลงต่อเนื่องแต่อัตราการลดเริ่มช้าลงจากช่วง Launch', meaning: 'ผู้เล่นเริ่มมี Divine สะสมมากขึ้น อุปทานเริ่มมาชนอุปสงค์',
-    advice: 'ยังเป็นจังหวะดีที่จะฟาร์มขาย แต่ไม่ต้องรีบขนาดสัปดาห์แรก', action: 'Farm/Sell' },
-  { key: 'mid', name: 'Mid League Drop', dayMin: 15, dayMax: 21, color: 'var(--chaos)',
-    behavior: 'ราคายังลดต่อเนื่องแบบขั้นบันได', meaning: 'เศรษฐกิจลีกเข้าสู่ช่วงกลาง อุปทาน Divine เพิ่มเร็วกว่าช่วงต้น',
-    advice: 'ทยอยขายส่วนเกิน เริ่มพิจารณาซื้อของ build ที่จำเป็นได้', action: 'Sell/Buy Gear' },
-  { key: 'floor', name: 'Floor Finding', dayMin: 22, dayMax: 30, color: 'var(--cold-glow)',
-    behavior: 'ราคาลดลงช้าลงมากและเริ่มแตะระดับต่ำที่ใกล้เคียงกันหลายวัน', meaning: 'ตลาดกำลังหาจุดสมดุลใหม่ (floor) ของราคาปลายลีก',
-    advice: 'จังหวะดีในการเริ่มทยอยซื้อ Divine เก็บ หรือซื้อของ/crafting', action: 'Buy/Craft' },
-  { key: 'late', name: 'Late Stabilization', dayMin: 31, dayMax: Infinity, color: '#008000',
-    behavior: 'ราคานิ่งใกล้ระดับต่ำสุดของลีก ลดลงทีละน้อยมากหรือทรงตัว', meaning: 'เศรษฐกิจลีกเข้าสู่ช่วงอิ่มตัว ราคาต่อหน่วยถูกที่สุดของรอบ',
-    advice: 'ช่วงคุ้มค่าที่สุดสำหรับซื้อของทำ build และ craft ด้วยเงินบาท', action: 'Build/Craft' },
-];
-
-function divineBasePhase(day) {
-  return DIVINE_PHASES.find(p => day >= p.dayMin && day <= p.dayMax) || DIVINE_PHASES[DIVINE_PHASES.length - 1];
-}
-
-// ป้าย momentum เสริม phase หลัก — อิงจากแรงเปลี่ยนแปลงราคา 7 วันล่าสุด (threshold ปรับได้ตรงนี้ที่เดียว)
-function divineMomentumLabel(pct7) {
-  if (pct7 == null) return null;
-  if (pct7 <= -20) return { text: 'แรงขายสูง', cls: 'divine-down' };
-  if (pct7 < 0) return { text: 'เริ่มนิ่ง', cls: 'divine-warn' };
-  if (pct7 === 0) return { text: 'Sideway / Stabilizing', cls: '' };
-  return { text: 'Rebound', cls: 'divine-up' };
-}
-
-function divineTrendLabel(pct) {
-  if (pct == null) return 'ข้อมูลไม่พอ';
-  if (pct <= -25) return 'ขาลงแรง';
-  if (pct <= -10) return 'ขาลง';
-  if (pct < 0) return 'ขาลงแต่เริ่มช้าลง';
-  if (pct === 0) return 'ทรงตัว';
-  return 'เด้งขึ้น';
-}
-
-function sortDivinePoints(pts) { return pts.slice().sort((a, b) => a.leagueDay - b.leagueDay); }
-function divineSortedPoints() { return sortDivinePoints(divinePoints); }
-
-function pctChange(curr, prev) {
-  if (prev == null || prev === 0) return null;
-  return ((curr - prev) / prev) * 100;
-}
-
-function computeDivineStats(pts) {
-  if (!pts.length) return null;
-  const idx = pts.length - 1;
-  const last = pts[idx];
-  const first = pts[0];
-  const prev1 = pts[idx - 1] || null;
-  const prev3 = pts[idx - 3] || null;
-  const prev7 = pts[idx - 7] || null;
-  const mkChange = prev => prev ? { abs: last.priceTHB - prev.priceTHB, pct: pctChange(last.priceTHB, prev.priceTHB) } : null;
-  const change1 = mkChange(prev1);
-  const change3 = mkChange(prev3);
-  const change7 = mkChange(prev7);
-  const drawdown = pctChange(last.priceTHB, first.priceTHB);
-  const prices = pts.map(p => p.priceTHB);
-  const max = Math.max(...prices);
-  const min = Math.min(...prices);
-  const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
-  const sortedPrices = prices.slice().sort((a, b) => a - b);
-  const mid = Math.floor(sortedPrices.length / 2);
-  const median = sortedPrices.length % 2 ? sortedPrices[mid] : (sortedPrices[mid - 1] + sortedPrices[mid]) / 2;
-
-  // volatility = ส่วนเบี่ยงเบนมาตรฐานของ % เปลี่ยนแปลงรายวัน ย้อนหลังสูงสุด 7 วัน
-  const last8 = pts.slice(-8);
-  const dailyPct = [];
-  for (let i = 1; i < last8.length; i++) {
-    const c = pctChange(last8[i].priceTHB, last8[i - 1].priceTHB);
-    if (c != null) dailyPct.push(c);
-  }
-  let volatility = null;
-  if (dailyPct.length >= 2) {
-    const m = dailyPct.reduce((a, b) => a + b, 0) / dailyPct.length;
-    volatility = Math.sqrt(dailyPct.reduce((a, b) => a + (b - m) * (b - m), 0) / dailyPct.length);
-  }
-
-  const basePhase = divineBasePhase(last.leagueDay);
-  const pct7 = change7 ? change7.pct : (change1 ? change1.pct : null);
-  const momentum = divineMomentumLabel(change7 ? change7.pct : null);
-  const trend = divineTrendLabel(pct7);
-  return { last, first, change1, change3, change7, drawdown, max, min, avg, median, volatility, basePhase, momentum, trend };
-}
-
-// forecast: เทียบอัตราลดลงเฉลี่ยต่อวันช่วงล่าสุด (สูงสุด 14 วัน) กับอัตราลดลงเฉลี่ยตลอดทั้งช่วงข้อมูล
-// แล้วให้เป็นช่วงคาดการณ์ (low/high) แทนตัวเลขเดียว — เป็น rule-based approximation เท่านั้น
-function computeDivineForecast(pts) {
-  if (pts.length < 3) return null;
-  const last = pts[pts.length - 1];
-  const first = pts[0];
-  const windowN = Math.min(14, pts.length - 1);
-  const ref = pts[pts.length - 1 - windowN];
-  const recentRatio = ref.priceTHB > 0 ? Math.pow(last.priceTHB / ref.priceTHB, 1 / windowN) : 1;
-  const fullN = pts.length - 1;
-  const fullRatio = (fullN > 0 && first.priceTHB > 0) ? Math.pow(last.priceTHB / first.priceTHB, 1 / fullN) : 1;
-  const lowRatio = Math.min(recentRatio, fullRatio);
-  const highRatio = Math.max(recentRatio, fullRatio, 0.99); // ฝั่งสูงไม่ควรมองโลกในแง่ร้ายเกินอัตราล่าสุด
-  const floorPrice = 0.3; // กันคาดการณ์ติดลบ/เป็นศูนย์ในระยะยาว
-  const project = (daysAhead, ratio) => Math.max(floorPrice, last.priceTHB * Math.pow(ratio, Math.max(0, daysAhead)));
-  const day7Ahead = 7;
-  const day45Ahead = 45 - last.leagueDay;
-  const day60Ahead = 60 - last.leagueDay;
-  return {
-    day7: { low: project(day7Ahead, lowRatio), high: project(day7Ahead, highRatio) },
-    day45: { low: project(day45Ahead, lowRatio), high: project(day45Ahead, highRatio) },
-    day60: { low: project(day60Ahead, lowRatio), high: project(day60Ahead, highRatio) },
-  };
-}
-
-// คำแนะนำแบบ rule-based จาก phase + trend + volatility — เพื่อประกอบการตัดสินใจส่วนตัวเท่านั้น ไม่ใช่คำแนะนำการเงิน/RMT
-function divineRecommendation(stats) {
-  if (!stats) return null;
-  const phaseKey = stats.basePhase.key;
-  const pct7 = stats.change7 ? stats.change7.pct : null;
-  const heavySell = pct7 != null && pct7 <= -30;
-  const highVol = stats.volatility != null && stats.volatility >= 15;
-  let category, sell, farm, buy, gear, craft, risk;
-
-  if (stats.momentum && stats.momentum.text === 'แรงขายสูง' && phaseKey !== 'launch') {
-    category = 'High Risk / Wait';
-    sell = 'รอความชัดเจนก่อนถ้าเป็นไปได้ — ราคากำลังร่วงแรงผิดปกตินอกช่วงต้นลีก อาจมีเหตุการณ์เฉพาะ (patch/event)';
-    farm = 'ฟาร์มไว้ก่อน ยังไม่ต้องรีบขายจนกว่าราคาจะนิ่งขึ้น';
-    buy = 'รอดูทิศทางก่อนซื้อเก็บเพิ่ม';
-    gear = 'รอความชัดเจนก่อนซื้อของชิ้นใหญ่';
-    craft = 'เลี่ยง craft ที่ใช้ Divine เยอะจนกว่าราคาจะนิ่ง';
-    risk = 'ความผันผวนสูงผิดปกติ ประเมินมูลค่าผิดพลาดได้ง่ายในช่วงนี้';
-  } else if (heavySell || phaseKey === 'launch') {
-    category = 'Strong Sell Zone';
-    sell = 'ควรขาย — ราคา Divine เป็นเงินบาทยังสูง/กำลังร่วงแรง ขายตอนนี้ได้บาทมากกว่ารอ';
-    farm = 'คุ้มที่จะเร่งฟาร์มขาย เพราะราคามีแนวโน้มลดลงเรื่อยๆ ทุกวันที่ผ่านไป';
-    buy = 'ยังไม่แนะนำซื้อ Divine เก็บด้วยเงินบาทตอนนี้ — รอราคานิ่งกว่านี้จะคุ้มกว่ามาก';
-    gear = 'ซื้อเฉพาะของที่จำเป็นเร่งด่วน ของจะถูกลงอีกเรื่อยๆ เมื่อคิดเป็นบาท';
-    craft = 'เลี่ยง craft ที่ใช้ Divine ปริมาณมากถ้าไม่จำเป็นเร่งด่วน';
-    risk = 'ราคาผันผวนสูงมากในช่วงต้นลีก การประเมินมูลค่ารายวันคลาดเคลื่อนได้ง่าย';
-  } else if (phaseKey === 'early' || phaseKey === 'mid') {
-    category = 'Sell / Farm-to-Sell Zone';
-    sell = 'ยังขายได้ราคาดีกว่าช่วงท้ายลีก แนะนำทยอยขายส่วนที่เกินความจำเป็น';
-    farm = 'ฟาร์มขายยังคุ้มอยู่ แต่ผลตอบแทนต่อวันเริ่มลดลงจากช่วงต้นลีก';
-    buy = 'เริ่มพิจารณาซื้อบางส่วนได้ถ้าต้องใช้ด่วน แต่ยังมีโอกาสได้ราคาถูกกว่านี้ในช่วงถัดไป';
-    gear = 'ซื้อของ build หลักที่จำเป็นได้ตามแผน ไม่ต้องรอ';
-    craft = 'Craft ของที่ใช้ Divine น้อยได้ตามปกติ ของที่ใช้เยอะรอดูราคาช่วง floor ก่อน';
-    risk = 'ราคายังลดลงต่อเนื่อง มูลค่าที่ประเมินไว้อาจเก่าเร็ว ควรเช็คราคาบ่อยๆ';
-  } else if (phaseKey === 'floor') {
-    category = stats.trend === 'เด้งขึ้น' ? 'Hold' : 'Gradual Buy Zone';
-    sell = 'ไม่แนะนำขายเพิ่มถ้าไม่จำเป็น ราคาลงมาใกล้ระดับต่ำของลีกแล้ว';
-    farm = 'ฟาร์มขายให้ผลตอบแทนต่ำแล้ว เน้นฟาร์มไว้ใช้เองดีกว่า';
-    buy = 'เริ่มเป็นจังหวะดีในการทยอยซื้อ Divine เก็บด้วยเงินบาท เพราะราคาต่อหน่วยถูกลงมากแล้ว';
-    gear = 'ช่วงดีสำหรับซื้อของทำ build เพราะของถูกลงเมื่อคิดเป็นบาท';
-    craft = 'ช่วงดีสำหรับ craft เพราะต้นทุนต่อครั้ง (คิดเป็นบาท) ต่ำลงมาก';
-    risk = 'ราคาอาจลงต่อได้อีกเล็กน้อยก่อนนิ่งจริง รอนานเกินไปอาจไม่คุ้มเวลา';
-  } else {
-    category = 'Build Upgrade Zone';
-    sell = 'ไม่แนะนำขายเพิ่ม ราคาต่ำสุดของลีกแล้ว ขายตอนนี้ได้บาทน้อยกว่าช่วงก่อนมาก';
-    farm = 'ฟาร์มขายไม่คุ้มค่าเวลาแล้วในมุมเงินบาท ควรฟาร์มไว้ใช้ทำ build เอง';
-    buy = 'เหมาะกับการซื้อ Divine เก็บด้วยเงินบาทมากที่สุดในรอบลีกนี้ ถ้ายังต้องใช้ต่อไป';
-    gear = 'ช่วงคุ้มที่สุดสำหรับซื้อของทำ build ด้วยเงินบาท';
-    craft = 'ช่วงคุ้มที่สุดสำหรับ craft ด้วย Divine เพราะต้นทุนจริงต่ำสุดของลีก (Crafting Value Zone)';
-    risk = 'ความเสี่ยงหลักคือ patch ใหม่หรือ league ใหม่ใกล้เข้ามาอาจทำให้ดีมานด์เปลี่ยนกะทันหัน';
-  }
-  if (highVol && category !== 'High Risk / Wait') risk += ' (ผันผวนสูงในช่วง 7 วันล่าสุด — ตัวเลขอาจเปลี่ยนเร็ว)';
-  return { category, sell, farm, buy, gear, craft, risk };
-}
-
-function computeDivineHealth(stats) {
-  if (!stats) return null;
-  const vol = stats.volatility != null ? stats.volatility : 20;
-  const pct7 = stats.change7 ? stats.change7.pct : 0;
-  let score = 100 - vol * 3 - Math.max(0, -pct7) * 1.2 + Math.max(0, pct7) * 1.5;
-  score = Math.max(0, Math.min(100, Math.round(score)));
-  const label = score >= 70 ? 'มั่นคง' : score >= 40 ? 'ปานกลาง' : 'ผันผวนสูง';
-  const cls = score >= 70 ? 'divine-up' : score >= 40 ? 'divine-warn' : 'divine-down';
-  return { score, label, cls };
-}
-
-function fmtTHB(v) {
-  if (v == null || !Number.isFinite(v)) return '—';
-  return (Math.round(v * 100) / 100).toLocaleString('th-TH', { maximumFractionDigits: 2 }) + ' ฿';
-}
-function fmtPct(v) {
-  if (v == null || !Number.isFinite(v)) return '—';
-  return (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
-}
-function fmtChangeCell(ch) {
-  if (!ch) return { value: '—', cls: '' };
-  const cls = ch.pct > 0.05 ? 'divine-up' : ch.pct < -0.05 ? 'divine-down' : '';
-  return { value: fmtTHB(ch.abs) + ' (' + fmtPct(ch.pct) + ')', cls };
-}
-
-function renderDivineMetrics(stats, forecast) {
-  const grid = document.getElementById('divineMetricsGrid');
-  if (!grid) return;
-  if (!stats) { grid.innerHTML = '<div class="hub-missing">ยังไม่มีข้อมูลราคา</div>'; return; }
-  const lg = homeStatus && homeStatus.league;
-  const leagueStart = lg && parseIso(lg.startAt);
-  const runningFor = leagueStart ? fmtDuration(Date.now() - leagueStart.getTime()) : '—';
-  const c1 = fmtChangeCell(stats.change1);
-  const c3 = fmtChangeCell(stats.change3);
-  const c7 = fmtChangeCell(stats.change7);
-  const items = [
-    ['ราคาล่าสุด', fmtTHB(stats.last.priceTHB), ''],
-    ['วันลีกล่าสุด', 'Day ' + stats.last.leagueDay, ''],
-    ['เวลาที่ลีกเปิดมาแล้ว', runningFor, ''],
-    ['เปลี่ยนแปลง 1 วัน', c1.value, c1.cls],
-    ['เปลี่ยนแปลง 3 วัน', c3.value, c3.cls],
-    ['เปลี่ยนแปลง 7 วัน', c7.value, c7.cls],
-    ['ลดลงจากวันแรก', fmtPct(stats.drawdown), stats.drawdown < 0 ? 'divine-down' : ''],
-    ['ราคาสูงสุด', fmtTHB(stats.max), ''],
-    ['ราคาต่ำสุด', fmtTHB(stats.min), ''],
-    ['ราคาเฉลี่ย', fmtTHB(stats.avg), ''],
-    ['ค่ากลาง', fmtTHB(stats.median), ''],
-    ['Phase ปัจจุบัน', stats.basePhase.name + (stats.momentum ? ' · ' + stats.momentum.text : ''), ''],
-    ['แนวโน้มตลาด', stats.trend, ''],
-    ['ความผันผวน (7 วัน)', stats.volatility != null ? stats.volatility.toFixed(1) + '%' : 'ข้อมูลไม่พอ', ''],
-    ['คาดการณ์ 7 วันข้างหน้า', forecast ? fmtTHB(forecast.day7.low) + ' – ' + fmtTHB(forecast.day7.high) : '—', ''],
-    ['คาดการณ์ Day 45', forecast ? fmtTHB(forecast.day45.low) + ' – ' + fmtTHB(forecast.day45.high) : '—', ''],
-    ['คาดการณ์ Day 60', forecast ? fmtTHB(forecast.day60.low) + ' – ' + fmtTHB(forecast.day60.high) : '—', ''],
-  ];
-  grid.innerHTML = items.map(([label, value, cls]) =>
-    '<div class="divine-metric-card"><div class="divine-metric-label">' + label + '</div>' +
-    '<div class="divine-metric-value' + (cls ? ' ' + cls : '') + '">' + value + '</div></div>'
-  ).join('');
-}
-
-function renderDivineHealth(stats) {
-  const el = document.getElementById('divineHealthBody');
-  if (!el) return;
-  const h = computeDivineHealth(stats);
-  if (!h) { el.innerHTML = '<div class="hub-missing">ยังไม่มีข้อมูลราคา</div>'; return; }
-  el.innerHTML =
-    '<div class="hub-line"><span>Health Score</span><strong class="hub-big ' + h.cls + '">' + h.score + ' / 100</strong></div>' +
-    '<div class="hub-line"><span>สถานะ</span><strong class="' + h.cls + '">' + h.label + '</strong></div>' +
-    '<div class="hub-missing">คำนวณจากความผันผวน 7 วันล่าสุด + แรงเปลี่ยนแปลงราคา 7 วัน — ยิ่งสูง = ตลาดนิ่ง คาดการณ์ง่ายขึ้น</div>';
-}
-
-function renderDivineWhatChanged(pts, stats) {
-  const el = document.getElementById('divineWhatChanged');
-  if (!el) return;
-  if (!stats || pts.length < 2) {
-    el.className = 'hub-missing';
-    el.textContent = 'ข้อมูลไม่พอสำหรับเปรียบเทียบวันล่าสุด';
-    return;
-  }
-  const prev = pts[pts.length - 2];
-  const last = stats.last;
-  const changeAbs = last.priceTHB - prev.priceTHB;
-  const changePct = pctChange(last.priceTHB, prev.priceTHB);
-  const cls = changePct > 0.05 ? 'divine-up' : changePct < -0.05 ? 'divine-down' : '';
-  el.className = '';
-  el.innerHTML = 'จาก Day ' + prev.leagueDay + ' (' + fmtTHB(prev.priceTHB) + ') → Day ' + last.leagueDay + ' (' + fmtTHB(last.priceTHB) + '): ' +
-    '<strong class="' + cls + '">' + fmtTHB(changeAbs) + ' (' + fmtPct(changePct) + ')</strong>' +
-    ' — Phase: <span style="color:' + stats.basePhase.color + '">' + stats.basePhase.name + '</span>' +
-    (stats.momentum ? ' · ' + stats.momentum.text : '');
-}
-
-function renderDivinePhaseTable(stats) {
-  const table = document.getElementById('divinePhaseTable');
-  if (!table) return;
-  const currentKey = stats ? stats.basePhase.key : null;
-  table.innerHTML =
-    '<thead><tr><th>Phase</th><th>Day Range</th><th>พฤติกรรมราคา</th><th>ความหมาย</th><th>คำแนะนำผู้เล่น</th><th>แนะนำ</th></tr></thead><tbody>' +
-    DIVINE_PHASES.map(p =>
-      '<tr class="' + (p.key === currentKey ? 'current-phase' : '') + '">' +
-      '<td style="color:' + p.color + '">' + p.name + '</td>' +
-      '<td>Day ' + p.dayMin + (p.dayMax === Infinity ? '+' : '–' + p.dayMax) + '</td>' +
-      '<td class="divine-td-wrap">' + p.behavior + '</td>' +
-      '<td class="divine-td-wrap">' + p.meaning + '</td>' +
-      '<td class="divine-td-wrap">' + p.advice + '</td>' +
-      '<td>' + p.action + '</td></tr>'
-    ).join('') + '</tbody>';
-}
-
-function renderDivineForecastTable(forecast, stats) {
-  const table = document.getElementById('divineForecastTable');
-  if (!table) return;
-  if (!forecast) {
-    table.innerHTML = '<tbody><tr><td>ข้อมูลไม่พอสำหรับคาดการณ์ (ต้องการอย่างน้อย 3 จุดข้อมูล)</td></tr></tbody>';
-    return;
-  }
-  const rows = [
-    ['อีก 7 วัน (Day ' + (stats.last.leagueDay + 7) + ')', forecast.day7],
-    ['Day 45', forecast.day45],
-    ['Day 60', forecast.day60],
-  ];
-  table.innerHTML =
-    '<thead><tr><th>ช่วงเวลา</th><th>คาดการณ์ต่ำสุด</th><th>คาดการณ์สูงสุด</th></tr></thead><tbody>' +
-    rows.map(([label, r]) => '<tr><td>' + label + '</td><td>' + fmtTHB(r.low) + '</td><td>' + fmtTHB(r.high) + '</td></tr>').join('') +
-    '</tbody>';
-}
-
-function renderDivineRecommendation(stats) {
-  const card = document.getElementById('divineRecoCard');
-  if (!card) return;
-  const reco = divineRecommendation(stats);
-  if (!reco) { card.innerHTML = '<div class="hub-missing">ยังไม่มีข้อมูลราคา</div>'; return; }
-  card.innerHTML =
-    '<div class="reco-head"><span class="reco-name">คำแนะนำตอนนี้</span><span class="divine-reco-badge">' + reco.category + '</span></div>' +
-    '<ul class="reason-list">' +
-      '<li><strong>ควรขาย Divine ที่มีไหม?</strong> ' + reco.sell + '</li>' +
-      '<li><strong>ควรเร่งฟาร์มขายช่วงนี้ไหม?</strong> ' + reco.farm + '</li>' +
-      '<li><strong>ควรซื้อ Divine ไหม?</strong> ' + reco.buy + '</li>' +
-      '<li><strong>ควรซื้อของมาทำ build ไหม?</strong> ' + reco.gear + '</li>' +
-      '<li><strong>ควร craft ตอนนี้ไหม?</strong> ' + reco.craft + '</li>' +
-    '</ul>' +
-    '<div class="reco-risk">⚠ ความเสี่ยงหลัก: ' + reco.risk + '</div>' +
-    '<div class="divine-form-note">คำแนะนำนี้เป็น rule-based approximation จากข้อมูลราคาย้อนหลังเท่านั้น ไม่ใช่คำแนะนำการลงทุนหรือบริการซื้อขายเงินจริง โปรดใช้วิจารณญาณ</div>';
-}
-
-function renderDivineChart(pts, forecast) {
-  const wrap = document.getElementById('divineChartWrap');
-  if (!wrap) return;
-  if (!pts || pts.length < 2) {
-    wrap.innerHTML = '<div class="hub-missing">ข้อมูลไม่พอสำหรับสร้างกราฟ (ต้องการอย่างน้อย 2 จุด)</div>';
-    return;
-  }
-  const last = pts[pts.length - 1];
-  const W = 760, H = 260, padL = 50, padR = 20, padT = 16, padB = 30;
-  const maxDayX = forecast ? Math.max(60, last.leagueDay + 7) : last.leagueDay;
-  const minDay = pts[0].leagueDay;
-  const priceCandidates = pts.map(p => p.priceTHB);
-  if (forecast) priceCandidates.push(forecast.day7.high, forecast.day45.high, forecast.day60.high);
-  const maxPrice = Math.max(...priceCandidates) * 1.08;
-  const xScale = day => padL + ((day - minDay) / Math.max(1, (maxDayX - minDay))) * (W - padL - padR);
-  const yScale = price => (H - padB) - (Math.max(0, price) / (maxPrice || 1)) * (H - padT - padB);
-
-  let segmentsHtml = '';
-  for (let i = 1; i < pts.length; i++) {
-    const a = pts[i - 1], b = pts[i];
-    const color = divineBasePhase(b.leagueDay).color;
-    segmentsHtml += '<line x1="' + xScale(a.leagueDay).toFixed(1) + '" y1="' + yScale(a.priceTHB).toFixed(1) +
-      '" x2="' + xScale(b.leagueDay).toFixed(1) + '" y2="' + yScale(b.priceTHB).toFixed(1) +
-      '" stroke="' + color + '" stroke-width="2.4" stroke-linecap="round" />';
-  }
-
-  let forecastHtml = '';
-  if (forecast) {
-    const targets = [
-      { day: last.leagueDay + 7, range: forecast.day7 },
-      { day: 45, range: forecast.day45 },
-      { day: 60, range: forecast.day60 },
-    ].filter(t => t.day > last.leagueDay).sort((a, b) => a.day - b.day);
-    const lowPts = [[last.leagueDay, last.priceTHB]].concat(targets.map(t => [t.day, t.range.low]));
-    const highPts = [[last.leagueDay, last.priceTHB]].concat(targets.map(t => [t.day, t.range.high]));
-    const bandPts = lowPts.map(([d, p]) => xScale(d).toFixed(1) + ',' + yScale(p).toFixed(1)).join(' ') + ' ' +
-      highPts.slice().reverse().map(([d, p]) => xScale(d).toFixed(1) + ',' + yScale(p).toFixed(1)).join(' ');
-    forecastHtml += '<polygon points="' + bandPts + '" fill="rgba(0,0,255,0.08)" stroke="none" />';
-    forecastHtml += '<polyline points="' + highPts.map(([d, p]) => xScale(d).toFixed(1) + ',' + yScale(p).toFixed(1)).join(' ') +
-      '" fill="none" stroke="var(--cold-glow)" stroke-width="1.6" stroke-dasharray="5,4" />';
-    forecastHtml += '<polyline points="' + lowPts.map(([d, p]) => xScale(d).toFixed(1) + ',' + yScale(p).toFixed(1)).join(' ') +
-      '" fill="none" stroke="var(--cold-glow)" stroke-width="1.6" stroke-dasharray="5,4" opacity="0.75" />';
-  }
-
-  const gridHtml = [0, 0.5, 1].map(f => {
-    const y = padT + f * (H - padT - padB);
-    const price = maxPrice * (1 - f);
-    return '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) +
-      '" stroke="var(--border-soft)" stroke-width="1" />' +
-      '<text x="' + (padL - 6) + '" y="' + (y + 3).toFixed(1) + '" text-anchor="end" font-size="9" fill="var(--text-dim)">' + price.toFixed(1) + '</text>';
-  }).join('');
-
-  const xTickDays = Array.from(new Set([minDay, last.leagueDay, forecast ? last.leagueDay + 7 : null, 45, 60]
-    .filter(d => d != null && d >= minDay && d <= maxDayX)));
-  const xTicksHtml = xTickDays.map(d =>
-    '<text x="' + xScale(d).toFixed(1) + '" y="' + (H - padB + 16) + '" text-anchor="middle" font-size="9" fill="var(--text-dim)">D' + d + '</text>'
-  ).join('');
-
-  let circlesHtml = '';
-  pts.forEach((p, i) => {
-    circlesHtml += '<circle class="divine-pt" data-i="' + i + '" cx="' + xScale(p.leagueDay).toFixed(1) + '" cy="' + yScale(p.priceTHB).toFixed(1) +
-      '" r="3.4" fill="var(--gold-glow)" stroke="#ffffff" stroke-width="1.5"></circle>';
-  });
-
-  wrap.innerHTML =
-    '<svg viewBox="0 0 ' + W + ' ' + H + '" class="divine-chart-svg" preserveAspectRatio="xMidYMid meet">' +
-      gridHtml + forecastHtml + segmentsHtml + circlesHtml + xTicksHtml +
-    '</svg>' +
-    '<div class="divine-tooltip" id="divineTooltip" hidden></div>' +
-    '<div class="divine-legend">' +
-      DIVINE_PHASES.map(p => '<span><i style="background:' + p.color + '"></i>' + p.name + '</span>').join('') +
-      (forecast ? '<span><i class="forecast"></i>Forecast range</span>' : '') +
-    '</div>';
-
-  const tip = wrap.querySelector('#divineTooltip');
-  wrap.querySelectorAll('.divine-pt').forEach(c => {
-    const i = Number(c.dataset.i);
-    const showTip = evt => {
-      const p = pts[i];
-      const prev = pts[i - 1];
-      const changeAbs = prev ? p.priceTHB - prev.priceTHB : null;
-      const changePct = prev ? pctChange(p.priceTHB, prev.priceTHB) : null;
-      const phase = divineBasePhase(p.leagueDay);
-      tip.innerHTML = '<strong>' + p.date + '</strong> · Day ' + p.leagueDay + '<br>' +
-        fmtTHB(p.priceTHB) + ' / Divine<br>' +
-        (changeAbs != null ? fmtTHB(changeAbs) + ' (' + fmtPct(changePct) + ')' : 'จุดแรกของข้อมูล') + '<br>' +
-        '<span style="color:' + phase.color + '">' + phase.name + '</span>';
-      const rect = wrap.getBoundingClientRect();
-      const cx = evt.touches ? evt.touches[0].clientX : evt.clientX;
-      const cy = evt.touches ? evt.touches[0].clientY : evt.clientY;
-      // rect/clientX เป็น viewport px แต่ style.left เป็น px ก่อน zoom → หาร uiZoom() (font-scale patch 0.27)
-      const z = uiZoom();
-      tip.style.left = Math.max(0, Math.min((cx - rect.left) / z + 12, rect.width / z - 160)) + 'px';
-      tip.style.top = Math.max(0, (cy - rect.top) / z - 40) + 'px';
-      tip.hidden = false;
-    };
-    c.addEventListener('mouseenter', showTip);
-    c.addEventListener('mousemove', showTip);
-    c.addEventListener('mouseleave', () => { tip.hidden = true; });
-    c.addEventListener('click', showTip);
-  });
-}
-
-function renderDivineMarket() {
-  const pts = divineSortedPoints();
-  const stats = computeDivineStats(pts);
-  const forecast = computeDivineForecast(pts);
-  renderDivineMetrics(stats, forecast);
-  renderDivineChart(pts, forecast);
-  renderDivineRecommendation(stats);
-  renderDivineHealth(stats);
-  renderDivineWhatChanged(pts, stats);
-  renderDivinePhaseTable(stats);
-  renderDivineForecastTable(forecast, stats);
-}
-
-(function initDivineForm() {
-  const form = document.getElementById('divineForm');
-  if (!form) return;
-  const dateInput = document.getElementById('divineInputDate');
-  const dayInput = document.getElementById('divineInputDay');
-  const priceInput = document.getElementById('divineInputPrice');
-
-  // เดา League Day จากวันที่ที่เลือก เทียบกับจุดข้อมูลล่าสุด (ผู้ใช้แก้ทับได้เสมอ)
-  function suggestDivineDay(dateStr) {
-    const pts = divineSortedPoints();
-    const last = pts[pts.length - 1];
-    if (!last) return 1;
-    const d = parseIso(dateStr);
-    const lastDate = parseIso(last.date);
-    if (!d || !lastDate) return last.leagueDay + 1;
-    const diffDays = Math.round((d.getTime() - lastDate.getTime()) / 86400000);
-    return Math.max(1, last.leagueDay + diffDays);
-  }
-  function prefillDivineForm() {
-    const pad = n => String(n).padStart(2, '0');
-    const t = new Date();
-    dateInput.value = t.getFullYear() + '-' + pad(t.getMonth() + 1) + '-' + pad(t.getDate());
-    dayInput.value = suggestDivineDay(dateInput.value);
-  }
-  dateInput.addEventListener('change', () => {
-    if (dateInput.value) dayInput.value = suggestDivineDay(dateInput.value);
-  });
-  prefillDivineForm();
-
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    const errEl = document.getElementById('divineFormError');
-    const dateVal = dateInput.value;
-    const dayVal = Number(dayInput.value);
-    const priceVal = Number(priceInput.value);
-    errEl.textContent = '';
-    if (!dateVal) { errEl.textContent = 'กรุณาระบุวันที่'; return; }
-    if (!Number.isFinite(dayVal) || dayVal <= 0) { errEl.textContent = 'League Day ต้องเป็นจำนวนมากกว่า 0'; return; }
-    if (!Number.isFinite(priceVal) || priceVal <= 0) { errEl.textContent = 'ราคาต้องมากกว่า 0'; return; }
-    const existingIdx = divinePoints.findIndex(p => p.leagueDay === dayVal || p.date === dateVal);
-    const entry = { date: dateVal, leagueDay: dayVal, priceTHB: priceVal };
-    if (existingIdx >= 0) divinePoints[existingIdx] = entry;
-    else divinePoints.push(entry);
-    renderDivineMarket();
-    priceInput.value = '';
-    // เตือนความจริงข้อสำคัญ: จุดราคานี้อยู่ในหน่วยความจำของเซสชันเท่านั้น (ไม่บันทึกลงไฟล์/localStorage)
-    showInfoToast(
-      (existingIdx >= 0 ? 'อัปเดตราคา League Day ' : 'เพิ่มราคา League Day ') + dayVal +
-      ' แล้ว — ข้อมูลนี้อยู่ในเซสชันนี้เท่านั้น (รีเฟรชแล้วหาย)',
-      { key: 'divine-add' }
-    );
-  });
-})();
-
-renderDivineMarket();
 
 /* ==================== Content Codex ====================
    ฐานความรู้ drop ของ boss/content PoE2 — อ่านจาก data/content-codex.json อย่างเดียว
@@ -13749,7 +13320,8 @@ function renderTodayRadarCard() {
   headRow.appendChild(nm);
   const sc = document.createElement('span');
   sc.className = 'tb-est';
-  sc.textContent = 'Farm Score ' + Math.round(top.score) + '%';
+  // patch 0.39: แนบระดับ confidence (กติกาเดียวกับการ์ดในแท็บ Market Radar — radarConfidenceInfo)
+  sc.textContent = 'Farm Score ' + Math.round(top.score) + '% · Confidence: ' + radarConfidenceInfo(top).label;
   headRow.appendChild(sc);
   card.appendChild(headRow);
 
