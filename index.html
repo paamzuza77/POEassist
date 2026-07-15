@@ -3994,6 +3994,8 @@
   /* ค่าหลักแบบป้ายสถานะ (No signal / Low confidence) — เล็กกว่าเลข % และเป็นสี dim ไม่ให้เด่นเกิน */
   .score-badge.score-badge-label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; }
   .reco-signal-note { font-size: 11.5px; color: var(--text-muted); margin: 0 0 6px; line-height: 1.5; }
+  /* ปุ่ม deep-link → Content Codex (patch 0.40) — modifier ของ .ocr-btn เดิม (theme ครอบให้อยู่แล้ว) */
+  .reco-codex-btn { padding: 4px 9px; font-size: 10px; }
   .reco-breakdown {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
@@ -6546,6 +6548,9 @@ const I18N = {
     'today.radar.nopick.title': 'รอบนี้ยังไม่มี TOP PICK',
     'today.radar.nopick.body': 'ไม่มี content ที่มีหลักฐานราคาผ่านเกณฑ์ใน snapshot/ฟิลเตอร์ปัจจุบัน',
     'today.radar.updated': 'ข้อมูลอัปเดต: {t}',
+    'radar.viewcontent': 'ดูข้อมูล Content',
+    'radar.codexopened': 'เปิด {name} ใน Content Codex แล้ว',
+    'radar.codexmissing': 'ไม่พบ {name} ใน Content Codex — เปิดผลค้นหาแทน',
     'today.forge.nogear': 'ยังไม่มีข้อมูลอุปกรณ์ในเพรเซ็ตที่ใช้อยู่ — กรอกค่าหรือวางรูปไอเทมในแท็บ Resistance Checker',
     'today.farm.total': 'การ์ดทั้งหมด',
     'today.farm.cards': '{n} ใบ',
@@ -6792,6 +6797,9 @@ const I18N = {
     'today.radar.nopick.title': 'No TOP PICK this round',
     'today.radar.nopick.body': 'No content has qualifying price evidence in the current snapshot/filter',
     'today.radar.updated': 'Updated: {t}',
+    'radar.viewcontent': 'View content info',
+    'radar.codexopened': 'Opened {name} in Content Codex.',
+    'radar.codexmissing': '{name} not found in Content Codex — opened search instead.',
     'today.forge.nogear': 'No gear data in the active preset yet — enter values or paste an item screenshot in the Resistance Checker tab',
     'today.farm.total': 'Total cards',
     'today.farm.cards': '{n} cards',
@@ -8982,6 +8990,15 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.40',
+    date: '2026-07-15',
+    notes: [
+      'Market Radar: การ์ดคำแนะนำมีปุ่ม "📖 ดูข้อมูล Content" — กดแล้วเปิด entry ที่ตรงกันใน Content Codex ทันที (วิธีเข้า content / ของที่ดรอป)',
+      'ปุ่มนี้ใช้ตาราง map ที่ตรวจมือทีละคู่เท่านั้น (8 bucket: Breach / Ritual / Delirium / Expedition / Simulacrum / Abyss / Essence / Strongboxes) — bucket ที่ยังไม่มี entry ตรงกันจะไม่มีปุ่ม ไม่มีการเดาชื่อ',
+      'Today: การ์ด Market Radar (TOP PICK) มีปุ่มเดียวกัน — เปิดข้อมูล content ของ pick วันนี้ได้จากหน้าแรกเลย',
+    ],
+  },
+  {
     version: '0.39',
     date: '2026-07-15',
     notes: [
@@ -10803,6 +10820,45 @@ const RADAR_FILTER_KEY = 'poeAssist.radarFilter.v1';
 const RADAR_RATES_KEY = 'poeAssist.radarRates.v1';
 const RADAR_UNITS = ['Divine', 'Exalted', 'Chaos', 'THB'];
 
+/* ---- Radar → Content Codex deep-link (patch 0.40) ----
+   ตาราง map มือ: radar contentKey (CONTENT_BUCKETS ใน scripts/update-market-radar.mjs)
+   → entry id ใน data/content-codex.json — ตรวจทีละคู่กับข้อมูลจริงแล้วเท่านั้น
+   (แบบเดียวกับ Game asset registry: ห้าม fuzzy match ห้ามเดา — bucket ที่ไม่อยู่ในตาราง = ไม่มีปุ่ม)
+   จงใจไม่ map: runes / fragments_bossing / waystones_mapping / generic_currency (ไม่มี entry เดียวที่ตรง)
+   และ trial_soulcores (มีทั้ง Trial of Chaos และ Sekhemas — เลือกไม่ได้ว่าอันไหน) */
+const RADAR_CODEX_LINKS = {
+  breach: 'breach',
+  ritual: 'ritual',
+  delirium: 'delirium',
+  expedition: 'expedition',
+  simulacrum: 'simulacrum',
+  abyss: 'abyss',
+  essence: 'essence-encounter',
+  strongboxes: 'strongbox',
+};
+
+// เปิด Content Codex ที่ entry ที่ map ไว้ — เรียกจากปุ่มบนการ์ด radar/Today เท่านั้น
+// (codexData/todayOpenCodexEntry ประกาศท้ายสคริปต์ แต่ฟังก์ชันนี้รันตอนคลิกหลัง parse จบ — ไม่ชน TDZ)
+function openRadarCodexEntry(contentKey, displayName) {
+  const id = RADAR_CODEX_LINKS[contentKey];
+  if (!id) return;
+  const entries = (codexData && Array.isArray(codexData.entries)) ? codexData.entries : null;
+  const entry = entries ? entries.find(e => e.id === id) : null;
+  if (entries && !entry) {
+    // ข้อมูลโหลดแล้วแต่ id หายไป (เช่น regenerate codex ใหม่) — fallback: เปิดแท็บ + ตั้งคำค้นแทน
+    switchTab('codex');
+    codexFilter = 'all';
+    codexSearchText = id.replace(/-/g, ' ');
+    const search = document.getElementById('codexSearch');
+    if (search) search.value = codexSearchText;
+    if (typeof renderCodex === 'function') renderCodex();
+    showWarningToast(tFmt('radar.codexmissing', { name: displayName || id }), { key: 'radar-codex' });
+    return;
+  }
+  todayOpenCodexEntry(id); // helper เดิม: สลับแท็บ + เคลียร์ filter/ค้นหา + เลือก entry + scroll
+  showInfoToast(tFmt('radar.codexopened', { name: entry ? entry.name : (displayName || id) }), { key: 'radar-codex' });
+}
+
 let radarData = null; // snapshot ล่าสุดที่โหลดแล้ว — ใช้ re-render ตอนเปลี่ยนฟิลเตอร์โดยไม่ fetch ซ้ำ
 
 let radarFilter = (function loadRadarFilter() {
@@ -11300,6 +11356,16 @@ function renderRadar(data) {
       cf.textContent = 'Confidence: ' + confBadgeInfo.label;
       cf.title = confBadgeInfo.why || '';
       footEl.appendChild(cf);
+      // Deep-link → Content Codex (patch 0.40): เฉพาะ bucket ที่อยู่ในตาราง RADAR_CODEX_LINKS เท่านั้น
+      if (RADAR_CODEX_LINKS[rc.contentKey]) {
+        const cx = document.createElement('button');
+        cx.type = 'button';
+        cx.className = 'ocr-btn reco-codex-btn';
+        cx.textContent = '📖 ' + t('radar.viewcontent');
+        cx.title = 'เปิดข้อมูล content นี้ใน Content Codex (วิธีฟาร์ม / ของที่ดรอป)';
+        cx.addEventListener('click', () => openRadarCodexEntry(rc.contentKey, rc.content));
+        footEl.appendChild(cx);
+      }
       (Array.isArray(rc.sourceUrls) ? rc.sourceUrls : []).forEach((u, i) => {
         if (!u) return;
         const a = document.createElement('a');
@@ -13334,6 +13400,16 @@ function renderTodayRadarCard() {
       ul.appendChild(li);
     });
     card.appendChild(ul);
+  }
+  // Deep-link → Content Codex (patch 0.40): ปุ่มเดียวกับการ์ดในแท็บ Market Radar — เฉพาะ bucket ที่ map มือแล้ว
+  if (RADAR_CODEX_LINKS[top.contentKey]) {
+    const cx = document.createElement('button');
+    cx.type = 'button';
+    cx.className = 'ocr-btn reco-codex-btn';
+    cx.style.marginTop = '6px';
+    cx.textContent = '📖 ' + t('radar.viewcontent');
+    cx.addEventListener('click', () => openRadarCodexEntry(top.contentKey, top.content));
+    card.appendChild(cx);
   }
   if (fresh.updated) {
     const p = document.createElement('p');

@@ -2,6 +2,14 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-15 (10)
+
+- **Market Radar → Content Codex hand-verified deep-link (patch 0.40)** (`index.html` + docs): shipped the deep-link that 0.39 deferred (TODO item 40a).
+  - **Mapping table `RADAR_CODEX_LINKS`** (next to the radar constants, search it): radar `contentKey` → Content Codex entry `id`, 8 pairs each verified against `data/content-codex.json` — `breach`→`breach`, `ritual`→`ritual`, `delirium`→`delirium`, `expedition`→`expedition`, `simulacrum`→`simulacrum`, `abyss`→`abyss`, `essence`→`essence-encounter`, `strongboxes`→`strongbox`. **No fuzzy matching, no guessing** (asset-registry pattern). Deliberately unmapped: `runes`, `fragments_bossing`, `waystones_mapping`, `generic_currency` (no single matching entry) and `trial_soulcores` (two trials — ambiguous). Unmapped buckets render no button.
+  - **UI:** mapped reco cards get a compact "📖 ดูข้อมูล Content" button in `.reco-foot` (`.ocr-btn reco-codex-btn`, one small CSS modifier — no new theme-group registration needed); Today's radar top-pick card gets the same button. Label/toasts via 3 new i18n keys in both dictionaries (`radar.viewcontent` / `radar.codexopened` / `radar.codexmissing`).
+  - **Behavior:** `openRadarCodexEntry(contentKey, displayName)` reuses `todayOpenCodexEntry(id)` (switch tab, clear filter/search, select entry, scroll) + success toast (`key: 'radar-codex'`). If codex data is loaded but the id is missing (e.g. a regenerated codex), it falls back to opening the tab with a search for the entry name + warning toast. Codex favorites/filters/search, radar scoring/grouping/No-Signal toggle all untouched; `content-codex.json` and the generator untouched.
+  - Verification: `node --check` on both extracted inline scripts; headless Edge over local HTTP — exactly the 6 mapped visible cards (Abyss/Ritual/Delirium/Expedition/Essence/Breach) + Today card show the button, unmapped visible cards (Runes / Fragments / Generic Currency / Trial) show none (Simulacrum/Strongboxes were in the hidden No Signal group — same `buildCard` path), zero console errors.
+
 ## 2026-07-15 (9)
 
 - **Divine Market removal + Market Radar V2 presentation (patch 0.39)** (`index.html` + `css/modern-theme.css` + docs):
