@@ -1,0 +1,558 @@
+/* ==================== Modern theme (patch 0.35) ====================
+   ธีมใหม่ "Modern" — ดีไซน์แนว macOS / Linear / Vercel: พื้นหลังนุ่ม, ขอบบาง 1px,
+   มุมโค้ง, เงาซ้อนเบาๆ, topbar แบบ glass, nav แบบ pill, accent สี indigo,
+   ทรานซิชันสั้นๆ (มี prefers-reduced-motion guard ครบ)
+   - เป็น "ธีมเริ่มต้น" ใหม่สำหรับผู้ใช้ที่ไม่เคยเลือกธีมเอง (poeAssist.theme.v1 ว่าง)
+   - RawBlock / Trust Blue Pay ยังเลือกได้ใน Settings เหมือนเดิม และไม่ถูกแก้แม้แต่บรรทัดเดียว
+   - scope ทุกกฎด้วย [data-theme="modern"] เท่านั้น — ไฟล์นี้ไม่มีผลกับธีมอื่น
+   - โครงสร้าง/กลุ่ม selector ตั้งใจล้อกับบล็อก Trust Blue Pay structural polish ใน index.html
+     (กลุ่ม 1 ขอบโค้ง / 2 pill / 3 เงา / 4 accent / 5 ซ่อมสีเทา hardcode) — เพิ่ม class ใหม่ที่ไหน
+     ให้เพิ่มทั้งสองที่
+   - โทเคนสีอ้างชื่อ var เดิมทั้งหมด (--gold = accent) เพื่อให้ JS ที่อ่าน computed vars
+     (gauge fills, chart) ทำงานต่อได้ทันที */
+
+/* ---- Tokens · Modern Light ---- */
+:root[data-theme="modern"] {
+  --void: #f6f6f8;
+  --panel: #ffffff;
+  --panel-raised: #ffffff;
+  --panel-sunken: #eff0f3;
+  --border: #d8dae0;
+  --border-soft: #e8e9ee;
+  --text: #17181c;
+  --text-muted: #43454e;
+  --text-dim: #74767f;
+
+  --fire: #e5484d; --fire-glow: #e5484d;
+  --cold: #0b84ff; --cold-glow: #0b84ff;
+  --lightning: #d97706; --lightning-glow: #d97706;
+  --chaos: #8e4ec6; --chaos-glow: #8e4ec6;
+
+  --gold: #5856d6; --gold-glow: #5856d6; --gold-dim: #4644b8;
+
+  --ok: #178a3f;
+  --link: #5856d6;
+
+  --font-head: 'Inter', 'Work Sans', sans-serif;
+  --font-body: 'Inter', 'Work Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Space Mono', monospace;
+}
+
+/* ---- Tokens · Modern Dark (Linear-ish near-black, คุม contrast) ---- */
+:root[data-theme="modern"][data-mode="dark"] {
+  --void: #0e0f13;
+  --panel: #16171d;
+  --panel-raised: #1b1c24;
+  --panel-sunken: #20222b;
+  --border: #2e3039;
+  --border-soft: #24262e;
+  --text: #e9eaf0;
+  --text-muted: #b8bac6;
+  --text-dim: #888b99;
+
+  --fire: #ff6b6e; --fire-glow: #ff6b6e;
+  --cold: #54a9ff; --cold-glow: #54a9ff;
+  --lightning: #f0b13c; --lightning-glow: #f0b13c;
+  --chaos: #bf7af0; --chaos-glow: #bf7af0;
+
+  --gold: #7d7ef5; --gold-glow: #7d7ef5; --gold-dim: #9394f7;
+
+  --ok: #3ecf74;
+  --link: #7d7ef5;
+}
+
+/* ---- 0 · Base surface & typography ---- */
+html[data-theme="modern"] body {
+  font-feature-settings: "tnum";
+  -webkit-font-smoothing: antialiased;
+}
+html[data-theme="modern"] ::selection { background: var(--gold); color: #ffffff; }
+html[data-theme="modern"] h2, html[data-theme="modern"] h3 { letter-spacing: -0.01em; }
+
+/* Scrollbar บาง โค้ง ตามธีม */
+html[data-theme="modern"] * { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+html[data-theme="modern"] ::-webkit-scrollbar { width: 10px; height: 10px; }
+html[data-theme="modern"] ::-webkit-scrollbar-track { background: transparent; }
+html[data-theme="modern"] ::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+/* ---- 1 · ขอบบาง 1px + มุมโค้งบนทุก panel / card / control / input ----
+   (รายการเดียวกับกลุ่ม 1 ของ Trust Blue Pay ยกเว้น .sidebar/.topbar ที่แยกไปจัดใน
+   หมวด App shell — ขอบเต็มความสูงไม่ควรมี radius) */
+html[data-theme="modern"] .nav-item,
+html[data-theme="modern"] .sidebar-toggle,
+html[data-theme="modern"] .preset-tab,
+html[data-theme="modern"] .preset-save-tag,
+html[data-theme="modern"] .ocr-zone,
+html[data-theme="modern"] .ocr-btn,
+html[data-theme="modern"] .ocr-thumb,
+html[data-theme="modern"] .paperdoll-frame,
+html[data-theme="modern"] .equip-slot,
+html[data-theme="modern"] .jewel-slot,
+html[data-theme="modern"] .item-editor,
+html[data-theme="modern"] .stat-radar,
+html[data-theme="modern"] .aug-calc,
+html[data-theme="modern"] .ac-tip,
+html[data-theme="modern"] .template-label,
+html[data-theme="modern"] .sr-score-box,
+html[data-theme="modern"] .sr-bar,
+html[data-theme="modern"] .totals-panel,
+html[data-theme="modern"] .gauge-track,
+html[data-theme="modern"] .hub-card,
+html[data-theme="modern"] .link-card,
+html[data-theme="modern"] .link-open,
+html[data-theme="modern"] .stash-manual,
+html[data-theme="modern"] .reco-card,
+html[data-theme="modern"] .score-bar,
+html[data-theme="modern"] .score-badge,
+html[data-theme="modern"] .radar-panel,
+html[data-theme="modern"] .radar-item-card,
+html[data-theme="modern"] .radar-item-rows-wrap,
+html[data-theme="modern"] .radar-item-row,
+html[data-theme="modern"] .radar-score-info,
+html[data-theme="modern"] .radar-filter,
+html[data-theme="modern"] .radar-errors,
+html[data-theme="modern"] .radar-fallback,
+html[data-theme="modern"] .radar-stale-note,
+html[data-theme="modern"] .farm-toolbar,
+html[data-theme="modern"] .farm-card,
+html[data-theme="modern"] .farm-project-bar,
+html[data-theme="modern"] .farm-list-item,
+html[data-theme="modern"] .farm-run-summary,
+html[data-theme="modern"] .farm-econ,
+html[data-theme="modern"] .farm-econ-field,
+html[data-theme="modern"] .farm-tracker,
+html[data-theme="modern"] .frs-cell,
+html[data-theme="modern"] .add-link-btn,
+html[data-theme="modern"] .divine-metric-card,
+html[data-theme="modern"] .divine-chart-wrap,
+html[data-theme="modern"] .divine-table-wrap,
+html[data-theme="modern"] .divine-disclaimer,
+html[data-theme="modern"] .shop-summary .summary-group,
+html[data-theme="modern"] .shop-toolbar,
+html[data-theme="modern"] .shop-filter,
+html[data-theme="modern"] .size-btn,
+html[data-theme="modern"] .shop-buynext,
+html[data-theme="modern"] .shop-progress,
+html[data-theme="modern"] #shopGearPanel,
+html[data-theme="modern"] .shop-gear-panel,
+html[data-theme="modern"] .shop-slot,
+html[data-theme="modern"] .shop-slot-add,
+html[data-theme="modern"] .shop-table-wrap,
+html[data-theme="modern"] .shop-numpad,
+html[data-theme="modern"] .shop-numpad button,
+html[data-theme="modern"] .link-cell a,
+html[data-theme="modern"] .icon-btn,
+html[data-theme="modern"] button.add-row,
+html[data-theme="modern"] .codex-list-item,
+html[data-theme="modern"] .codex-detail-panel,
+html[data-theme="modern"] .codex-section,
+html[data-theme="modern"] .codex-empty,
+html[data-theme="modern"] .codex-img-box,
+html[data-theme="modern"] .kwc-compare-bar,
+html[data-theme="modern"] .kwc-compare-card,
+html[data-theme="modern"] .kli-cmp,
+html[data-theme="modern"] .kw-tip,
+html[data-theme="modern"] .toast,
+html[data-theme="modern"] .ux-state,
+html[data-theme="modern"] .ux-skel-row,
+html[data-theme="modern"] .game-thumb,
+html[data-theme="modern"] .shop-bulkbar,
+html[data-theme="modern"] .shop-row-menu,
+html[data-theme="modern"] .density-btn,
+html[data-theme="modern"] .shop-bulk-slot select,
+html[data-theme="modern"] .patch-panel,
+html[data-theme="modern"] .patch-close,
+html[data-theme="modern"] .mode-toggle,
+html[data-theme="modern"] .appearance-seg button,
+html[data-theme="modern"] input,
+html[data-theme="modern"] select,
+html[data-theme="modern"] textarea {
+  border-width: 1px;
+  border-radius: 10px;
+}
+/* พื้นผิวใหญ่ที่ Trust ไม่ได้ครอบ แต่ยังโชว์ขอบหนา RawBlock อยู่ */
+html[data-theme="modern"] .hub-hero {
+  border-width: 1px;
+  border-radius: 14px;
+  background: var(--panel);
+  box-shadow: 0 1px 2px rgba(23, 24, 28, 0.04), 0 3px 10px rgba(23, 24, 28, 0.05);
+}
+html[data-theme="modern"][data-mode="dark"] .hub-hero {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+/* radius scale: พื้นผิวใหญ่โค้งกว่า / control เล็กโค้งน้อยกว่า */
+html[data-theme="modern"] .hub-card,
+html[data-theme="modern"] .radar-panel,
+html[data-theme="modern"] .reco-card,
+html[data-theme="modern"] .codex-detail-panel,
+html[data-theme="modern"] #shopGearPanel,
+html[data-theme="modern"] .farm-run-summary,
+html[data-theme="modern"] .divine-chart-wrap,
+html[data-theme="modern"] .stat-radar,
+html[data-theme="modern"] .aug-calc,
+html[data-theme="modern"] .item-editor,
+html[data-theme="modern"] .totals-panel { border-radius: 12px; }
+html[data-theme="modern"] .patch-panel { border-radius: 14px; border-color: var(--border-soft); }
+html[data-theme="modern"] .nav-item,
+html[data-theme="modern"] .sidebar-toggle,
+html[data-theme="modern"] .ocr-btn,
+html[data-theme="modern"] .size-btn,
+html[data-theme="modern"] .density-btn,
+html[data-theme="modern"] .icon-btn,
+html[data-theme="modern"] button.add-row,
+html[data-theme="modern"] .shop-numpad button,
+html[data-theme="modern"] .appearance-seg button,
+html[data-theme="modern"] .preset-tab,
+html[data-theme="modern"] input,
+html[data-theme="modern"] select,
+html[data-theme="modern"] textarea { border-radius: 8px; }
+
+/* ---- 2 · Pill radius บน chip/badge สั้นๆ (รายการเดียวกับกลุ่ม 2 ของ Trust) ---- */
+html[data-theme="modern"] .radar-badge,
+html[data-theme="modern"] .filter-chip,
+html[data-theme="modern"] .mech-tag,
+html[data-theme="modern"] .bought-badge,
+html[data-theme="modern"] .divine-reco-badge,
+html[data-theme="modern"] .reco-top-badge,
+html[data-theme="modern"] .codex-dev-badge,
+html[data-theme="modern"] .codex-type-chip,
+html[data-theme="modern"] .codex-status-chip,
+html[data-theme="modern"] .codex-rate-chip,
+html[data-theme="modern"] .codex-link-chip,
+html[data-theme="modern"] .codex-mob-chip,
+html[data-theme="modern"] .kwc-review-badge,
+html[data-theme="modern"] .kwc-en-badge,
+html[data-theme="modern"] .kwc-cat-chip,
+html[data-theme="modern"] .kw-help-chip,
+html[data-theme="modern"] .kw-tip-btn,
+html[data-theme="modern"] .kw-tip-link,
+html[data-theme="modern"] .kwc-cmp-chip,
+html[data-theme="modern"] .sr-status,
+html[data-theme="modern"] .budget-chip,
+html[data-theme="modern"] .farm-link-chip {
+  border-width: 1px;
+  border-radius: 999px;
+}
+html[data-theme="modern"] .reco-top-badge { background: var(--gold); color: #ffffff; border-color: var(--gold); }
+/* dark: accent เป็น indigo อ่อน — ตัวอักษรเข้มอ่านชัดกว่าขาว */
+html[data-theme="modern"][data-mode="dark"] .reco-top-badge { color: #0e0f13; }
+
+/* ---- 3 · Elevation: เงาซ้อนเบาๆ บน card, เงาลอยชัดบน layer ลอย ---- */
+html[data-theme="modern"] .hub-card,
+html[data-theme="modern"] .link-card,
+html[data-theme="modern"] .reco-card,
+html[data-theme="modern"] .radar-panel,
+html[data-theme="modern"] .radar-item-card,
+html[data-theme="modern"] .farm-card,
+html[data-theme="modern"] .farm-list-item,
+html[data-theme="modern"] .farm-run-summary,
+html[data-theme="modern"] .farm-econ,
+html[data-theme="modern"] .stat-radar,
+html[data-theme="modern"] .aug-calc,
+html[data-theme="modern"] .farm-tracker,
+html[data-theme="modern"] .divine-metric-card,
+html[data-theme="modern"] .codex-list-item,
+html[data-theme="modern"] .codex-detail-panel,
+html[data-theme="modern"] .kwc-compare-card,
+html[data-theme="modern"] .shop-summary .summary-group,
+html[data-theme="modern"] #shopGearPanel {
+  box-shadow: 0 1px 2px rgba(23, 24, 28, 0.04), 0 3px 10px rgba(23, 24, 28, 0.05);
+}
+html[data-theme="modern"] .patch-panel,
+html[data-theme="modern"] .toast,
+html[data-theme="modern"] .shop-row-menu,
+html[data-theme="modern"] .shop-numpad,
+html[data-theme="modern"] .ac-tip,
+html[data-theme="modern"] .kw-tip {
+  box-shadow: 0 8px 16px rgba(23, 24, 28, 0.08), 0 20px 48px rgba(23, 24, 28, 0.16);
+}
+html[data-theme="modern"][data-mode="dark"] .hub-card,
+html[data-theme="modern"][data-mode="dark"] .link-card,
+html[data-theme="modern"][data-mode="dark"] .reco-card,
+html[data-theme="modern"][data-mode="dark"] .radar-panel,
+html[data-theme="modern"][data-mode="dark"] .radar-item-card,
+html[data-theme="modern"][data-mode="dark"] .farm-card,
+html[data-theme="modern"][data-mode="dark"] .farm-list-item,
+html[data-theme="modern"][data-mode="dark"] .farm-run-summary,
+html[data-theme="modern"][data-mode="dark"] .farm-econ,
+html[data-theme="modern"][data-mode="dark"] .stat-radar,
+html[data-theme="modern"][data-mode="dark"] .aug-calc,
+html[data-theme="modern"][data-mode="dark"] .farm-tracker,
+html[data-theme="modern"][data-mode="dark"] .divine-metric-card,
+html[data-theme="modern"][data-mode="dark"] .codex-list-item,
+html[data-theme="modern"][data-mode="dark"] .codex-detail-panel,
+html[data-theme="modern"][data-mode="dark"] .kwc-compare-card,
+html[data-theme="modern"][data-mode="dark"] .shop-summary .summary-group,
+html[data-theme="modern"][data-mode="dark"] #shopGearPanel {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+html[data-theme="modern"][data-mode="dark"] .patch-panel,
+html[data-theme="modern"][data-mode="dark"] .toast,
+html[data-theme="modern"][data-mode="dark"] .shop-row-menu,
+html[data-theme="modern"][data-mode="dark"] .shop-numpad,
+html[data-theme="modern"][data-mode="dark"] .ac-tip,
+html[data-theme="modern"][data-mode="dark"] .kw-tip {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5), 0 24px 56px rgba(0, 0, 0, 0.55);
+}
+/* card ใน dark ควรลอยด้วยสีพื้น ไม่ใช่แค่เงา */
+html[data-theme="modern"][data-mode="dark"] .hub-card,
+html[data-theme="modern"][data-mode="dark"] .reco-card,
+html[data-theme="modern"][data-mode="dark"] .radar-panel,
+html[data-theme="modern"][data-mode="dark"] .codex-detail-panel,
+html[data-theme="modern"][data-mode="dark"] .divine-metric-card { background: var(--panel); }
+
+/* ---- 4 · Accent (indigo) แทนลำดับชั้นที่เคยมาจากขอบดำหนา ---- */
+html[data-theme="modern"] .score-bar-fill { background: var(--gold); }
+html[data-theme="modern"] .summary-group.remain-group,
+html[data-theme="modern"] .summary-group.bought-group,
+html[data-theme="modern"] .reco-card.top-pick,
+html[data-theme="modern"] .farm-list-item.selected,
+html[data-theme="modern"] .codex-list-item.selected,
+html[data-theme="modern"] .farm-card.favorite {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px var(--gold), 0 3px 10px rgba(23, 24, 28, 0.06);
+}
+html[data-theme="modern"] .farm-card.is-active {
+  border-left-width: 3px;
+  border-left-color: var(--gold);
+}
+html[data-theme="modern"] .farm-list-item.selected,
+html[data-theme="modern"] .codex-list-item.selected {
+  background: color-mix(in srgb, var(--gold) 7%, var(--panel));
+}
+
+/* ---- 5 · ซ่อมสีเทา hardcode ให้รอด dark mode (ล้อกลุ่ม 5 ของ Trust) ---- */
+html[data-theme="modern"] .farm-card.muted,
+html[data-theme="modern"] .reco-card.dimmed {
+  background: var(--panel-sunken);
+}
+html[data-theme="modern"] .shop-slot.empty {
+  border-color: var(--border-soft);
+  color: var(--text-dim);
+}
+html[data-theme="modern"] .shop-table tbody tr.bought:hover,
+html[data-theme="modern"] .shop-filter:hover,
+html[data-theme="modern"] .shop-table tbody tr.row-target {
+  background: var(--panel-sunken);
+}
+
+/* ---- 6 · App shell: sidebar / topbar / nav ---- */
+html[data-theme="modern"] .sidebar {
+  background: #f0f0f3;
+  border-right: 1px solid var(--border-soft);
+}
+html[data-theme="modern"][data-mode="dark"] .sidebar { background: #121318; }
+html[data-theme="modern"] .sidebar-brand { border-bottom: 1px solid var(--border); }
+html[data-theme="modern"] .sidebar-brand-name {
+  text-transform: none;
+  letter-spacing: -0.01em;
+  font-weight: 700;
+}
+html[data-theme="modern"] .sidebar-footer { border-top: 1px solid var(--border); }
+html[data-theme="modern"] .nav-group-label {
+  color: var(--text-dim);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+}
+
+html[data-theme="modern"] .nav-item {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+html[data-theme="modern"] .nav-item:hover {
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+  color: var(--text);
+}
+html[data-theme="modern"] .nav-item.active {
+  background: color-mix(in srgb, var(--gold) 12%, transparent);
+  border-color: transparent;
+  color: var(--gold);
+  font-weight: 600;
+}
+/* โหมดย่อ sidebar: ยืนยันการซ่อน label ด้วย font-size:0 เหมือน base (กัน override ชน) */
+@media (min-width: 861px) {
+  html[data-theme="modern"] .app-shell.collapsed .nav-item,
+  html[data-theme="modern"] .app-shell.collapsed .sidebar-toggle { font-size: 0; }
+}
+
+html[data-theme="modern"] .sidebar-toggle {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-dim);
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+html[data-theme="modern"] .sidebar-toggle:hover {
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+  color: var(--text);
+}
+
+/* Topbar แบบ glass: เนื้อหาเลื่อนลอดใต้ได้ (sticky อยู่แล้ว) */
+html[data-theme="modern"] .topbar {
+  background: rgba(246, 246, 248, 0.82);
+  -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  backdrop-filter: blur(14px) saturate(1.5);
+  border-bottom: 1px solid var(--border-soft);
+  align-items: center;
+  padding: 13px 28px;
+}
+html[data-theme="modern"][data-mode="dark"] .topbar { background: rgba(14, 15, 19, 0.8); }
+html[data-theme="modern"] .topbar-title {
+  text-transform: none;
+  letter-spacing: -0.01em;
+  font-weight: 650;
+  font-size: 15px;
+}
+html[data-theme="modern"] .topbar-crumb {
+  background: var(--panel-sunken);
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  padding: 2px 9px;
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+}
+html[data-theme="modern"] .mode-toggle { border-radius: 999px; }
+
+/* ---- 7 · Controls: ปุ่ม / chip / input / ตาราง / layer ลอย ----
+   ลด hover แบบกลับสีดำ-ขาว (RawBlock inversion) เป็น tint นุ่มๆ */
+html[data-theme="modern"] .ocr-btn {
+  background: var(--panel);
+  border-color: var(--border);
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-family: var(--font-body);
+  font-weight: 550;
+}
+html[data-theme="modern"] .ocr-btn:hover {
+  background: var(--panel-sunken);
+  color: var(--text);
+  border-color: var(--border);
+}
+html[data-theme="modern"] .ocr-btn.primary {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #ffffff;
+}
+html[data-theme="modern"] .ocr-btn.primary:hover {
+  background: var(--gold-dim);
+  border-color: var(--gold-dim);
+  color: #ffffff;
+}
+html[data-theme="modern"][data-mode="dark"] .ocr-btn.primary,
+html[data-theme="modern"][data-mode="dark"] .ocr-btn.primary:hover { color: #0e0f13; }
+
+html[data-theme="modern"] .preset-tab:hover,
+html[data-theme="modern"] .filter-chip:hover,
+html[data-theme="modern"] .mode-toggle:hover,
+html[data-theme="modern"] .shop-numpad button:hover {
+  background: var(--panel-sunken);
+  color: var(--text);
+}
+html[data-theme="modern"] .preset-tab.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #ffffff;
+}
+html[data-theme="modern"][data-mode="dark"] .preset-tab.active { color: #0e0f13; }
+html[data-theme="modern"] .filter-chip.active {
+  background: color-mix(in srgb, var(--gold) 12%, transparent);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+html[data-theme="modern"] .shop-numpad button.np-done {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #ffffff;
+}
+html[data-theme="modern"] .shop-numpad button.np-done:hover { background: var(--gold-dim); color: #ffffff; }
+html[data-theme="modern"][data-mode="dark"] .shop-numpad button.np-done,
+html[data-theme="modern"][data-mode="dark"] .shop-numpad button.np-done:hover { color: #0e0f13; }
+
+/* input focus: วงแหวน accent แบบ Linear แทน inset border ดำ */
+html[data-theme="modern"] input:focus,
+html[data-theme="modern"] select:focus,
+html[data-theme="modern"] textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 18%, transparent);
+}
+html[data-theme="modern"] input,
+html[data-theme="modern"] select,
+html[data-theme="modern"] textarea { background: var(--panel); color: var(--text); }
+
+/* หัวตาราง: แถบนุ่ม ไม่ใช่แถบกลับสี */
+html[data-theme="modern"] .shop-table thead th {
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+}
+html[data-theme="modern"] .divine-table th {
+  background: var(--panel-sunken);
+  color: var(--text-muted);
+}
+
+/* Interactive list rows: hover ชัดแต่นุ่ม */
+html[data-theme="modern"] .codex-list-item:hover,
+html[data-theme="modern"] .farm-list-item:hover,
+html[data-theme="modern"] .radar-item-row:hover,
+html[data-theme="modern"] .shop-slot:hover,
+html[data-theme="modern"] .link-card:hover {
+  background: var(--panel-sunken);
+}
+
+/* Layer ลอย: modal overlay เบลอแบบ macOS, เมนู/ทูลทิปเป็น glass บางๆ */
+html[data-theme="modern"] .patch-overlay {
+  background: rgba(10, 10, 16, 0.45);
+  -webkit-backdrop-filter: blur(6px) saturate(1.2);
+  backdrop-filter: blur(6px) saturate(1.2);
+}
+html[data-theme="modern"] .shop-row-menu,
+html[data-theme="modern"] .kw-tip,
+html[data-theme="modern"] .ac-tip {
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  backdrop-filter: blur(10px) saturate(1.3);
+  border-color: var(--border-soft);
+}
+
+/* ---- 8 · Motion & focus (ทั้งหมดอยู่หลัง reduced-motion guard) ---- */
+html[data-theme="modern"] :focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html[data-theme="modern"] button,
+  html[data-theme="modern"] a,
+  html[data-theme="modern"] input,
+  html[data-theme="modern"] select,
+  html[data-theme="modern"] textarea,
+  html[data-theme="modern"] .nav-item,
+  html[data-theme="modern"] .filter-chip,
+  html[data-theme="modern"] .preset-tab,
+  html[data-theme="modern"] .shop-slot,
+  html[data-theme="modern"] .codex-list-item,
+  html[data-theme="modern"] .farm-list-item,
+  html[data-theme="modern"] .link-card,
+  html[data-theme="modern"] .mode-toggle,
+  html[data-theme="modern"] .icon-btn {
+    transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease,
+      box-shadow 0.16s ease, transform 0.12s ease, opacity 0.16s ease;
+  }
+  /* pressed state สั้นๆ — ไม่แตะ layout */
+  html[data-theme="modern"] button:active:not(:disabled) { transform: scale(0.985); }
+}

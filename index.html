@@ -8,18 +8,18 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23003087'/%3E%3Crect x='9' y='8' width='14' height='3.4' fill='%23fff'/%3E%3Crect x='9' y='14.3' width='11' height='3.4' fill='%23fff'/%3E%3Crect x='9' y='20.6' width='14' height='3.4' fill='%23fff'/%3E%3Crect x='9' y='8' width='3.4' height='16' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<!-- ตั้ง data-theme / data-mode / data-font-scale บน <html> ให้เร็วที่สุด (กัน flash ธีม/โหมด/ขนาดตัวอักษรตอนโหลด) — ค่าเริ่มต้น rawblock/light/normal -->
+<!-- ตั้ง data-theme / data-mode / data-font-scale บน <html> ให้เร็วที่สุด (กัน flash ธีม/โหมด/ขนาดตัวอักษรตอนโหลด) — ค่าเริ่มต้น modern/light/normal (patch 0.35: ธีมเริ่มต้นใหม่ 'modern'; ผู้ใช้ที่เคยเลือก rawblock/trust ไว้ยังได้ธีมเดิม) -->
 <script>
 (function () {
   try {
     var t = localStorage.getItem('poeAssist.theme.v1');
     var m = localStorage.getItem('poeAssist.colorMode.v1');
     var f = localStorage.getItem('poeAssist.fontScale.v1');
-    document.documentElement.setAttribute('data-theme', t === 'trust-blue-pay' ? 'trust-blue-pay' : 'rawblock');
+    document.documentElement.setAttribute('data-theme', (t === 'trust-blue-pay' || t === 'rawblock') ? t : 'modern');
     document.documentElement.setAttribute('data-mode', m === 'dark' ? 'dark' : 'light');
     document.documentElement.setAttribute('data-font-scale', (f === 'small' || f === 'large') ? f : 'normal');
   } catch (e) {
-    document.documentElement.setAttribute('data-theme', 'rawblock');
+    document.documentElement.setAttribute('data-theme', 'modern');
     document.documentElement.setAttribute('data-mode', 'light');
     document.documentElement.setAttribute('data-font-scale', 'normal');
   }
@@ -64,8 +64,10 @@
   }
 
   /* ==================== Themes & color modes ====================
-     Applied via data-theme (rawblock|trust-blue-pay) + data-mode (light|dark)
-     on <html>. Base :root above = RawBlock light (default, no attribute needed).
+     Applied via data-theme (modern|rawblock|trust-blue-pay) + data-mode (light|dark)
+     on <html>. Base :root above = RawBlock light (no attribute needed).
+     patch 0.35: ธีมเริ่มต้นคือ 'modern' — token + structural override ของมันอยู่ใน
+     css/modern-theme.css (ไฟล์แยก, scope ด้วย [data-theme="modern"] ทั้งหมด).
      Everything is token-based so all tabs re-theme globally with no per-tab JS.
      Persisted in poeAssist.theme.v1 / poeAssist.colorMode.v1. */
 
@@ -480,6 +482,16 @@
     color: var(--text);
   }
   .topbar-crumb { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); }
+  /* คำอธิบายสั้นๆ ของแท็บที่เปิดอยู่ (patch 0.35) — ตัดด้วย ellipsis, ซ่อนบนจอแคบ */
+  .topbar-sub {
+    font-size: 11.5px;
+    color: var(--text-dim);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  @media (max-width: 1023px) { .topbar-sub { display: none; } }
 
   /* max-width กว้างขึ้นเพื่อใช้พื้นที่จอกว้างให้คุ้ม (เดิม 1400 เหลือช่องว่างขวาเยอะ); margin auto กันจอ ultra-wide ชิดซ้าย */
   .content { flex: 1; width: 100%; max-width: 1760px; margin: 0 auto; padding: 22px 32px 60px; }
@@ -3829,6 +3841,9 @@
      วางหลัง </style> เพื่อคงลำดับ cascade เดิม (rule พื้นฐาน specificity ต่ำ — override ของ Trust theme ชนะด้วย specificity อยู่แล้ว) -->
 <link rel="stylesheet" href="css/asset-icons.css">
 <link rel="stylesheet" href="css/ux-foundation.css">
+<!-- ธีม Modern (patch 0.35) — token + structural override ทั้งหมด scope ด้วย [data-theme="modern"];
+     ต้องอยู่ท้ายสุดเพื่อชนะ cascade ของ base style และไฟล์ helper ด้านบน -->
+<link rel="stylesheet" href="css/modern-theme.css">
 </head>
 <body>
 <div class="app-shell">
@@ -3877,6 +3892,7 @@
     <header class="topbar">
       <span class="topbar-title" id="topbarTitle">Exile Hub</span>
       <span class="topbar-crumb" id="topbarCrumb">Main</span>
+      <span class="topbar-sub" id="topbarSub"></span>
       <div class="topbar-actions">
         <button class="mode-toggle" type="button" id="modeToggle" title="สลับโหมดสว่าง/มืด" aria-label="สลับโหมดสว่าง/มืด" aria-pressed="false"></button>
       </div>
@@ -6000,6 +6016,17 @@ const TAB_IDS = { home: 'pageHome', radar: 'pageRadar', farm: 'pageFarm', forge:
 const TAB_BTNS = { home: 'tabBtnHome', radar: 'tabBtnRadar', farm: 'tabBtnFarm', forge: 'tabBtnForge', shop: 'tabBtnShop', divine: 'tabBtnDivine', codex: 'tabBtnCodex', keyword: 'tabBtnKeyword' };
 const TAB_TITLES = { home: 'Exile Hub', radar: 'Market Radar', farm: 'Farm Planner', forge: 'Resistance Checker', shop: 'Gear Planner', divine: 'Divine Market', codex: 'Content Codex', keyword: 'Keyword Codex' };
 const TAB_GROUPS = { home: 'Main', radar: 'Main', divine: 'Main', farm: 'Planning', shop: 'Planning', forge: 'Tools', codex: 'Tools', keyword: 'Tools' };
+// คำอธิบายสั้นๆ ต่อแท็บ แสดงบน topbar (patch 0.35) — ข้อความล้วน อัปเดตใน switchTab
+const TAB_SUBTITLES = {
+  home: 'League status, stash sale watch & quick resources',
+  radar: 'Hourly poe.ninja snapshot → what to farm now',
+  divine: 'Divine price analytics & phase timeline',
+  farm: 'Plan farm strategies, track runs & profit',
+  shop: 'Build shopping list, budget & trade links',
+  forge: 'Resistance / stat check with OCR import',
+  codex: 'Boss & content drop knowledge base (poe2wiki)',
+  keyword: 'PoE2 keyword encyclopedia TH/EN (poe2db)',
+};
 
 // แท็บเริ่มต้นตอนเปิดเว็บ (additive key) — 'last' = ใช้แท็บล่าสุดเหมือนเดิม, หรือ id แท็บที่ตายตัว
 const START_TAB_KEY = 'poeAssist.startTab.v1';
@@ -6029,8 +6056,10 @@ function switchTab(tab) {
   if (activeBtn.scrollIntoView) activeBtn.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   const titleEl = document.getElementById('topbarTitle');
   const crumbEl = document.getElementById('topbarCrumb');
+  const subEl = document.getElementById('topbarSub');
   if (titleEl) titleEl.textContent = TAB_TITLES[tab] || tab;
   if (crumbEl) crumbEl.textContent = TAB_GROUPS[tab] || '';
+  if (subEl) subEl.textContent = TAB_SUBTITLES[tab] || '';
 }
 Object.keys(TAB_BTNS).forEach(k => {
   document.getElementById(TAB_BTNS[k]).addEventListener('click', () => switchTab(k));
@@ -6063,19 +6092,24 @@ const SIDEBAR_KEY = 'poeAssist.sidebarCollapsed.v1';
 })();
 
 /* ==================== Appearance: theme + color mode ====================
-   ธีมทั้งเว็บคุมด้วย data-theme (rawblock|trust-blue-pay) + data-mode (light|dark)
+   ธีมทั้งเว็บคุมด้วย data-theme (modern|rawblock|trust-blue-pay) + data-mode (light|dark)
    บน <html> — ตั้งค่าเร็วสุดใน <head> แล้ว (กัน flash). ที่นี่คุมการสลับ/บันทึก/ซิงก์
    ปุ่มบน topbar กับใน Settings ให้ตรงกันเสมอ. เก็บใน key เพิ่มใหม่ (additive). */
 const THEME_KEY = 'poeAssist.theme.v1';
 const MODE_KEY = 'poeAssist.colorMode.v1';
 const APP_THEMES = [
+  { id: 'modern', label: 'Modern' },
   { id: 'rawblock', label: 'RawBlock' },
   { id: 'trust-blue-pay', label: 'Trust Blue Pay' },
 ];
 
+// patch 0.35: ธีมเริ่มต้นใหม่คือ 'modern' — ค่าที่ผู้ใช้เคยบันทึกไว้ (rawblock/trust) ยังถูกเคารพเสมอ
 function loadThemePreference() {
-  try { return localStorage.getItem(THEME_KEY) === 'trust-blue-pay' ? 'trust-blue-pay' : 'rawblock'; }
-  catch (e) { return 'rawblock'; }
+  try {
+    const t = localStorage.getItem(THEME_KEY);
+    return APP_THEMES.some(x => x.id === t) ? t : 'modern';
+  }
+  catch (e) { return 'modern'; }
 }
 function loadColorModePreference() {
   try { return localStorage.getItem(MODE_KEY) === 'dark' ? 'dark' : 'light'; }
@@ -6108,7 +6142,7 @@ function syncAppearanceControls() {
 }
 
 function setAppTheme(t) {
-  appTheme = APP_THEMES.some(x => x.id === t) ? t : 'rawblock';
+  appTheme = APP_THEMES.some(x => x.id === t) ? t : 'modern';
   try { localStorage.setItem(THEME_KEY, appTheme); } catch (e) { /* storage unavailable */ }
   applyThemePreference();
   syncAppearanceControls();
@@ -8433,6 +8467,18 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.35',
+    date: '2026-07-15',
+    notes: [
+      'ธีมใหม่ "Modern" (ค่าเริ่มต้นใหม่) — ดีไซน์แนว macOS / Linear / Vercel: พื้นหลังนุ่ม ขอบบาง มุมโค้ง เงาเบาๆ accent สี indigo ครบทั้งโหมดสว่าง/มืด (css/modern-theme.css)',
+      'App shell โฉมใหม่ใต้ธีม Modern: topbar แบบ glass-blur, เมนู sidebar แบบ pill พร้อมสถานะ active ชัดเจน, ป้ายกลุ่มเมนู, scrollbar บางตามธีม',
+      'Interaction ทั้งแอป (ธีม Modern): hover/focus/pressed states นุ่มขึ้น, focus ring สี accent, ทรานซิชันสั้นๆ ทุกอย่างเคารพ prefers-reduced-motion, modal overlay เบลอแบบ macOS, เมนูลอย/ทูลทิปเป็น glass',
+      'Topbar แสดงคำอธิบายสั้นๆ ของแท็บที่เปิดอยู่ (ซ่อนอัตโนมัติบนจอแคบ)',
+      'ธีมเดิมยังอยู่ครบ: RawBlock และ Trust Blue Pay เลือกได้ใน Settings เหมือนเดิม — ผู้ใช้ที่เคยเลือกธีมไว้จะได้ธีมเดิม ไม่ถูกสลับอัตโนมัติ',
+      'ไม่มีการแตะข้อมูล/สูตรคำนวณใดๆ — การเปลี่ยนแปลงเป็น CSS + ป้ายข้อความเท่านั้น ทุกฟีเจอร์และ localStorage เดิมทำงานเหมือนเดิม',
+    ],
+  },
   {
     version: '0.34',
     date: '2026-07-15',
