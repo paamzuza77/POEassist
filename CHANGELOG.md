@@ -2,6 +2,16 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-16 (2)
+
+- **Settings background image picker (patch 0.46)** (`index.html` + `css/modern-theme.css` + docs): optional subtle app background chosen in Settings → Appearance, default "no background".
+  - **Images found in `background/`:** `1.jfif`, `2.webp`, `3.jfif`, `4.jpg`, `5.jpg` (dark PoE-style fantasy art; filenames have no spaces, `src` still goes through `encodeURI`). GitHub Pages can't list folders at runtime → static registry `APP_BACKGROUNDS` in a new `App background (patch 0.46)` JS module (after the Display-mode block); adding an image = drop file + one registry row.
+  - **Settings UI:** new "พื้นหลัง (Background)" section in Appearance — a "ไม่มีพื้นหลัง" chip + one real thumbnail button per image (background-image on the button), active ring on the current choice, a 0–20% intensity slider (default 8%, live % readout, dimmed while mode = none), and the readability note (TH/EN via new `bg.*`/`sec.background` keys in both dictionaries).
+  - **Rendering:** static `<div id="appBgLayer">` right after `<body>` — `position:fixed; inset:0; z-index:-1; pointer-events:none; cover/center`, image + opacity set inline by `applyAppBackground()`. Negative z-index paints it above the theme's body canvas but under every card/panel, so all three themes stay readable in light and dark; no transition/animation (reduced-motion safe, no layout shift).
+  - **Storage:** additive `poeAssist.background.v1` = `{mode:'none'|'image', src, opacity}`, tolerant load (unknown src → none; opacity clamped 0–0.2, non-numeric → 0.08). In `APP_DATA_KEYS` (export/import) **and** `UI_PREF_KEYS` (Reset UI prefs → no background).
+  - Verification: Playwright headless over local HTTP — **23/23 checks, zero console errors**: default none, 6 picker options, immediate apply, slider 0–20 with clamp, persistence across reload, key present in both lists, `parseBackup` round-trip, reset simulation → none, garbage-value tolerant load, light/dark + RawBlock/Trust render with background on, all 8 tabs, existing Appearance controls intact, 480px zero overflow + picker fits. Screenshots reviewed: Modern dark/light with background, Settings picker, RawBlock, Trust, 480px settings.
+  - Deferred: blur option, per-mode (light/dark) backgrounds, and re-encoding the oversized `4.jpg` (1.2MB)/`5.jpg` (520KB) to ~200KB webp — noted in `TODO.md` (needs user OK to modify images).
+
 ## 2026-07-16 (1)
 
 - **Top-right app menu + topbar global search (patch 0.45)** (`index.html` + `css/modern-theme.css` + docs): new compact ⋯ button at the far right of the topbar opens a macOS/Codex-style floating popover (`#appMenuBtn`/`#appMenu`), and a global search field (`#topbarSearch`) sits next to the Simple/Advanced pill. JS lives in a new `App Menu + Global Search (patch 0.45)` block at the very end of the main script (after the Today Dashboard block — it reads the same end-of-file `let`s inside handlers only).

@@ -254,6 +254,7 @@
   html[data-theme="trust-blue-pay"] .app-menu,
   html[data-theme="trust-blue-pay"] .topbar-search-input,
   html[data-theme="trust-blue-pay"] .topbar-search-results,
+  html[data-theme="trust-blue-pay"] .bg-thumb,
   html[data-theme="trust-blue-pay"] .appearance-seg button,
   html[data-theme="trust-blue-pay"] input,
   html[data-theme="trust-blue-pay"] select,
@@ -4557,6 +4558,48 @@
   @media (max-width: 480px) {
     .topbar-search-input { width: 92px; }
   }
+
+  /* ==================== App background (patch 0.46) ====================
+     เลเยอร์ภาพพื้นหลังจางๆ (เลือกใน Settings → Appearance) — z-index:-1 = วาดเหนือพื้นหลัง
+     ธีม (body canvas) แต่ใต้เนื้อหาทั้งหมด · opacity/รูปถูกตั้งด้วย inline style จาก
+     applyAppBackground() (สูงสุด 0.2 — บังคับใน JS) · ไม่มี transition/animation (นิ่งเสมอ,
+     เคารพ reduced-motion โดยปริยาย) · pointer-events:none = ไม่บังการคลิกใดๆ */
+  #appBgLayer {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    pointer-events: none;
+  }
+  /* ---- ตัวเลือกพื้นหลังใน Settings ---- */
+  .bg-pick-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: stretch; }
+  .bg-thumb {
+    width: 78px;
+    height: 50px;
+    border: 2px solid var(--border);
+    background-color: var(--void);
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    padding: 0;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .bg-thumb:hover { border-color: var(--text); }
+  .bg-thumb:focus-visible { outline: 2px solid var(--border); outline-offset: 1px; }
+  .bg-thumb.active { outline: 3px solid var(--gold); outline-offset: 1px; border-color: var(--gold); }
+  .bg-thumb-none { display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 4px; line-height: 1.3; }
+  .bg-opacity-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+  .bg-opacity-row.bg-dim { opacity: 0.45; }
+  .bg-opacity-row input[type="range"] { flex: 1; max-width: 220px; accent-color: var(--gold); }
+  .bg-opacity-label { font-size: 12px; color: var(--text-muted); }
+  .bg-opacity-val { font-family: var(--font-mono); font-size: 11px; font-weight: 700; min-width: 36px; text-align: right; }
 </style>
 <!-- Modularization Phase 1 (patch 0.34): helper CSS ที่แยกออกจาก inline <style> ด้านบน
      วางหลัง </style> เพื่อคงลำดับ cascade เดิม (rule พื้นฐาน specificity ต่ำ — override ของ Trust theme ชนะด้วย specificity อยู่แล้ว) -->
@@ -4567,6 +4610,10 @@
 <link rel="stylesheet" href="css/modern-theme.css?v=0.44.1">
 </head>
 <body>
+<!-- App background layer (patch 0.46) — ภาพพื้นหลังจางๆ ที่ผู้ใช้เลือกใน Settings → Appearance
+     วาด "เหนือ" พื้นหลังธีมแต่ "ใต้" เนื้อหาแอปทั้งหมด (z-index:-1, pointer-events:none)
+     คุมด้วยโมดูล App background ในสคริปต์หลัก (คีย์ poeAssist.background.v1) — ค่าเริ่มต้น: ไม่มีพื้นหลัง -->
+<div id="appBgLayer" aria-hidden="true"></div>
 <div class="app-shell">
   <aside class="sidebar">
     <button class="sidebar-toggle" type="button" id="sidebarToggle" title="ย่อ/ขยายเมนู" aria-label="ย่อ/ขยายเมนู" aria-pressed="false">
@@ -6990,6 +7037,66 @@ applyDisplayMode(); // ยืนยัน attribute เผื่อ head script 
   syncDisplayToggle();
 })();
 
+/* ==================== App background (patch 0.46) ====================
+   ภาพพื้นหลังจางๆ ของทั้งแอป (เลือกใน Settings → Appearance) — วาดบนเลเยอร์ #appBgLayer
+   (fixed, z-index:-1, pointer-events:none) เหนือพื้นหลังธีมแต่ใต้เนื้อหา/การ์ดทุกชิ้น
+   - GitHub Pages เป็น static → ลิสต์ไฟล์ตอนรันไม่ได้ — APP_BACKGROUNDS คือทะเบียนคงที่
+     ของไฟล์ในโฟลเดอร์ background/ (ตรวจด้วยตาตอน implement) · เพิ่มรูป = วางไฟล์ + เพิ่มแถว
+   - คีย์ additive poeAssist.background.v1: {mode:'none'|'image', src:'background/<file>', opacity:0–0.2}
+     tolerant load (src ไม่อยู่ในทะเบียน → none) · ค่าเริ่มต้น: ไม่มีพื้นหลัง, opacity 0.08
+   - อยู่ทั้งใน APP_DATA_KEYS (backup) และ UI_PREF_KEYS (Reset UI = กลับเป็นไม่มีพื้นหลัง) */
+const APP_BG_KEY = 'poeAssist.background.v1';
+const APP_BG_OPACITY_DEFAULT = 0.08;
+const APP_BG_OPACITY_MAX = 0.2;
+// ทะเบียนไฟล์ใน background/ — ชื่อไฟล์ตรงตามจริง (ไม่มีช่องว่าง; ใส่ผ่าน encodeURI ตอนใช้เสมอ)
+const APP_BACKGROUNDS = [
+  { id: 'bg1', src: 'background/1.jfif' },
+  { id: 'bg2', src: 'background/2.webp' },
+  { id: 'bg3', src: 'background/3.jfif' },
+  { id: 'bg4', src: 'background/4.jpg' },
+  { id: 'bg5', src: 'background/5.jpg' },
+];
+let appBackground = (function loadAppBackground() {
+  const def = { mode: 'none', src: '', opacity: APP_BG_OPACITY_DEFAULT };
+  try {
+    const v = JSON.parse(localStorage.getItem(APP_BG_KEY));
+    if (!v || typeof v !== 'object') return def;
+    const bg = APP_BACKGROUNDS.find(b => b.src === v.src);
+    let op = Number(v.opacity);
+    if (!isFinite(op)) op = APP_BG_OPACITY_DEFAULT;
+    op = Math.min(APP_BG_OPACITY_MAX, Math.max(0, op));
+    return { mode: (v.mode === 'image' && bg) ? 'image' : 'none', src: bg ? bg.src : '', opacity: op };
+  } catch (e) { return def; }
+})();
+function persistAppBackground() {
+  try { localStorage.setItem(APP_BG_KEY, JSON.stringify(appBackground)); } catch (e) { /* storage unavailable */ }
+}
+function applyAppBackground() {
+  const layer = document.getElementById('appBgLayer');
+  if (!layer) return;
+  if (appBackground.mode === 'image' && appBackground.src) {
+    layer.style.backgroundImage = 'url("' + encodeURI(appBackground.src) + '")';
+    layer.style.opacity = String(appBackground.opacity);
+  } else {
+    layer.style.backgroundImage = '';
+    layer.style.opacity = '0';
+  }
+}
+// patch = ส่วนที่จะแก้ (merge — ฟิลด์อื่นคงเดิม) เช่น {mode:'image', src:'background/2.webp'} หรือ {opacity:0.12}
+function setAppBackground(patch) {
+  const next = Object.assign({}, appBackground, patch || {});
+  const bg = APP_BACKGROUNDS.find(b => b.src === next.src);
+  next.mode = (next.mode === 'image' && bg) ? 'image' : 'none';
+  if (!bg) next.src = '';
+  let op = Number(next.opacity);
+  if (!isFinite(op)) op = APP_BG_OPACITY_DEFAULT;
+  next.opacity = Math.min(APP_BG_OPACITY_MAX, Math.max(0, op));
+  appBackground = next;
+  persistAppBackground();
+  applyAppBackground();
+}
+applyAppBackground();
+
 /* ==================== Shared command disclosures (patch 0.44) ====================
    Dense page sections follow Simple/Advanced until the user explicitly toggles
    that section. One additive UI key keeps choices across page re-renders. */
@@ -7455,6 +7562,13 @@ const I18N = {
     'search.type.keyword': 'Keyword',
     'search.type.todo': 'งาน',
     'search.type.gear': 'เกียร์',
+    // App background (patch 0.46)
+    'sec.background': 'พื้นหลัง (Background)',
+    'bg.label': 'ภาพพื้นหลังแอป',
+    'bg.none': 'ไม่มีพื้นหลัง',
+    'bg.image': 'ภาพ {n}',
+    'bg.opacity': 'ความเข้ม',
+    'bg.note': 'พื้นหลังจะแสดงแบบจางเพื่อไม่รบกวนการอ่าน — ปรับความเข้มได้ 0–20%',
   },
   en: {
     'settings.title': 'Settings',
@@ -7735,6 +7849,13 @@ const I18N = {
     'search.type.keyword': 'Keyword',
     'search.type.todo': 'Todo',
     'search.type.gear': 'Gear',
+    // App background (patch 0.46)
+    'sec.background': 'Background',
+    'bg.label': 'App background image',
+    'bg.none': 'No background',
+    'bg.image': 'Image {n}',
+    'bg.opacity': 'Intensity',
+    'bg.note': 'Backgrounds are rendered subtly so text stays readable — intensity adjustable 0–20%.',
   },
 };
 
@@ -7807,6 +7928,7 @@ const APP_DATA_KEYS = [
   'poeAssist.fontScale.v1',
   'poeAssist.displayMode.v1', // โหมดแสดงผล Simple/Advanced (patch 0.41)
   'poeAssist.commandPanels.v1', // shared command-surface disclosure choices (patch 0.44)
+  'poeAssist.background.v1', // ภาพพื้นหลังแอป (patch 0.46)
   'poe2ShopList.rows.v1',
   'poe2ShopList.rate.v1',
   'poe2ShopList.tableSizing.v1',
@@ -7837,6 +7959,7 @@ const UI_PREF_KEYS = [
   'poeAssist.fontScale.v1',
   'poeAssist.displayMode.v1', // Simple/Advanced เป็น UI pref (patch 0.41)
   'poeAssist.commandPanels.v1', // shared disclosure UI preference (patch 0.44)
+  'poeAssist.background.v1', // ภาพพื้นหลังเป็น UI pref (patch 0.46) — Reset UI = กลับเป็นไม่มีพื้นหลัง
   'poe2ShopList.tableSizing.v1',
   'poe2ShopList.density.v1',
   'poe2ShopList.panels.v1', // UI pref (patch 0.42)
@@ -8029,6 +8152,75 @@ function parseBackup(text) {
     () => appFontScale, setAppFontScale, 'fontscale'));
   pgAppearance.appendChild(noteP('appearance.note'));
   pgAppearance.appendChild(noteP('fontsize.note'));
+
+  // ---- พื้นหลังแอป (patch 0.46) — ตัวเลือกภาพ (ทะเบียน APP_BACKGROUNDS) + ความเข้ม ----
+  pgAppearance.appendChild(sectionTitle('sec.background'));
+  const bgGroup = document.createElement('div');
+  bgGroup.className = 'appearance-group';
+  const bgLab = document.createElement('div');
+  bgLab.className = 'appearance-group-label';
+  bgLab.dataset.i18n = 'bg.label';
+  bgLab.textContent = t('bg.label');
+  bgGroup.appendChild(bgLab);
+  const bgRow = document.createElement('div');
+  bgRow.className = 'bg-pick-row';
+  bgRow.id = 'settingsBgRow';
+  const bgOpRow = document.createElement('div');
+  bgOpRow.className = 'bg-opacity-row';
+  const bgOpLab = document.createElement('span');
+  bgOpLab.className = 'bg-opacity-label';
+  bgOpLab.dataset.i18n = 'bg.opacity';
+  bgOpLab.textContent = t('bg.opacity');
+  const bgOpInput = document.createElement('input');
+  bgOpInput.type = 'range';
+  bgOpInput.id = 'settingsBgOpacity';
+  bgOpInput.min = '0';
+  bgOpInput.max = String(Math.round(APP_BG_OPACITY_MAX * 100)); // 20 (%)
+  bgOpInput.step = '1';
+  const bgOpVal = document.createElement('span');
+  bgOpVal.className = 'bg-opacity-val';
+  function syncBgControls() {
+    bgRow.querySelectorAll('.bg-thumb').forEach(b => {
+      b.classList.toggle('active',
+        (appBackground.mode === 'none' && b.dataset.bgsrc === '') ||
+        (appBackground.mode === 'image' && b.dataset.bgsrc === appBackground.src));
+    });
+    const pct = Math.round(appBackground.opacity * 100);
+    bgOpInput.value = String(pct);
+    bgOpVal.textContent = pct + '%';
+    bgOpRow.classList.toggle('bg-dim', appBackground.mode !== 'image'); // ยังปรับได้ แค่หรี่ให้รู้ว่าไม่มีผลตอนนี้
+  }
+  const bgNoneBtn = document.createElement('button');
+  bgNoneBtn.type = 'button';
+  bgNoneBtn.className = 'bg-thumb bg-thumb-none';
+  bgNoneBtn.dataset.bgsrc = '';
+  bgNoneBtn.dataset.i18n = 'bg.none';
+  bgNoneBtn.textContent = t('bg.none');
+  bgNoneBtn.addEventListener('click', () => { setAppBackground({ mode: 'none', src: '' }); syncBgControls(); });
+  bgRow.appendChild(bgNoneBtn);
+  APP_BACKGROUNDS.forEach((bg, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'bg-thumb';
+    b.dataset.bgsrc = bg.src;
+    b.style.backgroundImage = 'url("' + encodeURI(bg.src) + '")'; // ทะเบียนคงที่ในไฟล์
+    b.title = tFmt('bg.image', { n: i + 1 });
+    b.setAttribute('aria-label', tFmt('bg.image', { n: i + 1 }));
+    b.addEventListener('click', () => { setAppBackground({ mode: 'image', src: bg.src }); syncBgControls(); });
+    bgRow.appendChild(b);
+  });
+  bgOpInput.addEventListener('input', () => {
+    setAppBackground({ opacity: Number(bgOpInput.value) / 100 });
+    syncBgControls();
+  });
+  bgOpRow.appendChild(bgOpLab);
+  bgOpRow.appendChild(bgOpInput);
+  bgOpRow.appendChild(bgOpVal);
+  bgGroup.appendChild(bgRow);
+  bgGroup.appendChild(bgOpRow);
+  bgGroup.appendChild(noteP('bg.note'));
+  pgAppearance.appendChild(bgGroup);
+  syncBgControls();
 
   pgAppearance.appendChild(sectionTitle('sec.startup'));
   const startGroup = document.createElement('div');
@@ -10096,6 +10288,16 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.46',
+    date: '2026-07-16',
+    notes: [
+      'เลือกภาพพื้นหลังแอปได้ใน Settings → Appearance (หมวดใหม่ "พื้นหลัง"): มีตัวเลือก "ไม่มีพื้นหลัง" (ค่าเริ่มต้น) + ภาพ 5 แบบจากโฟลเดอร์ background/ พร้อมภาพตัวอย่างขนาดเล็กให้กดเลือก',
+      'พื้นหลังแสดงแบบจางมาก (ค่าเริ่มต้น 8%) เพื่อไม่รบกวนการอ่าน — ปรับความเข้มได้ 0–20% ด้วยแถบเลื่อน, ภาพนิ่งเสมอ (ไม่มีอนิเมชัน), ไม่บังการคลิก และการ์ด/ตัวอักษรยังอ่านชัดทุกธีมทั้งโหมดสว่าง/มืด',
+      'ตัวเลือกถูกบันทึกในเครื่อง (คีย์ใหม่ poeAssist.background.v1) — ติดไปกับ Backup Export/Import และถูกล้างกลับเป็น "ไม่มีพื้นหลัง" เมื่อกด Reset UI preferences',
+      'ไม่มีการแตะข้อมูล/สูตรคำนวณ/ฟีเจอร์เดิมใดๆ — เป็นเลเยอร์แสดงผลเพิ่มเข้ามาอย่างเดียว',
+    ],
+  },
   {
     version: '0.45',
     date: '2026-07-16',

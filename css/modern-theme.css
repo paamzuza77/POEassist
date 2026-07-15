@@ -1217,3 +1217,14 @@ html[data-theme="modern"] .topbar-search-input:focus {
 @media(max-width:860px){
   html[data-theme="modern"] .app-menu-btn{min-height:34px}
 }
+
+/* ==================== 14 · App background picker (patch 0.46) ====================
+   ตัวเลือกภาพพื้นหลังใน Settings — โฉม Modern: thumb มน, ring accent ตอนเลือก
+   (เลเยอร์ #appBgLayer เองเป็น theme-agnostic — ไม่มี override) */
+html[data-theme="modern"] .bg-thumb { border: 1px solid var(--border-soft); border-radius: 10px; }
+html[data-theme="modern"] .bg-thumb:hover { border-color: var(--gold); }
+html[data-theme="modern"] .bg-thumb.active {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
