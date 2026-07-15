@@ -1167,3 +1167,53 @@ html[data-theme="modern"] .farm-command .farm-filters{grid-column:2}
   html[data-theme="modern"] .today-focus-item .todo-due{grid-column:2 / 4;grid-row:2;justify-self:start}
   html[data-theme="modern"] .today-focus-item .tk-status{grid-column:2 / 4;grid-row:3;justify-self:start}
 }
+
+/* ==================== 13 · App Menu + Global Search (patch 0.45) ====================
+   popover เมนูแอปขวาบน + ช่องค้นหา global — โฉม Modern: มุมโค้ง, glass, เงา --shadow-lg,
+   แถว hover นุ่มแบบ macOS/Codex (base RawBlock อยู่ใน index.html — sync กลุ่ม selector) */
+html[data-theme="modern"] .app-menu-btn {
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid var(--border-soft);
+  color: var(--text-muted);
+}
+html[data-theme="modern"] .app-menu-btn:hover { background: var(--panel-sunken); color: var(--text); }
+html[data-theme="modern"] .app-menu-btn[aria-expanded="true"] { background: var(--accent-soft); color: var(--gold); border-color: transparent; }
+html[data-theme="modern"] .app-menu,
+html[data-theme="modern"] .topbar-search-results {
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+}
+html[data-theme="modern"] .app-menu-row,
+html[data-theme="modern"] .tsr-row { border-radius: 9px; }
+html[data-theme="modern"] .app-menu-row:hover,
+html[data-theme="modern"] .app-menu-row:focus-visible,
+html[data-theme="modern"] .tsr-row:hover,
+html[data-theme="modern"] .tsr-row.active { background: var(--accent-soft); color: var(--text); }
+html[data-theme="modern"] .app-menu-row:hover .app-menu-hint,
+html[data-theme="modern"] .app-menu-row:focus-visible .app-menu-hint { color: var(--text-muted); }
+html[data-theme="modern"] .tsr-row:hover .tsr-type,
+html[data-theme="modern"] .tsr-row.active .tsr-type { color: var(--gold); border-color: var(--gold); }
+html[data-theme="modern"] .app-menu-check { color: var(--gold); }
+html[data-theme="modern"] .app-menu-sep { border-top-color: var(--border-soft); }
+html[data-theme="modern"] .tsr-type { border-radius: 999px; border-color: var(--border-soft); }
+html[data-theme="modern"] .topbar-search-input {
+  border-radius: 999px;
+  border: 1px solid var(--border-soft);
+  background: var(--panel-sunken);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+html[data-theme="modern"] .topbar-search-input:focus {
+  outline: none;
+  border-color: var(--gold);
+  background: var(--panel);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+@media(max-width:860px){
+  html[data-theme="modern"] .app-menu-btn{min-height:34px}
+}

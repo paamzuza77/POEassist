@@ -250,6 +250,10 @@
   html[data-theme="trust-blue-pay"] .patch-panel,
   html[data-theme="trust-blue-pay"] .patch-close,
   html[data-theme="trust-blue-pay"] .mode-toggle,
+  html[data-theme="trust-blue-pay"] .app-menu-btn,
+  html[data-theme="trust-blue-pay"] .app-menu,
+  html[data-theme="trust-blue-pay"] .topbar-search-input,
+  html[data-theme="trust-blue-pay"] .topbar-search-results,
   html[data-theme="trust-blue-pay"] .appearance-seg button,
   html[data-theme="trust-blue-pay"] input,
   html[data-theme="trust-blue-pay"] select,
@@ -319,6 +323,8 @@
   html[data-theme="trust-blue-pay"] .patch-panel,
   html[data-theme="trust-blue-pay"] .toast,
   html[data-theme="trust-blue-pay"] .shop-row-menu,
+  html[data-theme="trust-blue-pay"] .app-menu,
+  html[data-theme="trust-blue-pay"] .topbar-search-results,
   html[data-theme="trust-blue-pay"] .kw-tip {
     box-shadow: 0 12px 32px rgba(0, 48, 135, 0.14);
   }
@@ -4412,6 +4418,145 @@
   @media (max-width: 560px) {
     .radar-hero-score { margin-left: 0; align-items: flex-start; }
   }
+
+  /* ==================== App Menu + Global Search (patch 0.45) ====================
+     เมนูแอปขวาบน (popover) + ช่องค้นหา global บน topbar — base เป็น RawBlock (เหลี่ยม/เส้นหนา);
+     Modern v2 มี override มน/glass ใน css/modern-theme.css section 13 (sync กลุ่ม selector) */
+  /* ปุ่มโหมดสว่าง/มืดเดิมบน topbar ถูกซ่อน (ย้าย action เข้า app menu) — element ยังอยู่เพื่อ Settings sync */
+  .topbar-actions .mode-toggle { display: none; }
+  .app-menu-wrap { position: relative; flex-shrink: 0; }
+  .app-menu-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 34px; height: 34px;
+    background: var(--void);
+    border: 2px solid var(--border);
+    color: var(--text);
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+  }
+  .app-menu-btn:hover, .app-menu-btn[aria-expanded="true"] { background: var(--text); color: var(--void); }
+  .app-menu-btn:focus-visible { outline: 2px solid var(--border); outline-offset: 1px; }
+  .app-menu-btn svg { width: 16px; height: 16px; display: block; }
+  .app-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 260; /* เหนือ topbar/kw-tip(200) — ใต้ modal(300)/toast(400) */
+    width: min(272px, calc(100vw - 24px));
+    max-height: min(72vh, 560px);
+    overflow-y: auto;
+    background: var(--void);
+    border: 3px solid var(--border);
+    padding: 6px;
+  }
+  .app-menu[hidden] { display: none; }
+  .app-menu-group-label {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 8px 10px 4px;
+  }
+  .app-menu-sep { border: 0; border-top: 1px solid var(--border-soft, var(--border)); margin: 6px 4px; }
+  .app-menu-row {
+    display: flex; align-items: center; gap: 9px;
+    width: 100%;
+    background: transparent;
+    border: 0;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    text-align: left;
+    padding: 7px 10px;
+    cursor: pointer;
+  }
+  .app-menu-row:hover, .app-menu-row:focus-visible { background: var(--text); color: var(--void); outline: none; }
+  .app-menu-row:hover .app-menu-hint, .app-menu-row:focus-visible .app-menu-hint { color: inherit; }
+  .app-menu-ico { display: inline-flex; width: 15px; height: 15px; flex-shrink: 0; align-items: center; justify-content: center; }
+  .app-menu-ico svg { width: 14px; height: 14px; display: block; }
+  .app-menu-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .app-menu-hint {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .app-menu-check { font-size: 10.5px; flex-shrink: 0; }
+  .app-menu-status {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    padding: 3px 10px;
+  }
+  .app-menu-status .app-menu-hint { color: var(--text); }
+  /* ---- Global search ---- */
+  .topbar-search { position: relative; display: flex; align-items: center; flex-shrink: 1; min-width: 0; }
+  .topbar-search-ico { position: absolute; left: 9px; width: 13px; height: 13px; color: var(--text-dim); pointer-events: none; }
+  .topbar-search-input {
+    width: 190px;
+    max-width: 100%;
+    height: 34px;
+    background: var(--void);
+    border: 2px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 12px;
+    padding: 0 10px 0 28px;
+  }
+  .topbar-search-input:focus { outline: 2px solid var(--border); outline-offset: 1px; }
+  .topbar-search-input::placeholder { color: var(--text-dim); }
+  .topbar-search-results {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 260;
+    width: min(340px, calc(100vw - 24px));
+    max-height: min(60vh, 420px);
+    overflow-y: auto;
+    background: var(--void);
+    border: 3px solid var(--border);
+    padding: 6px;
+  }
+  .topbar-search-results[hidden] { display: none; }
+  .tsr-row {
+    display: flex; align-items: center; gap: 9px;
+    width: 100%;
+    background: transparent;
+    border: 0;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    text-align: left;
+    padding: 7px 10px;
+    cursor: pointer;
+  }
+  .tsr-row:hover, .tsr-row.active { background: var(--text); color: var(--void); }
+  .tsr-row:hover .tsr-type, .tsr-row.active .tsr-type { color: inherit; border-color: currentColor; }
+  .tsr-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tsr-type {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border: 1px solid var(--border-soft, var(--border));
+    padding: 1px 6px;
+    flex-shrink: 0;
+  }
+  .tsr-empty { font-size: 12px; color: var(--text-dim); padding: 10px; }
+  @media (max-width: 860px) {
+    .app-menu-btn { width: 30px; height: 30px; }
+    .topbar-search-input { width: 120px; height: 30px; font-size: 11.5px; }
+  }
+  @media (max-width: 480px) {
+    .topbar-search-input { width: 92px; }
+  }
 </style>
 <!-- Modularization Phase 1 (patch 0.34): helper CSS ที่แยกออกจาก inline <style> ด้านบน
      วางหลัง </style> เพื่อคงลำดับ cascade เดิม (rule พื้นฐาน specificity ต่ำ — override ของ Trust theme ชนะด้วย specificity อยู่แล้ว) -->
@@ -4478,8 +4623,23 @@
       <span class="topbar-sub" id="topbarSub"></span>
       </div>
       <div class="topbar-actions">
+        <!-- Global search (patch 0.45) — ค้นหาแท็บ/Codex/Todo/Gear แบบเบาๆ (ไม่ใช่ command palette เต็มรูป)
+             JS ทั้งหมดอยู่บล็อก "App Menu + Global Search" ท้ายสคริปต์หลัก -->
+        <div class="topbar-search" id="topbarSearchWrap">
+          <svg class="topbar-search-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
+          <input type="text" id="topbarSearch" class="topbar-search-input" placeholder="ค้นหา…" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="topbarSearchResults" aria-label="Global search">
+          <div id="topbarSearchResults" class="topbar-search-results" role="listbox" hidden></div>
+        </div>
         <button class="display-toggle" type="button" id="displayToggle" title="สลับโหมดแสดงผล Simple/Advanced" aria-pressed="false"></button>
+        <!-- ปุ่มโหมดสว่าง/มืดถูกย้ายเข้าเมนูขวาบน (patch 0.45) — ปุ่มเดิม "ซ่อนด้วย CSS" ไม่ลบทิ้ง:
+             initModeToggle/syncAppearanceControls ยังอ้าง element นี้อยู่ (Settings sync เดิมไม่ถูกแตะ) -->
         <button class="mode-toggle" type="button" id="modeToggle" title="สลับโหมดสว่าง/มืด" aria-label="สลับโหมดสว่าง/มืด" aria-pressed="false"></button>
+        <!-- App menu ขวาบน (patch 0.45) — popover รวม action ระดับแอป (โหมดสี/นำทาง/ระบบ/สถานะ)
+             เนื้อในถูก render ใหม่ทุกครั้งที่เปิด (i18n ตามภาษาปัจจุบัน) โดย renderAppMenu() -->
+        <div class="app-menu-wrap">
+          <button class="app-menu-btn" type="button" id="appMenuBtn" title="เมนูแอป" aria-haspopup="menu" aria-expanded="false" aria-controls="appMenu"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3" cy="8" r="1.6"/><circle cx="8" cy="8" r="1.6"/><circle cx="13" cy="8" r="1.6"/></svg></button>
+          <div class="app-menu" id="appMenu" role="menu" aria-labelledby="appMenuBtn" hidden></div>
+        </div>
       </div>
     </header>
 
@@ -7268,6 +7428,33 @@ const I18N = {
     'today.tl.buy': 'ซื้อ',
     'today.tl.farm': 'ฟาร์ม',
     'today.tl.empty': 'ยังไม่มีรายการ — ใส่กำหนดเสร็จให้งาน หรือรอข้อมูลตลาด/รายการซื้อ แล้วจะโผล่ที่นี่',
+    // App menu + global search (patch 0.45)
+    'menu.btn': 'เมนูแอป',
+    'menu.appearance': 'การแสดงผล',
+    'menu.mode.tolight': 'สลับเป็นโหมดสว่าง',
+    'menu.mode.todark': 'สลับเป็นโหมดมืด',
+    'menu.mode.light': 'สว่าง',
+    'menu.mode.dark': 'มืด',
+    'menu.display': 'โหมดแสดงผล',
+    'menu.nav': 'ไปที่แท็บ',
+    'menu.system': 'ระบบ',
+    'menu.settings': 'ตั้งค่า (Settings)',
+    'menu.patchnotes': 'Patch Notes',
+    'menu.export': 'สำรองข้อมูล (Export)',
+    'menu.status': 'สถานะ',
+    'menu.status.theme': 'ธีม',
+    'menu.status.currency': 'สกุลเงิน',
+    'menu.status.lang': 'ภาษา',
+    'menu.status.market': 'ข้อมูลตลาด',
+    'menu.market.age': 'อัปเดต {h} ชม.ก่อน',
+    'menu.market.none': 'ยังไม่โหลด',
+    'search.ph': 'ค้นหา…',
+    'search.none': 'ไม่พบผลลัพธ์',
+    'search.type.tab': 'แท็บ',
+    'search.type.content': 'Content',
+    'search.type.keyword': 'Keyword',
+    'search.type.todo': 'งาน',
+    'search.type.gear': 'เกียร์',
   },
   en: {
     'settings.title': 'Settings',
@@ -7521,6 +7708,33 @@ const I18N = {
     'today.tl.buy': 'Buy',
     'today.tl.farm': 'Farm',
     'today.tl.empty': 'Nothing yet — add due dates to tasks, or wait for market/shopping data to appear here',
+    // App menu + global search (patch 0.45)
+    'menu.btn': 'App menu',
+    'menu.appearance': 'Appearance',
+    'menu.mode.tolight': 'Switch to light mode',
+    'menu.mode.todark': 'Switch to dark mode',
+    'menu.mode.light': 'Light',
+    'menu.mode.dark': 'Dark',
+    'menu.display': 'Display mode',
+    'menu.nav': 'Go to tab',
+    'menu.system': 'System',
+    'menu.settings': 'Settings',
+    'menu.patchnotes': 'Patch Notes',
+    'menu.export': 'Export backup',
+    'menu.status': 'Status',
+    'menu.status.theme': 'Theme',
+    'menu.status.currency': 'Currency',
+    'menu.status.lang': 'Language',
+    'menu.status.market': 'Market data',
+    'menu.market.age': 'Updated {h}h ago',
+    'menu.market.none': 'Not loaded',
+    'search.ph': 'Search…',
+    'search.none': 'No results',
+    'search.type.tab': 'Tab',
+    'search.type.content': 'Content',
+    'search.type.keyword': 'Keyword',
+    'search.type.todo': 'Todo',
+    'search.type.gear': 'Gear',
   },
 };
 
@@ -9882,6 +10096,17 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.45',
+    date: '2026-07-16',
+    notes: [
+      'เมนูแอปมุมขวาบน (App Menu): ปุ่ม ⋯ บน topbar เปิด popover รวม action ระดับแอป — สลับโหมดสว่าง/มืด, สลับ Simple/Advanced, ไปแท็บใดก็ได้ (ติ๊กแท็บปัจจุบัน), ทางลัด Settings / Patch Notes / Export backup และแถวสถานะ (ธีม·โหมด / สกุลเงิน / ภาษา / ความสดข้อมูลตลาด)',
+      'ปุ่มสลับสว่าง/มืดย้ายจาก topbar เข้าไปอยู่ในเมนูใหม่ (ยัง sync กับ Settings เหมือนเดิม) — ปุ่ม Settings/Patch Notes เดิมใน sidebar ยังอยู่ที่เดิม เมนูเป็นทางลัดซ้ำ',
+      'ช่องค้นหา global บน topbar (ข้าง Simple/Advanced): ค้นชื่อแท็บ, Content Codex, Keyword Codex, งานในหน้า Today และไอเทมใน Gear Planner — คลิก/Enter เปิดปลายทางให้เลย, ลูกศรขึ้นลงเลือกผล, Esc ปิด/ล้าง',
+      'เมนูและผลค้นหาปิดด้วย Esc / คลิกนอกกรอบ, รองรับคีย์บอร์ด, แสดงผลถูกทั้งโหมดสว่าง/มืดและทุกธีม (Modern/RawBlock/Trust)',
+      'ไม่มีการแตะข้อมูล/สูตรคำนวณ/คีย์ storage ใดๆ — ทุก action ในเมนูเรียกฟังก์ชันเดิมของแอป',
+    ],
+  },
   {
     version: '0.44',
     date: '2026-07-15',
@@ -15823,6 +16048,324 @@ function renderToday() {
     if (tick) tick.textContent = todayHeroTickText();
   }, 1000);
   renderToday();
+})();
+
+/* ==================== App Menu + Global Search (patch 0.45) ====================
+   เมนูแอปขวาบน (#appMenu popover) + ช่องค้นหา global (#topbarSearch) บน topbar
+   - เมนู: render เนื้อในใหม่ทุกครั้งที่เปิด (i18n ตามภาษาปัจจุบัน) — action ทุกอันเรียกฟังก์ชัน
+     เดิมของแอปเท่านั้น (setAppColorMode/setAppDisplayMode/switchTab/settingsBtn.click()/
+     patchNotesBtn.click()/exportAppData) ไม่มีตรรกะใหม่ · ปุ่ม #modeToggle เดิมยังอยู่ใน DOM
+     (ซ่อนด้วย CSS) เพื่อไม่แตะ initModeToggle/syncAppearanceControls/Settings sync
+   - ค้นหา: แท็บ / Content Codex / Keyword Codex / Todo (Today) / แถว Gear Planner —
+     substring match เบาๆ ไม่มี index · เปิดปลายทางด้วย deep-link helper เดิม
+     (todayOpenCodexEntry/openKeywordCodexEntry/openTodayTodoModal/goToShopRow)
+   - บล็อกนี้ต้องอยู่ "ท้ายสคริปต์ หลังบล็อก Today Dashboard" — handler อ่าน let ที่ประกาศ
+     ด้านบน (codexData/kwcData/todayTodos/shopRows) · ข้อความผู้ใช้/ภายนอกลง DOM ด้วย
+     textContent เสมอ (innerHTML ใช้เฉพาะ SVG สตริงคงที่ในไฟล์) */
+
+(function initAppMenu() {
+  const btn = document.getElementById('appMenuBtn');
+  const menu = document.getElementById('appMenu');
+  if (!btn || !menu) return;
+  let appMenuOpen = false;
+
+  // ไอคอนแท็บ/ปุ่มระบบ: โคลน SVG เดิมจากปุ่ม sidebar (สตริงคงที่ในไฟล์ — ปลอดภัยต่อ innerHTML)
+  const navSvg = (btnId) => {
+    const el = document.getElementById(btnId);
+    const svg = el && el.querySelector('.tab-ico svg');
+    return svg ? svg.outerHTML : '';
+  };
+  const EXPORT_SVG = '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M7 1h2v7l2.5-2.5L13 7l-5 5-5-5 1.5-1.5L7 8zM2 13h12v2H2z"/></svg>';
+
+  const mkIco = (svg) => {
+    const s = document.createElement('span');
+    s.className = 'app-menu-ico';
+    s.innerHTML = svg; // SVG คงที่ในไฟล์เท่านั้น
+    return s;
+  };
+  const mkGroupLabel = (text) => {
+    const d = document.createElement('div');
+    d.className = 'app-menu-group-label';
+    d.textContent = text;
+    return d;
+  };
+  const mkSep = () => {
+    const hr = document.createElement('hr');
+    hr.className = 'app-menu-sep';
+    return hr;
+  };
+  const mkRow = (opts) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'app-menu-row';
+    b.setAttribute('role', 'menuitem');
+    if (opts.icon) b.appendChild(mkIco(opts.icon));
+    const lab = document.createElement('span');
+    lab.className = 'app-menu-label';
+    lab.textContent = opts.label;
+    b.appendChild(lab);
+    if (opts.checked) {
+      const c = document.createElement('span');
+      c.className = 'app-menu-check';
+      c.textContent = '✓';
+      b.appendChild(c);
+    }
+    if (opts.hint) {
+      const h = document.createElement('span');
+      h.className = 'app-menu-hint';
+      h.textContent = opts.hint;
+      b.appendChild(h);
+    }
+    b.addEventListener('click', opts.onClick);
+    return b;
+  };
+  const mkStatus = (label, value) => {
+    const d = document.createElement('div');
+    d.className = 'app-menu-status';
+    const l = document.createElement('span');
+    l.textContent = label;
+    const v = document.createElement('span');
+    v.className = 'app-menu-hint';
+    v.textContent = value;
+    d.appendChild(l);
+    d.appendChild(v);
+    return d;
+  };
+
+  function renderAppMenu() {
+    menu.innerHTML = '';
+    // 1 · Appearance — โหมดสี (ย้ายมาจาก topbar) + โหมดแสดงผล (ทางลัด — pill เดิมยังอยู่)
+    menu.appendChild(mkGroupLabel(t('menu.appearance')));
+    menu.appendChild(mkRow({
+      icon: appMode === 'dark' ? SUN_SVG : MOON_SVG,
+      label: appMode === 'dark' ? t('menu.mode.tolight') : t('menu.mode.todark'),
+      hint: t('menu.mode.' + appMode),
+      onClick: () => { setAppColorMode(appMode === 'dark' ? 'light' : 'dark'); renderAppMenu(); },
+    }));
+    menu.appendChild(mkRow({
+      icon: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1 3h14v2H1zM1 7h10v2H1zM1 11h14v2H1z"/></svg>',
+      label: t('menu.display'),
+      hint: appDisplay === 'advanced' ? 'Advanced' : 'Simple',
+      onClick: () => { setAppDisplayMode(appDisplay === 'advanced' ? 'simple' : 'advanced'); renderAppMenu(); },
+    }));
+    menu.appendChild(mkSep());
+    // 2 · Navigate — แท็บทั้งหมด (checkmark = แท็บปัจจุบัน) — sidebar เดิมไม่ถูกแทนที่
+    menu.appendChild(mkGroupLabel(t('menu.nav')));
+    Object.keys(TAB_IDS).forEach(k => {
+      menu.appendChild(mkRow({
+        icon: navSvg(TAB_BTNS[k]),
+        label: TAB_TITLES[k] || k,
+        checked: activeTab === k,
+        onClick: () => { switchTab(k); closeAppMenu(); },
+      }));
+    });
+    menu.appendChild(mkSep());
+    // 3 · System — ทางลัดซ้ำของปุ่มเดิม (ปุ่ม Settings/Patch Notes ใน sidebar ยังอยู่ที่เดิม)
+    menu.appendChild(mkGroupLabel(t('menu.system')));
+    menu.appendChild(mkRow({
+      icon: navSvg('settingsBtn'),
+      label: t('menu.settings'),
+      onClick: () => {
+        closeAppMenu();
+        const sb = document.getElementById('settingsBtn');
+        if (sb) sb.click();
+      },
+    }));
+    menu.appendChild(mkRow({
+      icon: navSvg('patchNotesBtn'),
+      label: t('menu.patchnotes'),
+      onClick: () => {
+        closeAppMenu();
+        const pb = document.getElementById('patchNotesBtn');
+        if (pb) pb.click();
+      },
+    }));
+    menu.appendChild(mkRow({
+      icon: EXPORT_SVG,
+      label: t('menu.export'),
+      onClick: () => {
+        closeAppMenu();
+        try { exportAppData(); showSuccessToast(t('backup.export.ok')); }
+        catch (e) { showErrorToast(String(e && e.message || e)); }
+      },
+    }));
+    menu.appendChild(mkSep());
+    // 4 · Status — อ่านอย่างเดียว ค่าจาก state เดิม (ไม่มีการคำนวณใหม่)
+    menu.appendChild(mkGroupLabel(t('menu.status')));
+    const themeInfo = APP_THEMES.find(x => x.id === appTheme);
+    menu.appendChild(mkStatus(t('menu.status.theme'), (themeInfo ? themeInfo.label : appTheme) + ' · ' + t('menu.mode.' + appMode)));
+    menu.appendChild(mkStatus(t('menu.status.currency'), fiatCode()));
+    menu.appendChild(mkStatus(t('menu.status.lang'), appLang === 'th' ? 'ไทย' : 'English'));
+    const ageH = (typeof radarSnapshotAgeHours === 'function') ? radarSnapshotAgeHours() : null;
+    menu.appendChild(mkStatus(t('menu.status.market'),
+      ageH === null ? t('menu.market.none') : tFmt('menu.market.age', { h: ageH < 1 ? '<1' : String(Math.round(ageH)) })));
+  }
+
+  function openAppMenu() {
+    renderAppMenu();
+    menu.hidden = false;
+    appMenuOpen = true;
+    btn.setAttribute('aria-expanded', 'true');
+    const first = menu.querySelector('.app-menu-row');
+    if (first) first.focus();
+  }
+  function closeAppMenu(focusBtn) {
+    if (!appMenuOpen && menu.hidden) return;
+    menu.hidden = true;
+    appMenuOpen = false;
+    btn.setAttribute('aria-expanded', 'false');
+    if (focusBtn) btn.focus();
+  }
+
+  btn.addEventListener('click', () => { if (appMenuOpen) closeAppMenu(); else openAppMenu(); });
+  document.addEventListener('click', (e) => {
+    if (!appMenuOpen) return;
+    // ใช้ composedPath: แถวโหมดสี/โหมดแสดงผล re-render เมนูใน handler ของตัวเอง →
+    // ตอน event มาถึง document, e.target หลุดจาก DOM แล้ว (menu.contains ให้ false ผิดๆ)
+    const path = e.composedPath ? e.composedPath() : [];
+    if (path.indexOf(menu) !== -1 || path.indexOf(btn) !== -1) return;
+    if (menu.contains(e.target) || btn.contains(e.target)) return;
+    closeAppMenu();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && appMenuOpen) closeAppMenu(true);
+  });
+  // ลูกศรขึ้น/ลงวนตามแถวเมนู (Tab ปกติก็ใช้ได้ — ปุ่มจริงทุกแถว)
+  menu.addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    const rows = Array.from(menu.querySelectorAll('.app-menu-row'));
+    if (!rows.length) return;
+    const i = rows.indexOf(document.activeElement);
+    const n = e.key === 'ArrowDown' ? (i + 1) % rows.length : (i - 1 + rows.length) % rows.length;
+    rows[n].focus();
+    e.preventDefault();
+  });
+  // title ปุ่มตามภาษา
+  const applyMenuBtnTitle = () => { btn.title = t('menu.btn'); btn.setAttribute('aria-label', t('menu.btn')); };
+  applyMenuBtnTitle();
+  document.addEventListener('poeassist:prefschange', applyMenuBtnTitle);
+})();
+
+(function initTopbarSearch() {
+  const input = document.getElementById('topbarSearch');
+  const box = document.getElementById('topbarSearchResults');
+  const wrap = document.getElementById('topbarSearchWrap');
+  if (!input || !box || !wrap) return;
+  let results = [];
+  let active = -1; // index แถวที่ไฮไลต์ด้วยลูกศร (-1 = ยังไม่เลือก → Enter เปิดผลแรก)
+
+  const applyPlaceholder = () => { input.placeholder = t('search.ph'); };
+  applyPlaceholder();
+  document.addEventListener('poeassist:prefschange', applyPlaceholder);
+
+  function buildResults(q) {
+    const needle = String(q || '').trim().toLowerCase();
+    const out = [];
+    if (!needle) return out;
+    const match = (s) => typeof s === 'string' && s.toLowerCase().includes(needle);
+    const push = (type, label, run) => out.push({ type, label, run });
+    // 1) แท็บ (ชื่อ + กลุ่ม)
+    Object.keys(TAB_TITLES).forEach(k => {
+      if (match(TAB_TITLES[k]) || match(TAB_GROUPS[k])) push('tab', TAB_TITLES[k], () => switchTab(k));
+    });
+    // 2) Content Codex — เปิด entry ผ่าน deep link เดิม
+    try {
+      const entries = (codexData && Array.isArray(codexData.entries)) ? codexData.entries : [];
+      entries.filter(en => match(en.name)).slice(0, 5)
+        .forEach(en => push('content', en.name || en.id, () => todayOpenCodexEntry(en.id)));
+    } catch (e) { /* ข้อมูลยังไม่โหลด — ข้าม */ }
+    // 3) Keyword Codex — ชื่อไทย/อังกฤษ
+    try {
+      const kws = (kwcData && Array.isArray(kwcData.keywords)) ? kwcData.keywords : [];
+      kws.filter(kw => match(kw.nameTh) || match(kw.nameEn)).slice(0, 5)
+        .forEach(kw => push('keyword', kw.nameTh || kw.nameEn || kw.id, () => openKeywordCodexEntry(kw.id)));
+    } catch (e) { /* ข้าม */ }
+    // 4) Todo (Today) — เปิด popup รายละเอียดงานเดิม
+    try {
+      (Array.isArray(todayTodos) ? todayTodos : []).filter(x => match(x.title)).slice(0, 4)
+        .forEach(x => push('todo', x.title, () => { switchTab('today'); openTodayTodoModal(x.id); }));
+    } catch (e) { /* ข้าม */ }
+    // 5) แถว Gear Planner — jump ด้วย goToShopRow (เปิดส่วนตารางที่พับอยู่ให้เอง)
+    try {
+      (Array.isArray(shopRows) ? shopRows : []).filter(r => match(r.name)).slice(0, 4)
+        .forEach(r => push('gear', r.name, () => { switchTab('shop'); goToShopRow(r); }));
+    } catch (e) { /* ข้าม */ }
+    return out.slice(0, 12);
+  }
+
+  function closeResults() {
+    box.hidden = true;
+    input.setAttribute('aria-expanded', 'false');
+    active = -1;
+  }
+  function pick(r) {
+    closeResults();
+    input.value = '';
+    input.blur();
+    r.run();
+  }
+  function renderResults() {
+    box.innerHTML = '';
+    active = -1;
+    if (!input.value.trim()) { closeResults(); return; }
+    if (!results.length) {
+      const d = document.createElement('div');
+      d.className = 'tsr-empty';
+      d.textContent = t('search.none');
+      box.appendChild(d);
+    } else {
+      results.forEach(r => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'tsr-row';
+        b.setAttribute('role', 'option');
+        const lab = document.createElement('span');
+        lab.className = 'tsr-label';
+        lab.textContent = r.label; // ข้อความผู้ใช้/ภายนอก — textContent เสมอ
+        const ty = document.createElement('span');
+        ty.className = 'tsr-type';
+        ty.textContent = t('search.type.' + r.type);
+        b.appendChild(lab);
+        b.appendChild(ty);
+        b.addEventListener('click', () => pick(r));
+        box.appendChild(b);
+      });
+    }
+    box.hidden = false;
+    input.setAttribute('aria-expanded', 'true');
+  }
+  function setActive(n) {
+    const rows = Array.from(box.querySelectorAll('.tsr-row'));
+    if (!rows.length) return;
+    active = ((n % rows.length) + rows.length) % rows.length;
+    rows.forEach((el, i) => el.classList.toggle('active', i === active));
+    if (rows[active].scrollIntoView) rows[active].scrollIntoView({ block: 'nearest' });
+  }
+
+  input.addEventListener('input', () => { results = buildResults(input.value); renderResults(); });
+  input.addEventListener('focus', () => {
+    if (input.value.trim()) { results = buildResults(input.value); renderResults(); }
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      // Esc ครั้งแรกปิด dropdown — ครั้งถัดไปล้างคำค้น (ไม่ปล่อยทะลุไปปิด modal อื่น)
+      if (!box.hidden) closeResults(); else input.value = '';
+      e.stopPropagation();
+      return;
+    }
+    if (e.key === 'ArrowDown') {
+      if (box.hidden && input.value.trim()) { results = buildResults(input.value); renderResults(); }
+      setActive(active + 1);
+      e.preventDefault();
+      return;
+    }
+    if (e.key === 'ArrowUp') { setActive(active - 1); e.preventDefault(); return; }
+    if (e.key === 'Enter' && results.length && !box.hidden) {
+      pick(results[active >= 0 ? active : 0]);
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('click', (e) => { if (!wrap.contains(e.target)) closeResults(); });
 })();
 </script>
 </body>
