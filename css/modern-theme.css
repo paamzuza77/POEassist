@@ -154,6 +154,14 @@ html[data-theme="modern"] .shop-toolbar,
 html[data-theme="modern"] .shop-filter,
 html[data-theme="modern"] .size-btn,
 html[data-theme="modern"] .shop-buynext,
+html[data-theme="modern"] .shop-hero-slotctx,
+html[data-theme="modern"] .shop-slotctx-clear,
+html[data-theme="modern"] .shop-stat,
+html[data-theme="modern"] .shop-stat-bar,
+html[data-theme="modern"] .shop-disclosure > summary,
+html[data-theme="modern"] .shop-attention,
+html[data-theme="modern"] .shop-att-item,
+html[data-theme="modern"] .shop-att-rank,
 html[data-theme="modern"] .shop-progress,
 html[data-theme="modern"] #shopGearPanel,
 html[data-theme="modern"] .shop-gear-panel,
@@ -208,10 +216,12 @@ html[data-theme="modern"] .aug-calc,
 html[data-theme="modern"] .item-editor,
 html[data-theme="modern"] .totals-panel,
 html[data-theme="modern"] .shop-summary .summary-group,
+html[data-theme="modern"] .shop-attention,
 html[data-theme="modern"] #shopGearPanel { border-color: var(--border-soft); }
 
 /* พื้นผิวใหญ่: hero โค้งกว้าง + เงานุ่ม */
 html[data-theme="modern"] .hub-hero,
+html[data-theme="modern"] .shop-hero,
 html[data-theme="modern"] .today-hero {
   border-width: 1px;
   border-color: var(--border-soft);
@@ -694,3 +704,73 @@ html[data-theme="modern"] .toast { border-color: var(--border-soft); }
 
 /* ตัวเลข summary ใหญ่ๆ ใช้ mono ตัวหนาอ่านไว */
 html[data-theme="modern"] .hub-big { letter-spacing: -0.01em; }
+
+/* ---- 10 · Gear Planner planner-first reflow (patch 0.42) ----
+   base อยู่ใน index.html (banner ชื่อเดียวกัน) — บล็อกนี้คือหน้าตา Modern v2:
+   hero นุ่ม + ชิปสถิติลอย + disclosure เป็นแถบพับสงบๆ + Work Queue เป็นการ์ดข้าง */
+html[data-theme="modern"] .shop-hero { padding: 18px 20px; }
+html[data-theme="modern"] .shop-hero .shop-buynext {
+  border-color: var(--border-soft);
+  background: color-mix(in srgb, var(--gold) 5%, var(--panel));
+  box-shadow: none;
+}
+html[data-theme="modern"] .shop-buynext-tag {
+  background: var(--gold);
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 4px 12px;
+}
+html[data-theme="modern"][data-mode="dark"] .shop-buynext-tag { color: #0a0b10; }
+html[data-theme="modern"] .shop-stat {
+  border-color: var(--border-soft);
+  background: var(--panel);
+  box-shadow: var(--shadow-sm);
+  border-radius: 12px;
+}
+html[data-theme="modern"] button.shop-stat:hover {
+  background: var(--panel);
+  color: var(--text);
+  border-color: var(--gold);
+  box-shadow: var(--shadow-md);
+}
+html[data-theme="modern"] button.shop-stat:hover .shop-stat-label { color: var(--text-dim); }
+html[data-theme="modern"] button.shop-stat:hover .shop-stat-value { color: var(--text); }
+html[data-theme="modern"] .shop-stat-warn { border-color: color-mix(in srgb, var(--lightning) 45%, var(--border-soft)); }
+html[data-theme="modern"] .shop-stat-bar { border: none; background: var(--panel-sunken); border-radius: 999px; height: 6px; }
+html[data-theme="modern"] .shop-stat-bar-fill { border-radius: 999px; }
+html[data-theme="modern"] .shop-hero-slotctx { border-color: var(--border-soft); background: var(--panel-sunken); border-radius: 999px; }
+html[data-theme="modern"] .shop-slotctx-clear { border-radius: 999px; }
+html[data-theme="modern"] .shop-slotctx-clear:hover { background: var(--gold); border-color: var(--gold); color: #ffffff; }
+html[data-theme="modern"][data-mode="dark"] .shop-slotctx-clear:hover { color: #0a0b10; }
+html[data-theme="modern"] .shop-disclosure > summary {
+  border-color: var(--border-soft);
+  background: var(--panel);
+  border-radius: 12px;
+}
+html[data-theme="modern"] .shop-disclosure > summary:hover {
+  background: color-mix(in srgb, var(--gold) 6%, var(--panel));
+  color: var(--text);
+  border-color: var(--gold);
+}
+html[data-theme="modern"] .shop-disclosure > summary:hover .shop-disc-hint { color: var(--text-dim); }
+html[data-theme="modern"] .shop-attention { border-radius: 14px; box-shadow: var(--shadow-sm); }
+html[data-theme="modern"] .shop-att-item {
+  border-color: var(--border-soft);
+  background: var(--panel);
+  border-radius: 10px;
+}
+html[data-theme="modern"] .shop-att-item:hover {
+  background: color-mix(in srgb, var(--gold) 6%, var(--panel));
+  color: var(--text);
+  border-color: var(--gold);
+}
+html[data-theme="modern"] .shop-att-item:hover .shop-att-name,
+html[data-theme="modern"] .shop-att-item:hover .shop-att-est,
+html[data-theme="modern"] .shop-att-item:hover .shop-att-rank { color: var(--text); }
+html[data-theme="modern"] .shop-att-issue { border-style: solid; }
+html[data-theme="modern"] .shop-att-rank {
+  border-color: var(--border-soft);
+  background: var(--panel-sunken);
+  border-radius: 999px;
+}
+html[data-theme="modern"] .shop-tool-danger { border-left-color: var(--border-soft); }

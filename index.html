@@ -208,6 +208,15 @@
   html[data-theme="trust-blue-pay"] .shop-filter,
   html[data-theme="trust-blue-pay"] .size-btn,
   html[data-theme="trust-blue-pay"] .shop-buynext,
+  html[data-theme="trust-blue-pay"] .shop-hero,
+  html[data-theme="trust-blue-pay"] .shop-hero-slotctx,
+  html[data-theme="trust-blue-pay"] .shop-slotctx-clear,
+  html[data-theme="trust-blue-pay"] .shop-stat,
+  html[data-theme="trust-blue-pay"] .shop-stat-bar,
+  html[data-theme="trust-blue-pay"] .shop-disclosure > summary,
+  html[data-theme="trust-blue-pay"] .shop-attention,
+  html[data-theme="trust-blue-pay"] .shop-att-item,
+  html[data-theme="trust-blue-pay"] .shop-att-rank,
   html[data-theme="trust-blue-pay"] .shop-progress,
   html[data-theme="trust-blue-pay"] #shopGearPanel,
   html[data-theme="trust-blue-pay"] .shop-gear-panel,
@@ -296,6 +305,8 @@
   html[data-theme="trust-blue-pay"] .codex-detail-panel,
   html[data-theme="trust-blue-pay"] .kwc-compare-card,
   html[data-theme="trust-blue-pay"] .shop-summary .summary-group,
+  html[data-theme="trust-blue-pay"] .shop-hero,
+  html[data-theme="trust-blue-pay"] .shop-attention,
   html[data-theme="trust-blue-pay"] #shopGearPanel {
     box-shadow: 0 1px 4px rgba(0, 48, 135, 0.06);
   }
@@ -320,6 +331,8 @@
   html[data-theme="trust-blue-pay"][data-mode="dark"] .codex-detail-panel,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .kwc-compare-card,
   html[data-theme="trust-blue-pay"][data-mode="dark"] .shop-summary .summary-group,
+  html[data-theme="trust-blue-pay"][data-mode="dark"] .shop-hero,
+  html[data-theme="trust-blue-pay"][data-mode="dark"] .shop-attention,
   html[data-theme="trust-blue-pay"][data-mode="dark"] #shopGearPanel {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
   }
@@ -1553,12 +1566,18 @@
     gap: 16px;
     align-items: start;
   }
+  /* คอลัมน์ซ้าย (patch 0.42): บอร์ด slot + Work Queue ซ้อนกัน — sticky ย้ายมาที่ wrapper */
+  .shop-side {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: sticky;
+    top: 74px; /* ใต้ topbar sticky */
+  }
   .shop-gear-panel {
     background: var(--void);
     border: 3px solid var(--border);
     padding: 10px;
-    position: sticky;
-    top: 74px; /* ใต้ topbar sticky */
   }
   .shop-gear-title {
     font-family: var(--font-mono);
@@ -1692,7 +1711,7 @@
   @media (max-width: 980px) {
     /* minmax(0,1fr) จำเป็น — 1fr เฉยๆ จะติด min-content ของตาราง (min-width 1180px) แล้วดันทั้ง layout ล้นจอ */
     .shop-layout { grid-template-columns: minmax(0, 1fr); }
-    .shop-gear-panel { position: static; }
+    .shop-side { position: static; }
   }
 
   /* ---------- Build Shopping List: on-screen numpad (RawBlock) ---------- */
@@ -2591,7 +2610,8 @@
   html[data-display="simple"] .reco-breakdown,
   html[data-display="simple"] .radar-score-info,
   html[data-display="simple"] .aug-calc,
-  html[data-display="simple"] #todayStatusCard { display: none; }
+  html[data-display="simple"] #todayStatusCard,
+  html[data-display="simple"] .shop-tool-display { display: none; } /* 0.42: Row H/Density เป็นของ power user — Advanced เท่านั้น */
 
   .appearance-group { margin-bottom: 16px; }
   .appearance-group-label {
@@ -4073,6 +4093,177 @@
   }
   .rf-nosignal-toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-muted); cursor: pointer; }
   .rf-nosignal-toggle input { cursor: pointer; }
+
+  /* ==================== Gear Planner planner-first reflow (patch 0.42) ====================
+     hero (คำตอบแรกของหน้า) + Work Queue + disclosure (ledger/ตาราง) — base เป็น RawBlock;
+     Modern v2 มี override ของตัวเองใน css/modern-theme.css (กลุ่ม selector ทั้งสองต้อง sync กัน) */
+  .shop-hero {
+    background: var(--void);
+    border: 5px solid var(--border);
+    padding: 16px 18px;
+    margin-bottom: 16px;
+  }
+  .shop-hero-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .shop-hero-title {
+    font-family: var(--font-head);
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0;
+  }
+  /* display:flex/inline-flex ชนะกฎ [hidden] ของเบราว์เซอร์ — ต้อง override กลับเอง (แบบเดียวกับ .kwc-compare-bar) */
+  .shop-hero-slotctx[hidden], .shop-hero .shop-buynext[hidden], .shop-attention[hidden] { display: none; }
+  .shop-hero-slotctx {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    border: 2px solid var(--border);
+    padding: 4px 8px;
+  }
+  .shop-slotctx-clear {
+    border: 2px solid var(--border);
+    background: var(--void);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    cursor: pointer;
+  }
+  .shop-slotctx-clear:hover { background: var(--text); color: var(--void); }
+  /* แถบ buy-next เดิมอยู่ใน hero แล้ว — ปรับให้เป็นชิ้นหลัก ไม่มีกรอบซ้อนหนา */
+  .shop-hero .shop-buynext { margin-bottom: 12px; }
+  .shop-hero-stats {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: stretch;
+  }
+  .shop-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border: 2px solid var(--border);
+    background: var(--void);
+    color: var(--text);
+    padding: 8px 12px;
+    min-width: 130px;
+    text-align: left;
+    font-family: var(--font-mono);
+  }
+  button.shop-stat { cursor: pointer; }
+  button.shop-stat:hover { background: var(--text); color: var(--void); }
+  button.shop-stat:hover .shop-stat-label, button.shop-stat:hover .shop-stat-value { color: var(--void); }
+  .shop-stat-label {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .shop-stat-value { font-size: 15px; font-weight: 700; white-space: nowrap; }
+  .shop-stat-value .game-ico { width: 14px; height: 14px; }
+  .shop-stat-warn { border-color: var(--lightning); }
+  .shop-stat-warn .shop-stat-value { color: var(--lightning); }
+  .shop-stat-done .shop-stat-value { color: var(--ok); }
+  .shop-stat-mirror .shop-stat-value { color: var(--text-muted); font-size: 13px; }
+  .shop-stat-progress { display: flex; flex-direction: column; gap: 4px; }
+  .shop-stat-bar { display: block; height: 8px; border: 2px solid var(--border); overflow: hidden; min-width: 110px; }
+  .shop-stat-bar-fill { display: block; height: 100%; background: var(--ok); }
+  .shop-hero-empty {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  /* disclosure ร่วม (ledger งบเต็ม + ส่วนตารางเต็ม) */
+  .shop-disclosure { margin-bottom: 16px; }
+  .shop-disclosure > summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 2px solid var(--border);
+    background: var(--void);
+    padding: 8px 12px;
+    user-select: none;
+  }
+  .shop-disclosure > summary::-webkit-details-marker { display: none; }
+  .shop-disclosure > summary:hover { background: var(--text); color: var(--void); }
+  .shop-disc-ico { transition: transform 0.15s ease; }
+  .shop-disclosure[open] > summary .shop-disc-ico { transform: rotate(90deg); }
+  .shop-disc-hint { font-weight: 400; letter-spacing: 0.02em; text-transform: none; color: var(--text-dim); }
+  .shop-disclosure > summary:hover .shop-disc-hint { color: var(--void); }
+  .shop-ledger-box .shop-summary { margin-top: 12px; margin-bottom: 4px; }
+  .shop-table-section > summary { margin-bottom: 0; }
+  .shop-table-section[open] > summary { margin-bottom: 14px; }
+  /* toolbar จัดกลุ่ม: ค้นหา/เรียง · แถว/นำเข้า-ส่งออก · การแสดงผลตาราง · โซนอันตรายแยกขวา */
+  .shop-tool-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .shop-tool-find { flex: 1; min-width: 240px; }
+  .shop-tool-display { gap: 12px; margin-left: auto; }
+  .shop-tool-display .shop-sizing { margin-left: 0; }
+  .shop-tool-danger { padding-left: 10px; border-left: 2px solid var(--border-soft); }
+  html[data-display="simple"] .shop-tool-danger { border-left: none; padding-left: 0; }
+  /* Work Queue (คอลัมน์ซ้าย ใต้บอร์ด) */
+  .shop-attention {
+    background: var(--void);
+    border: 3px solid var(--border);
+    padding: 10px;
+  }
+  .shop-att-queue, .shop-att-issues { display: flex; flex-direction: column; gap: 6px; }
+  .shop-att-queue { margin-bottom: 8px; }
+  .shop-att-queue:last-child { margin-bottom: 0; }
+  .shop-att-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    border: 2px solid var(--border);
+    background: var(--void);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 6px 8px;
+    cursor: pointer;
+    text-align: left;
+    min-width: 0;
+  }
+  .shop-att-item:hover { background: var(--text); color: var(--void); }
+  .shop-att-item:hover .shop-att-name, .shop-att-item:hover .shop-att-est, .shop-att-item:hover .shop-att-rank { color: inherit; }
+  .shop-att-rank {
+    flex-shrink: 0;
+    width: 18px; height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--border);
+    font-weight: 700;
+    font-size: 10px;
+  }
+  .shop-att-ico { flex-shrink: 0; font-size: 12px; }
+  .shop-att-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .shop-att-est { flex-shrink: 0; font-weight: 700; }
+  .shop-att-issue { border-style: dashed; }
+  .shop-att-clear { font-family: var(--font-mono); font-size: 11px; color: var(--ok); }
 </style>
 <!-- Modularization Phase 1 (patch 0.34): helper CSS ที่แยกออกจาก inline <style> ด้านบน
      วางหลัง </style> เพื่อคงลำดับ cascade เดิม (rule พื้นฐาน specificity ต่ำ — override ของ Trust theme ชนะด้วย specificity อยู่แล้ว) -->
@@ -4395,6 +4586,21 @@
   </div><!-- /pageForge -->
 
   <div id="pageShop" hidden>
+    <!-- Planner-first hero (patch 0.42): คำตอบแรกของหน้า — ซื้ออะไรต่อ / งบเหลือเท่าไหร่ / อะไรต้องดู
+         ตัวเลขทั้งหมด render โดย JS จากยอดเดิมของ updateShopSummary (ไม่มีสูตรใหม่) -->
+    <section class="shop-hero" id="shopHero">
+      <div class="shop-hero-head">
+        <p class="shop-hero-title">Gear Planner</p>
+        <span class="shop-hero-slotctx" id="shopSlotContext" hidden></span>
+      </div>
+      <div class="shop-buynext" id="shopBuyNext" hidden></div>
+      <div class="shop-hero-stats" id="shopHeroStats"></div>
+    </section>
+
+    <!-- Ledger งบเต็ม (เรทเงิน / Min-Max / จ่ายจริง / ต้องใช้อีก) — ย้ายเป็น disclosure รอง (patch 0.42)
+         ข้างใน "ไม่เปลี่ยน" — id/โครงเดิมทุกตัว updateShopSummary ยังเขียนใส่ตามเดิม -->
+    <details class="shop-disclosure shop-ledger-box" id="shopLedgerBox">
+      <summary><span class="shop-disc-ico">▸</span> รายละเอียดงบ + เรทเงิน <span class="shop-disc-hint">(Min/Max · จ่ายจริง · ต้องใช้อีก)</span></summary>
     <div class="shop-summary" id="shopSummary">
       <div class="summary-group rate-group">
         <p class="sg-title">เรทเงิน</p>
@@ -4441,27 +4647,39 @@
         <div class="sg-warn" id="shopMissWarn" hidden></div>
       </div>
     </div>
-
-    <div class="shop-buynext" id="shopBuyNext" hidden></div>
+    </details><!-- /shopLedgerBox -->
 
     <div class="shop-layout">
-    <aside class="shop-gear-panel" id="shopGearPanel"></aside>
+    <aside class="shop-side">
+      <div class="shop-gear-panel" id="shopGearPanel"></div>
+      <!-- Work Queue / จุดที่ต้องดู (patch 0.42) — render โดย renderShopAttention() จากยอดเดิม -->
+      <div class="shop-attention" id="shopAttention" hidden></div>
+    </aside>
     <div class="shop-main">
 
+    <!-- ตารางเต็ม = ส่วน "จัดการรายการ" (patch 0.42) — Simple พับไว้ก่อน, Advanced เปิดไว้;
+         สถานะเปิด/ปิดจำใน poe2ShopList.panels.v1 (additive UI pref) — ทุกฟีเจอร์ตารางเดิมอยู่ครบข้างใน -->
+    <details class="shop-disclosure shop-table-section" id="shopTableSection">
+      <summary><span class="shop-disc-ico">▸</span> จัดการรายการ (ตารางเต็ม) <span class="shop-disc-hint" id="shopTableMeta"></span></summary>
+
     <div class="shop-toolbar">
-      <input type="text" class="shop-filter" id="shopFilter" placeholder="ค้นหา: ชื่อ / type / option / link…">
-      <select class="shop-sort" id="shopSort" title="เรียงลำดับการแสดงผล (ไม่เปลี่ยนลำดับที่บันทึกไว้)">
-        <option value="default">เรียง: ตามที่จด</option>
-        <option value="unbought">ยังไม่ซื้อก่อน</option>
-        <option value="expensive">แพงก่อน</option>
-        <option value="cheap">ถูกก่อน</option>
-        <option value="missing">ไม่มีราคาก่อน</option>
-      </select>
-      <button class="ocr-btn primary" type="button" id="shopAddRowBtn">+ Add Row</button>
-      <button class="ocr-btn" type="button" id="shopExportBtn">Export JSON</button>
-      <button class="ocr-btn" type="button" id="shopImportBtn">Import JSON</button>
-      <input type="file" id="shopImportFile" accept="application/json,.json" hidden>
-      <button class="ocr-btn danger" type="button" id="shopClearAllBtn">Clear All Rows</button>
+      <div class="shop-tool-group shop-tool-find">
+        <input type="text" class="shop-filter" id="shopFilter" placeholder="ค้นหา: ชื่อ / type / option / link…">
+        <select class="shop-sort" id="shopSort" title="เรียงลำดับการแสดงผล (ไม่เปลี่ยนลำดับที่บันทึกไว้)">
+          <option value="default">เรียง: ตามที่จด</option>
+          <option value="unbought">ยังไม่ซื้อก่อน</option>
+          <option value="expensive">แพงก่อน</option>
+          <option value="cheap">ถูกก่อน</option>
+          <option value="missing">ไม่มีราคาก่อน</option>
+        </select>
+      </div>
+      <div class="shop-tool-group shop-tool-rows">
+        <button class="ocr-btn primary" type="button" id="shopAddRowBtn">+ Add Row</button>
+        <button class="ocr-btn" type="button" id="shopExportBtn">Export JSON</button>
+        <button class="ocr-btn" type="button" id="shopImportBtn">Import JSON</button>
+        <input type="file" id="shopImportFile" accept="application/json,.json" hidden>
+      </div>
+      <div class="shop-tool-group shop-tool-display">
       <div class="shop-sizing">
         <span class="shop-sizing-label">Row H</span>
         <button class="size-btn" type="button" id="shopRowHDec" title="ลดความสูงแถว" aria-label="ลดความสูงแถว">−</button>
@@ -4473,6 +4691,10 @@
         <span class="shop-sizing-label">Density</span>
         <button class="density-btn" type="button" data-density="comfortable" title="แถวโปร่ง (ค่าเริ่มต้น)">Comfortable</button>
         <button class="density-btn" type="button" data-density="compact" title="แถวกระชับ ประหยัดพื้นที่">Compact</button>
+      </div>
+      </div>
+      <div class="shop-tool-group shop-tool-danger">
+        <button class="ocr-btn danger" type="button" id="shopClearAllBtn">Clear All Rows</button>
       </div>
     </div>
 
@@ -4519,6 +4741,7 @@
       </table>
     </div>
 
+    </details><!-- /shopTableSection -->
     </div><!-- /shop-main -->
     </div><!-- /shop-layout -->
     <datalist id="itemTypeList"></datalist>
@@ -7076,6 +7299,7 @@ const APP_DATA_KEYS = [
   'poe2ShopList.rate.v1',
   'poe2ShopList.tableSizing.v1',
   'poe2ShopList.density.v1',
+  'poe2ShopList.panels.v1', // สถานะพับ/เปิด ledger + ส่วนตารางของ Gear Planner (patch 0.42)
   'poe2FarmPlanner.cards.v1',
   'poe2FarmPlanner.filter.v1',
   'poe2FarmPlanner.view.v1',
@@ -7101,6 +7325,7 @@ const UI_PREF_KEYS = [
   'poeAssist.displayMode.v1', // Simple/Advanced เป็น UI pref (patch 0.41)
   'poe2ShopList.tableSizing.v1',
   'poe2ShopList.density.v1',
+  'poe2ShopList.panels.v1', // UI pref (patch 0.42)
   'poe2FarmPlanner.view.v1',
 ];
 const BACKUP_KIND = 'exile-assistant-backup';
@@ -7815,6 +8040,32 @@ function pruneShopSelection() {
   shopSelected.forEach(r => { if (!shopRows.includes(r)) shopSelected.delete(r); });
 }
 
+// ---- Planner-first panels (patch 0.42) ----
+// สถานะเปิด/ปิดของ ledger งบเต็ม + ส่วนตารางเต็ม — additive UI pref (อยู่ใน APP_DATA_KEYS + UI_PREF_KEYS)
+// null = ยังไม่เคยเลือกเอง → ใช้ค่าเริ่มต้นตาม display mode (Simple พับ / Advanced เปิด)
+const SHOP_PANELS_KEY = 'poe2ShopList.panels.v1';
+let shopPanels = (function loadShopPanels() {
+  try {
+    const v = JSON.parse(localStorage.getItem(SHOP_PANELS_KEY));
+    if (v && typeof v === 'object') {
+      return {
+        ledgerOpen: typeof v.ledgerOpen === 'boolean' ? v.ledgerOpen : null,
+        tableOpen: typeof v.tableOpen === 'boolean' ? v.tableOpen : null,
+      };
+    }
+  } catch (e) { /* malformed storage */ }
+  return { ledgerOpen: null, tableOpen: null };
+})();
+let shopPanelsReady = false; // กัน toggle event ตอน init เขียนค่า default ทับความตั้งใจผู้ใช้
+function persistShopPanels() {
+  try { localStorage.setItem(SHOP_PANELS_KEY, JSON.stringify(shopPanels)); } catch (e) { /* storage unavailable */ }
+}
+// เปิดส่วนตารางเต็ม (ใช้ก่อน scroll/focus แถว — deep link จาก Today / buy-next / quick-add ต้องเห็นแถวจริง)
+function openShopTableSection() {
+  const d = document.getElementById('shopTableSection');
+  if (d && !d.open) d.open = true; // toggle listener จะ persist ให้เอง (หลัง init)
+}
+
 function persistShopRows() {
   try { localStorage.setItem(SHOP_ROWS_KEY, JSON.stringify(shopRows)); } catch (e) { /* storage unavailable */ }
 }
@@ -7912,6 +8163,10 @@ function formatMirrorEquivalent(totalDiv) {
     .catch(() => { /* ไม่มีข้อมูล → helper ซ่อนตัวเอง */ });
 })();
 
+// ยอดล่าสุดที่ updateShopSummary คำนวณ (patch 0.42) — hero/attention อ่านจากตรงนี้ "เท่านั้น"
+// ห้ามคำนวณซ้ำ/แตกสูตรใหม่ — ตัวเลขบน hero ต้องเท่ากับ ledger เสมอ
+let shopSummaryStats = null;
+
 function updateShopSummary() {
   // งบที่วางแผน: ใช้ min/max ถ้ามีครบ, ถ้ามีด้านเดียวใช้ด้านนั้นแทนอีกด้าน (กันยอดหายเพราะกรอกไม่ครบ)
   let totalMin = 0, totalMax = 0, totalBought = 0, boughtCount = 0;
@@ -7976,8 +8231,21 @@ function updateShopSummary() {
     warn.hidden = true;
   }
 
+  // เก็บยอดชุดเดียวกันไว้ให้ hero + attention panel (patch 0.42) — ไม่มีการคำนวณซ้ำ
+  shopSummaryStats = { totalMin, totalMax, totalBought, boughtCount, needMin, needMax, missingCount, rowCount: shopRows.length, pct };
+
   renderShopBuyNext();
   updateShopGearPanel();
+  renderShopHero();
+  renderShopAttention();
+}
+
+// คิว "ซื้อต่อไป" เรียงแล้ว (patch 0.42 — แยกออกมาให้ hero + Work Queue ใช้แหล่งเดียวกัน)
+// ตรรกะเดิมของ renderShopBuyNext เป๊ะ: ยังไม่ซื้อ + มีราคา, แถวที่มาร์กมาก่อน, จากนั้นถูกสุดก่อน
+function shopBuyNextCandidates() {
+  const candidates = shopRows.filter(r => !isBought(r) && rowEstPrice(r) !== null);
+  candidates.sort((a, b) => ((b.checked === true) - (a.checked === true)) || (rowEstPrice(a) - rowEstPrice(b)));
+  return candidates;
 }
 
 // แถบ "ซื้อต่อไป": เลือกจากแถวที่ยังไม่ซื้อ + มีราคา — แถวที่ติ๊กมาร์กไว้ถือว่าสำคัญกว่า จากนั้นเอาถูกสุดก่อน
@@ -8002,14 +8270,13 @@ function renderShopBuyNext() {
   }
 
   tag.textContent = 'ซื้อต่อไป';
-  const candidates = unbought.filter(r => rowEstPrice(r) !== null);
+  const candidates = shopBuyNextCandidates(); // เรียงมาแล้ว (มาร์กก่อน → ถูกสุดก่อน)
   if (candidates.length === 0) {
     body.textContent = 'ยังแนะนำไม่ได้ — ใส่ราคา Min/Max หรือราคา deal ให้รายการที่เหลืออย่างน้อย 1 แถวก่อน';
     box.appendChild(tag); box.appendChild(body);
     return;
   }
 
-  candidates.sort((a, b) => ((b.checked === true) - (a.checked === true)) || (rowEstPrice(a) - rowEstPrice(b)));
   const pick = candidates[0];
   const est = rowEstPrice(pick);
 
@@ -8052,6 +8319,7 @@ function renderShopBuyNext() {
 
 function goToShopRow(row) {
   // เคลียร์ filter/ค้นหา/slot ก่อน เพื่อให้แถวเป้าหมายแสดงแน่ๆ แล้ว scroll + ไฮไลต์ชั่วคราว
+  openShopTableSection(); // ส่วนตารางอาจถูกพับอยู่ (patch 0.42) — ต้องเปิดก่อนถึงจะ scroll เห็นแถว
   shopSelectedSlot = 'all';
   shopQuickFilter = 'all';
   shopFilterText = '';
@@ -8063,6 +8331,238 @@ function goToShopRow(row) {
   tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
   tr.classList.add('row-target');
   setTimeout(() => tr.classList.remove('row-target'), 1600);
+}
+
+/* ---- Planner-first hero + Work Queue (patch 0.42) ----
+   ทั้งสองส่วน "แสดงผลอย่างเดียว" จาก shopSummaryStats (ยอดเดิมของ updateShopSummary),
+   shopBuyNextCandidates() (คิวเดิมของ buy-next) และ helper เดิม (rowBudgetStatus/rowHasName/formatMirrorEquivalent)
+   — ไม่มีสูตรใหม่ ไม่มีการแปลงหน่วยใหม่ */
+
+// ใช้ quick filter จาก hero/attention — mirror ตรรกะ click handler ของชิปเป๊ะ (display-only in-memory)
+// ถ้า handler ของชิปเปลี่ยน ต้องอัปเดตที่นี่ + todayOpenShopNoPrice ให้ตรงกันด้วย
+function applyShopQuickChip(filter) {
+  openShopTableSection();
+  shopQuickFilter = filter;
+  document.querySelectorAll('#shopQuickFilters .filter-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === filter));
+  renderShopTable();
+}
+
+// ชิปสถิติหนึ่งอัน (label + value) — value รับ Node/สตริงที่เราสร้างเอง (ชื่อไอเทมผู้ใช้ใส่ผ่าน textContent เท่านั้น)
+function makeShopStat(label, valueNode, opts) {
+  const o = opts || {};
+  const chip = document.createElement(o.onClick ? 'button' : 'div');
+  if (o.onClick) { chip.type = 'button'; chip.addEventListener('click', o.onClick); }
+  chip.className = 'shop-stat' + (o.className ? ' ' + o.className : '');
+  if (o.title) chip.title = o.title;
+  const l = document.createElement('span');
+  l.className = 'shop-stat-label';
+  l.textContent = label;
+  const v = document.createElement('span');
+  v.className = 'shop-stat-value';
+  if (typeof valueNode === 'string') v.textContent = valueNode;
+  else v.appendChild(valueNode);
+  chip.appendChild(l);
+  chip.appendChild(v);
+  return chip;
+}
+
+function renderShopHero() {
+  const stats = shopSummaryStats;
+  const box = document.getElementById('shopHeroStats');
+  if (!box || !stats) return;
+  box.innerHTML = '';
+
+  // บริบทช่องที่เลือก (มุมขวาหัว hero) — กดล้างกลับมามุมมองรวมได้ทันที
+  const ctx = document.getElementById('shopSlotContext');
+  if (ctx) {
+    ctx.innerHTML = '';
+    if (shopSelectedSlot !== 'all') {
+      const def = SHOP_SLOTS.find(s => s.id === shopSelectedSlot);
+      const label = shopSelectedSlot === 'unassigned' ? 'Unassigned' : (def ? def.label : shopSelectedSlot);
+      const n = shopRows.filter(r => rowMatchesSlot(r)).length;
+      const txt = document.createElement('span');
+      txt.textContent = 'กำลังดูช่อง: ' + label + ' · ' + n + ' รายการ';
+      const clear = document.createElement('button');
+      clear.type = 'button';
+      clear.className = 'shop-slotctx-clear';
+      clear.textContent = '✕ ดูทั้งหมด';
+      clear.title = 'กลับมุมมองทุกช่อง';
+      clear.addEventListener('click', () => selectShopSlot('all'));
+      ctx.appendChild(txt);
+      ctx.appendChild(clear);
+      ctx.hidden = false;
+    } else {
+      ctx.hidden = true;
+    }
+  }
+
+  // ยังไม่มีแถวเลย → hero เป็นจุดเริ่ม (ปุ่มเดียวกับ + Add Row ใน toolbar)
+  if (stats.rowCount === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'shop-hero-empty';
+    const msg = document.createElement('span');
+    msg.textContent = 'ยังไม่มีรายการของที่ต้องซื้อ — เพิ่มแถวแรก หรือกด + บนช่องอุปกรณ์ด้านล่างเพื่อเริ่มวางแผน';
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ocr-btn primary';
+    btn.textContent = '+ Add Row';
+    btn.addEventListener('click', () => document.getElementById('shopAddRowBtn').click());
+    empty.appendChild(msg);
+    empty.appendChild(btn);
+    box.appendChild(empty);
+    return;
+  }
+
+  const divIco = () => renderAssetIcon('Divine', { size: 'sm', className: 'game-ico-cur', lazy: false });
+
+  // 1) งบที่ต้องใช้อีก (ของที่ยังไม่ซื้อ) — ตัวเลขเดียวกับการ์ด "ต้องใช้อีก" ใน ledger
+  const needVal = document.createElement('span');
+  needVal.innerHTML = divIco() + (stats.needMin === stats.needMax
+    ? fmtNum(stats.needMin) + ' Div'
+    : fmtNum(stats.needMin) + '–' + fmtNum(stats.needMax) + ' Div'); // fmtNum คืนตัวเลขล้วน — ปลอดภัย
+  box.appendChild(makeShopStat('ต้องใช้อีก (Min–Max)', needVal, {
+    className: 'shop-stat-need',
+    title: divineRate > 0
+      ? '= ' + fmtNum(stats.needMin * divineRate) + '–' + fmtNum(stats.needMax * divineRate) + ' ' + fiatSymbol() + ' (เรทที่ตั้งไว้)'
+      : 'รวมราคาแถวที่ยังไม่ซื้อ (min ?? max) — ใส่เรทเงินใน "รายละเอียดงบ" เพื่อเห็นเป็น ' + fiatCode(),
+  }));
+
+  // 2) ความคืบหน้าการซื้อ — ตัวเลขเดียวกับ statusCounts
+  const progVal = document.createElement('span');
+  progVal.className = 'shop-stat-progress';
+  const progText = document.createElement('span');
+  progText.textContent = stats.boughtCount + ' / ' + stats.rowCount + ' (' + stats.pct + '%)';
+  const bar = document.createElement('span');
+  bar.className = 'shop-stat-bar';
+  const fill = document.createElement('span');
+  fill.className = 'shop-stat-bar-fill';
+  fill.style.width = stats.pct + '%';
+  bar.appendChild(fill);
+  progVal.appendChild(progText);
+  progVal.appendChild(bar);
+  box.appendChild(makeShopStat('ซื้อแล้ว', progVal, { className: stats.pct >= 100 ? 'shop-stat-done' : '' }));
+
+  // 3) แผนรวม Min–Max (อ้างอิง — ตัวเต็มอยู่ใน ledger)
+  const planVal = document.createElement('span');
+  planVal.innerHTML = divIco() + fmtNum(stats.totalMin) + '–' + fmtNum(stats.totalMax) + ' Div';
+  box.appendChild(makeShopStat('งบทั้งแผน', planVal, {
+    onClick: () => { const d = document.getElementById('shopLedgerBox'); if (d) d.open = true; d && d.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); },
+    title: 'ดูรายละเอียดงบเต็ม (เปิด ledger)',
+  }));
+
+  // 4) แถวที่ยังไม่มีราคา — กดแล้วกรอง noprice ให้เลย (จุดคลิกใหญ่กว่าจุดเตือนบนบอร์ด)
+  if (stats.missingCount > 0) {
+    box.appendChild(makeShopStat('ไม่มีราคา', '⚠ ' + stats.missingCount + ' แถว', {
+      className: 'shop-stat-warn',
+      onClick: () => applyShopQuickChip('noprice'),
+      title: 'ยอดที่ต้องใช้จริงอาจสูงกว่านี้ — กดเพื่อกรองเฉพาะแถวที่ยังไม่มีราคา',
+    }));
+  }
+
+  // 5) เทียบเป็น Mirror (helper เดิม patch 0.22 — ใช้ยอดแผน Max; ไม่มีราคา Mirror = ไม่แสดง)
+  const mirrorText = formatMirrorEquivalent(stats.totalMax);
+  if (mirrorText && mirrorText !== 'Short of 1 Mirror') {
+    const mv = document.createElement('span');
+    mv.innerHTML = renderAssetIcon('Mirror of Kalandra', { size: 'sm', className: 'game-ico-cur', lazy: false }) + mirrorText;
+    box.appendChild(makeShopStat('งบ Max ≈', mv, { className: 'shop-stat-mirror', title: 'เทียบจากราคา Mirror ล่าสุดใน market snapshot' }));
+  }
+
+  // อัปเดต hint บนหัวข้อส่วนตาราง (จำนวนแถว) — ให้รู้ว่าข้างในมีอะไรแม้พับอยู่
+  const meta = document.getElementById('shopTableMeta');
+  if (meta) meta.textContent = '· ' + stats.rowCount + ' แถว · ซื้อแล้ว ' + stats.boughtCount;
+}
+
+// Work Queue ใต้บอร์ด slot: คิวซื้อ 3 อันดับถัดไป + จุดที่ต้องตามแก้ (ทุกปุ่มพาไปแถว/ฟิลเตอร์ที่เกี่ยวข้อง)
+function renderShopAttention() {
+  const box = document.getElementById('shopAttention');
+  if (!box) return;
+  const stats = shopSummaryStats;
+  box.innerHTML = '';
+  if (!stats || stats.rowCount === 0) { box.hidden = true; return; }
+  box.hidden = false;
+
+  const title = document.createElement('p');
+  title.className = 'shop-gear-title';
+  title.textContent = 'Work Queue';
+  box.appendChild(title);
+
+  // คิวซื้อถัดไป (สูงสุด 3) — คิวเดียวกับแถบ "ซื้อต่อไป" (shopBuyNextCandidates)
+  const queue = shopBuyNextCandidates().slice(0, 3);
+  if (queue.length > 0) {
+    const qwrap = document.createElement('div');
+    qwrap.className = 'shop-att-queue';
+    queue.forEach((row, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'shop-att-item shop-att-buy';
+      b.title = 'ไปที่แถวนี้ในตาราง';
+      const rank = document.createElement('span');
+      rank.className = 'shop-att-rank';
+      rank.textContent = String(i + 1);
+      const nm = document.createElement('span');
+      nm.className = 'shop-att-name';
+      nm.textContent = rowDisplayName(row); // ข้อความผู้ใช้ — textContent เท่านั้น
+      const est = document.createElement('span');
+      est.className = 'shop-att-est';
+      est.textContent = '~' + fmtNum(rowEstPrice(row)) + ' Div';
+      b.appendChild(rank);
+      b.appendChild(nm);
+      b.appendChild(est);
+      b.addEventListener('click', () => goToShopRow(row));
+      qwrap.appendChild(b);
+    });
+    box.appendChild(qwrap);
+  }
+
+  const issues = document.createElement('div');
+  issues.className = 'shop-att-issues';
+  let issueCount = 0;
+  const addIssue = (icon, text, titleText, onClick) => {
+    issueCount++;
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'shop-att-item shop-att-issue';
+    b.title = titleText;
+    const ic = document.createElement('span');
+    ic.className = 'shop-att-ico';
+    ic.textContent = icon;
+    const tx = document.createElement('span');
+    tx.className = 'shop-att-name';
+    tx.textContent = text;
+    b.appendChild(ic);
+    b.appendChild(tx);
+    b.addEventListener('click', onClick);
+    issues.appendChild(b);
+  };
+
+  if (stats.missingCount > 0) {
+    addIssue('⚠', 'ไม่มีราคา ' + stats.missingCount + ' แถว', 'กรองเฉพาะแถวที่ยังไม่ใส่ราคา Min/Max', () => applyShopQuickChip('noprice'));
+  }
+  const nonameCount = shopRows.filter(r => !rowHasName(r)).length;
+  if (nonameCount > 0) {
+    addIssue('✎', 'ไม่มีชื่อ ' + nonameCount + ' แถว', 'กรองเฉพาะแถวที่ยังไม่ตั้งชื่อไอเทม', () => applyShopQuickChip('noname'));
+  }
+  // เกินงบ: bought > Max ที่วางไว้ (นิยามเดียวกับ budget chip 'over' ใน rowBudgetStatus)
+  const overRows = shopRows.filter(r => { const s = rowBudgetStatus(r); return s && s.key === 'over'; });
+  if (overRows.length > 0) {
+    addIssue('฿', 'ซื้อเกินงบ ' + overRows.length + ' แถว', 'ไปที่แถวแรกที่ราคาซื้อจริงสูงกว่า Max ที่วางแผน', () => goToShopRow(overRows[0]));
+  }
+  // มีลิงก์เทรดพร้อมเปิดแต่ยังไม่ซื้อ — กดแล้วกรองชิป "มีลิงก์" (ตัวกรองรวมแถวที่ซื้อแล้วด้วย ตามนิยามชิปเดิม)
+  const readyLinks = shopRows.filter(r => rowHasLink(r) && !isBought(r)).length;
+  if (readyLinks > 0) {
+    addIssue('🔗', 'มีลิงก์รอซื้อ ' + readyLinks + ' แถว', 'กรองแถวที่มีลิงก์เทรด (ชิป "มีลิงก์" — รวมแถวที่ซื้อแล้วด้วย)', () => applyShopQuickChip('haslink'));
+  }
+
+  if (issueCount > 0) {
+    box.appendChild(issues);
+  } else if (queue.length === 0) {
+    const done = document.createElement('div');
+    done.className = 'shop-att-clear';
+    done.textContent = stats.boughtCount === stats.rowCount
+      ? '✓ ซื้อครบทุกรายการแล้ว'
+      : '✓ ไม่มีจุดค้าง — ใส่ราคาแถวที่เหลือเพื่อให้คิวแนะนำทำงาน';
+    box.appendChild(done);
+  }
 }
 
 function makeIconBtn(symbol, label, onClick, danger) {
@@ -8600,6 +9100,7 @@ function resetShopViewFilters() {
 
 // โฟกัสช่องชื่อไอเทมของแถว index ที่กำหนด (หลัง render เสร็จ) — ฟิลด์ที่มีประโยชน์สุดหลังเพิ่มแถว
 function focusShopRowName(idx) {
+  openShopTableSection(); // แถวใหม่อยู่ในส่วนตารางที่อาจพับอยู่ (patch 0.42)
   requestAnimationFrame(() => {
     const tr = document.querySelector('#shopTbody tr[data-row-no="' + idx + '"]');
     if (!tr) return;
@@ -9052,6 +9553,19 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
   SHOP_SLOTS.forEach(s => bulkSlot.appendChild(new Option(s.label, s.id)));
   buildShopGearPanel(); // บอร์ด slot ต้องมีก่อน renderShopTable (summary จะอัปเดตตัวเลขบนบอร์ด)
   applyShopDensity();   // ตั้งคลาส density + ปุ่ม active จากค่าที่บันทึกไว้ (ก่อน render ก็ได้ — คลาสอยู่บน wrap)
+  // สถานะเปิด/ปิดของ ledger + ส่วนตาราง (patch 0.42): ค่าที่ผู้ใช้เคยเลือก > ค่าเริ่มต้นตาม display mode
+  (function initShopPanels() {
+    const ledger = document.getElementById('shopLedgerBox');
+    const table = document.getElementById('shopTableSection');
+    if (!ledger || !table) return;
+    const adv = document.documentElement.getAttribute('data-display') === 'advanced';
+    ledger.open = typeof shopPanels.ledgerOpen === 'boolean' ? shopPanels.ledgerOpen : adv;
+    table.open = typeof shopPanels.tableOpen === 'boolean' ? shopPanels.tableOpen : adv;
+    ledger.addEventListener('toggle', () => { if (!shopPanelsReady) return; shopPanels.ledgerOpen = ledger.open; persistShopPanels(); });
+    table.addEventListener('toggle', () => { if (!shopPanelsReady) return; shopPanels.tableOpen = table.open; persistShopPanels(); });
+    // toggle event ยิงแบบ async — เปิดการ persist หลังคิว event ตอน init ระบายแล้ว
+    setTimeout(() => { shopPanelsReady = true; }, 0);
+  })();
   renderShopTable();
   applyShopSizing();    // ปรับความกว้างคอลัมน์/ความสูงแถวจากค่าที่บันทึกไว้ (colgroup เป็น markup คงที่)
   initShopColResize();  // ผูก handle ลากปรับความกว้างที่หัวคอลัมน์
@@ -9060,6 +9574,17 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.42',
+    date: '2026-07-15',
+    notes: [
+      'Gear Planner จัดหน้าใหม่แบบ "planner-first": ด้านบนเป็น hero ตอบ 3 คำถามแรกทันที — ซื้ออะไรต่อ (แถบซื้อต่อไป + ปุ่มเปิดเทรด/ไปที่แถว), งบเหลือเท่าไหร่ (ต้องใช้อีก Min–Max + ความคืบหน้าซื้อ), อะไรต้องดู (จำนวนแถวไม่มีราคา กดกรองได้เลย + เทียบ Mirror + ช่องที่เลือกอยู่)',
+      'เพิ่มการ์ด Work Queue ใต้บอร์ด Gear Plan: คิวซื้อ 3 อันดับถัดไป (กดแล้วกระโดดไปแถว) + จุดค้าง ไม่มีราคา / ไม่มีชื่อ / ซื้อเกินงบ / มีลิงก์รอซื้อ — ทุกปุ่มพาไปแถวหรือฟิลเตอร์ที่เกี่ยวข้อง',
+      'ledger งบเต็ม (เรทเงิน/Min-Max/จ่ายจริง) และตารางเต็มกลายเป็นส่วนพับได้: โหมด Simple พับไว้ก่อน (หน้าโล่ง เห็นแผนก่อน), Advanced เปิดให้ครบ — สถานะเปิด/ปิดที่เลือกเองถูกจำไว้ (คีย์ใหม่ poe2ShopList.panels.v1 ติด backup ให้แล้ว)',
+      'toolbar ตารางจัดกลุ่มใหม่: ค้นหา/เรียง · แถว/Export/Import · การแสดงผลตาราง (Row H + Density — โชว์เฉพาะโหมด Advanced) · ปุ่ม Clear All แยกโซนอันตรายชัดเจน',
+      'ทุกอย่างเดิมอยู่ครบ: การคำนวณงบ/ซื้อต่อไป/Mirror ไม่เปลี่ยนแม้แต่ตัวเดียว, ตาราง + เมนู ⋯ + bulk actions + ปรับคอลัมน์/ความสูงแถว + quick filter + numpad ใช้ได้เหมือนเดิม; deep link จากหน้า Today ยังกระโดดมาถูกแถว (เปิดส่วนตารางให้อัตโนมัติ)',
+    ],
+  },
   {
     version: '0.41',
     date: '2026-07-15',
