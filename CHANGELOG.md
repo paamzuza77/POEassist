@@ -2,6 +2,13 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-23 (16)
+
+- **Add hideout/filter resources + topbar redesign + P5 foundation (patch 0.63)** (multiple files):
+  - **Exile Hub resources:** 3 new cards — Hideout Showcase, Hideout Hub, Item Filter Ladder — + new `hideout`/`filter` inline icons in `RAW_ICONS`/`HUB_RESOURCES`.
+  - **Topbar redesign:** universal accent bar before the title (base CSS, all themes); Modern theme gets accent-tinted glass, gradient title text, a glass action cluster, and glowing focus/hover. **No `overflow:hidden`** (would clip the search dropdown/popovers). Verified accent bar in all 3 themes, search dropdown works, no overflow.
+  - **P5 Stack modernization — Phase 1 (foundation, dev-tooling only, live deploy untouched):** added `package.json` (Vite 5 + TypeScript 5; `dev`/`build`/`preview`/`typecheck`), `tsconfig.json` (typechecks `src/` only, strict), `vite.config.ts` (`base:'./'`, `publicDir:false`, `dist/` not used yet), `.gitignore` += `node_modules/`/`dist/`, and a seed module `src/lib/format.ts` (typed pure formatters mirroring the legacy helpers). **Verified:** `npm run typecheck` exit 0; `npm run dev` serves the existing app at :5173 with HMR + `data/*.json`/`css/*` (200). The monolith stays the live source — build/deploy cutover is deferred (bundling the global-scope monolith would break global sharing). Full staged plan in the new **`P5_MIGRATION.md`**; ROADMAP P5 marked started, docs map + TODO updated.
+
 ## 2026-07-23 (15)
 
 - **Fix build-switcher rename/remove closing the menu (patch 0.62)** (`index.html`): clicking ✎ rename or ✕ remove in the topbar build-switcher popover called `render()`, which rebuilds the menu's innerHTML — detaching the just-clicked button, so the same click event bubbled to the `document` outside-click handler where `menu.contains(e.target)` was now false, immediately closing the menu (rename/remove appeared broken). Fix: `menu.addEventListener('click', e => e.stopPropagation())` on the persistent `#buildSwitchMenu` container so inner clicks never reach the document handler. Verified: rename → inline input stays open + saves; remove → inline confirm stays open + deletes; outside-click and Esc still close; toggle still works; no console errors.

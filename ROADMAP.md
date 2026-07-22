@@ -50,12 +50,14 @@ Status: ongoing. Done ล่าสุด: Resistance Check redesign (0.48), Gear
 4. **Trade link builder** — ปุ่มสร้างลิงก์ค้น trade2 จากแถว Gear Planner (ต้องตรวจ URL format จริงก่อนทำ)
 5. เพิ่มหมวด poe.ninja, Content Codex refresh ราย**สัปดาห์**ใน Actions, แก้ stub parsers
 
-### P5 — Stack modernization: เปลี่ยนเครื่องยนต์ (แก้ boundary โดยตั้งใจ)
-`index.html` ~16,700 บรรทัดแตะเพดานแล้ว:
-1. **Vite + TypeScript** — แตกเป็นโมดูลต่อแท็บ, build ออกมาเป็น static เหมือนเดิม (Pages deploy ผ่าน Actions)
+### P5 — Stack modernization: เปลี่ยนเครื่องยนต์ (แก้ boundary โดยตั้งใจ) — **เริ่มแล้ว (Phase 1)**
+`index.html` ~17k บรรทัดแตะเพดานแล้ว. **กฎ "no build step" ถูกยกเลิกอย่างเป็นทางการแล้ว (2026-07-23).**
+1. **Vite + TypeScript** — แตกเป็นโมดูลต่อแท็บ, build ออกเป็น static (Pages deploy ผ่าน Actions)
 2. กติกาเหล็ก: **localStorage keys + สูตรทุกตัวห้ามเปลี่ยน**, migrate ทีละแท็บ, Playwright คุมทุกก้าว
 3. **i18n เต็มระบบ TH/EN** ทั้งแอป (โครง `I18N` มีแล้ว — migrate ให้ครบ)
-> เฟสนี้ยกเลิกกฎ "no build step" อย่างเป็นทางการเมื่อเริ่มทำ — ต้องยืนยันอีกครั้งก่อนเริ่ม
+> **สถานะ:** Phase 1 (foundation) เสร็จ patch 0.63 — Vite+TS ติดตั้ง+verify (dev server + typecheck) แล้ว
+> **โดยยังไม่แตะ deploy จริง** (live เสิร์ฟ index.html เดิม). แผน 5 เฟสอยู่ใน **`P5_MIGRATION.md`** —
+> อ่านก่อนทำต่อ. เหตุที่ยังไม่ตัด build: monolith global-scope จะพังถ้า bundle เลย ต้องย้ายเป็น ES modules ก่อน.
 
 ### P6 — Cloud + API/Tracker (optional — ข้าม boundary "no backend", ทำเมื่อพร้อมเท่านั้น)
 1. **Sync ข้ามเครื่อง** — ทางเลือกเบา: GitHub Gist token ของผู้ใช้เอง / ทางเลือกเต็ม: worker เล็กๆ

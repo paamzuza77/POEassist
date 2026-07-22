@@ -1,5 +1,9 @@
 .claude/
 
+# P5 tooling (patch 0.63) — Vite + TypeScript build artifacts, not committed
+node_modules/
+dist/
+
 # Unused image/ assets — kept on your disk, deliberately NOT published to the repo (patch 0.32).
 # The app never references either file; see PROJECT_INDEX.md → "Game asset registry".
 #   logo.png — the official Path of Exile 2 logo. Trademarked, reads as endorsement
