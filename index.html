@@ -4730,6 +4730,50 @@ window.ensureRawblockFonts = function () {
   }
   .cmdk-foot b { color: var(--text-muted); }
   .cmdk-foot-hint { margin-left: auto; letter-spacing: 0.08em; }
+
+  /* ==================== Price lookup (patch 0.53) ==================== */
+  .price-panel {
+    background: var(--void);
+    border: 3px solid var(--border);
+    padding: 16px 18px;
+    margin-bottom: 20px;
+  }
+  .price-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .price-title { font-family: var(--font-head); font-size: 15px; text-transform: uppercase; margin: 0; }
+  .price-sub { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-dim); }
+  .price-input {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--void);
+    border: 2px solid var(--border);
+    border-radius: 0;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    padding: 9px 12px;
+  }
+  .price-input:focus-visible { outline: 2px solid var(--border); outline-offset: 1px; }
+  .price-results { margin-top: 10px; display: grid; gap: 6px; }
+  .price-results:empty { display: none; }
+  .price-empty { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-dim); padding: 8px 2px; }
+  .price-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 2px solid var(--border-soft);
+    background: var(--panel-sunken);
+  }
+  .price-item img { width: 30px; height: 30px; object-fit: contain; flex-shrink: 0; }
+  .price-item-body { flex: 1; min-width: 0; }
+  .price-item-name { font-size: 13px; font-weight: 700; color: var(--text); }
+  .price-item-line {
+    display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline;
+    font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-top: 2px;
+  }
+  .price-val { color: var(--gold-glow, var(--text)); font-weight: 700; }
+  .price-fiat { color: var(--text-dim); }
+  .price-liq { color: var(--text-dim); font-size: 10px; }
 </style>
 <!-- Modularization Phase 1 (patch 0.34): helper CSS ที่แยกออกจาก inline <style> ด้านบน
      วางหลัง </style> เพื่อคงลำดับ cascade เดิม (rule พื้นฐาน specificity ต่ำ — override ของ Trust theme ชนะด้วย specificity อยู่แล้ว) -->
@@ -4905,6 +4949,16 @@ window.ensureRawblockFonts = function () {
   </div><!-- /pageHome -->
 
   <div id="pageRadar" hidden>
+    <!-- เช็คราคาไอเทม (patch 0.53) — ค้นจาก snapshot ที่โหลดอยู่แล้ว (radarData.marketItems) ไม่ fetch เพิ่ม -->
+    <div class="price-panel" id="pricePanel">
+      <div class="price-head">
+        <h2 class="price-title">💰 เช็คราคาไอเทม</h2>
+        <span class="price-sub">ค้นจากภาพตลาดล่าสุด — พิมพ์ชื่อไอเทม (อังกฤษ)</span>
+      </div>
+      <input type="text" id="priceLookupInput" class="price-input" placeholder="เช่น Divine, Exalted, Chaos, rune, essence…" autocomplete="off" spellcheck="false">
+      <div id="priceLookupResults" class="price-results"></div>
+    </div>
+
     <!-- ===== Market Farm Radar =====
          อ่านข้อมูลจากไฟล์ static: data/market-radar.json (สร้างโดย GitHub Actions รายชั่วโมง)
          หน้าเว็บไม่เรียก poe.ninja ตรงๆ เด็ดขาด -->
@@ -10689,6 +10743,13 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.53',
+    date: '2026-07-23',
+    notes: [
+      'Market Radar: กล่อง "💰 เช็คราคาไอเทม" ด้านบน — พิมพ์ชื่อไอเทมแล้วดูราคา (Divine) เทรนด์ 7 วัน สภาพคล่อง และลิงก์ poe.ninja จากภาพตลาดล่าสุด (ถ้าตั้งเรทเงินไว้จะโชว์ค่าเงินให้ด้วย) — เปิดเร็วด้วย Ctrl+K → “เช็คราคาไอเทม”',
+    ],
+  },
+  {
     version: '0.52',
     date: '2026-07-23',
     notes: [
@@ -13758,6 +13819,107 @@ document.getElementById('radarRefreshBtn').addEventListener('click', async () =>
   if (radarData && Array.isArray(radarData.marketItems)) showSuccessToast('รีเฟรชข้อมูลตลาดแล้ว');
 });
 loadRadar();
+
+/* ---- Price-this-item lookup (patch 0.53) ----
+   ค้นราคาไอเทมจาก radarData.marketItems ที่โหลดไว้แล้ว — ไม่ fetch เพิ่ม, ไม่มีคณิตใหม่
+   (value เป็น Divine ตามฐานข้อมูล; แปลง fiat ด้วยเรทที่ผู้ใช้ตั้งเองเท่านั้นผ่าน getDivineFiatRate) */
+(function initPriceLookup() {
+  const input = document.getElementById('priceLookupInput');
+  const box = document.getElementById('priceLookupResults');
+  if (!input || !box) return;
+
+  const fmtTrend = (t) => (typeof t !== 'number' || isNaN(t)) ? ''
+    : (t >= 0 ? '▲ +' : '▼ ') + t.toFixed(1) + '% 7d';
+
+  function render() {
+    const q = input.value.trim().toLowerCase();
+    box.innerHTML = '';
+    if (!q) return;
+    const items = (radarData && Array.isArray(radarData.marketItems)) ? radarData.marketItems : [];
+    if (!items.length) {
+      const d = document.createElement('div');
+      d.className = 'price-empty';
+      d.textContent = radarData ? 'ยังไม่มีข้อมูลตลาดในรอบนี้' : 'กำลังโหลดข้อมูลตลาด… ลองพิมพ์อีกครั้ง';
+      box.appendChild(d);
+      if (!radarData) loadRadar();
+      return;
+    }
+    const matches = items
+      .filter(it => typeof it.name === 'string' && it.name.toLowerCase().includes(q))
+      .sort((a, b) => (b.value || 0) - (a.value || 0))
+      .slice(0, 8);
+    if (!matches.length) {
+      const d = document.createElement('div');
+      d.className = 'price-empty';
+      d.textContent = 'ไม่พบไอเทมชื่อนี้ในภาพตลาดล่าสุด';
+      box.appendChild(d);
+      return;
+    }
+    const rate = getDivineFiatRate();
+    const sym = fiatSymbol();
+    matches.forEach(it => {
+      const card = document.createElement('div');
+      card.className = 'price-item';
+      if (it.icon) {
+        const img = document.createElement('img');
+        img.src = it.icon; img.alt = ''; img.loading = 'lazy';
+        img.onerror = () => img.remove();
+        card.appendChild(img);
+      }
+      const body = document.createElement('div');
+      body.className = 'price-item-body';
+      const nm = document.createElement('div');
+      nm.className = 'price-item-name';
+      nm.textContent = it.name; // ชื่อจากข้อมูล — textContent
+      body.appendChild(nm);
+      const line = document.createElement('div');
+      line.className = 'price-item-line';
+      const val = document.createElement('span');
+      val.className = 'price-val';
+      val.textContent = radarFmtValue(it.value, it.valueCurrency);
+      line.appendChild(val);
+      if (rate > 0 && typeof it.value === 'number') {
+        const fiat = document.createElement('span');
+        fiat.className = 'price-fiat';
+        fiat.textContent = '≈ ' + fmtNum(it.value * rate) + ' ' + sym;
+        line.appendChild(fiat);
+      }
+      const tr = fmtTrend(it.trend7d);
+      if (tr) {
+        const tEl = document.createElement('span');
+        tEl.className = it.trend7d >= 0 ? 'trend-up' : 'trend-down';
+        tEl.textContent = tr;
+        line.appendChild(tEl);
+      }
+      if (it.liquidityLabel) {
+        const liq = document.createElement('span');
+        liq.className = 'price-liq';
+        liq.textContent = 'liq: ' + it.liquidityLabel;
+        line.appendChild(liq);
+      }
+      body.appendChild(line);
+      card.appendChild(body);
+      if (it.sourceUrl) {
+        const a = document.createElement('a');
+        a.className = 'farm-link-chip';
+        a.href = it.sourceUrl; a.target = '_blank'; a.rel = 'noopener noreferrer';
+        a.textContent = 'poe.ninja ↗';
+        card.appendChild(a);
+      }
+      box.appendChild(card);
+    });
+  }
+
+  input.addEventListener('input', render);
+  // snapshot โหลดเสร็จ/รีเฟรช → วาดผลใหม่ถ้ากำลังค้นอยู่
+  document.addEventListener('poeassist:radarloaded', () => { if (input.value.trim()) render(); });
+  // ให้ Command Palette เรียกโฟกัสได้
+  window.focusPriceLookup = () => {
+    switchTab('radar');
+    if (!radarData) loadRadar();
+    requestAnimationFrame(() => { input.focus(); input.select(); });
+  };
+})();
 
 /* ---- Radar filter UI wiring ---- */
 (function initRadarFilter() {
@@ -17089,6 +17251,7 @@ function cmdkFuzzyScore(text, q) {
     });
     cmds.push({ icon: '➕', label: 'เพิ่มแถวใหม่ (Gear Planner)', hint: 'action', kw: 'add row gear shop เพิ่มแถว', run: () => { switchTab('shop'); document.getElementById('shopAddRowBtn').click(); } });
     cmds.push({ icon: '📋', label: 'วางข้อความไอเทม (Gear Planner)', hint: 'action', kw: 'paste item วางไอเทม', run: () => { switchTab('shop'); openShopPasteModal(); } });
+    cmds.push({ icon: '💰', label: 'เช็คราคาไอเทม (Market Radar)', hint: 'action', kw: 'price ราคา lookup ค้นราคา item', run: () => { if (typeof window.focusPriceLookup === 'function') window.focusPriceLookup(); else switchTab('radar'); } });
     cmds.push({ icon: '📡', label: 'รีเฟรช Market Radar', hint: 'action', kw: 'refresh radar market รีเฟรช', run: () => { switchTab('radar'); if (typeof loadRadar === 'function') loadRadar(); } });
     cmds.push({ icon: '💾', label: 'Export backup (ดาวน์โหลดข้อมูลทั้งหมด)', hint: 'action', kw: 'export backup save ดาวน์โหลด สำรอง', run: () => { if (typeof exportAppData === 'function') exportAppData(); } });
     cmds.push({ icon: '⚙', label: 'เปิด Settings', hint: 'action', kw: 'settings ตั้งค่า config', run: () => { const b = document.getElementById('settingsBtn'); if (b) b.click(); } });
