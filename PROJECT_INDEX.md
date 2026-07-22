@@ -183,7 +183,8 @@ Tabs are switched via `TAB_IDS` / `TAB_BTNS` (search `TAB_IDS =`); panels are `<
   - `PENALTY = -40` line 1970 — resistance penalty constant
   - `renderPaperdoll()` 2067, `renderEditor()` 2157, `renderResGauges()` 2270, `recalc()` 2354
   - OCR: `OCR paste zone` CSS at 163; JS block `OCR: paste a screenshot...` starting 2419
-    - `loadTesseract()` 2426, `STAT_PATTERNS` 2469, `guessSlot()` 2491, `parseItemText()` 2508, `handleItemImage()` 2552
+    - `loadTesseract()`, `STAT_PATTERNS`, `guessSlot()`, `parseItemText()`, `handleItemImage()` (search the names — line numbers drifted)
+    - **Patch 0.50 (smart Ctrl+V):** the `document` paste listener branches on clipboard type — text → `handleItemText()` → `parseItemText()` (no Tesseract); image → `handleItemImage()` (OCR, unchanged). Shared review UI is `showItemReview(parsed, {imgURL, rawText, source})` (was `showOcrReview`); `source:'text'` renders `.ocr-textbox` (raw item text) instead of the thumbnail. Slot guess reads the game's `Item Class:` line first via `slotFromItemClass()` (`ITEM_CLASS_SLOTS`) then falls back to `SLOT_KEYWORDS`; both resolve through `resolveGuessedSlot()`. Paste is gated to the forge tab, skipped while an editable element is focused, image-first then text (≥8 chars); drop accepts item text too.
     - Paste listener line 2767 (gated to `activeTab === 'forge'`), drop listener line 2785
 - Data source: none; presets in `localStorage` (`STORAGE_KEY`); radar targets in additive `poe2ResForge.targets.v1` (patch 0.23).
 - Safe edit notes: do not touch OCR/paste/drop logic unless asked — it's fragile (Tesseract.js loaded from CDN, regex-based stat parsing).
