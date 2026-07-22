@@ -2,6 +2,10 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-23 (22)
+
+- **P5 Phase 4 batch 3 — migrate 4 more pure formatters to TypeScript (patch 0.69, internal)** (`src/lib/format.ts`, `js/ea.js`, `index.html`, docs): moved `kwHelpEsc` (HTML escape), `notifFmtAgo` (Thai relative time), `acNum`/`acPct` (Augment Calc number/percent) into `src/lib/format.ts` (all pure, typed, byte-identical). `js/ea.js` now 28 exports (17.8KB); monolith binds them from `window.EA`, old defs deleted (kwHelpEsc bound at the top **before** the must-be-first Keyword Help Bridge that uses it). Verified known values (escaping, `acNum(22.005)`→"22.01", `acPct` +22%/0%/-5%, `notifFmtAgo` 90min→"1 ชม.ก่อน") + integration (forge stat rows / notification time / Augment Calc table) + no console errors. **Remaining per-tab logic depends on globals** (`radarConfidenceInfo`/`formatResValue`/forge+shop scoring read `radarData`/`CAP`/`PENALTY`/`forgeTargets`/`shopRows`) — needs constants + shared state lifted to `src/` first (next Phase-4 chunk; noted in `P5_MIGRATION.md`).
+
 ## 2026-07-23 (21)
 
 - **P5 Phase 4 batch — migrate 4 more pure helpers to TypeScript (patch 0.68, internal)** (`src/lib/format.ts` +`fuzzy.ts`, `src/tabs/radar-format.ts`, `js/ea.js`, `index.html`, docs): moved `parseIso` (→ `format.ts`), `cmdkFuzzyScore` (→ new `lib/fuzzy.ts`, palette matcher), and `radarFmtValue` + `priceSparkline` (→ new `tabs/radar-format.ts`, radar display). All pure, typed, byte-identical; re-exported via `src/main.ts` → `js/ea.js` (24 exports, 17KB); monolith binds them from `window.EA`, old defs deleted. Verified known values (`radarFmtValue` 1234.5→"1,235 Div"/5.678→"5.68 Div"/0.0456→"0.046 Div"/'x'→"—", `parseIso` valid/bad/empty, `cmdkFuzzyScore` match≥0/no-match −1/empty 0, `priceSparkline` 2-pts→SVG/1-pt→null) + real integration (price sparkline in DOM, palette fuzzy 4 results) + no console errors.

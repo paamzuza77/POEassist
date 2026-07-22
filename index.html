@@ -5629,6 +5629,8 @@ window.ensureRawblockFonts = function () {
 const { formatDurationParts, fmtDuration, fmtNum, parseIso } = window.EA;
 // pure logic เพิ่มเติม (patch 0.68): fuzzy matcher (palette) + radar display formatters
 const { cmdkFuzzyScore, radarFmtValue, priceSparkline } = window.EA;
+// pure formatters/escape (patch 0.69) — kwHelpEsc ใช้ในหลาย renderer + Keyword Help Bridge (ต้อง bind ก่อน)
+const { kwHelpEsc, notifFmtAgo, acNum, acPct } = window.EA;
 // Game asset registry (ex js/asset-registry.js → src/lib/asset-registry.ts, patch 0.65)
 const { GAME_ASSETS, ASSET_ALIASES, RADAR_ASSET_BY_KEY, normalizeAssetKey, getLocalAssetForName, renderAssetIcon } = window.EA;
 // Modern UX Foundation (ex js/ux-foundation.js → src/lib/ux-foundation.ts, patch 0.66)
@@ -5685,10 +5687,7 @@ const KW_HELP_TERMS = [
 ];
 const KW_HELP_MAX_CHIPS = 6; // กันรก: ต่อข้อความหนึ่งก้อน แสดงมากสุด 6 ชิป (ที่เหลือ "+N")
 
-function kwHelpEsc(s) {
-  return String(s == null ? '' : s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
+// kwHelpEsc() ย้ายไป src/lib/format.ts แล้ว (patch 0.69) — bind จาก window.EA ที่ต้นสคริปต์
 // ข้อมูลจาก keyword-codex (ใช้ kwcData ของแท็บ Keyword Codex ร่วมกัน — ไม่ fetch ซ้ำ)
 // ต้องครอบ try/catch: kwcData เป็น `let` ที่ประกาศท้ายสคริปต์ — ถ้า renderer ตัวไหนถูกเรียกตอน init
 // (เช่น ตาราง Gear Planner / การ์ด Farm ที่มีข้อมูลเก่าอยู่แล้ว) จะชน TDZ และทั้งหน้าพัง
@@ -6728,8 +6727,7 @@ const AUG_CALC_ROWS = [
 ];
 
 // จัดรูปตัวเลข: ปัดทศนิยม 2 ตำแหน่ง ตัดศูนย์ท้าย (ค่าจริงส่วนใหญ่เป็นจำนวนเต็มอยู่แล้ว)
-function acNum(v) { return String(Math.round(v * 100) / 100); }
-function acPct(v) { const r = Math.round(v * 100) / 100; return (r > 0 ? '+' : '') + r + '%'; }
+// acNum()/acPct() ย้ายไป src/lib/format.ts แล้ว (patch 0.69) — bind จาก window.EA ที่ต้นสคริปต์
 
 function updateForgeAugCalc(totals) {
   const augBody = document.getElementById('acAugBody');
@@ -18316,15 +18314,7 @@ function runNotifAct(act) {
     else if (act.settings) { const b = document.getElementById('settingsBtn'); if (b) b.click(); }
   } catch (e) { /* ข้าม */ }
 }
-function notifFmtAgo(iso) {
-  const d = new Date(iso); if (isNaN(d)) return '';
-  const mins = Math.floor((Date.now() - d.getTime()) / 60000);
-  if (mins < 1) return 'เมื่อครู่นี้';
-  if (mins < 60) return mins + ' นาทีก่อน';
-  const h = Math.floor(mins / 60);
-  if (h < 24) return h + ' ชม.ก่อน';
-  return Math.floor(h / 24) + ' วันก่อน';
-}
+// notifFmtAgo() ย้ายไป src/lib/format.ts แล้ว (patch 0.69) — bind จาก window.EA ที่ต้นสคริปต์
 
 function renderNotifList() {
   const list = document.getElementById('notifList');

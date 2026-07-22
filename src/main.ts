@@ -5,7 +5,7 @@
 // Migration pattern: move a pure helper into src/lib/*.ts (typed), re-export it here,
 // rebuild the bridge (npm run build:bridge), then in index.html delete the old inline
 // definition and bind `const <name> = window.EA.<name>;` near the top of the script.
-export { formatDurationParts, fmtDuration, fmtNum, parseIso } from './lib/format';
+export { formatDurationParts, fmtDuration, fmtNum, parseIso, kwHelpEsc, notifFmtAgo, acNum, acPct } from './lib/format';
 export type { DurationParts } from './lib/format';
 
 // Phase 4 (patch 0.68) — more pure logic: fuzzy matcher + radar display formatters

@@ -27,6 +27,26 @@ var EA = function(exports) {
     const d = new Date(s);
     return isNaN(d.getTime()) ? null : d;
   }
+  function kwHelpEsc(s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function notifFmtAgo(iso) {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    const mins = Math.floor((Date.now() - d.getTime()) / 6e4);
+    if (mins < 1) return "เมื่อครู่นี้";
+    if (mins < 60) return mins + " นาทีก่อน";
+    const h = Math.floor(mins / 60);
+    if (h < 24) return h + " ชม.ก่อน";
+    return Math.floor(h / 24) + " วันก่อน";
+  }
+  function acNum(v) {
+    return String(Math.round(v * 100) / 100);
+  }
+  function acPct(v) {
+    const r = Math.round(v * 100) / 100;
+    return (r > 0 ? "+" : "") + r + "%";
+  }
   function cmdkFuzzyScore(textIn, qIn) {
     const text = String(textIn || "").toLowerCase();
     const q = String(qIn || "").toLowerCase().trim();
@@ -412,13 +432,17 @@ var EA = function(exports) {
   exports.ASSET_ALIASES = ASSET_ALIASES;
   exports.GAME_ASSETS = GAME_ASSETS;
   exports.RADAR_ASSET_BY_KEY = RADAR_ASSET_BY_KEY;
+  exports.acNum = acNum;
+  exports.acPct = acPct;
   exports.buildRadarRecos = buildRadarRecos;
   exports.cmdkFuzzyScore = cmdkFuzzyScore;
   exports.fmtDuration = fmtDuration;
   exports.fmtNum = fmtNum;
   exports.formatDurationParts = formatDurationParts;
   exports.getLocalAssetForName = getLocalAssetForName;
+  exports.kwHelpEsc = kwHelpEsc;
   exports.normalizeAssetKey = normalizeAssetKey;
+  exports.notifFmtAgo = notifFmtAgo;
   exports.parseIso = parseIso;
   exports.priceSparkline = priceSparkline;
   exports.radarFmtValue = radarFmtValue;

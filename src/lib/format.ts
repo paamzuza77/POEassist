@@ -44,3 +44,25 @@ export function parseIso(s: string | number | Date | null | undefined): Date | n
   const d = new Date(s);
   return isNaN(d.getTime()) ? null : d; // isNaN(Date) coerces via getTime() — byte-identical
 }
+
+/** Escape the 5 HTML-sensitive chars for safe string concatenation. (legacy kwHelpEsc) */
+export function kwHelpEsc(s: unknown): string {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/** Thai relative-time label from an ISO/date (เมื่อครู่นี้ / N นาทีก่อน / N ชม.ก่อน / N วันก่อน). (legacy notifFmtAgo) */
+export function notifFmtAgo(iso: string | number | Date): string {
+  const d = new Date(iso); if (isNaN(d.getTime())) return '';
+  const mins = Math.floor((Date.now() - d.getTime()) / 60000);
+  if (mins < 1) return 'เมื่อครู่นี้';
+  if (mins < 60) return mins + ' นาทีก่อน';
+  const h = Math.floor(mins / 60);
+  if (h < 24) return h + ' ชม.ก่อน';
+  return Math.floor(h / 24) + ' วันก่อน';
+}
+
+/** Round to ≤2 decimals as a plain string. (legacy acNum — Augment Calc) */
+export function acNum(v: number): string { return String(Math.round(v * 100) / 100); }
+/** Round to ≤2 decimals as a signed percent, e.g. "+22%". (legacy acPct — Augment Calc) */
+export function acPct(v: number): string { const r = Math.round(v * 100) / 100; return (r > 0 ? '+' : '') + r + '%'; }
