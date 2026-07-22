@@ -4831,6 +4831,91 @@ window.ensureRawblockFonts = function () {
   .price-fiat { color: var(--text-dim); }
   .price-liq { color: var(--text-dim); font-size: 10px; }
 
+  /* ==================== Notification bell + panel (patch 0.59) ==================== */
+  .sidebar-bell {
+    position: relative;
+    display: flex; align-items: center; gap: 9px;
+    width: 100%;
+    background: transparent;
+    border: 2px solid transparent;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 12px;
+    text-align: left;
+    padding: 6px 10px;               /* เล็กกว่า .nav-item (จงใจ — "ห้ามใหญ่เท่าเมนู") */
+    cursor: pointer;
+    margin-bottom: 2px;
+  }
+  .sidebar-bell:hover, .sidebar-bell[aria-expanded="true"] { color: var(--text); border-color: var(--border-soft); }
+  .sidebar-bell:focus-visible { outline: 2px solid var(--border); outline-offset: 1px; }
+  .sidebar-bell-ico { display: inline-flex; width: 16px; height: 16px; flex-shrink: 0; }
+  .sidebar-bell-ico svg { width: 15px; height: 15px; display: block; }
+  .sidebar-bell-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* badge สีแดงแบบ facebook — วางบนไอคอน (มุมขวาบน) เห็นได้แม้ตอนย่อ sidebar */
+  .notif-badge {
+    position: absolute;
+    left: 20px; top: 2px;
+    min-width: 15px; height: 15px;
+    padding: 0 4px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--fire, #d33);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 9.5px; font-weight: 700; line-height: 1;
+    border-radius: 8px;
+    border: 1.5px solid var(--void);
+    pointer-events: none;
+  }
+  .notif-badge[hidden] { display: none; }
+  /* ตอนย่อ sidebar เหลือไอคอน: ซ่อน label, จัดกลางไอคอน (เหมือน nav-item) */
+  .app-shell.collapsed .sidebar-bell-label { display: none; }
+  .app-shell.collapsed .sidebar-bell { justify-content: center; }
+  .app-shell.collapsed .notif-badge { left: auto; right: 12px; top: 2px; }
+
+  .notif-panel {
+    position: fixed;
+    z-index: 260;
+    width: min(340px, calc(100vw - 24px));
+    max-height: min(70vh, 520px);
+    display: flex; flex-direction: column;
+    background: var(--void);
+    border: 3px solid var(--border);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+  .notif-panel[hidden] { display: none; }
+  .notif-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px;
+    border-bottom: 2px solid var(--border);
+  }
+  .notif-title { font-family: var(--font-head); font-size: 14px; text-transform: uppercase; flex: 1; margin: 0; }
+  .notif-head-btn {
+    background: none; border: none; color: var(--text-dim);
+    font-family: var(--font-mono); font-size: 10.5px; cursor: pointer; padding: 2px 4px; white-space: nowrap;
+  }
+  .notif-head-btn:hover { color: var(--text); }
+  .notif-list { overflow-y: auto; padding: 6px; }
+  .notif-empty { padding: 26px 16px; text-align: center; color: var(--text-dim); font-family: var(--font-mono); font-size: 12px; }
+  .notif-item {
+    display: flex; gap: 9px; align-items: flex-start;
+    padding: 9px 10px;
+    border: 2px solid var(--border-soft);
+    background: var(--panel-sunken);
+    margin-bottom: 5px;
+    cursor: default;
+  }
+  .notif-item.unread { border-color: var(--gold-dim, var(--border)); }
+  .notif-item.has-act { cursor: pointer; }
+  .notif-item.has-act:hover { border-color: var(--gold, var(--text)); }
+  .notif-ico { font-size: 16px; line-height: 1.2; flex-shrink: 0; }
+  .notif-body { flex: 1; min-width: 0; }
+  .notif-item-title { font-size: 12.5px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 6px; }
+  .notif-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--fire, #d33); flex-shrink: 0; }
+  .notif-item-msg { font-size: 11.5px; color: var(--text-muted); line-height: 1.5; margin-top: 2px; word-break: break-word; }
+  .notif-time { font-family: var(--font-mono); font-size: 9.5px; color: var(--text-dim); margin-top: 3px; }
+  .notif-x { background: none; border: none; color: var(--text-dim); font-size: 13px; cursor: pointer; padding: 0 2px; flex-shrink: 0; line-height: 1; }
+  .notif-x:hover { color: var(--fire, #d33); }
+
   /* View Transitions ตอนสลับแท็บ (patch 0.57) — cross-fade สั้นๆ; JS การ์ด reduced-motion ให้แล้ว */
   ::view-transition-old(root),
   ::view-transition-new(root) { animation-duration: 0.2s; }
@@ -4891,6 +4976,13 @@ window.ensureRawblockFonts = function () {
     </nav>
 
     <div class="sidebar-footer">
+      <!-- กระดิ่งแจ้งเตือน (patch 0.59) — เล็กกว่าเมนู มี badge สีแดงบอกจำนวนที่ยังไม่อ่าน
+           คลิกเปิดแผง #notifPanel (สร้าง/จัดการใน initNotifications ท้ายสคริปต์) -->
+      <button class="sidebar-bell" type="button" id="notifBell" title="การแจ้งเตือน" aria-label="การแจ้งเตือน" aria-haspopup="dialog" aria-expanded="false">
+        <span class="sidebar-bell-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1.5a3.5 3.5 0 0 0-3.5 3.5c0 3-1.5 4-1.5 5h10c0-1-1.5-2-1.5-5A3.5 3.5 0 0 0 8 1.5zM6.2 12a1.8 1.8 0 0 0 3.6 0z"/></svg></span>
+        <span class="sidebar-bell-label">การแจ้งเตือน</span>
+        <span class="notif-badge" id="notifBadge" hidden>0</span>
+      </button>
       <div class="nav-group">
         <div class="nav-group-label">System</div>
         <button class="nav-item nav-item-ghost" type="button" id="settingsBtn" title="Settings"><span class="tab-ico"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M6 1h4v2H6zM6 13h4v2H6zM1 6h2v4H1zM13 6h2v4h-2zM3 3l1.4-1.4 2.8 2.8-1.4 1.4zM9.8 9.8l1.4-1.4 2.8 2.8-1.4 1.4zM11.2 3l1.4 1.4-2.8 2.8-1.4-1.4zM4.4 9.8l1.4 1.4-2.8 2.8-1.4-1.4zM8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm0 2a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg></span>Settings</button>
@@ -11177,6 +11269,14 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.59',
+    date: '2026-07-23',
+    notes: [
+      'เพิ่มกระดิ่งแจ้งเตือนใน sidebar พร้อม badge สีแดงบอกจำนวนที่ยังไม่อ่าน — คลิกเปิดแผงรวมแจ้งเตือน (กดที่รายการเพื่อกระโดดไปหน้าที่เกี่ยว), อ่านทั้งหมด/ล้างทั้งหมดได้',
+      'ตอนนี้แจ้งเตือน: Stash Tab Sale ใกล้เริ่ม/เริ่มแล้ว, เตือนให้สำรองข้อมูล, และมีอัปเดตใหม่ (What\'s new) — Watchlist ราคาไอเทมจะตามมา',
+    ],
+  },
+  {
     version: '0.58',
     date: '2026-07-23',
     notes: [
@@ -14913,10 +15013,18 @@ function checkStashSaleAlert() {
     if (startMs > now && startMs - now <= 3600000 && stashAlertFired.soon !== saleId) {
       stashAlertFired.soon = saleId;
       showInfoToast('⏳ Stash Tab Sale จะเริ่มในไม่ถึง 1 ชั่วโมง (' + fmtDuration(startMs - now) + ')', { key: 'stash-alert', duration: 10000 });
+      if (typeof pushNotification === 'function') pushNotification({
+        type: 'stash', title: 'Stash Tab Sale ใกล้เริ่ม', body: 'จะเริ่มในไม่ถึง 1 ชั่วโมง — กดไปหน้า Exile Hub ดูเวลานับถอยหลัง',
+        act: { tab: 'home' }, dedupeKey: 'stash-soon-' + saleId,
+      });
     }
     if (startMs <= now && endAt && endAt.getTime() > now && stashAlertFired.live !== saleId) {
       stashAlertFired.live = saleId;
       showSuccessToast('🛒 Stash Tab Sale เริ่มแล้ว! เหลืออีก ' + fmtDuration(endAt.getTime() - now), { key: 'stash-alert', duration: 12000 });
+      if (typeof pushNotification === 'function') pushNotification({
+        type: 'stash', title: 'Stash Tab Sale เริ่มแล้ว!', body: 'ลดราคาแล้วตอนนี้ — กดไปหน้า Exile Hub',
+        act: { tab: 'home' }, dedupeKey: 'stash-live-' + saleId,
+      });
     }
   } catch (e) { /* ข้าม */ }
 }
@@ -18045,6 +18153,203 @@ function cmdkFuzzyScore(text, q) {
   document.addEventListener('keydown', (e) => { if (open && e.key === 'Escape') closeMenu(); });
 })();
 
+/* ==================== Notification center (patch 0.59) ====================
+   กระดิ่งใน sidebar + แผงรายการ — ศูนย์รวมแจ้งเตือน (Watchlist, สำรองข้อมูล, Stash sale, What's new)
+   เก็บใน localStorage คีย์ meta เดียว (ไม่อยู่ใน APP_DATA_KEYS — เป็นข้อมูลชั่วคราว ไม่ต้อง backup/restore)
+   pushNotification() เป็น API กลางให้ที่อื่นเรียก — action เป็น descriptor ที่ serialize ได้ (แปลงเป็น handler ตอน render) */
+const NOTIF_KEY = 'poeAssist.notifications.v1';
+const NOTIF_MAX = 40;
+const NOTIF_ICONS = { watchlist: '🎯', backup: '💾', stash: '🛒', whatsnew: '✨', market: '📡', info: '🔔' };
+
+let notifications = (function loadNotifications() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(NOTIF_KEY));
+    if (Array.isArray(raw)) return raw.filter(n => n && n.id);
+  } catch (e) { /* malformed */ }
+  return [];
+})();
+function persistNotifications() {
+  try { localStorage.setItem(NOTIF_KEY, JSON.stringify(notifications.slice(0, NOTIF_MAX))); } catch (e) { /* storage */ }
+}
+function notifUnreadCount() { return notifications.reduce((n, x) => n + (x.read ? 0 : 1), 0); }
+
+function updateNotifBadge() {
+  const badge = document.getElementById('notifBadge');
+  const bell = document.getElementById('notifBell');
+  if (!badge) return;
+  const c = notifUnreadCount();
+  badge.textContent = c > 99 ? '99+' : String(c);
+  badge.hidden = c === 0;
+  if (bell) bell.title = c ? 'การแจ้งเตือน (' + c + ' ใหม่)' : 'การแจ้งเตือน';
+}
+
+// API กลาง — act: {tab:'radar'} | {settings:true} | {price:true} | null ; dedupeKey กันแจ้งซ้ำ (ถ้ายังไม่อ่าน)
+function pushNotification(opts) {
+  const o = opts || {};
+  if (o.dedupeKey && notifications.some(n => n.dedupeKey === o.dedupeKey && !n.read)) return null;
+  const n = {
+    id: 'n_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+    type: o.type || 'info',
+    title: String(o.title || ''),
+    body: String(o.body || ''),
+    act: o.act || null,
+    dedupeKey: o.dedupeKey || null,
+    at: new Date().toISOString(),
+    read: false,
+  };
+  notifications.unshift(n);
+  notifications = notifications.slice(0, NOTIF_MAX);
+  persistNotifications();
+  updateNotifBadge();
+  const panel = document.getElementById('notifPanel');
+  if (panel && !panel.hidden) renderNotifList();
+  return n;
+}
+// แปลง act descriptor → ทำงานจริง (นำทาง)
+function runNotifAct(act) {
+  if (!act) return;
+  try {
+    if (act.tab) switchTab(act.tab);
+    else if (act.price && typeof window.focusPriceLookup === 'function') window.focusPriceLookup();
+    else if (act.settings) { const b = document.getElementById('settingsBtn'); if (b) b.click(); }
+  } catch (e) { /* ข้าม */ }
+}
+function notifFmtAgo(iso) {
+  const d = new Date(iso); if (isNaN(d)) return '';
+  const mins = Math.floor((Date.now() - d.getTime()) / 60000);
+  if (mins < 1) return 'เมื่อครู่นี้';
+  if (mins < 60) return mins + ' นาทีก่อน';
+  const h = Math.floor(mins / 60);
+  if (h < 24) return h + ' ชม.ก่อน';
+  return Math.floor(h / 24) + ' วันก่อน';
+}
+
+function renderNotifList() {
+  const list = document.getElementById('notifList');
+  if (!list) return;
+  list.innerHTML = '';
+  if (!notifications.length) {
+    const e = document.createElement('div');
+    e.className = 'notif-empty';
+    e.textContent = 'ยังไม่มีการแจ้งเตือน';
+    list.appendChild(e);
+    return;
+  }
+  notifications.forEach(n => {
+    const item = document.createElement('div');
+    item.className = 'notif-item' + (n.read ? '' : ' unread') + (n.act ? ' has-act' : '');
+    const ico = document.createElement('span');
+    ico.className = 'notif-ico';
+    ico.textContent = NOTIF_ICONS[n.type] || NOTIF_ICONS.info;
+    const body = document.createElement('div');
+    body.className = 'notif-body';
+    const title = document.createElement('div');
+    title.className = 'notif-item-title';
+    if (!n.read) { const dot = document.createElement('span'); dot.className = 'notif-dot'; title.appendChild(dot); }
+    const tt = document.createElement('span'); tt.textContent = n.title; title.appendChild(tt);
+    body.appendChild(title);
+    if (n.body) { const m = document.createElement('div'); m.className = 'notif-item-msg'; m.textContent = n.body; body.appendChild(m); }
+    const tm = document.createElement('div'); tm.className = 'notif-time'; tm.textContent = notifFmtAgo(n.at); body.appendChild(tm);
+    const x = document.createElement('button');
+    x.className = 'notif-x'; x.type = 'button'; x.title = 'ลบการแจ้งเตือนนี้'; x.textContent = '✕';
+    x.addEventListener('click', (e) => {
+      e.stopPropagation();
+      notifications = notifications.filter(m => m.id !== n.id);
+      persistNotifications(); updateNotifBadge(); renderNotifList();
+    });
+    item.appendChild(ico);
+    item.appendChild(body);
+    item.appendChild(x);
+    if (n.act) {
+      item.addEventListener('click', () => {
+        n.read = true; persistNotifications(); updateNotifBadge();
+        closeNotifPanel();
+        runNotifAct(n.act);
+      });
+    }
+    list.appendChild(item);
+  });
+}
+
+let notifPanelOpen = false;
+function closeNotifPanel() {
+  const panel = document.getElementById('notifPanel');
+  if (panel) panel.hidden = true;
+  const bell = document.getElementById('notifBell');
+  if (bell) bell.setAttribute('aria-expanded', 'false');
+  notifPanelOpen = false;
+}
+
+(function initNotifications() {
+  const bell = document.getElementById('notifBell');
+  if (!bell) return;
+
+  // สร้างแผง (append body — position:fixed วางใกล้กระดิ่ง)
+  const panel = document.createElement('div');
+  panel.className = 'notif-panel';
+  panel.id = 'notifPanel';
+  panel.hidden = true;
+  panel.setAttribute('role', 'dialog');
+  panel.setAttribute('aria-label', 'การแจ้งเตือน');
+  const head = document.createElement('div');
+  head.className = 'notif-head';
+  const h = document.createElement('p'); h.className = 'notif-title'; h.textContent = 'การแจ้งเตือน';
+  const readAll = document.createElement('button');
+  readAll.className = 'notif-head-btn'; readAll.type = 'button'; readAll.textContent = 'อ่านทั้งหมด';
+  readAll.addEventListener('click', () => {
+    notifications.forEach(n => { n.read = true; });
+    persistNotifications(); updateNotifBadge(); renderNotifList();
+  });
+  const clearAll = document.createElement('button');
+  clearAll.className = 'notif-head-btn'; clearAll.type = 'button'; clearAll.textContent = 'ล้างทั้งหมด';
+  clearAll.addEventListener('click', () => {
+    if (!notifications.length) return;
+    notifications = []; persistNotifications(); updateNotifBadge(); renderNotifList();
+  });
+  head.appendChild(h); head.appendChild(readAll); head.appendChild(clearAll);
+  const listEl = document.createElement('div');
+  listEl.className = 'notif-list'; listEl.id = 'notifList';
+  panel.appendChild(head); panel.appendChild(listEl);
+  document.body.appendChild(panel);
+
+  function positionPanel() {
+    const r = bell.getBoundingClientRect();
+    const z = (typeof uiZoom === 'function') ? uiZoom() : 1;
+    const pw = Math.min(340, window.innerWidth - 24);
+    // วางทางขวาของกระดิ่ง ถ้าไม่พอก็ใต้กระดิ่ง; หารด้วย zoom เพราะ body มี zoom (font-scale)
+    let left = (r.right + 8);
+    if (left + pw > window.innerWidth - 8) left = Math.max(8, window.innerWidth - pw - 8);
+    let top = r.top;
+    if (top + 520 > window.innerHeight) top = Math.max(8, window.innerHeight - 528);
+    panel.style.left = (left / z) + 'px';
+    panel.style.top = (top / z) + 'px';
+  }
+  function openPanel() {
+    renderNotifList();
+    positionPanel();
+    panel.hidden = false;
+    bell.setAttribute('aria-expanded', 'true');
+    notifPanelOpen = true;
+  }
+  bell.addEventListener('click', (e) => { e.stopPropagation(); if (notifPanelOpen) closeNotifPanel(); else openPanel(); });
+  document.addEventListener('click', (e) => { if (notifPanelOpen && !panel.contains(e.target) && e.target !== bell && !bell.contains(e.target)) closeNotifPanel(); });
+  document.addEventListener('keydown', (e) => { if (notifPanelOpen && e.key === 'Escape') closeNotifPanel(); });
+  window.addEventListener('resize', () => { if (notifPanelOpen) positionPanel(); });
+
+  updateNotifBadge();
+
+  // "What's new" — แจ้งครั้งเดียวเมื่อเวอร์ชัน patch ล่าสุดเปลี่ยน (เทียบกับที่เคยเห็น)
+  try {
+    const LAST_SEEN = 'poeAssist.lastSeenPatch.v1';
+    const cur = (typeof PATCH_NOTES !== 'undefined' && PATCH_NOTES[0]) ? PATCH_NOTES[0].version : null;
+    const seen = localStorage.getItem(LAST_SEEN);
+    if (cur && seen && seen !== cur) {
+      pushNotification({ type: 'whatsnew', title: 'อัปเดตใหม่ v' + cur, body: 'มีฟีเจอร์/การแก้ไขใหม่ — กดดู Patch Notes', act: null, dedupeKey: 'whatsnew-' + cur });
+    }
+    if (cur) localStorage.setItem(LAST_SEEN, cur);
+  } catch (e) { /* ข้าม */ }
+})();
+
 /* ==================== Codex background warmup (patch 0.47, boot perf) ====================
    หลัง first paint (event 'load') + ตอน browser ว่าง (requestIdleCallback) ค่อยอุ่นข้อมูล
    Content/Keyword Codex แบบเงียบๆ เพื่อไม่ให้บล็อกการเปิดแอปครั้งแรก แต่ยังพร้อมใช้เร็ว
@@ -18066,6 +18371,10 @@ function cmdkFuzzyScore(text, q) {
         : (Date.now() - oldestSnap > EXPORT_NUDGE_DAYS * dayMs);
       if (staleExport) {
         showInfoToast('เผื่อข้อมูลหาย: ลอง Export ไฟล์สำรองใน Settings → ข้อมูล/Backup ไว้บ้างนะ (ระบบมีจุดกู้คืนอัตโนมัติในเครื่องให้แล้ว)', { key: 'export-nudge', duration: 9000 });
+        if (typeof pushNotification === 'function') pushNotification({
+          type: 'backup', title: 'ควรสำรองข้อมูล', body: 'ไม่ได้ Export ไฟล์สำรองมานานแล้ว — กดเพื่อไปหน้า Settings → ข้อมูล/Backup',
+          act: { settings: true }, dedupeKey: 'backup-nudge',
+        });
       }
     } catch (e) { /* ข้าม */ }
   };

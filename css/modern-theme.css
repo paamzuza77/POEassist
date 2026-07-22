@@ -1243,3 +1243,13 @@ html[data-theme="modern"] .build-rename-input,
 html[data-theme="modern"] .build-add-input { border-radius: 8px; border-color: var(--border-soft); }
 html[data-theme="modern"] .build-row { border-radius: 10px; }
 html[data-theme="modern"] .build-name { border-radius: 8px; }
+
+/* Notification bell + panel (patch 0.59) — เข้าธีม Modern */
+html[data-theme="modern"] .sidebar-bell { border-radius: 10px; }
+html[data-theme="modern"] .sidebar-bell:hover,
+html[data-theme="modern"] .sidebar-bell[aria-expanded="true"] { background: var(--panel-sunken); border-color: transparent; }
+html[data-theme="modern"] .notif-panel { border: 1px solid var(--glass-border, var(--border-soft)); border-radius: 16px; box-shadow: var(--shadow-lg); }
+html[data-theme="modern"] .notif-head { border-bottom: 1px solid var(--border-soft); }
+html[data-theme="modern"] .notif-item { border: 1px solid var(--border-soft); border-radius: 12px; }
+html[data-theme="modern"] .notif-item.unread { border-color: var(--gold); }
+html[data-theme="modern"] .notif-badge { border-color: var(--panel); }
