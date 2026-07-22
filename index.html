@@ -8784,6 +8784,20 @@ function parseBackup(text) {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') overlay.hidden = true; });
 })();
 
+/* ==================== Undo system (patch 0.54) ====================
+   soft-delete: ลบทันที + toast "เลิกทำ" กู้คืนได้ (แทน confirm สำหรับการลบทีละชิ้น)
+   การลบครั้งใหญ่ (Clear All / bulk) ยังคง confirm ไว้ + เพิ่ม undo เป็นตาข่ายกันพลาด
+   restoreFn เป็น closure ที่คืนค่าที่ snapshot ไว้ + persist + re-render (ไม่มีคีย์ storage ใหม่) */
+function showUndoToast(message, restoreFn, opts) {
+  const o = opts || {};
+  return showToast(message, {
+    kind: o.kind || 'success',
+    key: o.key || 'undo',
+    duration: typeof o.duration === 'number' ? o.duration : 7000,
+    action: { label: '↩ เลิกทำ', onClick: restoreFn },
+  });
+}
+
 /* ==================== Build Shopping List ==================== */
 
 // รายการประเภทไอเทมใน dropdown ช่อง Type — แก้ไข/เพิ่ม/ลบได้ที่ array นี้ที่เดียว
@@ -9643,13 +9657,16 @@ function openShopRowMenu(anchorBtn, row) {
     showSuccessToast('ล้างค่าในแถวแล้ว', { key: 'shop-row' });
   }));
   menu.appendChild(shopMenuItem('✕ ลบแถวนี้', () => {
-    // ลบแถว = ยืนยันแบบบล็อกเสมอ
-    if (!confirm('ลบแถวนี้ออกจากรายการ?')) return;
+    // soft-delete (patch 0.54): ลบทันที + undo แทน confirm ทีละแถว
     const i = shopRows.indexOf(row);
-    if (i !== -1) shopRows.splice(i, 1);
+    if (i === -1) return;
+    const removed = shopRows.splice(i, 1)[0];
     shopSelected.delete(row);
     persistShopRows(); renderShopTable();
-    showSuccessToast('ลบแถวแล้ว', { key: 'shop-row' });
+    showUndoToast('ลบแถวแล้ว' + (row.name ? ': ' + row.name : ''), () => {
+      shopRows.splice(Math.min(i, shopRows.length), 0, removed);
+      persistShopRows(); renderShopTable(); flashShopRow(removed);
+    }, { key: 'shop-row' });
   }, { danger: true }));
 
   document.body.appendChild(menu);
@@ -10549,12 +10566,17 @@ document.getElementById('shopPasteItemBtn').addEventListener('click', openShopPa
 document.getElementById('shopClearAllBtn').addEventListener('click', () => {
   if (shopRows.length === 0) { showInfoToast('ไม่มีแถวให้ลบอยู่แล้ว'); return; }
   const n = shopRows.length;
-  // ลบข้อมูลผู้ใช้ = ต้องยืนยันแบบบล็อกเสมอ (ห้ามเปลี่ยนเป็น toast)
-  if (confirm('ลบทุกแถวใน Build Shopping List? (' + n + ' แถว)\nการลบนี้ย้อนกลับไม่ได้ — แนะนำ Export JSON เก็บไว้ก่อนถ้าไม่แน่ใจ')) {
+  // ลบครั้งใหญ่ = คง confirm ไว้ (ห้ามเปลี่ยนเป็น toast) + เพิ่ม undo เป็นตาข่ายกันพลาด (patch 0.54)
+  if (confirm('ลบทุกแถวใน Build Shopping List? (' + n + ' แถว)\nกู้คืนได้จากปุ่ม "เลิกทำ" ชั่วครู่ — หรือ Export JSON เก็บไว้ก่อนถ้าไม่แน่ใจ')) {
+    const backup = shopRows;
     shopRows = [];
     persistShopRows();
     renderShopTable();
-    showSuccessToast('ลบรายการทั้งหมดแล้ว (' + n + ' แถว)');
+    showUndoToast('ลบรายการทั้งหมดแล้ว (' + n + ' แถว)', () => {
+      shopRows = backup;
+      persistShopRows();
+      renderShopTable();
+    }, { key: 'shop-clear', duration: 9000 });
   }
 });
 
@@ -10681,13 +10703,18 @@ document.getElementById('shopBulkSlot').addEventListener('change', (e) => {
 document.getElementById('shopBulkDelete').addEventListener('click', () => {
   const rows = shopRows.filter(r => shopSelected.has(r)); // ลบเฉพาะที่เลือกจริง (แม้ถูกกรองซ่อน)
   if (rows.length === 0) { showInfoToast('ยังไม่ได้เลือกแถว'); return; }
-  // ลบข้อมูลผู้ใช้ = ยืนยันแบบบล็อกเสมอ
-  if (!confirm('ลบ ' + rows.length + ' แถวที่เลือก?\nการลบนี้ย้อนกลับไม่ได้')) return;
+  // ลบหลายแถว = คง confirm + เพิ่ม undo (patch 0.54)
+  if (!confirm('ลบ ' + rows.length + ' แถวที่เลือก?\nกู้คืนได้จากปุ่ม "เลิกทำ" ชั่วครู่')) return;
+  const backup = shopRows;
   shopRows = shopRows.filter(r => !shopSelected.has(r));
   shopSelected.clear();
   persistShopRows();
   renderShopTable();
-  showSuccessToast('ลบ ' + rows.length + ' แถวที่เลือกแล้ว', { key: 'shop-bulk' });
+  showUndoToast('ลบ ' + rows.length + ' แถวที่เลือกแล้ว', () => {
+    shopRows = backup;
+    persistShopRows();
+    renderShopTable();
+  }, { key: 'shop-bulk', duration: 9000 });
 });
 
 document.getElementById('shopBulkClear').addEventListener('click', () => {
@@ -10740,6 +10767,14 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.54',
+    date: '2026-07-23',
+    notes: [
+      'เลิกทำการลบได้ (Undo): ลบแถวใน Gear Planner หรือการ์ดใน Farm Planner แล้วมีปุ่ม "↩ เลิกทำ" ในแจ้งเตือนให้กู้คืนทันที — ไม่ต้องยืนยันซ้ำทีละชิ้น',
+      'ลบครั้งใหญ่ (Clear All / ลบที่เลือกหลายแถว) ยังถามยืนยันเหมือนเดิม แต่เพิ่มปุ่มเลิกทำเป็นตาข่ายกันพลาดด้วย',
+    ],
+  },
   {
     version: '0.53',
     date: '2026-07-23',
@@ -11923,12 +11958,19 @@ function buildFarmCard(card) {
     showSuccessToast('คัดลอกการ์ดแล้ว — "' + copy.name + '"', { key: 'farm-card' });
   }));
   foot.appendChild(makeIconBtn('✕', 'ลบการ์ดนี้', () => {
+    // soft-delete (patch 0.54): ลบทันที + undo แทน confirm ทีละการ์ด
     const label = card.name || 'ไม่มีชื่อ';
-    if (!confirm('ลบการ์ด "' + label + '" ?')) return; // ลบการ์ด = ยืนยันแบบบล็อกเหมือนเดิม
-    farmCards.splice(farmCards.indexOf(card), 1);
+    const idx = farmCards.indexOf(card);
+    if (idx === -1) return;
+    const removed = farmCards.splice(idx, 1)[0];
     persistFarmCards();
     renderFarmGrid();
-    showSuccessToast('ลบการ์ด "' + label + '" แล้ว', { key: 'farm-card' });
+    showUndoToast('ลบการ์ด "' + label + '" แล้ว', () => {
+      farmCards.splice(Math.min(idx, farmCards.length), 0, removed);
+      persistFarmCards();
+      renderFarmGrid();
+      flashFarmListItem(removed.id);
+    }, { key: 'farm-card' });
   }, true));
   el.appendChild(foot);
 
@@ -12650,12 +12692,17 @@ document.getElementById('farmProjectRuns').addEventListener('input', (e) => {
 document.getElementById('farmClearBtn').addEventListener('click', () => {
   if (farmCards.length === 0) { showInfoToast('ไม่มีการ์ดให้ลบอยู่แล้ว'); return; }
   const n = farmCards.length;
-  // ลบข้อมูลผู้ใช้ = ต้องยืนยันแบบบล็อกเสมอ (ห้ามเปลี่ยนเป็น toast)
-  if (confirm('ลบสูตรฟาร์มทั้งหมด ' + n + ' การ์ด?\nการลบนี้ย้อนกลับไม่ได้ — แนะนำ Export JSON เก็บไว้ก่อน')) {
+  // ลบครั้งใหญ่ = คง confirm + เพิ่ม undo เป็นตาข่ายกันพลาด (patch 0.54)
+  if (confirm('ลบสูตรฟาร์มทั้งหมด ' + n + ' การ์ด?\nกู้คืนได้จากปุ่ม "เลิกทำ" ชั่วครู่ — หรือ Export JSON เก็บไว้ก่อน')) {
+    const backup = farmCards;
     farmCards = [];
     persistFarmCards();
     renderFarmGrid();
-    showSuccessToast('ลบการ์ดทั้งหมดแล้ว (' + n + ' การ์ด)');
+    showUndoToast('ลบการ์ดทั้งหมดแล้ว (' + n + ' การ์ด)', () => {
+      farmCards = backup;
+      persistFarmCards();
+      renderFarmGrid();
+    }, { key: 'farm-clear', duration: 9000 });
   }
 });
 

@@ -44,6 +44,22 @@
   flex: 0 0 auto;
 }
 .toast-msg { flex: 1 1 auto; min-width: 0; word-break: break-word; }
+/* ปุ่ม action ใน toast (เช่น "เลิกทำ" ของ undo) — patch 0.54 */
+.toast-action {
+  flex: 0 0 auto;
+  border: 2px solid var(--gold, var(--text));
+  background: none;
+  color: var(--gold, var(--text));
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.toast-action:hover { background: var(--gold, var(--text)); color: var(--void); }
 .toast-close {
   flex: 0 0 auto;
   border: none;

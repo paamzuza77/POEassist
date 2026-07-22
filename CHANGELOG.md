@@ -2,6 +2,10 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-23 (7)
+
+- **Undo / soft-delete (patch 0.54 — P2 start)** (`js/ux-foundation.js`, `css/ux-foundation.css`, `index.html`): `showToast()` gained an additive optional `action: {label, onClick}` button (renders before the close ✕; runs then dismisses) + `.toast-action` styling. New global `showUndoToast(message, restoreFn, opts)` (toast with an "↩ เลิกทำ" action, 7s default). Wired: **single-item deletes now soft-delete** (delete immediately + undo, no confirm) — Gear Planner row-menu "ลบแถวนี้" and Farm Planner card "✕"; **bulk/clear-all keep their confirm() and add undo on top** — Gear Planner Clear All + bulk delete, Farm Planner Clear All. Restore = closure over the removed item/backuparray, spliced back at the original index + persist + re-render (no new storage key). **Rule change (deliberate, per user request for "Trash + Undo / soft-delete"):** this supersedes the old "every confirm() was kept" rule *for single-item reversible deletes only* — big/irreversible-feeling bulk ops still confirm. Verified: shop row + farm card delete→undo restores at the right position, undo button label, no console errors.
+
 ## 2026-07-23 (6)
 
 - **Housekeeping: webp currency icons + junk cleanup (no patch — internal)** (`js/asset-registry.js`, `image/`): converted the three tracked full-res PNG currency icons to 64px webp q80 via `sharp` (exalt.png 157KB→exalt.webp 2KB, mirror.png 106KB→2KB, chaos.png 40KB→3KB — **~287KB off the deployed payload**; `divine` already used webp). `GAME_ASSETS` `file:` refs repointed to the webp; old PNGs `git rm`'d. Deleted the local untracked/gitignored junk that was never published: `image/logo.png` (trademark), `image/the-divine-orb-…webp` (dup), `image/divine.png` (dup), and the stale `Index.md` (untracked duplicate of `PROJECT_INDEX.md`). Verified all webp load (64px) + registry points to them + no console errors. Closes the long-standing "re-encode oversized currency icons" TODO.

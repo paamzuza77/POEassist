@@ -69,15 +69,28 @@ function showToast(message, opts) {
   const msg = document.createElement('span');
   msg.className = 'toast-msg';
   msg.textContent = String(message == null ? '' : message); // textContent = escape ให้เอง
+
+  el.appendChild(ico);
+  el.appendChild(msg);
+
+  // ปุ่ม action เสริม (additive) — เช่นปุ่ม "เลิกทำ" ของระบบ undo; o.action = { label, onClick }
+  if (o.action && typeof o.action.onClick === 'function') {
+    const act = document.createElement('button');
+    act.type = 'button';
+    act.className = 'toast-action';
+    act.textContent = String(o.action.label == null ? 'OK' : o.action.label);
+    act.addEventListener('click', () => {
+      try { o.action.onClick(); } finally { dismissToast(el); }
+    });
+    el.appendChild(act);
+  }
+
   const close = document.createElement('button');
   close.type = 'button';
   close.className = 'toast-close';
   close.setAttribute('aria-label', 'ปิดการแจ้งเตือน');
   close.textContent = '✕';
   close.addEventListener('click', () => dismissToast(el));
-
-  el.appendChild(ico);
-  el.appendChild(msg);
   el.appendChild(close);
   toastStackEl().appendChild(el);
 
