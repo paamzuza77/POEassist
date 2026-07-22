@@ -19,3 +19,18 @@ export {
   renderAssetIcon,
 } from './lib/asset-registry';
 export type { GameAsset, LocalAsset, RenderAssetOpts } from './lib/asset-registry';
+
+// Phase 3 (patch 0.66) — Modern UX Foundation (ex js/ux-foundation.js). Public helpers only;
+// internal toast plumbing stays module-private.
+export {
+  showToast,
+  showSuccessToast,
+  showWarningToast,
+  showErrorToast,
+  showInfoToast,
+  uxEmptyState,
+  uxSkeleton,
+  uxFlash,
+  uxBusy,
+} from './lib/ux-foundation';
+export type { ToastOpts, ToastAction, UxAction, UxStateCfg } from './lib/ux-foundation';

@@ -1,33 +1,29 @@
-/* ==================== Modern UX Foundation (patch 0.31) ====================
-   ระบบกลาง 3 อย่างที่ทุกแท็บเรียกใช้ได้ (ไม่มี state/สคีมาใหม่ ไม่แตะการคำนวณใดๆ):
+// P5 Phase 3 (patch 0.66) — Modern UX Foundation, ported from js/ux-foundation.js to TypeScript.
+// Logic byte-identical. Built into js/ea.js (window.EA), loaded before the monolith.
+// Public API (exposed on window.EA): showToast + show{Success,Warning,Error,Info}Toast,
+// uxEmptyState, uxSkeleton, uxFlash, uxBusy. Internal helpers stay module-private.
+// กติกา: ห้ามใช้ toast แทน confirm() ของงานลบข้อมูล (toast ไม่บล็อก กดพลาดแล้วกู้ไม่ได้).
+// จับคู่กับ css/ux-foundation.css (ยัง <link> แยก — เป็น CSS ไม่ย้าย).
 
-     showToast(msg, opts) / showSuccessToast / showWarningToast / showErrorToast / showInfoToast
-       opts: { duration, key }  — key เดิมจะ "แทนที่" toast ตัวเก่า ไม่ซ้อนกองกัน
-       auto-dismiss + หยุดนับถอยหลังตอนเอาเมาส์ชี้/โฟกัสอยู่ในนั้น + ปุ่มปิดเอง
-       เขียนลง aria-live region ให้ screen reader อ่านด้วย
+type ToastKind = 'success' | 'warn' | 'error' | 'info';
+type ToastEl = HTMLDivElement & { _toastTimer?: ReturnType<typeof setTimeout> };
 
-     uxEmptyState({ icon, title, body, bodyHtml, actions, variant })  → HTMLElement
-       variant: 'empty' (ค่าเริ่มต้น) | 'loading' | 'error'
-       actions: [{ label, onClick, primary }]
-     uxSkeleton(rows)  → HTMLElement (placeholder ระหว่างโหลด JSON)
+export interface ToastAction {
+  label?: string;
+  onClick: () => void;
+}
+export interface ToastOpts {
+  kind?: ToastKind;
+  duration?: number;
+  key?: string;
+  action?: ToastAction;
+}
 
-     uxFlash(el)          — ไฮไลต์เขียวจางๆ ให้แถว/การ์ดที่เพิ่งเพิ่ม/เปลี่ยน
-     uxBusy(btn, on, txt) — ปุ่มกำลังทำงาน (import/export) กันกดซ้ำ
-
-   ห้ามใช้ toast แทน confirm() ของงานที่ลบข้อมูล — toast ไม่บล็อก ผู้ใช้กดพลาดแล้วกู้ไม่ได้
-
-   ── modularization Phase 1 (patch 0.34) ─────────────────────────────────────
-   ย้ายออกจาก inline <script> ของ index.html เป็นไฟล์แยก — โค้ดเดิมไม่เปลี่ยน
-   ต้องโหลด "ก่อน" สคริปต์หลักของ index.html (แท็กอยู่เหนือ <script> ตัวหลัก)
-   เป็น classic script ตัวเดียวกับ global scope — const/function ด้านล่างจึงมองเห็นได้จากสคริปต์หลัก
-   จับคู่กับ css/ux-foundation.css
-   =========================================================================== */
-
-const TOAST_ICONS = { success: '✓', warn: '⚠', error: '✕', info: 'i' };
+const TOAST_ICONS: Record<ToastKind, string> = { success: '✓', warn: '⚠', error: '✕', info: 'i' };
 const TOAST_DEFAULT_MS = 3200;
-const toastByKey = new Map(); // key → element (toast ที่มี key ซ้ำจะถูกแทนที่ ไม่กองซ้อน)
+const toastByKey = new Map<string, ToastEl>(); // key → element (toast ที่มี key ซ้ำจะถูกแทนที่ ไม่กองซ้อน)
 
-function toastStackEl() {
+function toastStackEl(): HTMLElement {
   let stack = document.getElementById('toastStack');
   if (!stack) {
     stack = document.createElement('div');
@@ -40,25 +36,25 @@ function toastStackEl() {
   return stack;
 }
 
-function dismissToast(el) {
+function dismissToast(el: ToastEl | null | undefined): void {
   if (!el || el.dataset.leaving === '1') return;
   el.dataset.leaving = '1';
   clearTimeout(el._toastTimer);
   if (el.dataset.toastKey) toastByKey.delete(el.dataset.toastKey);
   el.classList.add('leaving');
-  const drop = () => el.remove();
+  const drop = (): void => el.remove();
   el.addEventListener('animationend', drop, { once: true });
   setTimeout(drop, 400); // กันกรณี reduced-motion (ไม่มี animationend ให้รอ)
 }
 
-function showToast(message, opts) {
+export function showToast(message: unknown, opts?: ToastOpts): HTMLElement {
   const o = opts || {};
-  const kind = TOAST_ICONS[o.kind] ? o.kind : 'info';
+  const kind: ToastKind = o.kind && TOAST_ICONS[o.kind] ? o.kind : 'info';
   const duration = typeof o.duration === 'number' ? o.duration : TOAST_DEFAULT_MS;
 
   if (o.key && toastByKey.has(o.key)) dismissToast(toastByKey.get(o.key));
 
-  const el = document.createElement('div');
+  const el = document.createElement('div') as ToastEl;
   el.className = 'toast ' + kind;
   if (o.key) { el.dataset.toastKey = o.key; toastByKey.set(o.key, el); }
 
@@ -75,12 +71,13 @@ function showToast(message, opts) {
 
   // ปุ่ม action เสริม (additive) — เช่นปุ่ม "เลิกทำ" ของระบบ undo; o.action = { label, onClick }
   if (o.action && typeof o.action.onClick === 'function') {
+    const action = o.action;
     const act = document.createElement('button');
     act.type = 'button';
     act.className = 'toast-action';
-    act.textContent = String(o.action.label == null ? 'OK' : o.action.label);
+    act.textContent = String(action.label == null ? 'OK' : action.label);
     act.addEventListener('click', () => {
-      try { o.action.onClick(); } finally { dismissToast(el); }
+      try { action.onClick(); } finally { dismissToast(el); }
     });
     el.appendChild(act);
   }
@@ -95,7 +92,7 @@ function showToast(message, opts) {
   toastStackEl().appendChild(el);
 
   // หยุดนับถอยหลังตอนชี้/โฟกัสอยู่ในนั้น — ผู้ใช้จะได้อ่าน/กดลิงก์ทัน
-  const arm = () => {
+  const arm = (): void => {
     clearTimeout(el._toastTimer);
     if (duration > 0) el._toastTimer = setTimeout(() => dismissToast(el), duration);
   };
@@ -107,13 +104,35 @@ function showToast(message, opts) {
   return el;
 }
 
-function showSuccessToast(message, opts) { return showToast(message, Object.assign({}, opts, { kind: 'success' })); }
-function showWarningToast(message, opts) { return showToast(message, Object.assign({}, opts, { kind: 'warn' })); }
-function showErrorToast(message, opts) { return showToast(message, Object.assign({}, opts, { kind: 'error', duration: (opts && opts.duration) || 6000 })); }
-function showInfoToast(message, opts) { return showToast(message, Object.assign({}, opts, { kind: 'info' })); }
+export function showSuccessToast(message: unknown, opts?: ToastOpts): HTMLElement {
+  return showToast(message, Object.assign({}, opts, { kind: 'success' as const }));
+}
+export function showWarningToast(message: unknown, opts?: ToastOpts): HTMLElement {
+  return showToast(message, Object.assign({}, opts, { kind: 'warn' as const }));
+}
+export function showErrorToast(message: unknown, opts?: ToastOpts): HTMLElement {
+  return showToast(message, Object.assign({}, opts, { kind: 'error' as const, duration: (opts && opts.duration) || 6000 }));
+}
+export function showInfoToast(message: unknown, opts?: ToastOpts): HTMLElement {
+  return showToast(message, Object.assign({}, opts, { kind: 'info' as const }));
+}
 
 /* ---- Empty / loading / error state ---- */
-function uxEmptyState(cfg) {
+export interface UxAction {
+  label: string;
+  onClick: (ev?: Event) => void;
+  primary?: boolean;
+}
+export interface UxStateCfg {
+  icon?: string;
+  title?: string;
+  body?: string;
+  bodyHtml?: string;
+  actions?: Array<UxAction | null | undefined | false>;
+  variant?: 'empty' | 'loading' | 'error';
+}
+
+export function uxEmptyState(cfg?: UxStateCfg): HTMLElement {
   const c = cfg || {};
   const box = document.createElement('div');
   box.className = 'ux-state' + (c.variant && c.variant !== 'empty' ? ' ' + c.variant : '');
@@ -134,14 +153,14 @@ function uxEmptyState(cfg) {
     const b = document.createElement('div');
     b.className = 'ux-state-body';
     // bodyHtml ใช้เฉพาะข้อความคงที่ในไฟล์นี้ (เช่น <code>คำสั่ง</code>) — ห้ามส่งข้อมูลจากภายนอกเข้ามา
-    if (c.bodyHtml) b.innerHTML = c.bodyHtml; else b.textContent = c.body;
+    if (c.bodyHtml) b.innerHTML = c.bodyHtml; else b.textContent = c.body ?? '';
     box.appendChild(b);
   }
-  const acts = (c.actions || []).filter(Boolean);
+  const acts = (c.actions || []).filter(Boolean) as UxAction[];
   if (acts.length) {
     const row = document.createElement('div');
     row.className = 'ux-state-actions';
-    acts.forEach(a => {
+    acts.forEach((a) => {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'ocr-btn' + (a.primary ? ' primary' : '');
@@ -154,7 +173,7 @@ function uxEmptyState(cfg) {
   return box;
 }
 
-function uxSkeleton(rows) {
+export function uxSkeleton(rows?: number): HTMLElement {
   const wrap = document.createElement('div');
   wrap.className = 'ux-skel-list';
   wrap.setAttribute('aria-hidden', 'true'); // ตัวจริงคือ aria-busy/ข้อความสถานะ — ไม่ต้องให้ SR อ่านกล่องเปล่า
@@ -168,7 +187,7 @@ function uxSkeleton(rows) {
 }
 
 /* ---- Micro-interactions ---- */
-function uxFlash(el) {
+export function uxFlash(el: HTMLElement | null | undefined): void {
   if (!el || !el.classList) return;
   el.classList.remove('ux-flash');
   void el.offsetWidth; // restart animation (reflow) — จำเป็นเมื่อ flash ซ้ำที่เดิม
@@ -177,10 +196,10 @@ function uxFlash(el) {
 }
 
 // ปุ่มกำลังทำงาน: กันกดซ้ำระหว่าง export/import แล้วคืนข้อความเดิมให้เอง
-function uxBusy(btn, on, busyLabel) {
+export function uxBusy(btn: HTMLButtonElement | null | undefined, on: boolean, busyLabel?: string): void {
   if (!btn) return;
   if (on) {
-    if (btn.dataset.idleLabel == null) btn.dataset.idleLabel = btn.textContent;
+    if (btn.dataset.idleLabel == null) btn.dataset.idleLabel = btn.textContent ?? '';
     btn.classList.add('is-busy');
     btn.disabled = true;
     if (busyLabel) btn.textContent = busyLabel;

@@ -101,6 +101,174 @@ var EA = function(exports) {
     },
     true
   );
+  const TOAST_ICONS = { success: "✓", warn: "⚠", error: "✕", info: "i" };
+  const TOAST_DEFAULT_MS = 3200;
+  const toastByKey = /* @__PURE__ */ new Map();
+  function toastStackEl() {
+    let stack = document.getElementById("toastStack");
+    if (!stack) {
+      stack = document.createElement("div");
+      stack.id = "toastStack";
+      stack.className = "toast-stack";
+      stack.setAttribute("role", "status");
+      stack.setAttribute("aria-live", "polite");
+      document.body.appendChild(stack);
+    }
+    return stack;
+  }
+  function dismissToast(el) {
+    if (!el || el.dataset.leaving === "1") return;
+    el.dataset.leaving = "1";
+    clearTimeout(el._toastTimer);
+    if (el.dataset.toastKey) toastByKey.delete(el.dataset.toastKey);
+    el.classList.add("leaving");
+    const drop = () => el.remove();
+    el.addEventListener("animationend", drop, { once: true });
+    setTimeout(drop, 400);
+  }
+  function showToast(message, opts) {
+    const o = opts || {};
+    const kind = o.kind && TOAST_ICONS[o.kind] ? o.kind : "info";
+    const duration = typeof o.duration === "number" ? o.duration : TOAST_DEFAULT_MS;
+    if (o.key && toastByKey.has(o.key)) dismissToast(toastByKey.get(o.key));
+    const el = document.createElement("div");
+    el.className = "toast " + kind;
+    if (o.key) {
+      el.dataset.toastKey = o.key;
+      toastByKey.set(o.key, el);
+    }
+    const ico = document.createElement("span");
+    ico.className = "toast-ico";
+    ico.setAttribute("aria-hidden", "true");
+    ico.textContent = TOAST_ICONS[kind];
+    const msg = document.createElement("span");
+    msg.className = "toast-msg";
+    msg.textContent = String(message == null ? "" : message);
+    el.appendChild(ico);
+    el.appendChild(msg);
+    if (o.action && typeof o.action.onClick === "function") {
+      const action = o.action;
+      const act = document.createElement("button");
+      act.type = "button";
+      act.className = "toast-action";
+      act.textContent = String(action.label == null ? "OK" : action.label);
+      act.addEventListener("click", () => {
+        try {
+          action.onClick();
+        } finally {
+          dismissToast(el);
+        }
+      });
+      el.appendChild(act);
+    }
+    const close = document.createElement("button");
+    close.type = "button";
+    close.className = "toast-close";
+    close.setAttribute("aria-label", "ปิดการแจ้งเตือน");
+    close.textContent = "✕";
+    close.addEventListener("click", () => dismissToast(el));
+    el.appendChild(close);
+    toastStackEl().appendChild(el);
+    const arm = () => {
+      clearTimeout(el._toastTimer);
+      if (duration > 0) el._toastTimer = setTimeout(() => dismissToast(el), duration);
+    };
+    el.addEventListener("mouseenter", () => clearTimeout(el._toastTimer));
+    el.addEventListener("mouseleave", arm);
+    el.addEventListener("focusin", () => clearTimeout(el._toastTimer));
+    el.addEventListener("focusout", arm);
+    arm();
+    return el;
+  }
+  function showSuccessToast(message, opts) {
+    return showToast(message, Object.assign({}, opts, { kind: "success" }));
+  }
+  function showWarningToast(message, opts) {
+    return showToast(message, Object.assign({}, opts, { kind: "warn" }));
+  }
+  function showErrorToast(message, opts) {
+    return showToast(message, Object.assign({}, opts, { kind: "error", duration: opts && opts.duration || 6e3 }));
+  }
+  function showInfoToast(message, opts) {
+    return showToast(message, Object.assign({}, opts, { kind: "info" }));
+  }
+  function uxEmptyState(cfg) {
+    var _a;
+    const c = cfg || {};
+    const box = document.createElement("div");
+    box.className = "ux-state" + (c.variant && c.variant !== "empty" ? " " + c.variant : "");
+    if (c.icon) {
+      const i = document.createElement("div");
+      i.className = "ux-state-ico";
+      i.setAttribute("aria-hidden", "true");
+      i.textContent = c.icon;
+      box.appendChild(i);
+    }
+    if (c.title) {
+      const t2 = document.createElement("div");
+      t2.className = "ux-state-title";
+      t2.textContent = c.title;
+      box.appendChild(t2);
+    }
+    if (c.body || c.bodyHtml) {
+      const b = document.createElement("div");
+      b.className = "ux-state-body";
+      if (c.bodyHtml) b.innerHTML = c.bodyHtml;
+      else b.textContent = (_a = c.body) != null ? _a : "";
+      box.appendChild(b);
+    }
+    const acts = (c.actions || []).filter(Boolean);
+    if (acts.length) {
+      const row = document.createElement("div");
+      row.className = "ux-state-actions";
+      acts.forEach((a) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "ocr-btn" + (a.primary ? " primary" : "");
+        btn.textContent = a.label;
+        btn.addEventListener("click", a.onClick);
+        row.appendChild(btn);
+      });
+      box.appendChild(row);
+    }
+    return box;
+  }
+  function uxSkeleton(rows) {
+    const wrap = document.createElement("div");
+    wrap.className = "ux-skel-list";
+    wrap.setAttribute("aria-hidden", "true");
+    const n = Math.max(1, Math.min(8, rows || 5));
+    for (let i = 0; i < n; i++) {
+      const r = document.createElement("div");
+      r.className = "ux-skel-row";
+      wrap.appendChild(r);
+    }
+    return wrap;
+  }
+  function uxFlash(el) {
+    if (!el || !el.classList) return;
+    el.classList.remove("ux-flash");
+    void el.offsetWidth;
+    el.classList.add("ux-flash");
+    setTimeout(() => el.classList.remove("ux-flash"), 1300);
+  }
+  function uxBusy(btn, on, busyLabel) {
+    var _a;
+    if (!btn) return;
+    if (on) {
+      if (btn.dataset.idleLabel == null) btn.dataset.idleLabel = (_a = btn.textContent) != null ? _a : "";
+      btn.classList.add("is-busy");
+      btn.disabled = true;
+      if (busyLabel) btn.textContent = busyLabel;
+    } else {
+      btn.classList.remove("is-busy");
+      btn.disabled = false;
+      if (btn.dataset.idleLabel != null) {
+        btn.textContent = btn.dataset.idleLabel;
+        delete btn.dataset.idleLabel;
+      }
+    }
+  }
   exports.ASSET_ALIASES = ASSET_ALIASES;
   exports.GAME_ASSETS = GAME_ASSETS;
   exports.RADAR_ASSET_BY_KEY = RADAR_ASSET_BY_KEY;
@@ -110,6 +278,15 @@ var EA = function(exports) {
   exports.getLocalAssetForName = getLocalAssetForName;
   exports.normalizeAssetKey = normalizeAssetKey;
   exports.renderAssetIcon = renderAssetIcon;
+  exports.showErrorToast = showErrorToast;
+  exports.showInfoToast = showInfoToast;
+  exports.showSuccessToast = showSuccessToast;
+  exports.showToast = showToast;
+  exports.showWarningToast = showWarningToast;
+  exports.uxBusy = uxBusy;
+  exports.uxEmptyState = uxEmptyState;
+  exports.uxFlash = uxFlash;
+  exports.uxSkeleton = uxSkeleton;
   Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
   return exports;
 }({});
