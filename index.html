@@ -3417,6 +3417,14 @@ window.ensureRawblockFonts = function () {
   .settings-rate-unset { color: var(--lightning); font-family: var(--font-mono); font-size: 11px; font-weight: 700; margin: 6px 0 0; }
 
   /* ---- Contact / Donate ---- */
+  /* Auto-backup recovery points (patch 0.55) */
+  .settings-autobackup { display: grid; gap: 6px; margin: 8px 0; }
+  .settings-abk-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 8px 12px; border: 2px solid var(--border-soft); background: var(--panel-sunken);
+  }
+  .settings-abk-info { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-muted); }
+  .settings-abk-row .ocr-btn { flex-shrink: 0; }
   .settings-contact-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
   .settings-contact-row a {
     color: var(--link);
@@ -7582,6 +7590,8 @@ const I18N = {
     'backup.export': '⭳ Export all data',
     'backup.import': '⭱ Import backup',
     'backup.note': 'สำรอง/กู้คืนเฉพาะข้อมูลในเบราว์เซอร์ (การตั้งค่า + รายการซื้อ + การ์ดฟาร์ม + พรีเซ็ตเกียร์). ไม่รวมข้อมูลตลาดที่ generate อัตโนมัติ.',
+    'sec.autobackup': 'จุดกู้คืนอัตโนมัติ',
+    'autobackup.note': 'ระบบเก็บ "จุดกู้คืน" ล่าสุดไว้ในเครื่องอัตโนมัติ (สูงสุด 3 จุด) เผื่อข้อมูลหาย — ไม่มีข้อมูลออกนอกเบราว์เซอร์. การกู้คืนจะเขียนทับข้อมูลปัจจุบัน.',
     'backup.import.confirm': 'นำเข้าไฟล์สำรองนี้จะเขียนทับข้อมูลปัจจุบัน {n} รายการคีย์ที่รู้จัก แล้วรีโหลดหน้า.\nแนะนำ Export เก็บของเดิมไว้ก่อนถ้าไม่แน่ใจ. ดำเนินการต่อ?',
     'backup.import.fail': 'นำเข้าไม่สำเร็จ: ',
     'backup.write.fail': 'เขียนข้อมูลไม่สำเร็จ: ',
@@ -7869,6 +7879,8 @@ const I18N = {
     'backup.export': '⭳ Export all data',
     'backup.import': '⭱ Import backup',
     'backup.note': 'Backs up / restores browser-stored data only (settings + shopping rows + farm cards + gear presets). Auto-generated market data is not included.',
+    'sec.autobackup': 'Auto recovery points',
+    'autobackup.note': 'The app keeps recent "recovery points" on this device automatically (up to 3) in case data is lost — nothing leaves the browser. Restoring overwrites your current data.',
     'backup.import.confirm': 'Importing this backup will overwrite {n} known data keys, then reload the page.\nExport your current data first if unsure. Continue?',
     'backup.import.fail': 'Import failed: ',
     'backup.write.fail': 'Writing data failed: ',
@@ -8258,6 +8270,7 @@ function exportAppData() {
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+  if (typeof autoBackupMarkExport === 'function') autoBackupMarkExport(); // จำเวลา export ล่าสุด (patch 0.55)
 }
 
 // ตรวจ shape ให้พอกันไฟล์มั่ว แล้วคืนเฉพาะคีย์ที่รู้จัก (ยังไม่เขียนลง storage — ให้ caller ยืนยันก่อน)
@@ -8277,6 +8290,72 @@ function parseBackup(text) {
   if (Object.keys(incoming).length === 0)
     throw new Error('ไม่พบข้อมูลที่รู้จักในไฟล์นี้');
   return incoming;
+}
+
+/* ==================== Auto-backup (patch 0.55) ====================
+   เก็บ recovery point อัตโนมัติในเครื่อง (ตาข่ายกันข้อมูลหายจากการล้าง cache/พลาดหลัง undo หมดเวลา)
+   คีย์ meta แยกต่างหาก — ไม่อยู่ใน APP_DATA_KEYS (ไม่ backup ตัวเอง) และไม่อยู่ใน UI_PREF_KEYS (reset ไม่ลบ)
+   โครง: { snapshots: [{at, data}] เรียงใหม่→เก่า สูงสุด 3, lastExportAt } — ไม่มีข้อมูลออกนอกเครื่อง */
+const AUTO_BACKUP_KEY = 'poeAssist.autobackup.v1';
+const AUTO_BACKUP_MAX = 3;
+const AUTO_BACKUP_MIN_GAP_MS = 30 * 60 * 1000;   // เว้นอย่างน้อย 30 นาทีต่อ snapshot
+const AUTO_BACKUP_MAX_BYTES = 900 * 1024;         // กัน localStorage บวม — เกินนี้เก็บ snapshot เดียว
+const EXPORT_NUDGE_DAYS = 7;
+
+function loadAutoBackup() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(AUTO_BACKUP_KEY));
+    if (raw && typeof raw === 'object') {
+      return { snapshots: Array.isArray(raw.snapshots) ? raw.snapshots : [], lastExportAt: raw.lastExportAt || null };
+    }
+  } catch (e) { /* malformed → เริ่มใหม่ */ }
+  return { snapshots: [], lastExportAt: null };
+}
+function saveAutoBackup(store) {
+  try { localStorage.setItem(AUTO_BACKUP_KEY, JSON.stringify(store)); } catch (e) { /* storage เต็ม/ปิด — ข้าม */ }
+}
+// อ่านค่าปัจจุบันของทุกคีย์ข้อมูล (string ดิบ เหมือน exportAppData)
+function currentAppData() {
+  const data = {};
+  APP_DATA_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v !== null) data[k] = v; });
+  return data;
+}
+// เก็บ snapshot ถ้าข้อมูลเปลี่ยนและเว้นระยะพอ — เรียกตอนโหลดแอป
+function autoBackupSnapshot() {
+  const store = loadAutoBackup();
+  const data = currentAppData();
+  if (Object.keys(data).length === 0) return; // ยังไม่มีข้อมูลผู้ใช้ — ไม่ต้องเก็บ
+  const serialized = JSON.stringify(data);
+  const newest = store.snapshots[0];
+  if (newest) {
+    if (JSON.stringify(newest.data) === serialized) return;           // เหมือนเดิม — ข้าม
+    if (Date.now() - new Date(newest.at).getTime() < AUTO_BACKUP_MIN_GAP_MS) {
+      // ยังไม่ถึงเวลา — อัปเดต snapshot ล่าสุดแทนการเพิ่มใหม่ (คงจุดเก่าไว้)
+      store.snapshots[0] = { at: new Date().toISOString(), data };
+      saveAutoBackup(store);
+      return;
+    }
+  }
+  store.snapshots.unshift({ at: new Date().toISOString(), data });
+  let max = serialized.length > AUTO_BACKUP_MAX_BYTES ? 1 : AUTO_BACKUP_MAX;
+  store.snapshots = store.snapshots.slice(0, max);
+  saveAutoBackup(store);
+}
+function autoBackupMarkExport() {
+  const store = loadAutoBackup();
+  store.lastExportAt = new Date().toISOString();
+  saveAutoBackup(store);
+}
+// restore snapshot ที่ index → เขียนทับ storage + reload (caller ต้อง confirm ก่อน)
+function autoBackupRestore(index) {
+  const store = loadAutoBackup();
+  const snap = store.snapshots[index];
+  if (!snap || !snap.data) return false;
+  try {
+    Object.keys(snap.data).forEach(k => localStorage.setItem(k, snap.data[k]));
+  } catch (e) { showErrorToast('กู้คืนไม่สำเร็จ: ' + e.message); return false; }
+  location.reload();
+  return true;
 }
 
 /* ==================== Settings ==================== */
@@ -8650,6 +8729,59 @@ function parseBackup(text) {
   pgData.appendChild(backupRow);
   pgData.appendChild(noteP('backup.note'));
 
+  // ===== Auto-backup / recovery points (patch 0.55) =====
+  pgData.appendChild(sectionTitle('sec.autobackup'));
+  pgData.appendChild(noteP('autobackup.note'));
+  const autoWrap = document.createElement('div');
+  autoWrap.className = 'settings-autobackup';
+  autoWrap.id = 'settingsAutoBackup';
+  pgData.appendChild(autoWrap);
+  function fmtAgo(iso) {
+    const d = new Date(iso);
+    if (isNaN(d)) return '—';
+    const mins = Math.floor((Date.now() - d.getTime()) / 60000);
+    if (mins < 1) return 'เมื่อครู่นี้';
+    if (mins < 60) return mins + ' นาทีก่อน';
+    const h = Math.floor(mins / 60);
+    if (h < 24) return h + ' ชม.ก่อน';
+    return Math.floor(h / 24) + ' วันก่อน';
+  }
+  function renderAutoBackupUi() {
+    const store = loadAutoBackup();
+    autoWrap.innerHTML = '';
+    if (!store.snapshots.length) {
+      const empty = document.createElement('p');
+      empty.className = 'settings-note';
+      empty.textContent = 'ยังไม่มีจุดกู้คืน — ระบบจะบันทึกให้อัตโนมัติเมื่อคุณใช้งานและปิด/เปิดแอป';
+      autoWrap.appendChild(empty);
+      return;
+    }
+    store.snapshots.forEach((snap, i) => {
+      const keys = snap.data ? Object.keys(snap.data).length : 0;
+      const row = document.createElement('div');
+      row.className = 'settings-abk-row';
+      const info = document.createElement('span');
+      info.className = 'settings-abk-info';
+      info.textContent = (i === 0 ? '● ' : '○ ') + fmtAgo(snap.at) + ' · ' + keys + ' ชุดข้อมูล';
+      info.title = new Date(snap.at).toLocaleString();
+      const btn = document.createElement('button');
+      btn.className = 'ocr-btn';
+      btn.type = 'button';
+      btn.textContent = 'กู้คืน';
+      btn.addEventListener('click', () => {
+        // เขียนทับข้อมูลปัจจุบัน = confirm แบบบล็อก (ตามกฎการเขียนทับข้อมูลผู้ใช้)
+        if (!confirm('กู้คืนข้อมูลจากจุดนี้ (' + fmtAgo(snap.at) + ')?\nข้อมูลปัจจุบันจะถูกเขียนทับ แล้วรีโหลดหน้า — แนะนำ Export ไฟล์ปัจจุบันไว้ก่อนถ้าไม่แน่ใจ')) return;
+        autoBackupRestore(i);
+      });
+      row.appendChild(info);
+      row.appendChild(btn);
+      autoWrap.appendChild(row);
+    });
+  }
+  renderAutoBackupUi();
+  // เปิด Settings หน้า Data ครั้งใด รีเฟรชรายการจุดกู้คืนให้สด
+  document.addEventListener('poeassist:settingsopen', renderAutoBackupUi);
+
   // ===== หมวด 4 · ติดต่อ (แจ้งบั๊ก/ข้อเสนอแนะ) =====
   const pgContact = pages.contact.page;
   pgContact.appendChild(sectionTitle('sec.contact'));
@@ -8778,6 +8910,7 @@ function parseBackup(text) {
   btn.addEventListener('click', () => {
     overlay.hidden = false;
     refreshDynamic();
+    document.dispatchEvent(new CustomEvent('poeassist:settingsopen')); // รีเฟรชรายการจุดกู้คืน (patch 0.55)
   });
   close.addEventListener('click', () => { overlay.hidden = true; });
   overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.hidden = true; });
@@ -10767,6 +10900,14 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.55',
+    date: '2026-07-23',
+    notes: [
+      'จุดกู้คืนอัตโนมัติ (Auto-backup): ระบบเก็บสำเนาข้อมูลล่าสุดไว้ในเครื่องให้เอง (สูงสุด 3 จุด) เผื่อ cache ถูกล้างหรือข้อมูลหาย — กู้คืนได้ที่ Settings → ข้อมูล/Backup',
+      'เพิ่มการเตือนเบาๆ ให้ Export ไฟล์สำรองเก็บไว้ ถ้าไม่ได้สำรองมานาน',
+    ],
+  },
   {
     version: '0.54',
     date: '2026-07-23',
@@ -17423,6 +17564,30 @@ function cmdkFuzzyScore(text, q) {
    หลัง first paint (event 'load') + ตอน browser ว่าง (requestIdleCallback) ค่อยอุ่นข้อมูล
    Content/Keyword Codex แบบเงียบๆ เพื่อไม่ให้บล็อกการเปิดแอปครั้งแรก แต่ยังพร้อมใช้เร็ว
    (เปิดแท็บ / ค้นหา / deep link ก็สั่งโหลดทันทีอยู่แล้ว — อันนี้เป็น fallback เชิงรุก) */
+/* ==================== Auto-backup init (patch 0.55) ====================
+   หลัง first paint: เก็บ recovery point ของ session นี้ + เตือนให้ Export ถ้านานเกินไป (ครั้งเดียว เงียบๆ) */
+(function initAutoBackup() {
+  const run = () => {
+    try { autoBackupSnapshot(); } catch (e) { /* ข้าม */ }
+    try {
+      const store = loadAutoBackup();
+      const hasData = Object.keys(currentAppData()).length > 0;
+      if (!hasData) return;
+      const lastExp = store.lastExportAt ? new Date(store.lastExportAt).getTime() : null;
+      const oldestSnap = store.snapshots.length ? new Date(store.snapshots[store.snapshots.length - 1].at).getTime() : Date.now();
+      const dayMs = 86400000;
+      // เตือนเฉพาะคนที่ใช้มาสักพัก (snapshot เก่า > 7 วัน) และ export นานเกิน/ไม่เคย
+      const staleExport = lastExp ? (Date.now() - lastExp > EXPORT_NUDGE_DAYS * dayMs)
+        : (Date.now() - oldestSnap > EXPORT_NUDGE_DAYS * dayMs);
+      if (staleExport) {
+        showInfoToast('เผื่อข้อมูลหาย: ลอง Export ไฟล์สำรองใน Settings → ข้อมูล/Backup ไว้บ้างนะ (ระบบมีจุดกู้คืนอัตโนมัติในเครื่องให้แล้ว)', { key: 'export-nudge', duration: 9000 });
+      }
+    } catch (e) { /* ข้าม */ }
+  };
+  if (document.readyState === 'complete') setTimeout(run, 1500);
+  else window.addEventListener('load', () => setTimeout(run, 1500), { once: true });
+})();
+
 (function warmupCodexData() {
   const warm = () => {
     try { if (typeof ensureCodexLoaded === 'function') ensureCodexLoaded(); } catch (e) { /* ข้าม */ }
