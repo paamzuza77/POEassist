@@ -3417,6 +3417,15 @@ window.ensureRawblockFonts = function () {
   .settings-rate-unset { color: var(--lightning); font-family: var(--font-mono); font-size: 11px; font-weight: 700; margin: 6px 0 0; }
 
   /* ---- Contact / Donate ---- */
+  /* Build profiles (patch 0.56) */
+  .settings-buildprofiles { display: grid; gap: 10px; margin: 8px 0; }
+  .settings-bp-row { display: flex; align-items: center; gap: 10px; }
+  .settings-bp-label { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-dim); }
+  .settings-bp-row .settings-select { flex: 1; min-width: 0; }
+  .settings-bp-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+  .settings-bp-list { display: grid; gap: 4px; border-top: 2px solid var(--border-soft); padding-top: 8px; }
+  .settings-bp-listrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--text-muted); }
+
   /* Auto-backup recovery points (patch 0.55) */
   .settings-autobackup { display: grid; gap: 6px; margin: 8px 0; }
   .settings-abk-row {
@@ -7592,6 +7601,8 @@ const I18N = {
     'backup.note': 'สำรอง/กู้คืนเฉพาะข้อมูลในเบราว์เซอร์ (การตั้งค่า + รายการซื้อ + การ์ดฟาร์ม + พรีเซ็ตเกียร์). ไม่รวมข้อมูลตลาดที่ generate อัตโนมัติ.',
     'sec.autobackup': 'จุดกู้คืนอัตโนมัติ',
     'autobackup.note': 'ระบบเก็บ "จุดกู้คืน" ล่าสุดไว้ในเครื่องอัตโนมัติ (สูงสุด 3 จุด) เผื่อข้อมูลหาย — ไม่มีข้อมูลออกนอกเบราว์เซอร์. การกู้คืนจะเขียนทับข้อมูลปัจจุบัน.',
+    'sec.buildprofiles': 'โปรไฟล์บิลด์',
+    'buildprofiles.note': 'สลับหลายบิลด์ได้ในแอปเดียว — แต่ละบิลด์มีรายการซื้อ + พรีเซ็ตเกียร์/เป้าต้านทานของตัวเอง (ฟาร์ม/todo/เรทเงิน/ธีม ใช้ร่วมกัน). ข้อมูลบิลด์ที่ไม่ได้ใช้อยู่ถูกเก็บไว้ในเครื่อง.',
     'backup.import.confirm': 'นำเข้าไฟล์สำรองนี้จะเขียนทับข้อมูลปัจจุบัน {n} รายการคีย์ที่รู้จัก แล้วรีโหลดหน้า.\nแนะนำ Export เก็บของเดิมไว้ก่อนถ้าไม่แน่ใจ. ดำเนินการต่อ?',
     'backup.import.fail': 'นำเข้าไม่สำเร็จ: ',
     'backup.write.fail': 'เขียนข้อมูลไม่สำเร็จ: ',
@@ -7881,6 +7892,8 @@ const I18N = {
     'backup.note': 'Backs up / restores browser-stored data only (settings + shopping rows + farm cards + gear presets). Auto-generated market data is not included.',
     'sec.autobackup': 'Auto recovery points',
     'autobackup.note': 'The app keeps recent "recovery points" on this device automatically (up to 3) in case data is lost — nothing leaves the browser. Restoring overwrites your current data.',
+    'sec.buildprofiles': 'Build profiles',
+    'buildprofiles.note': 'Switch between multiple builds in one app — each has its own shopping list + gear presets / resistance targets (farm cards / todos / rates / theme are shared). Inactive builds are stored on this device.',
     'backup.import.confirm': 'Importing this backup will overwrite {n} known data keys, then reload the page.\nExport your current data first if unsure. Continue?',
     'backup.import.fail': 'Import failed: ',
     'backup.write.fail': 'Writing data failed: ',
@@ -8177,6 +8190,7 @@ updateFiatCurrencyUi(true);
 // ทุกคีย์ที่เป็น "ข้อมูลผู้ใช้/การตั้งค่า" ในเบราว์เซอร์ (ไม่รวมไฟล์ JSON ที่ generate มา)
 // ใช้ทั้งใน Export/Import ทั้งชุด — เก็บเป็น string ดิบตามที่อยู่ใน localStorage (lossless)
 const APP_DATA_KEYS = [
+  'poeAssist.buildProfiles.v1', // โปรไฟล์บิลด์ (patch 0.56) — เก็บสำเนาข้อมูลบิลด์ที่ไม่ได้ใช้งานอยู่
   'poe2ResForge.presets.v2',
   'poe2ResForge.activePreset.v2',
   'poe2ResForge.targets.v1',
@@ -8355,6 +8369,97 @@ function autoBackupRestore(index) {
     Object.keys(snap.data).forEach(k => localStorage.setItem(k, snap.data[k]));
   } catch (e) { showErrorToast('กู้คืนไม่สำเร็จ: ' + e.message); return false; }
   location.reload();
+  return true;
+}
+
+/* ==================== Build Profiles (patch 0.56) ====================
+   สลับ "บิลด์" ได้หลายชุด — ข้อมูลเฉพาะบิลด์ (รายการซื้อ + พรีเซ็ตเกียร์/เป้าต้านทาน) แยกกันต่อโปรไฟล์
+   ปลอดภัยกับข้อมูลเดิม: โปรไฟล์ที่ active เก็บใน "คีย์จริง" เดิมทุกตัว (ข้อมูลเก่า = โปรไฟล์แรกอัตโนมัติ);
+   โปรไฟล์ที่ไม่ได้ใช้อยู่เก็บสำเนาไว้ใน stash ของคีย์ meta เดียว — ฟาร์ม/todo/เรท/ธีม ใช้ร่วมทุกโปรไฟล์ */
+const BUILD_PROFILES_KEY = 'poeAssist.buildProfiles.v1';
+const PROFILE_KEYS = [
+  'poe2ShopList.rows.v1',        // รายการซื้อของบิลด์
+  'poe2ResForge.presets.v2',     // พรีเซ็ตเกียร์/ต้านทาน
+  'poe2ResForge.activePreset.v2',
+  'poe2ResForge.targets.v1',     // เป้าต้านทาน
+];
+
+function loadBuildProfiles() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(BUILD_PROFILES_KEY));
+    if (raw && typeof raw === 'object' && Array.isArray(raw.list) && raw.list.length) {
+      return { active: raw.active, list: raw.list, stash: (raw.stash && typeof raw.stash === 'object') ? raw.stash : {} };
+    }
+  } catch (e) { /* malformed → init ใหม่ */ }
+  // ครั้งแรก: ข้อมูลปัจจุบัน = โปรไฟล์ "บิลด์หลัก" อัตโนมัติ (ไม่แตะคีย์จริง)
+  const id = 'p_' + Date.now().toString(36);
+  const init = { active: id, list: [{ id, name: 'บิลด์หลัก' }], stash: {} };
+  saveBuildProfiles(init);
+  return init;
+}
+function saveBuildProfiles(store) {
+  try { localStorage.setItem(BUILD_PROFILES_KEY, JSON.stringify(store)); } catch (e) { /* storage เต็ม/ปิด */ }
+}
+function profileLiveData() {
+  const data = {};
+  PROFILE_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v !== null) data[k] = v; });
+  return data;
+}
+function profileWriteData(data) {
+  PROFILE_KEYS.forEach(k => {
+    if (data && Object.prototype.hasOwnProperty.call(data, k)) localStorage.setItem(k, data[k]);
+    else localStorage.removeItem(k); // โปรไฟล์เป้าหมายไม่มีคีย์นี้ = บิลด์นั้นยังไม่มีข้อมูลส่วนนี้ → ล้างให้ว่าง
+  });
+}
+function activeProfileId() { return loadBuildProfiles().active; }
+function activeProfileName() {
+  const s = loadBuildProfiles();
+  return (s.list.find(p => p.id === s.active) || {}).name || '—';
+}
+
+// สลับไปโปรไฟล์อื่น: เซฟข้อมูลบิลด์ปัจจุบันเข้า stash ของ active → โหลดของเป้าหมายเข้าคีย์จริง → reload
+function switchBuildProfile(targetId) {
+  const store = loadBuildProfiles();
+  if (targetId === store.active) return false;
+  if (!store.list.some(p => p.id === targetId)) return false;
+  store.stash[store.active] = profileLiveData(); // สำเนาบิลด์ปัจจุบัน
+  const targetData = store.stash[targetId] || {};
+  delete store.stash[targetId];                  // เป้าหมายกลายเป็น active → ไม่ต้องเก็บสำเนาซ้ำ
+  store.active = targetId;
+  saveBuildProfiles(store);
+  profileWriteData(targetData);                  // เขียนคีย์จริงเป็นของบิลด์เป้าหมาย
+  location.reload();
+  return true;
+}
+
+// สร้างโปรไฟล์ใหม่ (blank = บิลด์ว่าง / clone = ก็อปบิลด์ปัจจุบัน) แล้วสลับไปทันที
+function createBuildProfile(name, mode) {
+  const store = loadBuildProfiles();
+  const id = 'p_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+  store.stash[store.active] = profileLiveData(); // เซฟบิลด์ปัจจุบันก่อน
+  store.list.push({ id, name: name || ('บิลด์ ' + (store.list.length + 1)) });
+  store.active = id;
+  saveBuildProfiles(store);
+  // clone = คงข้อมูลปัจจุบันไว้ในคีย์จริง (บิลด์ใหม่เริ่มจากของเดิม) · blank = ล้างคีย์จริงให้ว่าง
+  if (mode !== 'clone') profileWriteData({});
+  location.reload();
+  return id;
+}
+function renameBuildProfile(id, name) {
+  const store = loadBuildProfiles();
+  const p = store.list.find(x => x.id === id);
+  if (!p) return false;
+  p.name = name || p.name;
+  saveBuildProfiles(store);
+  return true;
+}
+// ลบโปรไฟล์ (ห้ามลบตัวที่ active หรือตัวสุดท้าย) — ลบเฉพาะสำเนาใน stash
+function deleteBuildProfile(id) {
+  const store = loadBuildProfiles();
+  if (id === store.active || store.list.length <= 1) return false;
+  store.list = store.list.filter(p => p.id !== id);
+  delete store.stash[id];
+  saveBuildProfiles(store);
   return true;
 }
 
@@ -8646,6 +8751,108 @@ function autoBackupRestore(index) {
 
   // ===== หมวด 3 · ข้อมูล / Backup =====
   const pgData = pages.data.page;
+
+  // ===== Build Profiles (patch 0.56) — สลับ/จัดการหลายบิลด์ =====
+  pgData.appendChild(sectionTitle('sec.buildprofiles'));
+  pgData.appendChild(noteP('buildprofiles.note'));
+  const bpWrap = document.createElement('div');
+  bpWrap.className = 'settings-buildprofiles';
+  bpWrap.id = 'settingsBuildProfiles';
+  pgData.appendChild(bpWrap);
+  function renderBuildProfilesUi() {
+    const store = loadBuildProfiles();
+    bpWrap.innerHTML = '';
+    // แถวสลับบิลด์
+    const row = document.createElement('div');
+    row.className = 'settings-bp-row';
+    const lab = document.createElement('span');
+    lab.className = 'settings-bp-label';
+    lab.textContent = 'บิลด์ปัจจุบัน';
+    const sel = document.createElement('select');
+    sel.className = 'settings-select';
+    store.list.forEach(p => {
+      const o = document.createElement('option');
+      o.value = p.id; o.textContent = p.name; if (p.id === store.active) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.addEventListener('change', () => {
+      const target = sel.value;
+      if (target === store.active) return;
+      const name = (store.list.find(p => p.id === target) || {}).name || '';
+      if (!confirm('สลับไปบิลด์ "' + name + '" ?\nข้อมูลบิลด์ปัจจุบัน (รายการซื้อ + พรีเซ็ตเกียร์) จะถูกเก็บไว้ให้อัตโนมัติ แล้วรีโหลดหน้า')) {
+        sel.value = store.active; return;
+      }
+      switchBuildProfile(target);
+    });
+    row.appendChild(lab);
+    row.appendChild(sel);
+    bpWrap.appendChild(row);
+
+    // ปุ่มจัดการ
+    const actions = document.createElement('div');
+    actions.className = 'settings-bp-actions';
+    const mkBtn = (label, fn) => {
+      const b = document.createElement('button');
+      b.className = 'ocr-btn'; b.type = 'button'; b.textContent = label;
+      b.addEventListener('click', fn);
+      return b;
+    };
+    actions.appendChild(mkBtn('+ บิลด์ใหม่ (ว่าง)', () => {
+      const name = prompt('ตั้งชื่อบิลด์ใหม่:', 'บิลด์ ' + (store.list.length + 1));
+      if (name === null) return;
+      if (!confirm('สร้างบิลด์ใหม่ (ว่าง) และสลับไปทันที?\nข้อมูลบิลด์ปัจจุบันจะถูกเก็บไว้ให้')) return;
+      createBuildProfile(name.trim() || undefined, 'blank');
+    }));
+    actions.appendChild(mkBtn('⧉ ก็อปบิลด์นี้', () => {
+      const name = prompt('ตั้งชื่อบิลด์ที่ก็อป:', activeProfileName() + ' (copy)');
+      if (name === null) return;
+      createBuildProfile(name.trim() || undefined, 'clone');
+    }));
+    actions.appendChild(mkBtn('✎ เปลี่ยนชื่อ', () => {
+      const cur = store.list.find(p => p.id === store.active);
+      const name = prompt('เปลี่ยนชื่อบิลด์ปัจจุบัน:', cur ? cur.name : '');
+      if (name === null || !name.trim()) return;
+      renameBuildProfile(store.active, name.trim());
+      renderBuildProfilesUi();
+      showSuccessToast('เปลี่ยนชื่อบิลด์แล้ว', { key: 'build-profile' });
+    }));
+    const delBtn = mkBtn('✕ ลบบิลด์นี้', () => {
+      if (store.list.length <= 1) { showInfoToast('ต้องมีอย่างน้อย 1 บิลด์'); return; }
+      const cur = store.list.find(p => p.id === store.active);
+      showInfoToast('สลับไปบิลด์อื่นก่อน แล้วจึงลบบิลด์ที่ไม่ได้ใช้อยู่ได้');
+    });
+    delBtn.classList.add('danger');
+    actions.appendChild(delBtn);
+    bpWrap.appendChild(actions);
+
+    // รายการบิลด์อื่น (ลบได้เฉพาะที่ไม่ active)
+    const others = store.list.filter(p => p.id !== store.active);
+    if (others.length) {
+      const listWrap = document.createElement('div');
+      listWrap.className = 'settings-bp-list';
+      others.forEach(p => {
+        const r = document.createElement('div');
+        r.className = 'settings-bp-listrow';
+        const nm = document.createElement('span');
+        nm.textContent = p.name;
+        const del = document.createElement('button');
+        del.className = 'ocr-btn danger'; del.type = 'button'; del.textContent = 'ลบ';
+        del.addEventListener('click', () => {
+          if (!confirm('ลบบิลด์ "' + p.name + '" ? (ข้อมูลบิลด์นี้จะถูกลบถาวร)')) return;
+          deleteBuildProfile(p.id);
+          renderBuildProfilesUi();
+          showSuccessToast('ลบบิลด์ "' + p.name + '" แล้ว', { key: 'build-profile' });
+        });
+        r.appendChild(nm);
+        r.appendChild(del);
+        listWrap.appendChild(r);
+      });
+      bpWrap.appendChild(listWrap);
+    }
+  }
+  renderBuildProfilesUi();
+  document.addEventListener('poeassist:settingsopen', renderBuildProfilesUi);
+
   pgData.appendChild(sectionTitle('sec.localdata'));
   const overview = document.createElement('div');
   overview.className = 'settings-overview';
@@ -10900,6 +11107,14 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.56',
+    date: '2026-07-23',
+    notes: [
+      'โปรไฟล์บิลด์ (Build Profiles): สลับหลายบิลด์ได้ในแอปเดียว — แต่ละบิลด์มีรายการซื้อ + พรีเซ็ตเกียร์/เป้าต้านทานแยกกัน (ฟาร์ม/todo/เรทเงิน/ธีมใช้ร่วม) จัดการที่ Settings → ข้อมูล/Backup หรือสลับเร็วด้วย Ctrl+K',
+      'ข้อมูลเดิมของคุณกลายเป็นบิลด์ "หลัก" อัตโนมัติ — ไม่มีอะไรหาย',
+    ],
+  },
   {
     version: '0.55',
     date: '2026-07-23',
@@ -17440,6 +17655,13 @@ function cmdkFuzzyScore(text, q) {
     cmds.push({ icon: '💰', label: 'เช็คราคาไอเทม (Market Radar)', hint: 'action', kw: 'price ราคา lookup ค้นราคา item', run: () => { if (typeof window.focusPriceLookup === 'function') window.focusPriceLookup(); else switchTab('radar'); } });
     cmds.push({ icon: '📡', label: 'รีเฟรช Market Radar', hint: 'action', kw: 'refresh radar market รีเฟรช', run: () => { switchTab('radar'); if (typeof loadRadar === 'function') loadRadar(); } });
     cmds.push({ icon: '💾', label: 'Export backup (ดาวน์โหลดข้อมูลทั้งหมด)', hint: 'action', kw: 'export backup save ดาวน์โหลด สำรอง', run: () => { if (typeof exportAppData === 'function') exportAppData(); } });
+    // สลับบิลด์ (patch 0.56) — โปรไฟล์ที่ไม่ได้ active
+    try {
+      const bp = loadBuildProfiles();
+      bp.list.filter(p => p.id !== bp.active).forEach(p => {
+        cmds.push({ icon: '🎭', label: 'สลับไปบิลด์: ' + p.name, hint: 'build', kw: 'build profile บิลด์ สลับ ' + p.name, run: () => switchBuildProfile(p.id) });
+      });
+    } catch (e) { /* ยังไม่พร้อม */ }
     cmds.push({ icon: '⚙', label: 'เปิด Settings', hint: 'action', kw: 'settings ตั้งค่า config', run: () => { const b = document.getElementById('settingsBtn'); if (b) b.click(); } });
     cmds.push({ icon: '📜', label: 'เปิด Patch Notes', hint: 'action', kw: 'patch notes อัปเดต', run: () => { const b = document.getElementById('patchNotesBtn'); if (b) b.click(); } });
     cmds.push({ icon: '🌓', label: 'สลับโหมด ' + (appMode === 'dark' ? 'Light' : 'Dark'), hint: 'action', kw: 'light dark mode สว่าง มืด theme', run: () => setAppColorMode(appMode === 'dark' ? 'light' : 'dark') });
