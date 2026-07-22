@@ -5616,17 +5616,19 @@ window.ensureRawblockFonts = function () {
 
 <!-- Modularization Phase 1 (patch 0.34): helper แยกไฟล์ · classic scripts โหลด "ก่อน" สคริปต์หลัก
      จึงอยู่ global scope เดียวกัน — const/function ในไฟล์เหล่านี้ถูกเรียกจากสคริปต์หลักด้านล่างได้ -->
-<script src="js/asset-registry.js"></script>
 <script src="js/ux-foundation.js"></script>
-<!-- P5 bridge (patch 0.64): classic IIFE ที่ build จาก src/ (TypeScript) → window.EA
-     โหลดก่อน inline script เพื่อให้ผูกชื่อ helper ที่ย้ายไป src/ ได้ตอน parse (npm run build:bridge) -->
+<!-- P5 bridge (patch 0.64+): classic IIFE ที่ build จาก src/ (TypeScript) → window.EA
+     โหลดก่อน inline script เพื่อให้ผูกชื่อที่ย้ายไป src/ ได้ตอน parse (npm run build:bridge)
+     patch 0.65: รวม Game asset registry (แทน js/asset-registry.js เดิม) — listener รูปพังรันตอน ea.js โหลด -->
 <script src="js/ea.js"></script>
 
 <script>
-/* ===== P5 helper bridge (patch 0.64) — ชื่อ helper ที่ย้ายไป src/lib/ แล้ว ผูกจาก window.EA =====
-   logic อยู่ใน src/lib/format.ts (typed) — ที่นี่แค่ bind ชื่อให้ call site เดิมทั้งหมดใช้ต่อได้เหมือนเดิม
+/* ===== P5 bridge (patch 0.64/0.65) — ชื่อที่ย้ายไป src/ แล้ว ผูกจาก window.EA =====
+   logic อยู่ใน src/lib/*.ts (typed) — ที่นี่แค่ bind ชื่อให้ call site เดิมทั้งหมดใช้ต่อได้เหมือนเดิม
    ต้องอยู่บนสุด (ก่อนใช้งานครั้งแรก) — window.EA มาจาก js/ea.js ที่โหลดไปแล้วด้านบน */
 const { formatDurationParts, fmtDuration, fmtNum } = window.EA;
+// Game asset registry (ex js/asset-registry.js → src/lib/asset-registry.ts, patch 0.65)
+const { GAME_ASSETS, ASSET_ALIASES, RADAR_ASSET_BY_KEY, normalizeAssetKey, getLocalAssetForName, renderAssetIcon } = window.EA;
 
 /* ==================== Keyword Help Bridge (patch 0.30) ====================
    สะพานเชื่อม data/keyword-codex.json ให้เป็นระบบช่วยเหลือกลไกทั้งแอป:

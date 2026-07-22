@@ -7,3 +7,15 @@
 // definition and bind `const <name> = window.EA.<name>;` near the top of the script.
 export { formatDurationParts, fmtDuration, fmtNum } from './lib/format';
 export type { DurationParts } from './lib/format';
+
+// Phase 3 (patch 0.65) — Game asset registry (ex js/asset-registry.js). Importing it also
+// runs its top-level image-error listener (side effect) when ea.js loads, before the monolith.
+export {
+  GAME_ASSETS,
+  ASSET_ALIASES,
+  RADAR_ASSET_BY_KEY,
+  normalizeAssetKey,
+  getLocalAssetForName,
+  renderAssetIcon,
+} from './lib/asset-registry';
+export type { GameAsset, LocalAsset, RenderAssetOpts } from './lib/asset-registry';
