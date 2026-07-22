@@ -4434,6 +4434,47 @@ window.ensureRawblockFonts = function () {
     white-space: nowrap;
   }
   .app-menu-check { font-size: 10.5px; flex-shrink: 0; }
+
+  /* Build switcher popover (patch 0.58) */
+  .build-switch-menu { width: min(300px, calc(100vw - 24px)); }
+  .build-row {
+    display: flex; align-items: center; gap: 4px;
+    padding: 2px; border: 2px solid transparent;
+  }
+  .build-row.active { border-color: var(--border-soft); background: var(--panel-sunken); }
+  .build-name {
+    flex: 1; min-width: 0;
+    display: flex; align-items: center; gap: 7px;
+    background: transparent; border: 0; cursor: pointer;
+    color: var(--text); font-family: var(--font-body); font-size: 12.5px;
+    text-align: left; padding: 7px 8px;
+  }
+  .build-row.active .build-name { cursor: default; }
+  .build-name:hover:not([disabled]) { background: var(--text); color: var(--void); }
+  .build-check { width: 12px; flex-shrink: 0; color: var(--ok); font-size: 11px; }
+  .build-name:hover .build-check { color: inherit; }
+  .build-name-txt { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .build-mini {
+    flex-shrink: 0;
+    min-width: 26px; height: 26px; padding: 0 6px;
+    background: var(--void); border: 2px solid var(--border); color: var(--text);
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700; cursor: pointer;
+  }
+  .build-mini:hover:not(:disabled) { background: var(--text); color: var(--void); }
+  .build-mini:disabled { opacity: 0.4; cursor: not-allowed; }
+  .build-del:hover:not(:disabled) { background: var(--fire); border-color: var(--fire); color: var(--void); }
+  .build-confirm-label { flex: 1; min-width: 0; font-size: 12px; color: var(--fire); padding: 0 6px; }
+  .build-confirm-yes { border-color: var(--fire); color: var(--fire); }
+  .build-confirm-yes:hover { background: var(--fire); color: var(--void); }
+  .build-rename-input, .build-add-input {
+    flex: 1; min-width: 0;
+    background: var(--void); border: 2px solid var(--border); color: var(--text);
+    font-family: var(--font-body); font-size: 12.5px; padding: 5px 8px;
+  }
+  .build-rename-input:focus-visible, .build-add-input:focus-visible { outline: 2px solid var(--border); outline-offset: 1px; }
+  .build-add-row { display: flex; align-items: center; gap: 4px; padding: 2px; }
+  .build-add-btn { min-width: 30px; font-size: 15px; }
+  .build-clone-row { font-size: 12px; }
   .app-menu-status {
     display: flex; align-items: center; justify-content: space-between; gap: 10px;
     font-size: 11.5px;
@@ -4878,6 +4919,14 @@ window.ensureRawblockFonts = function () {
         <!-- ปุ่มโหมดสว่าง/มืดถูกย้ายเข้าเมนูขวาบน (patch 0.45) — ปุ่มเดิม "ซ่อนด้วย CSS" ไม่ลบทิ้ง:
              initModeToggle/syncAppearanceControls ยังอ้าง element นี้อยู่ (Settings sync เดิมไม่ถูกแตะ) -->
         <button class="mode-toggle" type="button" id="modeToggle" title="สลับโหมดสว่าง/มืด" aria-label="สลับโหมดสว่าง/มืด" aria-pressed="false"></button>
+        <!-- Build switcher ขวาบน (patch 0.58) — ไอคอน build + swap; คลิกเปิด dropdown เลือก/เพิ่ม/แก้ชื่อ/ลบบิลด์
+             เนื้อใน render ใหม่ทุกครั้งที่เปิดโดย renderBuildSwitchMenu() -->
+        <div class="build-switch-wrap app-menu-wrap">
+          <button class="app-menu-btn build-switch-btn" type="button" id="buildSwitchBtn" title="สลับบิลด์" aria-haspopup="menu" aria-expanded="false" aria-controls="buildSwitchMenu">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 5h9M8 2 11 5 8 8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 11H5M8 14 5 11 8 8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="app-menu build-switch-menu" id="buildSwitchMenu" role="menu" aria-labelledby="buildSwitchBtn" hidden></div>
+        </div>
         <!-- App menu ขวาบน (patch 0.45) — popover รวม action ระดับแอป (โหมดสี/นำทาง/ระบบ/สถานะ)
              เนื้อในถูก render ใหม่ทุกครั้งที่เปิด (i18n ตามภาษาปัจจุบัน) โดย renderAppMenu() -->
         <div class="app-menu-wrap">
@@ -11127,6 +11176,13 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.58',
+    date: '2026-07-23',
+    notes: [
+      'เพิ่มปุ่มสลับบิลด์ (ไอคอน swap) มุมขวาบนข้างเมนูแอป — คลิกเปิด dropdown เลือกบิลด์ เพิ่มบิลด์ใหม่ เปลี่ยนชื่อ และลบ (มีปุ่มยืนยันก่อนลบ) ได้ในที่เดียว ไม่ต้องเข้า Settings',
+    ],
+  },
   {
     version: '0.57',
     date: '2026-07-23',
@@ -17833,6 +17889,160 @@ function cmdkFuzzyScore(text, q) {
   });
   // เผยแพร่ให้ที่อื่นเรียกเปิดได้ (เช่นปุ่มบน topbar ในอนาคต)
   window.openCommandPalette = openPalette;
+})();
+
+/* ==================== Build switcher (topbar, patch 0.58) ====================
+   ปุ่มไอคอน build+swap ขวาบน → dropdown: เลือกบิลด์ / เพิ่มบิลด์ / แก้ชื่อ / ลบ (พร้อมยืนยัน)
+   ใช้ฟังก์ชันโปรไฟล์เดิม (switch/create/rename/deleteBuildProfile) — ไม่มีคีย์ storage ใหม่ */
+(function initBuildSwitcher() {
+  const btn = document.getElementById('buildSwitchBtn');
+  const menu = document.getElementById('buildSwitchMenu');
+  if (!btn || !menu) return;
+  let open = false;
+  let editId = null;   // id ของบิลด์ที่กำลังแก้ชื่อ
+  let confirmId = null; // id ของบิลด์ที่กำลังถามยืนยันลบ
+
+  function render() {
+    const store = loadBuildProfiles();
+    menu.innerHTML = '';
+
+    const label = document.createElement('div');
+    label.className = 'app-menu-group-label';
+    label.textContent = 'บิลด์ / Build';
+    menu.appendChild(label);
+
+    store.list.forEach(p => {
+      const row = document.createElement('div');
+      row.className = 'build-row' + (p.id === store.active ? ' active' : '');
+
+      if (editId === p.id) {
+        // โหมดแก้ชื่อ inline
+        const inp = document.createElement('input');
+        inp.type = 'text'; inp.className = 'build-rename-input'; inp.value = p.name;
+        inp.setAttribute('aria-label', 'ชื่อบิลด์');
+        const save = () => {
+          const v = inp.value.trim();
+          if (v) renameBuildProfile(p.id, v);
+          editId = null; render();
+        };
+        inp.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') { e.preventDefault(); save(); }
+          else if (e.key === 'Escape') { e.preventDefault(); editId = null; render(); }
+        });
+        const ok = mkMini('✓', 'บันทึกชื่อ', save);
+        const cancel = mkMini('✕', 'ยกเลิก', () => { editId = null; render(); });
+        row.appendChild(inp); row.appendChild(ok); row.appendChild(cancel);
+        menu.appendChild(row);
+        setTimeout(() => { inp.focus(); inp.select(); }, 0);
+        return;
+      }
+
+      if (confirmId === p.id) {
+        // โหมดยืนยันลบ inline
+        const warn = document.createElement('span');
+        warn.className = 'build-confirm-label';
+        warn.textContent = 'ลบ "' + p.name + '" ?';
+        const yes = mkMini('ยืนยัน', 'ยืนยันลบบิลด์นี้', () => {
+          if (deleteBuildProfile(p.id)) showSuccessToast('ลบบิลด์ "' + p.name + '" แล้ว', { key: 'build-switch' });
+          confirmId = null; render();
+        });
+        yes.classList.add('build-confirm-yes');
+        const no = mkMini('ยกเลิก', 'ยกเลิก', () => { confirmId = null; render(); });
+        row.appendChild(warn); row.appendChild(yes); row.appendChild(no);
+        menu.appendChild(row);
+        return;
+      }
+
+      // แถวปกติ: ชื่อ (คลิกสลับ) + rename + remove
+      const nameBtn = document.createElement('button');
+      nameBtn.type = 'button';
+      nameBtn.className = 'build-name';
+      nameBtn.innerHTML = (p.id === store.active ? '<span class="build-check">✓</span>' : '<span class="build-check"></span>');
+      const nm = document.createElement('span');
+      nm.className = 'build-name-txt';
+      nm.textContent = p.name;
+      nameBtn.appendChild(nm);
+      if (p.id === store.active) {
+        nameBtn.title = 'บิลด์ปัจจุบัน';
+      } else {
+        nameBtn.title = 'สลับไปบิลด์นี้';
+        nameBtn.addEventListener('click', () => {
+          if (confirm('สลับไปบิลด์ "' + p.name + '" ?\nข้อมูลบิลด์ปัจจุบันจะถูกเก็บไว้ให้ แล้วรีโหลดหน้า')) switchBuildProfile(p.id);
+        });
+      }
+      row.appendChild(nameBtn);
+
+      const ren = mkMini('✎', 'เปลี่ยนชื่อบิลด์', () => { editId = p.id; confirmId = null; render(); });
+      row.appendChild(ren);
+
+      const del = mkMini('✕', 'ลบบิลด์', () => { confirmId = p.id; editId = null; render(); });
+      del.classList.add('build-del');
+      // ลบได้เฉพาะบิลด์ที่ไม่ได้ active และต้องมีมากกว่า 1 บิลด์
+      if (p.id === store.active || store.list.length <= 1) {
+        del.disabled = true;
+        del.title = p.id === store.active ? 'สลับไปบิลด์อื่นก่อนจึงลบได้' : 'ต้องมีอย่างน้อย 1 บิลด์';
+      }
+      row.appendChild(del);
+
+      menu.appendChild(row);
+    });
+
+    // บรรทัดเพิ่มบิลด์
+    const sep = document.createElement('hr');
+    sep.className = 'app-menu-sep';
+    menu.appendChild(sep);
+    const addRow = document.createElement('div');
+    addRow.className = 'build-add-row';
+    const addInp = document.createElement('input');
+    addInp.type = 'text'; addInp.className = 'build-add-input';
+    addInp.placeholder = 'ชื่อบิลด์ใหม่…';
+    addInp.setAttribute('aria-label', 'ชื่อบิลด์ใหม่');
+    const doAdd = (mode) => {
+      const name = addInp.value.trim();
+      createBuildProfile(name || undefined, mode); // reload ทันที
+    };
+    addInp.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); doAdd('blank'); } });
+    const addBtn = mkMini('+', 'เพิ่มบิลด์ใหม่ (ว่าง) แล้วสลับไป', () => doAdd('blank'));
+    addBtn.classList.add('build-add-btn');
+    addRow.appendChild(addInp); addRow.appendChild(addBtn);
+    menu.appendChild(addRow);
+
+    const cloneRow = document.createElement('button');
+    cloneRow.type = 'button';
+    cloneRow.className = 'app-menu-row build-clone-row';
+    cloneRow.innerHTML = '<span class="app-menu-ico">⧉</span><span class="app-menu-label">ก็อปบิลด์ปัจจุบันเป็นบิลด์ใหม่</span>';
+    cloneRow.addEventListener('click', () => {
+      const name = (addInp.value.trim()) || (activeProfileName() + ' (copy)');
+      createBuildProfile(name, 'clone');
+    });
+    menu.appendChild(cloneRow);
+  }
+
+  function mkMini(txt, title, onClick) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'build-mini';
+    b.textContent = txt;
+    b.title = title;
+    b.addEventListener('click', onClick);
+    return b;
+  }
+
+  function openMenu() {
+    editId = null; confirmId = null;
+    render();
+    menu.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');
+    open = true;
+  }
+  function closeMenu() {
+    menu.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+    open = false;
+  }
+  btn.addEventListener('click', (e) => { e.stopPropagation(); if (open) closeMenu(); else openMenu(); });
+  document.addEventListener('click', (e) => { if (open && !menu.contains(e.target) && e.target !== btn) closeMenu(); });
+  document.addEventListener('keydown', (e) => { if (open && e.key === 'Escape') closeMenu(); });
 })();
 
 /* ==================== Codex background warmup (patch 0.47, boot perf) ====================

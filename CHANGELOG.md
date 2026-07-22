@@ -2,6 +2,10 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-23 (11)
+
+- **Topbar build switcher (patch 0.58 — P2 add-on, user request)** (`index.html`, `css/modern-theme.css`): a build+swap icon button `#buildSwitchBtn` in `.topbar-actions` (reuses `.app-menu-btn`, same 34px size, left of the app menu) opens a popover `#buildSwitchMenu` (`initBuildSwitcher`, reuses `.app-menu`): lists every build (✓ on active; click an inactive one → confirm → `switchBuildProfile`), each row has inline **rename** (✎ → input + ✓/✕, Enter/Esc) and **remove** (✕ → inline "ลบ …? [ยืนยール][ยกเลิก]", disabled on the active/last build), plus an add-build input (+ blank via `createBuildProfile`) and a "clone current" row. All via the existing 0.56 profile functions — no new storage. Verified: same size + top-right, open/close/outside-click/Esc, add/rename/remove-with-confirm, active-delete disabled, all 3 themes no overflow, no console errors.
+
 ## 2026-07-23 (10)
 
 - **Web polish: View Transitions + stash-sale alerts (patch 0.57 — P2 finish)** (`index.html`): `switchTab` now wraps its DOM swap in `document.startViewTransition()` for a smooth cross-fade — guarded by feature-detect + `prefers-reduced-motion` (falls back to the plain synchronous swap), with `::view-transition-*(root)` tuned to 0.2s. New in-page stash-sale alert (`checkStashSaleAlert`, runs on `poeassist:homestatusloaded` + every 60s, any tab): fires a one-per-sale `showInfoToast` when the sale starts within 1h and a `showSuccessToast` when it goes live, keyed off `getStashTimes()` (no scraping). Skeleton shimmer left as the existing RawBlock-compliant pulse (no gradient). Verified: VT called when reduced-motion is off (and correctly skipped when on — the test browser forces reduce), tab still swaps, stash "soon"/"live" toasts fire once each with no dupes, no console errors.

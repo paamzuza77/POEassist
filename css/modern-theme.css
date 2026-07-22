@@ -1236,3 +1236,10 @@ html[data-theme="modern"] .cmdk-row { border-radius: 10px; }
 html[data-theme="modern"] .cmdk-row.active { background: var(--accent-soft); color: var(--text); }
 html[data-theme="modern"] .cmdk-row.active .cmdk-hint { color: var(--text-muted); opacity: 1; }
 html[data-theme="modern"] .cmdk-foot { border-top: 1px solid var(--border-soft); }
+
+/* Build switcher popover (patch 0.58) — เข้าธีม Modern */
+html[data-theme="modern"] .build-mini,
+html[data-theme="modern"] .build-rename-input,
+html[data-theme="modern"] .build-add-input { border-radius: 8px; border-color: var(--border-soft); }
+html[data-theme="modern"] .build-row { border-radius: 10px; }
+html[data-theme="modern"] .build-name { border-radius: 8px; }
