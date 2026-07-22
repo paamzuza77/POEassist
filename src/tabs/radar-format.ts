@@ -1,6 +1,8 @@
 // P5 Phase 4 (patch 0.68) — Market Radar display helpers, ported from index.html.
 // Pure (input → string / SVG string). Byte-identical logic. DOM insertion stays in the monolith.
+// patch 0.71: the two radarData-dependent helpers moved here too — radarData is passed in as an argument.
 import type { RadarReco } from './radar-scoring';
+import { RADAR_FRESH_HOURS } from '../lib/constants';
 
 export interface PricePoint {
   t?: number;
@@ -67,4 +69,52 @@ export function radarSignalInfo(rc: RadarReco | null | undefined, isTopPick: boo
   if (trend >= 5) return { group: 'rising', label: null, sub: 'FARM SCORE', note: 'ราคาไอเทมท็อปกำลังขึ้น (+' + trend.toFixed(1) + '% 7d)' };
   if (trend <= -5) return { group: 'watch', label: null, sub: 'FARM SCORE', note: 'ราคาไอเทมท็อปกำลังลง (' + trend.toFixed(1) + '% 7d) — จับตาก่อนลงแรง' };
   return { group: 'stable', label: null, sub: 'FARM SCORE', note: 'ราคาแทบไม่ขยับใน 7 วัน (' + (trend >= 0 ? '+' : '') + trend.toFixed(1) + '%) — รายได้ค่อนข้างนิ่ง' };
+}
+
+// ---- patch 0.71: radarData-dependent presentation helpers (radarData passed in, not read as global) ----
+
+// รูปแบบ snapshot ขั้นต่ำที่ helper ต้องใช้ (radarData เต็มมี field อื่น ๆ — ไม่แตะ)
+export interface RadarSnapshot {
+  updatedAt?: string | number | Date | null;
+  [k: string]: unknown;
+}
+
+export interface RadarConfidence {
+  level: 'none' | 'high' | 'low' | 'medium';
+  label: string;
+  cls: string;
+  why: string;
+}
+
+// อายุ snapshot เป็นชั่วโมง (จาก radarData.updatedAt) — null ถ้าไม่มี/พาร์สไม่ได้
+export function radarSnapshotAgeHours(radarData: RadarSnapshot | null | undefined): number | null {
+  const updated = radarData && radarData.updatedAt ? new Date(radarData.updatedAt) : null;
+  if (!updated || isNaN(updated.getTime())) return null; // เดิม isNaN(updated) — isNaN(Date) coerces via getTime(), byte-identical
+  return (Date.now() - updated.getTime()) / 3600000;
+}
+
+/* Confidence ต่อการ์ด — กติกาโปร่งใสจากข้อมูลที่มีอยู่แล้วเท่านั้น (เอกสารเต็มใน EDIT_GUIDE.md):
+   - ไม่มี evidence (ไม่มีไอเทมผ่านเกณฑ์)                → No signal (missing data)
+   - itemCount ≥ 3 และ mapping confidence ≥ 0.8 และ snapshot สด → High
+   - itemCount < 2 หรือ mapping confidence < 0.6 หรือ snapshot เก่า/ไม่รู้อายุ → Low
+   - ที่เหลือ → Medium */
+export function radarConfidenceInfo(rc: RadarReco | null | undefined, radarData: RadarSnapshot | null | undefined): RadarConfidence {
+  if (!rc || rc.hasEvidence === false) {
+    return { level: 'none', label: 'No signal', cls: 'conf-none', why: 'ไม่มีไอเทมผ่านเกณฑ์ราคาใน snapshot นี้' };
+  }
+  const ageH = radarSnapshotAgeHours(radarData);
+  const fresh = ageH !== null && ageH <= RADAR_FRESH_HOURS;
+  const conf = typeof rc.confidence === 'number' ? rc.confidence : 0;
+  const n = typeof rc.itemCount === 'number' ? rc.itemCount : 0;
+  if (n >= 3 && conf >= 0.8 && fresh) {
+    return { level: 'high', label: 'High', cls: 'conf-high', why: n + ' items · mapping ' + Math.round(conf * 100) + '% · snapshot fresh' };
+  }
+  if (n < 2 || conf < 0.6 || !fresh) {
+    const why: string[] = [];
+    if (n < 2) why.push('มีหลักฐานแค่ ' + n + ' item');
+    if (conf < 0.6) why.push('mapping confidence ต่ำ (' + Math.round(conf * 100) + '%)');
+    if (!fresh) why.push('snapshot เก่า');
+    return { level: 'low', label: 'Low', cls: 'conf-low', why: why.join(' · ') };
+  }
+  return { level: 'medium', label: 'Medium', cls: 'conf-med', why: n + ' items · mapping ' + Math.round(conf * 100) + '%' };
 }

@@ -13,6 +13,10 @@ export { cmdkFuzzyScore } from './lib/fuzzy';
 export { radarFmtValue, priceSparkline, radarSignalInfo } from './tabs/radar-format';
 export type { PricePoint, RadarSignal } from './tabs/radar-format';
 
+// Phase 4 (patch 0.71) — radarData-dependent radar helpers (radarData passed in as an argument).
+export { radarSnapshotAgeHours, radarConfidenceInfo } from './tabs/radar-format';
+export type { RadarSnapshot, RadarConfidence } from './tabs/radar-format';
+
 // Phase 4 (patch 0.70) — state-module foundation: shared scoring constants + their pure consumers.
 // Lifting CAP/PENALTY/RADAR_FRESH_HOURS to src/ unblocks the constant-dependent scoring migrations.
 export { CAP, PENALTY, RADAR_FRESH_HOURS } from './lib/constants';

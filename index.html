@@ -5640,6 +5640,8 @@ const { radarItemScore, buildRadarRecos } = window.EA;
 // State-module foundation (patch 0.70): scoring/state constants + pure consumer ที่พึ่ง constant เท่านั้น
 // (CAP → formatResValue; RADAR_FRESH_HOURS ใช้ต่อ inline; radarSignalInfo pure) — bind บนสุดให้ available ทุกจุด
 const { CAP, PENALTY, RADAR_FRESH_HOURS, formatResValue, radarSignalInfo } = window.EA;
+// Radar state helpers (patch 0.71): พึ่ง radarData → รับเป็น argument ที่ call site (radarData เป็น let ท้ายไฟล์)
+const { radarSnapshotAgeHours, radarConfidenceInfo } = window.EA;
 
 /* ==================== Keyword Help Bridge (patch 0.30) ====================
    สะพานเชื่อม data/keyword-codex.json ให้เป็นระบบช่วยเหลือกลไกทั้งแอป:
@@ -13511,37 +13513,8 @@ function radarMinDivine() {
    เป้าหมาย: การ์ดที่คะแนน 0 ต้องไม่โชว์ "0%" โตๆ เหมือนเป็นคำแนะนำ — บอกสถานะจริงแทน
    (No signal / Insufficient data / Stable / Low confidence) + confidence + จัดกลุ่ม */
 
-function radarSnapshotAgeHours() {
-  const updated = radarData && radarData.updatedAt ? new Date(radarData.updatedAt) : null;
-  if (!updated || isNaN(updated)) return null;
-  return (Date.now() - updated.getTime()) / 3600000;
-}
-
-/* Confidence ต่อการ์ด — กติกาโปร่งใสจากข้อมูลที่มีอยู่แล้วเท่านั้น (เอกสารเต็มใน EDIT_GUIDE.md):
-   - ไม่มี evidence (ไม่มีไอเทมผ่านเกณฑ์)                → No signal (missing data)
-   - itemCount ≥ 3 และ mapping confidence ≥ 0.8 และ snapshot สด → High
-   - itemCount < 2 หรือ mapping confidence < 0.6 หรือ snapshot เก่า/ไม่รู้อายุ → Low
-   - ที่เหลือ → Medium */
-function radarConfidenceInfo(rc) {
-  if (!rc || rc.hasEvidence === false) {
-    return { level: 'none', label: 'No signal', cls: 'conf-none', why: 'ไม่มีไอเทมผ่านเกณฑ์ราคาใน snapshot นี้' };
-  }
-  const ageH = radarSnapshotAgeHours();
-  const fresh = ageH !== null && ageH <= RADAR_FRESH_HOURS;
-  const conf = typeof rc.confidence === 'number' ? rc.confidence : 0;
-  const n = typeof rc.itemCount === 'number' ? rc.itemCount : 0;
-  if (n >= 3 && conf >= 0.8 && fresh) {
-    return { level: 'high', label: 'High', cls: 'conf-high', why: n + ' items · mapping ' + Math.round(conf * 100) + '% · snapshot fresh' };
-  }
-  if (n < 2 || conf < 0.6 || !fresh) {
-    const why = [];
-    if (n < 2) why.push('มีหลักฐานแค่ ' + n + ' item');
-    if (conf < 0.6) why.push('mapping confidence ต่ำ (' + Math.round(conf * 100) + '%)');
-    if (!fresh) why.push('snapshot เก่า');
-    return { level: 'low', label: 'Low', cls: 'conf-low', why: why.join(' · ') };
-  }
-  return { level: 'medium', label: 'Medium', cls: 'conf-med', why: n + ' items · mapping ' + Math.round(conf * 100) + '%' };
-}
+// radarSnapshotAgeHours() + radarConfidenceInfo() ย้ายไป src/tabs/radar-format.ts แล้ว (patch 0.71)
+// — bind จาก window.EA ที่ต้นสคริปต์ · logic byte-identical · radarData ส่งเข้าเป็น argument ที่ call site
 
 // radarSignalInfo() (กลุ่ม/สัญญาณต่อการ์ด — pure presentation) ย้ายไป src/tabs/radar-format.ts แล้ว
 // (patch 0.70) — bind จาก window.EA ที่ต้นสคริปต์ · logic byte-identical (top/rising/stable/watch/nosignal)
@@ -13579,7 +13552,7 @@ function radarFreshChip(updatedValid, ageH) {
 function radarBuildSummaryText(top, groupsMap) {
   const lines = ['Market Radar — ' + new Date().toLocaleString('th-TH')];
   if (top) {
-    lines.push('Top Pick: ' + (top.content || '?') + ' — Farm Score ' + Math.round(top.score) + '% · Confidence: ' + radarConfidenceInfo(top).label);
+    lines.push('Top Pick: ' + (top.content || '?') + ' — Farm Score ' + Math.round(top.score) + '% · Confidence: ' + radarConfidenceInfo(top, radarData).label);
     (Array.isArray(top.reason) ? top.reason : []).forEach(r => lines.push('- ' + r));
   } else {
     lines.push('ยังไม่มี Top Pick ในรอบนี้ (ไม่มีสัญญาณเด่นผ่านเกณฑ์)');
@@ -13650,7 +13623,7 @@ function renderRadarHero(recos, groupsMap, updatedValid, ageH) {
   nm.className = 'radar-hero-name';
   nm.textContent = top.content || '?';
   nameWrap.appendChild(nm);
-  const confInfo = radarConfidenceInfo(top);
+  const confInfo = radarConfidenceInfo(top, radarData);
   const cf = document.createElement('span');
   cf.className = 'conf-badge ' + confInfo.cls;
   cf.textContent = 'Confidence: ' + confInfo.label;
@@ -14022,7 +13995,7 @@ function renderRadar(data) {
       // Score breakdown (patch 0.39) — เฉพาะการ์ดที่มี evidence และใช้แค่ค่าที่คำนวณอยู่แล้ว
       // (avgValue/avgTrend/itemCount/lowLiq/risk/confidence) — ไม่มีตัวเลขใหม่ ไม่มี fake precision
       if (rc.hasEvidence) {
-        const confInfo = radarConfidenceInfo(rc);
+        const confInfo = radarConfidenceInfo(rc, radarData);
         const bd = document.createElement('div');
         bd.className = 'reco-breakdown';
         const bdRow = (k, v, title) => {
@@ -14068,7 +14041,7 @@ function renderRadar(data) {
       const footEl = document.createElement('div');
       footEl.className = 'reco-foot';
       // Confidence badge (patch 0.39) แทนข้อความ "confidence NN%" เดิม — hover ดูเหตุผลของระดับ
-      const confBadgeInfo = radarConfidenceInfo(rc);
+      const confBadgeInfo = radarConfidenceInfo(rc, radarData);
       const cf = document.createElement('span');
       cf.className = 'conf-badge ' + confBadgeInfo.cls;
       cf.textContent = 'Confidence: ' + confBadgeInfo.label;
@@ -16468,7 +16441,7 @@ function renderTodayRadarCard() {
   const sc = document.createElement('span');
   sc.className = 'tb-est';
   // patch 0.39: แนบระดับ confidence (กติกาเดียวกับการ์ดในแท็บ Market Radar — radarConfidenceInfo)
-  sc.textContent = 'Farm Score ' + Math.round(top.score) + '% · Confidence: ' + radarConfidenceInfo(top).label;
+  sc.textContent = 'Farm Score ' + Math.round(top.score) + '% · Confidence: ' + radarConfidenceInfo(top, radarData).label;
   headRow.appendChild(sc);
   card.appendChild(headRow);
 
@@ -17746,7 +17719,7 @@ function renderToday() {
     menu.appendChild(mkStatus(t('menu.status.theme'), (themeInfo ? themeInfo.label : appTheme) + ' · ' + t('menu.mode.' + appMode)));
     menu.appendChild(mkStatus(t('menu.status.currency'), fiatCode()));
     menu.appendChild(mkStatus(t('menu.status.lang'), appLang === 'th' ? 'ไทย' : 'English'));
-    const ageH = (typeof radarSnapshotAgeHours === 'function') ? radarSnapshotAgeHours() : null;
+    const ageH = (typeof radarSnapshotAgeHours === 'function') ? radarSnapshotAgeHours(radarData) : null;
     menu.appendChild(mkStatus(t('menu.status.market'),
       ageH === null ? t('menu.market.none') : tFmt('menu.market.age', { h: ageH < 1 ? '<1' : String(Math.round(ageH)) })));
   }

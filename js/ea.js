@@ -78,6 +78,9 @@ var EA = function(exports) {
     }
     return score;
   }
+  const CAP = 75;
+  const PENALTY = -40;
+  const RADAR_FRESH_HOURS = 2;
   function radarFmtValue(v, cur) {
     if (typeof v !== "number" || Number.isNaN(v)) return "—";
     const num = v >= 100 ? Math.round(v).toLocaleString("en-US") : v >= 1 ? v.toFixed(2) : v.toPrecision(2);
@@ -124,9 +127,31 @@ var EA = function(exports) {
     if (trend <= -5) return { group: "watch", label: null, sub: "FARM SCORE", note: "ราคาไอเทมท็อปกำลังลง (" + trend.toFixed(1) + "% 7d) — จับตาก่อนลงแรง" };
     return { group: "stable", label: null, sub: "FARM SCORE", note: "ราคาแทบไม่ขยับใน 7 วัน (" + (trend >= 0 ? "+" : "") + trend.toFixed(1) + "%) — รายได้ค่อนข้างนิ่ง" };
   }
-  const CAP = 75;
-  const PENALTY = -40;
-  const RADAR_FRESH_HOURS = 2;
+  function radarSnapshotAgeHours(radarData) {
+    const updated = radarData && radarData.updatedAt ? new Date(radarData.updatedAt) : null;
+    if (!updated || isNaN(updated.getTime())) return null;
+    return (Date.now() - updated.getTime()) / 36e5;
+  }
+  function radarConfidenceInfo(rc, radarData) {
+    if (!rc || rc.hasEvidence === false) {
+      return { level: "none", label: "No signal", cls: "conf-none", why: "ไม่มีไอเทมผ่านเกณฑ์ราคาใน snapshot นี้" };
+    }
+    const ageH = radarSnapshotAgeHours(radarData);
+    const fresh = ageH !== null && ageH <= RADAR_FRESH_HOURS;
+    const conf = typeof rc.confidence === "number" ? rc.confidence : 0;
+    const n = typeof rc.itemCount === "number" ? rc.itemCount : 0;
+    if (n >= 3 && conf >= 0.8 && fresh) {
+      return { level: "high", label: "High", cls: "conf-high", why: n + " items · mapping " + Math.round(conf * 100) + "% · snapshot fresh" };
+    }
+    if (n < 2 || conf < 0.6 || !fresh) {
+      const why = [];
+      if (n < 2) why.push("มีหลักฐานแค่ " + n + " item");
+      if (conf < 0.6) why.push("mapping confidence ต่ำ (" + Math.round(conf * 100) + "%)");
+      if (!fresh) why.push("snapshot เก่า");
+      return { level: "low", label: "Low", cls: "conf-low", why: why.join(" · ") };
+    }
+    return { level: "medium", label: "Medium", cls: "conf-med", why: n + " items · mapping " + Math.round(conf * 100) + "%" };
+  }
   function formatResValue(total) {
     if (total > CAP) return `${CAP}%(${total}%)`;
     return (total > 0 ? "+" : "") + total + "%";
@@ -479,9 +504,11 @@ var EA = function(exports) {
   exports.notifFmtAgo = notifFmtAgo;
   exports.parseIso = parseIso;
   exports.priceSparkline = priceSparkline;
+  exports.radarConfidenceInfo = radarConfidenceInfo;
   exports.radarFmtValue = radarFmtValue;
   exports.radarItemScore = radarItemScore;
   exports.radarSignalInfo = radarSignalInfo;
+  exports.radarSnapshotAgeHours = radarSnapshotAgeHours;
   exports.renderAssetIcon = renderAssetIcon;
   exports.showErrorToast = showErrorToast;
   exports.showInfoToast = showInfoToast;
