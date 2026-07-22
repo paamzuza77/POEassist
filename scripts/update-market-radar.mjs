@@ -377,6 +377,46 @@ async function main() {
   writeFileSync(OUT_FILE, JSON.stringify(out, null, 2) + '\n');
   const withEvidence = contentRecommendations.filter((c) => c.evidenceItems.length > 0).length;
   console.log(`wrote ${OUT_FILE}: ${marketItems.length} marketItems (>=1D), ${topRising.length} rising items, ${contentRecommendations.length} content buckets (${withEvidence} with evidence), ${errors.length} errors`);
+
+  // --- STEP 4: price history — ต่อจุดราคาสะสมไว้ให้ frontend วาด sparkline (patch 0.61) ---
+  updatePriceHistory(marketItems);
+}
+
+// เก็บประวัติราคาแบบต่อจุด (append) ต่อชื่อไอเทม — สูงสุด HISTORY_MAX จุด (รายชั่วโมง ≈ 1 สัปดาห์)
+// ไฟล์เล็ก: t = epoch วินาที, v = ราคา Divine · ถ้ายังไม่มีไฟล์จะ seed จุดแรกจากค่าปัจจุบัน
+const HISTORY_FILE = join(__dirname, '..', 'data', 'price-history.json');
+const HISTORY_MAX = 168;
+const HISTORY_MIN_GAP_SEC = 30 * 60; // กันจุดถี่เกิน (รันซ้ำ/ถี่) — เว้นอย่างน้อย 30 นาที
+function updatePriceHistory(marketItems) {
+  let hist = { updatedAt: null, points: {} };
+  try {
+    const raw = JSON.parse(readFileSync(HISTORY_FILE, 'utf8'));
+    if (raw && typeof raw === 'object' && raw.points && typeof raw.points === 'object') hist = raw;
+  } catch (e) { /* ยังไม่มีไฟล์ — เริ่มใหม่ */ }
+  const nowSec = Math.floor(Date.now() / 1000);
+  const names = new Set();
+  marketItems.forEach((it) => {
+    if (!it || typeof it.value !== 'number' || !it.name) return;
+    names.add(it.name);
+    const arr = Array.isArray(hist.points[it.name]) ? hist.points[it.name] : [];
+    const last = arr[arr.length - 1];
+    if (last && nowSec - last.t < HISTORY_MIN_GAP_SEC) {
+      last.v = round2(it.value); // ยังไม่ถึงเวลา → อัปเดตจุดล่าสุดแทนการเพิ่ม
+    } else {
+      arr.push({ t: nowSec, v: round2(it.value) });
+    }
+    hist.points[it.name] = arr.slice(-HISTORY_MAX);
+  });
+  // ล้างไอเทมที่หายจากตลาดไปนานแล้ว (ไม่มีในรอบนี้ + จุดสุดท้ายเก่ากว่า 8 วัน)
+  Object.keys(hist.points).forEach((name) => {
+    if (names.has(name)) return;
+    const arr = hist.points[name];
+    const last = arr && arr[arr.length - 1];
+    if (!last || nowSec - last.t > 8 * 86400) delete hist.points[name];
+  });
+  hist.updatedAt = new Date().toISOString();
+  writeFileSync(HISTORY_FILE, JSON.stringify(hist) + '\n');
+  console.log(`wrote ${HISTORY_FILE}: ${Object.keys(hist.points).length} items tracked`);
 }
 
 main().catch((err) => {

@@ -4830,6 +4830,8 @@ window.ensureRawblockFonts = function () {
   .price-val { color: var(--gold-glow, var(--text)); font-weight: 700; }
   .price-fiat { color: var(--text-dim); }
   .price-liq { color: var(--text-dim); font-size: 10px; }
+  .price-spark-wrap { display: inline-flex; align-items: center; }
+  .price-spark { display: block; }
   /* Watchlist (patch 0.60) */
   .price-watch-btn {
     flex-shrink: 0;
@@ -11298,6 +11300,13 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.61',
+    date: '2026-07-23',
+    notes: [
+      'เพิ่มกราฟเทรนด์ราคาจิ๋ว (sparkline) ในกล่องเช็คราคา — เห็นได้เลยว่าไอเทมกำลังราคาขึ้นหรือลง (เขียว=ขึ้น แดง=ลง) จากประวัติราคาที่ระบบเก็บสะสมทุกชั่วโมง',
+    ],
+  },
+  {
     version: '0.60',
     date: '2026-07-23',
     notes: [
@@ -14444,6 +14453,46 @@ loadRadar();
 /* ---- Price-this-item lookup (patch 0.53) ----
    ค้นราคาไอเทมจาก radarData.marketItems ที่โหลดไว้แล้ว — ไม่ fetch เพิ่ม, ไม่มีคณิตใหม่
    (value เป็น Divine ตามฐานข้อมูล; แปลง fiat ด้วยเรทที่ผู้ใช้ตั้งเองเท่านั้นผ่าน getDivineFiatRate) */
+/* ---- Price history + sparkline (patch 0.61) ----
+   อ่าน data/price-history.json (สร้าง/ต่อจุดโดย GitHub Actions) → วาดกราฟจิ๋วบอกเทรนด์ราคา
+   เบราว์เซอร์ไม่เรียก poe.ninja ตรงๆ — อ่านไฟล์ static เท่านั้น */
+let priceHistory = null;
+(function loadPriceHistory() {
+  fetch('data/price-history.json?t=' + Date.now(), { cache: 'no-store' })
+    .then(r => (r.ok ? r.json() : null))
+    .then(h => {
+      if (h && h.points) {
+        priceHistory = h;
+        // ถ้าหน้าเช็คราคากำลังเปิดผลอยู่ → วาดใหม่ให้มี sparkline
+        const inp = document.getElementById('priceLookupInput');
+        if (inp && inp.value.trim()) inp.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    })
+    .catch(() => { /* ไม่มีไฟล์ = ยังไม่มี sparkline (feature ค่อยๆ สะสมข้อมูล) */ });
+})();
+
+// SVG sparkline จิ๋วจากจุดราคา [{t,v}] — ต้องมี ≥2 จุด; สีเขียว/แดงตามขึ้น-ลงรวม
+function priceSparkline(points, w, h) {
+  if (!Array.isArray(points) || points.length < 2) return null;
+  const vals = points.map(p => p.v).filter(v => typeof v === 'number');
+  if (vals.length < 2) return null;
+  const min = Math.min(...vals), max = Math.max(...vals);
+  const range = max - min || 1;
+  const W = w || 64, H = h || 18, pad = 2;
+  const stepX = (W - pad * 2) / (vals.length - 1);
+  const pts = vals.map((v, i) => {
+    const x = pad + i * stepX;
+    const y = pad + (H - pad * 2) * (1 - (v - min) / range);
+    return (Math.round(x * 10) / 10) + ',' + (Math.round(y * 10) / 10);
+  });
+  const up = vals[vals.length - 1] >= vals[0];
+  const color = up ? 'var(--ok, #4a4)' : 'var(--fire, #d33)';
+  const last = pts[pts.length - 1].split(',');
+  return '<svg class="price-spark" viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" aria-hidden="true">' +
+    '<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + color + '" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>' +
+    '<circle cx="' + last[0] + '" cy="' + last[1] + '" r="1.8" fill="' + color + '"/></svg>';
+}
+
 /* ---- Watchlist + price alerts (patch 0.60) ----
    เฝ้าราคาไอเทมจาก radarData.marketItems — แจ้งเตือนผ่านกระดิ่งเมื่อราคาถึงเกณฑ์ (ต่ำกว่า/สูงกว่า)
    triggered = สถานะว่าเคยแจ้งรอบนี้แล้ว (แจ้งครั้งเดียวต่อการข้ามเกณฑ์ — รีเซ็ตเมื่อราคากลับด้าน) */
@@ -14577,6 +14626,17 @@ setInterval(checkWatchlist, 60000);
         liq.className = 'price-liq';
         liq.textContent = 'liq: ' + it.liquidityLabel;
         line.appendChild(liq);
+      }
+      // sparkline เทรนด์ราคา (patch 0.61) — ถ้ามีประวัติ ≥2 จุด
+      if (priceHistory && priceHistory.points && Array.isArray(priceHistory.points[it.name])) {
+        const svg = priceSparkline(priceHistory.points[it.name]);
+        if (svg) {
+          const sp = document.createElement('span');
+          sp.className = 'price-spark-wrap';
+          sp.innerHTML = svg; // สตริง SVG ที่เราสร้างเอง (ไม่มีข้อมูลผู้ใช้)
+          sp.title = 'เทรนด์ราคาย้อนหลัง';
+          line.appendChild(sp);
+        }
       }
       body.appendChild(line);
       card.appendChild(body);
