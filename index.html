@@ -1483,20 +1483,7 @@ window.ensureRawblockFonts = function () {
   .shop-table tbody tr.row-target { background: #e8e8e8; outline: 3px solid var(--border); outline-offset: -3px; }
 
   /* ---------- Build Shopping List: gear slot planner (RawBlock) ---------- */
-  .shop-layout {
-    display: grid;
-    grid-template-columns: 320px minmax(0, 1fr);
-    gap: 16px;
-    align-items: start;
-  }
-  /* คอลัมน์ซ้าย (patch 0.42): บอร์ด slot + Work Queue ซ้อนกัน — sticky ย้ายมาที่ wrapper */
-  .shop-side {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    position: sticky;
-    top: 74px; /* ใต้ topbar sticky */
-  }
+  /* .shop-layout/.shop-side ถูกถอดใน patch 0.49 — บอร์ดย้ายเข้าแผง Gear Check (.shop-top), ตารางเต็มความกว้าง */
   .shop-gear-panel {
     background: var(--void);
     border: 3px solid var(--border);
@@ -1629,12 +1616,6 @@ window.ensureRawblockFonts = function () {
     text-transform: uppercase;
     padding: 3px 4px;
     cursor: pointer;
-  }
-
-  @media (max-width: 980px) {
-    /* minmax(0,1fr) จำเป็น — 1fr เฉยๆ จะติด min-content ของตาราง (min-width 1180px) แล้วดันทั้ง layout ล้นจอ */
-    .shop-layout { grid-template-columns: minmax(0, 1fr); }
-    .shop-side { position: static; }
   }
 
   /* ---------- Build Shopping List: on-screen numpad (RawBlock) ---------- */
@@ -4545,6 +4526,85 @@ window.ensureRawblockFonts = function () {
   .sr-chart { min-width: 0; }
   .sr-chart svg { display: block; width: 100%; height: auto; }
   .sr-side { min-width: 0; }
+
+  /* ==================== Gear Planner "Gear Check" redesign (patch 0.49) ====================
+     แถวบนของ Gear Planner เป็น 2 กลุ่มซ้าย-ขวาแบบเดียวกับ Resistance Check (.forge-top):
+     ซ้าย hero เดิม | ขวาแผง .stat-radar "Gear Check" — บอร์ด slot เดิมถูก restyle เป็น paperdoll
+     (คลาส/ids/พฤติกรรมเดิมทั้งหมด — เปลี่ยนเฉพาะหน้าตา) + Plan Progress + Work Queue ย้ายเข้าแผง */
+  .shop-top {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.95fr) minmax(0, 1.05fr);
+    gap: 24px;
+    align-items: stretch;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 1180px) {
+    .shop-top { grid-template-columns: 1fr; }
+  }
+  .shop-duo {
+    grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+    align-items: start;
+  }
+  /* บอร์ดอยู่ในแผง Gear Check แล้ว — ตัดกรอบ/พื้นของกล่องเดิมออกทุกธีม (id+class ชนะ rule ธีมที่จับ #shopGearPanel) */
+  #shopGearPanel.shop-paperdoll,
+  html[data-theme="rawblock"] #shopGearPanel.shop-paperdoll,
+  html[data-theme="trust-blue-pay"] #shopGearPanel.shop-paperdoll,
+  html[data-theme="modern"] #shopGearPanel.shop-paperdoll {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    border-radius: 0;
+  }
+  /* ช่องอุปกรณ์ทรงจัตุรัส icon ใหญ่แบบ paperdoll ของ Resistance Check */
+  .shop-paperdoll .shop-gear-board { gap: 8px; margin-bottom: 8px; }
+  .shop-paperdoll .shop-gear-board .shop-slot {
+    aspect-ratio: 1 / 1;
+    min-height: 0;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 3px;
+    padding: 6px 4px;
+  }
+  .shop-paperdoll .shop-gear-board .shop-slot-head,
+  .shop-paperdoll .shop-jewel-row .shop-slot-head { flex-direction: column; gap: 3px; }
+  .shop-paperdoll .shop-slot-ico svg { width: 24px; height: 24px; }
+  .shop-paperdoll .shop-gear-board .shop-slot-name {
+    font-size: 9.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .shop-paperdoll .shop-gear-board .shop-slot-sub,
+  .shop-paperdoll .shop-jewel-row .shop-slot-sub { font-size: 9px; text-align: center; }
+  .shop-paperdoll .shop-jewel-row { grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px; }
+  .shop-paperdoll .shop-jewel-row .shop-slot {
+    min-height: 62px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 5px 3px;
+  }
+  .shop-paperdoll .shop-jewel-row .shop-slot-name { font-size: 8.5px; text-transform: uppercase; white-space: nowrap; }
+  .shop-paperdoll .shop-slot-utility { gap: 8px; }
+  /* สถานะ coverage บนช่องจัตุรัส: แถบล่างแทนแถบซ้าย (สี/ความหมายเดิม) + ช่องว่างเป็นเส้นประจาง */
+  .shop-paperdoll .shop-slot.empty { border-style: dashed; opacity: 0.62; }
+  .shop-paperdoll .shop-slot.empty:hover { opacity: 1; }
+  .shop-paperdoll .shop-slot.cov-planned { box-shadow: inset 0 -4px 0 var(--text); }
+  .shop-paperdoll .shop-slot.cov-partial { box-shadow: inset 0 -4px 0 var(--ok); }
+  .shop-paperdoll .shop-slot.cov-complete { border-color: var(--ok); box-shadow: inset 0 -4px 0 var(--ok); }
+  @media (max-width: 640px) {
+    .shop-duo { grid-template-columns: 1fr; }
+  }
+  .shop-gear-budget {
+    margin: 10px 0 0;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--text-dim);
+  }
+  /* Work Queue ในแผง Gear Check — ชิดคะแนน เว้นระยะเท่า sr-stat-list */
+  .sr-side .shop-attention { margin-top: 12px; }
 </style>
 <!-- Modularization Phase 1 (patch 0.34): helper CSS ที่แยกออกจาก inline <style> ด้านบน
      วางหลัง </style> เพื่อคงลำดับ cascade เดิม (rule พื้นฐาน specificity ต่ำ — override ของ Trust theme ชนะด้วย specificity อยู่แล้ว) -->
@@ -4931,6 +4991,9 @@ window.ensureRawblockFonts = function () {
   </div><!-- /pageForge -->
 
   <div id="pageShop" hidden>
+    <!-- patch 0.49: แถวบนเป็น 2 กลุ่มชิดกันซ้าย-ขวาแบบเดียวกับ Resistance Check —
+         ซ้าย hero (ซื้ออะไรต่อ/งบ) · ขวาแผง "Gear Check" (paperdoll + Plan Progress + Work Queue) -->
+    <div class="shop-top">
     <!-- Planner-first hero (patch 0.42): คำตอบแรกของหน้า — ซื้ออะไรต่อ / งบเหลือเท่าไหร่ / อะไรต้องดู
          ตัวเลขทั้งหมด render โดย JS จากยอดเดิมของ updateShopSummary (ไม่มีสูตรใหม่) -->
     <section class="shop-hero ux-command-surface ux-elevate" id="shopHero">
@@ -4941,6 +5004,33 @@ window.ensureRawblockFonts = function () {
       <div class="shop-buynext" id="shopBuyNext" hidden></div>
       <div class="shop-hero-stats" id="shopHeroStats"></div>
     </section>
+
+    <!-- Gear Check (patch 0.49) — ใช้ชุดคลาส .stat-radar/.sr-* เดียวกับแผง Resistance Check
+         เพื่อหน้าตา/ธีมตรงกันทุกธีม; บอร์ด slot เดิม (id/พฤติกรรมเดิมทุกอย่าง) ถูก restyle เป็น paperdoll -->
+    <div class="stat-radar ornate" id="shopGearCheck">
+      <div class="sr-head">
+        <h2 class="sr-title">Gear Check</h2>
+        <span class="totals-cap-count" id="shopSlotReady" title="ช่องหลัก (10 ช่อง) ที่ซื้อครบทุกรายการแล้ว"></span>
+      </div>
+      <div class="sr-duo shop-duo">
+        <div class="shop-gear-panel shop-paperdoll" id="shopGearPanel"></div>
+        <div class="sr-side">
+          <div class="sr-score-box">
+            <div class="sr-score-line">
+              <span class="sr-score-label">Plan Progress</span>
+              <span class="sr-score" id="shopGearScore">–</span>
+            </div>
+            <div class="sr-bar"><div class="sr-bar-fill" id="shopGearBarFill"></div></div>
+            <div class="sr-breakdown" id="shopGearBreakdown"></div>
+            <p class="shop-gear-budget" id="shopGearBudget" hidden></p>
+          </div>
+          <!-- Work Queue / จุดที่ต้องดู (patch 0.42) — render โดย renderShopAttention() จากยอดเดิม (ย้ายที่ ไม่แก้ logic) -->
+          <div class="shop-attention" id="shopAttention" hidden></div>
+        </div>
+      </div>
+      <p class="sr-footnote">Plan Progress เป็น checklist ความคืบหน้าการวางแผน/ซื้อของ — ไม่ใช่ความแรงของบิลด์ · คลิกช่องเพื่อกรองตาราง · ปุ่ม + เพิ่มไอเทมเข้าช่องนั้น</p>
+    </div>
+    </div><!-- /shop-top -->
 
     <!-- Ledger งบเต็ม (เรทเงิน / Min-Max / จ่ายจริง / ต้องใช้อีก) — ย้ายเป็น disclosure รอง (patch 0.42)
          ข้างใน "ไม่เปลี่ยน" — id/โครงเดิมทุกตัว updateShopSummary ยังเขียนใส่ตามเดิม -->
@@ -4994,16 +5084,9 @@ window.ensureRawblockFonts = function () {
     </div>
     </details><!-- /shopLedgerBox -->
 
-    <div class="shop-layout">
-    <aside class="shop-side">
-      <div class="shop-gear-panel" id="shopGearPanel"></div>
-      <!-- Work Queue / จุดที่ต้องดู (patch 0.42) — render โดย renderShopAttention() จากยอดเดิม -->
-      <div class="shop-attention" id="shopAttention" hidden></div>
-    </aside>
-    <div class="shop-main">
-
     <!-- ตารางเต็ม = ส่วน "จัดการรายการ" (patch 0.42) — Simple พับไว้ก่อน, Advanced เปิดไว้;
-         สถานะเปิด/ปิดจำใน poe2ShopList.panels.v1 (additive UI pref) — ทุกฟีเจอร์ตารางเดิมอยู่ครบข้างใน -->
+         สถานะเปิด/ปิดจำใน poe2ShopList.panels.v1 (additive UI pref) — ทุกฟีเจอร์ตารางเดิมอยู่ครบข้างใน
+         (patch 0.49: เต็มความกว้างหน้า — wrapper .shop-layout/.shop-side ถูกถอด บอร์ดย้ายขึ้น Gear Check) -->
     <details class="shop-disclosure shop-table-section" id="shopTableSection">
       <summary><span class="shop-disc-ico">▸</span> จัดการรายการ (ตารางเต็ม) <span class="shop-disc-hint" id="shopTableMeta"></span></summary>
 
@@ -5087,8 +5170,6 @@ window.ensureRawblockFonts = function () {
     </div>
 
     </details><!-- /shopTableSection -->
-    </div><!-- /shop-main -->
-    </div><!-- /shop-layout -->
     <datalist id="itemTypeList"></datalist>
   </div><!-- /pageShop -->
 
@@ -9712,6 +9793,8 @@ function renderShopTable() {
 function selectShopSlot(id) {
   shopSelectedSlot = id;
   renderShopTable(); // ตารางกรองตาม slot; บอร์ดรีเฟรชผ่าน updateShopSummary → updateShopGearPanel
+  // patch 0.49: ตารางอยู่ใต้บอร์ดและอาจพับอยู่ (Simple) — เปิดให้เห็นผลการกรองเสมอ (ไม่ scroll เอง กันหน้ากระตุก)
+  openShopTableSection();
 }
 
 // เคลียร์ค้นหา/quick filter ให้แถวที่เพิ่งเพิ่มโผล่แน่ๆ (ใช้ตอน quick-add)
@@ -9797,10 +9880,7 @@ function makeShopSlotBtn(id, label, fullLabel, wide, iconSvg) {
 function buildShopGearPanel() {
   const panel = document.getElementById('shopGearPanel');
   panel.innerHTML = '';
-  const title = document.createElement('p');
-  title.className = 'shop-gear-title';
-  title.textContent = 'Gear Plan';
-  panel.appendChild(title);
+  // patch 0.49: หัวข้อย้ายไปอยู่ .sr-head ของแผง Gear Check แล้ว — บอร์ดเริ่มที่ปุ่ม All เลย
 
   const allWrap = document.createElement('div');
   allWrap.className = 'shop-slot-allwrap';
@@ -9883,6 +9963,50 @@ function updateShopGearPanel() {
       sub.appendChild(w);
     }
   });
+
+  /* ---- Gear Check score (patch 0.49) ----
+     checklist ความคืบหน้าแบบเดียวกับ Readiness ของ Resistance Check — display-only:
+     ใช้ stats ที่บอร์ดนับไว้แล้วข้างบน + ยอด needMin/needMax จาก shopSummaryStats (ไม่มีสูตรราคาใหม่)
+     ช่องหลักมีแผน 40 + ซื้อแล้ว 40 + ใส่ราคาแล้ว 20 = 0-100 */
+  const scoreEl = document.getElementById('shopGearScore');
+  if (scoreEl) {
+    const boardSlots = SHOP_SLOTS.filter(s => s.group === 'board');
+    const planned = boardSlots.filter(s => stats[s.id].count > 0).length;
+    const readySlots = boardSlots.filter(s => stats[s.id].count > 0 && stats[s.id].bought === stats[s.id].count).length;
+    const all = stats.all;
+    const priced = all.count - all.missing;
+    const pPlan = planned / boardSlots.length;
+    const pBought = all.count ? all.bought / all.count : 0;
+    const pPriced = all.count ? priced / all.count : 0;
+    const score = Math.round(pPlan * 40 + pBought * 40 + pPriced * 20);
+    const cls = score >= 80 ? 'sr-good' : score >= 50 ? 'sr-mid' : 'sr-low';
+    scoreEl.textContent = all.count === 0 && planned === 0 ? '0' : String(score);
+    scoreEl.className = 'sr-score ' + cls;
+    const fill = document.getElementById('shopGearBarFill');
+    fill.style.width = score + '%';
+    fill.className = 'sr-bar-fill ' + cls;
+    document.getElementById('shopGearBreakdown').innerHTML = [
+      { label: 'ช่องหลักมีแผน ' + planned + '/' + boardSlots.length, pts: Math.round(pPlan * 40), max: 40 },
+      { label: 'ซื้อแล้ว ' + all.bought + '/' + all.count, pts: Math.round(pBought * 40), max: 40 },
+      { label: 'ใส่ราคาแล้ว ' + priced + '/' + all.count, pts: Math.round(pPriced * 20), max: 20 },
+    ].map(p => '<div class="sr-part"><span>' + p.label + '</span><b>' + p.pts + '/' + p.max + '</b></div>').join('');
+
+    // ชิปหัวแผง: ช่องหลักที่ซื้อครบ (ธีมเดียวกับ "x/4 ถึง cap" ของ Resistance Check)
+    const readyChip = document.getElementById('shopSlotReady');
+    if (readyChip) {
+      readyChip.textContent = readySlots + '/' + boardSlots.length + ' ช่องพร้อม';
+      readyChip.classList.toggle('all-capped', readySlots === boardSlots.length);
+    }
+
+    // งบคงเหลือจากยอดเดิมของ updateShopSummary — โชว์เมื่อมีของยังไม่ซื้อ
+    const budgetEl = document.getElementById('shopGearBudget');
+    if (budgetEl) {
+      const ss = shopSummaryStats;
+      const show = ss && (ss.needMin > 0 || ss.needMax > 0);
+      budgetEl.hidden = !show;
+      if (show) budgetEl.textContent = 'ต้องใช้อีก ~' + fmtNum(ss.needMin) + '–' + fmtNum(ss.needMax) + ' Div สำหรับของที่เหลือ';
+    }
+  }
 }
 
 /* ---- On-screen numpad (ไม่มี dependency) — patch 0.24: ใช้ทั่วทั้งแอปกับทุกช่องตัวเลข ---- */
@@ -10206,6 +10330,16 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.49',
+    date: '2026-07-22',
+    notes: [
+      'Gear Planner โฉมใหม่แบบเดียวกับ Resistance Check: แถวบนเป็น 2 กลุ่มชิดกันซ้าย-ขวา — ซ้าย hero (ซื้ออะไรต่อ/งบ) · ขวาแผงใหม่ "Gear Check"',
+      'บอร์ดอุปกรณ์เป็น paperdoll ช่องจัตุรัสไอคอนใหญ่เหมือนหน้า Resistance — คลิกช่องกรองตาราง (เปิดส่วนตารางให้อัตโนมัติ), ปุ่ม + เพิ่มไอเทม, แถบสีบอกสถานะ ว่าง/มีแผน/ซื้อบางส่วน/ครบ เหมือนเดิม',
+      'เพิ่ม Plan Progress 0-100 (checklist โปร่งใส: ช่องหลักมีแผน 40 + ซื้อแล้ว 40 + ใส่ราคาแล้ว 20) + ชิป "x/10 ช่องพร้อม" + บรรทัดงบที่ต้องใช้อีก — Work Queue ย้ายมารวมในแผงเดียวกัน',
+      'ตารางรายการได้พื้นที่เต็มความกว้างหน้า (เลิก layout 2 คอลัมน์เดิม) — สูตรงบ/บันทึก/ฟีเจอร์ตารางเดิมครบทุกอย่าง',
+    ],
+  },
   {
     version: '0.48',
     date: '2026-07-22',

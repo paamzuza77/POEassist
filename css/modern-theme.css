@@ -1024,8 +1024,11 @@ html[data-theme="modern"] .shop-hero{min-height:230px;padding:28px;border:1px so
 html[data-theme="modern"] .shop-hero-title{font-size:clamp(30px,4vw,52px);letter-spacing:-.055em}
 html[data-theme="modern"] .shop-hero-stats{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 html[data-theme="modern"] .shop-stat{min-height:94px;border-radius:14px}
-html[data-theme="modern"] .shop-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
-html[data-theme="modern"] .shop-side{position:static;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.65fr);gap:16px}
+html[data-theme="modern"] .shop-top{display:grid;grid-template-columns:minmax(320px,.95fr) minmax(0,1.05fr);gap:16px;align-items:stretch}
+html[data-theme="modern"] .shop-top .shop-hero{min-height:0}
+html[data-theme="modern"] .shop-top .shop-hero-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:1180px){html[data-theme="modern"] .shop-top{grid-template-columns:1fr}}
+/* .shop-side ถูกถอดใน patch 0.49 — บอร์ด+Work Queue ย้ายเข้าแผง Gear Check ใน .shop-top */
 html[data-theme="modern"] .shop-gear-panel,html[data-theme="modern"] .shop-attention{border:1px solid var(--border-soft);border-radius:17px;background:var(--panel);box-shadow:var(--shadow-sm)}
 html[data-theme="modern"] .shop-table-section>summary{min-height:54px;border-radius:15px}
 html[data-theme="modern"] .shop-att-item,html[data-theme="modern"] .shop-att-issue{border-left-width:3px}
@@ -1080,7 +1083,7 @@ html[data-theme="modern"][data-display="simple"] .codex-source-line{display:none
   html[data-theme="modern"] .codex-detail,html[data-theme="modern"] .codex-list,html[data-theme="modern"] .kwc-list{grid-column:1;grid-row:auto;max-height:none}
   html[data-theme="modern"] .codex-detail{grid-row:1}
   html[data-theme="modern"] .codex-list,html[data-theme="modern"] .kwc-list{grid-row:2;max-height:360px}
-  html[data-theme="modern"] .forge-workbench-grid,html[data-theme="modern"] .shop-side{grid-template-columns:1fr}
+  html[data-theme="modern"] .forge-workbench-grid{grid-template-columns:1fr}
 }
 @media (max-width:860px){
   html[data-theme="modern"] .app-shell{display:flex;flex-direction:column;gap:8px;padding:8px}
