@@ -2,6 +2,10 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-23 (15)
+
+- **Fix build-switcher rename/remove closing the menu (patch 0.62)** (`index.html`): clicking ✎ rename or ✕ remove in the topbar build-switcher popover called `render()`, which rebuilds the menu's innerHTML — detaching the just-clicked button, so the same click event bubbled to the `document` outside-click handler where `menu.contains(e.target)` was now false, immediately closing the menu (rename/remove appeared broken). Fix: `menu.addEventListener('click', e => e.stopPropagation())` on the persistent `#buildSwitchMenu` container so inner clicks never reach the document handler. Verified: rename → inline input stays open + saves; remove → inline confirm stays open + deletes; outside-click and Esc still close; toggle still works; no console errors.
+
 ## 2026-07-23 (14)
 
 - **Price history + sparklines (patch 0.61 — P4 finish)** (`scripts/update-market-radar.mjs`, `.github/workflows/update-market-radar.yml`, `data/price-history.json`, `index.html`): the generator now maintains `data/price-history.json` (`{updatedAt, points:{name:[{t,v}]}}`) — appends each item's current value hourly (epoch-sec `t`, Divine `v`), throttled to ≥30min/point, capped at 168 points (~1 week), and prunes items gone >8 days. Workflow commits + `paths-ignore`s the new file (no self-trigger loop). Seeded `price-history.json` from the current snapshot with an honest 2-point start (7d-ago value **derived from the real `trend7d`** + now) so sparklines show immediately. Frontend: `loadPriceHistory()` (own static fetch, no poe.ninja) + `priceSparkline(points)` (mini SVG, green up / red down, needs ≥2 points) rendered on each Radar price-lookup result. Verified: generator throttle/append logic, 87-item seed, sparkline renders green for Divine, single-point→null, generator `node -c` clean, no console errors. **P4 complete (0.59–0.61).**

@@ -11300,6 +11300,13 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.62',
+    date: '2026-07-23',
+    notes: [
+      'แก้บั๊ก: ปุ่มเปลี่ยนชื่อ (rename) และลบ (remove) ในเมนูสลับบิลด์กดแล้วเมนูปิดเองทันที ใช้งานไม่ได้ — ตอนนี้ทำงานถูกต้องแล้ว',
+    ],
+  },
+  {
     version: '0.61',
     date: '2026-07-23',
     notes: [
@@ -18216,6 +18223,10 @@ function cmdkFuzzyScore(text, q) {
   const btn = document.getElementById('buildSwitchBtn');
   const menu = document.getElementById('buildSwitchMenu');
   if (!btn || !menu) return;
+  // patch 0.62: กันบั๊ก rename/remove ปิดเมนูเอง — render() สร้างเนื้อเมนูใหม่ทำให้ปุ่มที่กดหลุด DOM
+  // แล้ว event ลอยไปถึง document (ตัวจับ "คลิกนอกเมนู") เข้าใจผิดว่าคลิกข้างนอก. หยุด event ที่ container
+  // (ตัว #buildSwitchMenu คงอยู่ เปลี่ยนแค่ innerHTML) — คลิกภายในทั้งหมดจึงไม่บับเบิลไปปิดเมนู
+  menu.addEventListener('click', (e) => e.stopPropagation());
   let open = false;
   let editId = null;   // id ของบิลด์ที่กำลังแก้ชื่อ
   let confirmId = null; // id ของบิลด์ที่กำลังถามยืนยันลบ
