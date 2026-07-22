@@ -4789,6 +4789,14 @@ window.ensureRawblockFonts = function () {
   .price-val { color: var(--gold-glow, var(--text)); font-weight: 700; }
   .price-fiat { color: var(--text-dim); }
   .price-liq { color: var(--text-dim); font-size: 10px; }
+
+  /* View Transitions ตอนสลับแท็บ (patch 0.57) — cross-fade สั้นๆ; JS การ์ด reduced-motion ให้แล้ว */
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation-duration: 0.2s; }
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) { animation: none; }
+  }
 </style>
 <!-- Modularization Phase 1 (patch 0.34): helper CSS ที่แยกออกจาก inline <style> ด้านบน
      วางหลัง </style> เพื่อคงลำดับ cascade เดิม (rule พื้นฐาน specificity ต่ำ — override ของ Trust theme ชนะด้วย specificity อยู่แล้ว) -->
@@ -7138,22 +7146,34 @@ const startTabPref = loadStartTabPreference();
 if (startTabPref !== 'last' && TAB_IDS[startTabPref]) activeTab = startTabPref;
 
 function switchTab(tab) {
-  activeTab = tab;
-  try { localStorage.setItem(TAB_KEY, tab); } catch (e) { /* storage unavailable */ }
-  Object.keys(TAB_IDS).forEach(k => {
-    document.getElementById(TAB_IDS[k]).hidden = k !== tab;
-    const btn = document.getElementById(TAB_BTNS[k]);
-    btn.classList.toggle('active', k === tab);
-    btn.setAttribute('aria-selected', k === tab ? 'true' : 'false');
-  });
-  const activeBtn = document.getElementById(TAB_BTNS[tab]);
-  if (activeBtn.scrollIntoView) activeBtn.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-  const titleEl = document.getElementById('topbarTitle');
-  const crumbEl = document.getElementById('topbarCrumb');
-  const subEl = document.getElementById('topbarSub');
-  if (titleEl) titleEl.textContent = TAB_TITLES[tab] || tab;
-  if (crumbEl) crumbEl.textContent = TAB_GROUPS[tab] || '';
-  if (subEl) subEl.textContent = TAB_SUBTITLES[tab] || '';
+  const changed = tab !== activeTab;
+  const apply = () => {
+    activeTab = tab;
+    try { localStorage.setItem(TAB_KEY, tab); } catch (e) { /* storage unavailable */ }
+    Object.keys(TAB_IDS).forEach(k => {
+      document.getElementById(TAB_IDS[k]).hidden = k !== tab;
+      const btn = document.getElementById(TAB_BTNS[k]);
+      btn.classList.toggle('active', k === tab);
+      btn.setAttribute('aria-selected', k === tab ? 'true' : 'false');
+    });
+    const activeBtn = document.getElementById(TAB_BTNS[tab]);
+    if (activeBtn.scrollIntoView) activeBtn.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    const titleEl = document.getElementById('topbarTitle');
+    const crumbEl = document.getElementById('topbarCrumb');
+    const subEl = document.getElementById('topbarSub');
+    if (titleEl) titleEl.textContent = TAB_TITLES[tab] || tab;
+    if (crumbEl) crumbEl.textContent = TAB_GROUPS[tab] || '';
+    if (subEl) subEl.textContent = TAB_SUBTITLES[tab] || '';
+  };
+  // View Transitions API — cross-fade นุ่มตอนสลับแท็บ (patch 0.57); guard: รองรับ + ไม่ได้สั่งลดการเคลื่อนไหว
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (changed && document.startViewTransition && !reduce) {
+    document.documentElement.classList.add('vt-tab');
+    const t = document.startViewTransition(apply);
+    t.finished.finally(() => document.documentElement.classList.remove('vt-tab'));
+  } else {
+    apply();
+  }
 }
 Object.keys(TAB_BTNS).forEach(k => {
   document.getElementById(TAB_BTNS[k]).addEventListener('click', () => switchTab(k));
@@ -11108,6 +11128,14 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.57',
+    date: '2026-07-23',
+    notes: [
+      'ลูกเล่นลื่นขึ้น: สลับแท็บมีทรานซิชัน cross-fade นุ่มๆ (View Transitions) — ปิดอัตโนมัติถ้าตั้งค่า "ลดการเคลื่อนไหว"',
+      'แจ้งเตือนในหน้า: ถ้าเปิดแอปอยู่ตอน Stash Tab Sale ใกล้เริ่ม (≤1 ชม.) หรือเพิ่งเริ่ม จะมี toast บอกให้ทันที',
+    ],
+  },
+  {
     version: '0.56',
     date: '2026-07-23',
     notes: [
@@ -14814,6 +14842,31 @@ function startHubTicker() {
   }, 1000);
 }
 startHubTicker();
+
+/* ---- Stash sale in-page alert (patch 0.57) ----
+   ขณะเปิดแอปอยู่ (แท็บไหนก็ได้): เตือน toast เมื่อ sale ใกล้เริ่ม (≤1 ชม.) หรือเพิ่งเริ่ม
+   ยิงครั้งเดียวต่อ session ต่อ sale (กันสแปม) — ใช้เวลาจาก getStashTimes เดิม ไม่ scrape อะไรเพิ่ม */
+let stashAlertFired = { soon: null, live: null };
+function checkStashSaleAlert() {
+  try {
+    const { startAt, endAt } = getStashTimes();
+    if (!startAt) return;
+    const now = Date.now();
+    const startMs = startAt.getTime();
+    const saleId = startAt.toISOString(); // แยกต่อรอบ sale — ตั้งเวลาใหม่ = แจ้งได้อีก
+    if (startMs > now && startMs - now <= 3600000 && stashAlertFired.soon !== saleId) {
+      stashAlertFired.soon = saleId;
+      showInfoToast('⏳ Stash Tab Sale จะเริ่มในไม่ถึง 1 ชั่วโมง (' + fmtDuration(startMs - now) + ')', { key: 'stash-alert', duration: 10000 });
+    }
+    if (startMs <= now && endAt && endAt.getTime() > now && stashAlertFired.live !== saleId) {
+      stashAlertFired.live = saleId;
+      showSuccessToast('🛒 Stash Tab Sale เริ่มแล้ว! เหลืออีก ' + fmtDuration(endAt.getTime() - now), { key: 'stash-alert', duration: 12000 });
+    }
+  } catch (e) { /* ข้าม */ }
+}
+// เช็คตอนโหลดข้อมูลเสร็จ + ทุก 60 วิ (เบา ไม่ผูกกับ ticker วินาที)
+document.addEventListener('poeassist:homestatusloaded', checkStashSaleAlert);
+setInterval(checkStashSaleAlert, 60000);
 
 /* ==================== Content Codex ====================
    ฐานความรู้ drop ของ boss/content PoE2 — อ่านจาก data/content-codex.json อย่างเดียว
