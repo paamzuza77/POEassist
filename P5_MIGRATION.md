@@ -27,10 +27,20 @@ index.html ตอนนี้ มันจะห่อ top-level `function`/`con
 
 ## แผนถัดไป (ทำทีละเซสชัน)
 
-**Phase 2 — ย้าย helper บริสุทธิ์เป็น `src/`**
-1. ย้าย formatter/math/utility ที่ไม่พึ่ง DOM/global → `src/lib/*.ts` (เริ่มที่ `format.ts` แล้ว).
-2. ทำ `src/main.ts` เป็น entry เดียว รวม re-export helper + ติด `window.EA = {...}` (bridge) ให้ inline script เดิมเรียกได้ระหว่างเปลี่ยนผ่าน.
-3. เพิ่ม `<script type="module" src="/src/main.ts">` ใน index.html; แทนที่ helper เดิมด้วยการเรียกผ่าน bridge ทีละตัว.
+**Phase 2 — ย้าย helper บริสุทธิ์เป็น `src/` ผ่าน bridge `window.EA`** — **เริ่มแล้ว (patch 0.64)**
+กลไก bridge (สำคัญ — เหตุผลว่าทำไมไม่ใช้ `<script type="module">`): ES module เป็น **deferred** รันหลัง
+inline monolith (ซึ่งรันตอน parse) → monolith เรียก module ไม่ทัน. จึง build `src/main.ts` เป็น
+**classic IIFE** (`js/ea.js`, ตั้ง `window.EA`) โหลด **ก่อน** inline script เหมือน `js/ux-foundation.js` →
+monolith `const {…} = window.EA;` ที่ต้นสคริปต์ได้ทันเวลา parse.
+- ✅ ทำแล้ว: `src/lib/format.ts` (formatDurationParts/fmtDuration/fmtNum, typed) → `src/main.ts` re-export
+  → `vite.bridge.config.ts` build เป็น `js/ea.js` (IIFE, ไม่ minify, commit เข้า repo) → `<script src="js/ea.js">`
+  ก่อน inline → ลบ 3 function เดิมออกจาก monolith, bind จาก `window.EA` ที่ต้นสคริปต์. verify: helper ทำงานตรงค่าเดิม,
+  Exile Hub countdown + Gear/Farm (ใช้ fmtNum) ปกติ, ทุกแท็บโหลด, ไม่มี console error.
+- **ขั้นถัดไป (ทำต่อ):** ย้าย pure helper อื่น ๆ เข้า `src/lib/*.ts` แล้ว re-export ใน `main.ts` →
+  `npm run build:bridge` → bind ใน monolith (ลบ def เดิม). ผู้สมัคร: `fmtNum`-family (เสร็จ), number/round utils,
+  slot/stat mappings ที่บริสุทธิ์, escape/format อื่น ๆ. **อย่าย้าย** helper ที่แตะ DOM/global state ในเฟสนี้ (รอ Phase 4).
+- **workflow:** แก้ `src/` → `npm run build:bridge` → commit `js/ea.js` **คู่กับ** `src/`. (build artifact เดียวที่ commit —
+  เพราะ live เสิร์ฟไฟล์ดิบ). `npm run typecheck` ต้องผ่านก่อน commit.
 
 **Phase 3 — แปลง classic scripts เป็น modules**
 - `js/ux-foundation.js` + `js/asset-registry.js` → `src/ux/*.ts`, `src/assets/*.ts`; expose ผ่าน bridge เดียวกัน (แก้จุดที่บั๊ก global sharing ตอน bundle).

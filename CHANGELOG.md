@@ -2,6 +2,10 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-23 (17)
+
+- **P5 Phase 2 — first real helper migration via `window.EA` bridge (patch 0.64, internal)** (`src/`, `js/ea.js`, `index.html`, `vite.bridge.config.ts`, `package.json`, `P5_MIGRATION.md`): moved the three pure formatters (`formatDurationParts`/`fmtDuration`/`fmtNum`) out of the inline monolith into typed `src/lib/format.ts`. **Bridge mechanism** (needed because ES modules are deferred and can't be called by the parse-time monolith): `src/main.ts` re-exports the helpers; `vite.bridge.config.ts` (new `npm run build:bridge`) builds it as a **classic IIFE** `js/ea.js` that sets `window.EA`, loaded **before** the inline script (same pattern as `js/ux-foundation.js`); the monolith deletes the old definitions and binds `const { formatDurationParts, fmtDuration, fmtNum } = window.EA;` at the top. **No behavior change** — logic is byte-identical, verified: helpers return the same values, Exile Hub countdowns + Gear/Farm `fmtNum` render, all 8 tabs load, no console errors. `js/ea.js` is the one committed build artifact (live serves raw files). Workflow: edit `src/` → `build:bridge` → commit `js/ea.js` with `src/`; `typecheck` must pass. Plan/status in `P5_MIGRATION.md`.
+
 ## 2026-07-23 (16)
 
 - **Add hideout/filter resources + topbar redesign + P5 foundation (patch 0.63)** (multiple files):

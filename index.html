@@ -5618,8 +5618,16 @@ window.ensureRawblockFonts = function () {
      จึงอยู่ global scope เดียวกัน — const/function ในไฟล์เหล่านี้ถูกเรียกจากสคริปต์หลักด้านล่างได้ -->
 <script src="js/asset-registry.js"></script>
 <script src="js/ux-foundation.js"></script>
+<!-- P5 bridge (patch 0.64): classic IIFE ที่ build จาก src/ (TypeScript) → window.EA
+     โหลดก่อน inline script เพื่อให้ผูกชื่อ helper ที่ย้ายไป src/ ได้ตอน parse (npm run build:bridge) -->
+<script src="js/ea.js"></script>
 
 <script>
+/* ===== P5 helper bridge (patch 0.64) — ชื่อ helper ที่ย้ายไป src/lib/ แล้ว ผูกจาก window.EA =====
+   logic อยู่ใน src/lib/format.ts (typed) — ที่นี่แค่ bind ชื่อให้ call site เดิมทั้งหมดใช้ต่อได้เหมือนเดิม
+   ต้องอยู่บนสุด (ก่อนใช้งานครั้งแรก) — window.EA มาจาก js/ea.js ที่โหลดไปแล้วด้านบน */
+const { formatDurationParts, fmtDuration, fmtNum } = window.EA;
+
 /* ==================== Keyword Help Bridge (patch 0.30) ====================
    สะพานเชื่อม data/keyword-codex.json ให้เป็นระบบช่วยเหลือกลไกทั้งแอป:
    ชิป/ป้าย ? เล็กๆ ข้างคำที่เป็น keyword ของเกม → hover/โฟกัส/แตะ แล้วขึ้น tooltip
@@ -9584,9 +9592,7 @@ function persistDivineRate() {
   setDivineFiatRate(divineRate);
 }
 
-function fmtNum(n) {
-  return (Math.round((n + Number.EPSILON) * 100) / 100).toLocaleString('en-US', { maximumFractionDigits: 2 });
-}
+// fmtNum() ย้ายไป src/lib/format.ts แล้ว (patch 0.64) — bind จาก window.EA ที่ต้นสคริปต์
 
 function isBought(row) {
   return typeof row.bought === 'number' && !isNaN(row.bought);
@@ -14971,26 +14977,7 @@ const HUB_RESOURCES = [
 /* ---- League Status + Stash Sale Watch ---- */
 let homeStatus = null;
 
-// แตกช่วงเวลาเป็นส่วนๆ สำหรับ ticker (วัน/ชม./นาที/วินาที)
-function formatDurationParts(ms) {
-  if (typeof ms !== 'number' || isNaN(ms) || ms < 0) ms = 0;
-  const totalSec = Math.floor(ms / 1000);
-  return {
-    days: Math.floor(totalSec / 86400),
-    hours: Math.floor((totalSec % 86400) / 3600),
-    minutes: Math.floor((totalSec % 3600) / 60),
-    seconds: totalSec % 60,
-  };
-}
-
-// รูปแบบแสดงผล: "35d 9h 24m 12s" — วัน/ชม.ไม่เติมศูนย์, นาที/วินาทีเป็น 2 หลักเสมอ
-function fmtDuration(ms) {
-  const p = formatDurationParts(ms);
-  const pad = n => String(n).padStart(2, '0');
-  if (p.days > 0) return p.days + 'd ' + p.hours + 'h ' + pad(p.minutes) + 'm ' + pad(p.seconds) + 's';
-  if (p.hours > 0) return p.hours + 'h ' + pad(p.minutes) + 'm ' + pad(p.seconds) + 's';
-  return p.minutes + 'm ' + pad(p.seconds) + 's';
-}
+// formatDurationParts() + fmtDuration() ย้ายไป src/lib/format.ts แล้ว (patch 0.64) — bind จาก window.EA ที่ต้นสคริปต์
 
 function parseIso(s) {
   if (!s) return null;

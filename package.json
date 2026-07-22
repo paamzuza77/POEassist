@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:bridge": "vite build -c vite.bridge.config.ts",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
