@@ -2,6 +2,10 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-23 (5)
+
+- **P1 housekeeping (no patch — internal/docs)** (`README.md`, `index.html`, `css/modern-theme.css`, docs): replaced the placeholder `# POEassist` README with a real public-facing description (features, no-backend architecture, dev-doc pointers, GGG disclaimer). Removed 4 confirmed-dead `.totals-panel` CSS refs (the panel was deleted in patch 0.48) — 1 in the index Trust selector list (`.gauge-track` alongside), 3 in `css/modern-theme.css`. Verified all 3 themes render with no overflow, forge radar chart + gear board intact, no console errors. **Not done (needs user/tooling):** webp currency icons (no local encoder), `Index.md` deletion (untracked, not agent-created — stale dup of `PROJECT_INDEX.md`; ask first), junk images `logo.png`/`the-divine-orb-…webp` (surface, don't delete unprompted). This completes P1's core (items 1a/1b/2/3 shipped as 0.50–0.53).
+
 ## 2026-07-23 (4)
 
 - **Price-this-item lookup (patch 0.53 — P1 item 3)** (`index.html` + docs): new `#pricePanel` at the top of `#pageRadar` — a search box (`#priceLookupInput`) that filters `radarData.marketItems` (the already-loaded snapshot — no extra fetch) by name substring, top 8 by value, showing icon + name + Divine value (`radarFmtValue`) + 7-day trend + liquidity + a poe.ninja source chip; when a fiat rate is set it also shows `≈ value×rate sym` via `getDivineFiatRate()`/`fiatSymbol()`. `initPriceLookup` re-renders on `poeassist:radarloaded`; `window.focusPriceLookup()` (switch to radar + focus) is wired to a new "💰 เช็คราคาไอเทม" command in the palette. No new math/storage, no external call. Verified: 87-item snapshot, "divine"→Divine Orb 1.00 Divine ▲+5.2% liq High + link, no-match + cleared states, palette command opens+focuses, fiat 1000→≈1,000฿, no console errors.
