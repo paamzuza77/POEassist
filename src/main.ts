@@ -34,3 +34,7 @@ export {
   uxBusy,
 } from './lib/ux-foundation';
 export type { ToastOpts, ToastAction, UxAction, UxStateCfg } from './lib/ux-foundation';
+
+// Phase 4 (patch 0.67) — Market Radar scoring brain (pure). DOM rendering stays in the monolith.
+export { radarItemScore, buildRadarRecos } from './tabs/radar-scoring';
+export type { MarketItem, BucketMeta, RadarReco } from './tabs/radar-scoring';

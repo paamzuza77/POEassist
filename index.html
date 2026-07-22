@@ -5631,6 +5631,8 @@ const { formatDurationParts, fmtDuration, fmtNum } = window.EA;
 const { GAME_ASSETS, ASSET_ALIASES, RADAR_ASSET_BY_KEY, normalizeAssetKey, getLocalAssetForName, renderAssetIcon } = window.EA;
 // Modern UX Foundation (ex js/ux-foundation.js → src/lib/ux-foundation.ts, patch 0.66)
 const { showToast, showSuccessToast, showWarningToast, showErrorToast, showInfoToast, uxEmptyState, uxSkeleton, uxFlash, uxBusy } = window.EA;
+// Market Radar scoring brain (→ src/tabs/radar-scoring.ts, patch 0.67) — สูตร Farm Score; DOM ยังอยู่ที่นี่
+const { radarItemScore, buildRadarRecos } = window.EA;
 
 /* ==================== Keyword Help Bridge (patch 0.30) ====================
    สะพานเชื่อม data/keyword-codex.json ให้เป็นระบบช่วยเหลือกลไกทั้งแอป:
@@ -13501,96 +13503,8 @@ function radarMinDivine() {
 /* ---- Farm Score (0-1 ต่อไอเทม) ----
    ไม่ใช่อัตราดรอปจริง — คำนวณจาก price trend + มูลค่าไอเทม + สภาพคล่อง + risk
    trend ถูก cap ไว้กัน spike ของไอเทมสภาพคล่องต่ำครองอันดับ */
-function radarItemScore(it) {
-  const t = Math.max(-50, Math.min(150, typeof it.trend7d === 'number' ? it.trend7d : 0));
-  const trendScore = (t + 50) / 200;                              // 0..1
-  const v = typeof it.value === 'number' && it.value > 0 ? it.value : 0;
-  const valueScore = Math.min(1, Math.log10(1 + v * 10) / 2);     // log scale: ~10 Div = เต็ม
-  const volScore = typeof it.volumeScore === 'number' ? Math.max(0, Math.min(1, it.volumeScore)) : 0.3;
-  let s = trendScore * 0.45 + valueScore * 0.25 + volScore * 0.30;
-  if (it.liquidityLabel === 'Low' && t > 100) s *= 0.75;          // spike + สภาพคล่องต่ำ = หักแรง
-  else if (it.liquidityLabel === 'Low') s *= 0.9;
-  if (it.risk) s *= 0.95;
-  return Math.max(0, Math.min(1, s));
-}
-
-/* ---- Recommended Farm Now ----
-   จัดกลุ่มไอเทม marketItems (ที่ผ่านฟิลเตอร์แล้ว) ตาม contentKey → คิด Farm Score ต่อ content
-   แสดง "ทุก" content bucket ที่รองรับเสมอ (จาก data.contentRecommendations) แม้ไม่มี evidence
-   → เรียง bucket ที่มี evidence ก่อนตาม Farm Score, ไม่มี evidence ไปอยู่ท้ายแบบ muted
-   คำนวณใหม่ทุกครั้งที่ฟิลเตอร์เปลี่ยน */
-function buildRadarRecos(items, allBuckets) {
-  const groups = new Map();
-  items.forEach(it => {
-    if (!it.contentKey) return;
-    if (!groups.has(it.contentKey)) groups.set(it.contentKey, []);
-    groups.get(it.contentKey).push(it);
-  });
-
-  // รวม key ของทุก bucket ที่รองรับ (จาก snapshot) + key ที่โผล่มาจากไอเทมจริง กันตกหล่น
-  const bucketMeta = new Map();
-  (Array.isArray(allBuckets) ? allBuckets : []).forEach(b => {
-    if (b && b.contentKey) bucketMeta.set(b.contentKey, b);
-  });
-  groups.forEach((_, key) => {
-    if (!bucketMeta.has(key)) bucketMeta.set(key, { contentKey: key, displayName: key });
-  });
-
-  const recos = [];
-  bucketMeta.forEach((meta, key) => {
-    const list = groups.get(key) || [];
-    if (list.length === 0) {
-      recos.push({
-        content: meta.displayName || key,
-        contentKey: key,
-        score: 0,
-        confidence: typeof meta.confidence === 'number' ? meta.confidence : null,
-        relatedItems: [],
-        reason: [],
-        status: meta.noEvidenceStatus || meta.status || 'No qualifying 1D+ items in current snapshot',
-        risk: '',
-        sourceUrls: [],
-        hasEvidence: false,
-        itemCount: 0, // additive display field (patch 0.39)
-      });
-      return;
-    }
-    const scored = list.map(it => ({ it, s: radarItemScore(it) })).sort((a, b) => b.s - a.s);
-    const top = scored.slice(0, 3);
-    const avgScore = top.reduce((sum, x) => sum + x.s, 0) / top.length;
-    const conf = Math.max(...list.map(x => (typeof x.confidence === 'number' ? x.confidence : 0.7)));
-    const avgTrend = top.reduce((sum, x) => sum + (x.it.trend7d || 0), 0) / top.length;
-    const avgValue = top.reduce((sum, x) => sum + (x.it.value || 0), 0) / top.length;
-    const lowLiq = list.filter(x => x.liquidityLabel === 'Low').length;
-    recos.push({
-      content: list[0].mappedContent || meta.displayName || key,
-      contentKey: key,
-      score: Math.round(avgScore * conf * 100),
-      confidence: conf,
-      relatedItems: scored.slice(0, 4).map(x => x.it.name),
-      reason: [
-        list.length + ' รายการผ่านเกณฑ์ราคาขั้นต่ำ',
-        'เทรนด์เฉลี่ยไอเทมท็อป: ' + (avgTrend >= 0 ? '+' : '') + avgTrend.toFixed(1) + '% (7d)',
-        'มูลค่าเฉลี่ยไอเทมท็อป: ' + avgValue.toFixed(2) + ' Div',
-      ],
-      risk: lowLiq > list.length / 2 ? 'ไอเทมส่วนใหญ่สภาพคล่องต่ำ — ราคา spike อาจย่อ' : '',
-      sourceUrls: [...new Set(list.map(x => x.sourceUrl).filter(Boolean))].slice(0, 2),
-      hasEvidence: true,
-      // additive display fields (patch 0.39) — ค่าที่คำนวณอยู่แล้วด้านบน แค่แนบมากับการ์ด
-      // เพื่อใช้ทำ score breakdown / confidence / จัดกลุ่ม — "ไม่" กระทบสูตร score เดิม
-      itemCount: list.length,
-      avgTrend: avgTrend,
-      avgValue: avgValue,
-      lowLiqCount: lowLiq,
-      trendKnownCount: list.filter(x => typeof x.trend7d === 'number').length,
-    });
-  });
-  recos.sort((a, b) => {
-    if (a.hasEvidence !== b.hasEvidence) return a.hasEvidence ? -1 : 1;
-    return b.score - a.score;
-  });
-  return recos;
-}
+// radarItemScore() + buildRadarRecos() ย้ายไป src/tabs/radar-scoring.ts แล้ว (patch 0.67)
+// — bind จาก window.EA ที่ต้นสคริปต์ (สูตร Farm Score ไม่เปลี่ยน byte-identical)
 
 /* ---- Radar V2 presentation helpers (patch 0.39) ----
    ทั้งหมดเป็น "การนำเสนอ" เท่านั้น — สูตร Farm Score เดิมใน radarItemScore/buildRadarRecos ไม่ถูกแตะ

@@ -269,14 +269,97 @@ var EA = function(exports) {
       }
     }
   }
+  function radarItemScore(it) {
+    const t = Math.max(-50, Math.min(150, typeof it.trend7d === "number" ? it.trend7d : 0));
+    const trendScore = (t + 50) / 200;
+    const v = typeof it.value === "number" && it.value > 0 ? it.value : 0;
+    const valueScore = Math.min(1, Math.log10(1 + v * 10) / 2);
+    const volScore = typeof it.volumeScore === "number" ? Math.max(0, Math.min(1, it.volumeScore)) : 0.3;
+    let s = trendScore * 0.45 + valueScore * 0.25 + volScore * 0.3;
+    if (it.liquidityLabel === "Low" && t > 100) s *= 0.75;
+    else if (it.liquidityLabel === "Low") s *= 0.9;
+    if (it.risk) s *= 0.95;
+    return Math.max(0, Math.min(1, s));
+  }
+  function buildRadarRecos(items, allBuckets) {
+    const groups = /* @__PURE__ */ new Map();
+    items.forEach((it) => {
+      if (!it.contentKey) return;
+      if (!groups.has(it.contentKey)) groups.set(it.contentKey, []);
+      groups.get(it.contentKey).push(it);
+    });
+    const bucketMeta = /* @__PURE__ */ new Map();
+    (Array.isArray(allBuckets) ? allBuckets : []).forEach((b) => {
+      if (b && b.contentKey) bucketMeta.set(b.contentKey, b);
+    });
+    groups.forEach((_, key) => {
+      if (!bucketMeta.has(key)) bucketMeta.set(key, { contentKey: key, displayName: key });
+    });
+    const recos = [];
+    bucketMeta.forEach((meta, key) => {
+      const list = groups.get(key) || [];
+      if (list.length === 0) {
+        recos.push({
+          content: meta.displayName || key,
+          contentKey: key,
+          score: 0,
+          confidence: typeof meta.confidence === "number" ? meta.confidence : null,
+          relatedItems: [],
+          reason: [],
+          status: meta.noEvidenceStatus || meta.status || "No qualifying 1D+ items in current snapshot",
+          risk: "",
+          sourceUrls: [],
+          hasEvidence: false,
+          itemCount: 0
+          // additive display field (patch 0.39)
+        });
+        return;
+      }
+      const scored = list.map((it) => ({ it, s: radarItemScore(it) })).sort((a, b) => b.s - a.s);
+      const top = scored.slice(0, 3);
+      const avgScore = top.reduce((sum, x) => sum + x.s, 0) / top.length;
+      const conf = Math.max(...list.map((x) => typeof x.confidence === "number" ? x.confidence : 0.7));
+      const avgTrend = top.reduce((sum, x) => sum + (x.it.trend7d || 0), 0) / top.length;
+      const avgValue = top.reduce((sum, x) => sum + (x.it.value || 0), 0) / top.length;
+      const lowLiq = list.filter((x) => x.liquidityLabel === "Low").length;
+      recos.push({
+        content: list[0].mappedContent || meta.displayName || key,
+        contentKey: key,
+        score: Math.round(avgScore * conf * 100),
+        confidence: conf,
+        relatedItems: scored.slice(0, 4).map((x) => x.it.name),
+        reason: [
+          list.length + " รายการผ่านเกณฑ์ราคาขั้นต่ำ",
+          "เทรนด์เฉลี่ยไอเทมท็อป: " + (avgTrend >= 0 ? "+" : "") + avgTrend.toFixed(1) + "% (7d)",
+          "มูลค่าเฉลี่ยไอเทมท็อป: " + avgValue.toFixed(2) + " Div"
+        ],
+        risk: lowLiq > list.length / 2 ? "ไอเทมส่วนใหญ่สภาพคล่องต่ำ — ราคา spike อาจย่อ" : "",
+        sourceUrls: [...new Set(list.map((x) => x.sourceUrl).filter(Boolean))].slice(0, 2),
+        hasEvidence: true,
+        // additive display fields (patch 0.39) — ไม่กระทบสูตร score เดิม
+        itemCount: list.length,
+        avgTrend,
+        avgValue,
+        lowLiqCount: lowLiq,
+        trendKnownCount: list.filter((x) => typeof x.trend7d === "number").length
+      });
+    });
+    recos.sort((a, b) => {
+      if (a.hasEvidence !== b.hasEvidence) return a.hasEvidence ? -1 : 1;
+      return b.score - a.score;
+    });
+    return recos;
+  }
   exports.ASSET_ALIASES = ASSET_ALIASES;
   exports.GAME_ASSETS = GAME_ASSETS;
   exports.RADAR_ASSET_BY_KEY = RADAR_ASSET_BY_KEY;
+  exports.buildRadarRecos = buildRadarRecos;
   exports.fmtDuration = fmtDuration;
   exports.fmtNum = fmtNum;
   exports.formatDurationParts = formatDurationParts;
   exports.getLocalAssetForName = getLocalAssetForName;
   exports.normalizeAssetKey = normalizeAssetKey;
+  exports.radarItemScore = radarItemScore;
   exports.renderAssetIcon = renderAssetIcon;
   exports.showErrorToast = showErrorToast;
   exports.showInfoToast = showInfoToast;
