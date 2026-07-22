@@ -4830,6 +4830,32 @@ window.ensureRawblockFonts = function () {
   .price-val { color: var(--gold-glow, var(--text)); font-weight: 700; }
   .price-fiat { color: var(--text-dim); }
   .price-liq { color: var(--text-dim); font-size: 10px; }
+  /* Watchlist (patch 0.60) */
+  .price-watch-btn {
+    flex-shrink: 0;
+    background: var(--void); border: 2px solid var(--border); color: var(--text-muted);
+    font-family: var(--font-mono); font-size: 10.5px; padding: 4px 8px; cursor: pointer; white-space: nowrap;
+  }
+  .price-watch-btn:hover { border-color: var(--gold-dim, var(--border)); color: var(--gold-glow, var(--text)); }
+  .price-watch-btn.on { border-color: var(--gold, var(--text)); color: var(--gold-glow, var(--text)); }
+  .price-watchlist { margin-top: 14px; }
+  .price-watchlist:empty { display: none; }
+  .price-watch-title {
+    font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-dim); margin: 0 0 6px; padding-top: 10px; border-top: 2px solid var(--border-soft);
+  }
+  .price-watch-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 8px; border: 2px solid var(--border-soft); background: var(--panel-sunken); margin-bottom: 4px;
+    font-family: var(--font-mono); font-size: 11px;
+  }
+  .price-watch-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); font-weight: 700; }
+  .price-watch-cond { color: var(--text-dim); white-space: nowrap; }
+  .price-watch-cur { color: var(--text-muted); white-space: nowrap; }
+  .price-watch-cur.hit { color: var(--ok); font-weight: 700; }
+  .price-watch-cur.miss { color: var(--text-dim); }
+  .price-watch-del { flex-shrink: 0; background: none; border: none; color: var(--text-dim); font-size: 12px; cursor: pointer; padding: 0 2px; }
+  .price-watch-del:hover { color: var(--fire, #d33); }
 
   /* ==================== Notification bell + panel (patch 0.59) ==================== */
   .sidebar-bell {
@@ -5121,6 +5147,8 @@ window.ensureRawblockFonts = function () {
       </div>
       <input type="text" id="priceLookupInput" class="price-input" placeholder="เช่น Divine, Exalted, Chaos, rune, essence…" autocomplete="off" spellcheck="false">
       <div id="priceLookupResults" class="price-results"></div>
+      <!-- Watchlist (patch 0.60) — เฝ้าราคาไอเทม แจ้งเตือนผ่านกระดิ่งเมื่อถึงเกณฑ์ -->
+      <div id="priceWatchlist" class="price-watchlist"></div>
     </div>
 
     <!-- ===== Market Farm Radar =====
@@ -8380,6 +8408,7 @@ const APP_DATA_KEYS = [
   'poe2KeywordCodex.favorites.v1',
   'poe2TodayTodos.v1', // Todo list ในหน้า Today (patch 0.36) — ข้อมูลผู้ใช้ ไม่ใช่ UI pref (Reset UI ไม่ลบ)
   'poe2TodayPlanningNote.v1', // Planning note ในหน้า Today (patch 0.38) — ข้อมูลผู้ใช้เช่นกัน ไม่ใช่ UI pref
+  'poeAssist.watchlist.v1', // รายการเฝ้าราคาไอเทม (patch 0.60)
   'poeAssist.radarFilter.v1',
   'poeAssist.radarRates.v1',
   'poeAssist.radarPanels.v1', // สถานะพับ/เปิดกล่องฟิลเตอร์ + ส่วน Evidence ของ Market Radar (patch 0.43)
@@ -11268,6 +11297,13 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.60',
+    date: '2026-07-23',
+    notes: [
+      'Watchlist ราคาไอเทม: ในกล่องเช็คราคา (Market Radar) กดปุ่ม "👁 เฝ้าดู" ตั้งเกณฑ์ราคา แล้วระบบจะแจ้งเตือนผ่านกระดิ่งเมื่อราคาถึงเกณฑ์ (≤ ที่ตั้งไว้) — มีรายการเฝ้าดูโชว์ราคาปัจจุบัน + สถานะให้ด้วย',
+    ],
+  },
   {
     version: '0.59',
     date: '2026-07-23',
@@ -14408,6 +14444,66 @@ loadRadar();
 /* ---- Price-this-item lookup (patch 0.53) ----
    ค้นราคาไอเทมจาก radarData.marketItems ที่โหลดไว้แล้ว — ไม่ fetch เพิ่ม, ไม่มีคณิตใหม่
    (value เป็น Divine ตามฐานข้อมูล; แปลง fiat ด้วยเรทที่ผู้ใช้ตั้งเองเท่านั้นผ่าน getDivineFiatRate) */
+/* ---- Watchlist + price alerts (patch 0.60) ----
+   เฝ้าราคาไอเทมจาก radarData.marketItems — แจ้งเตือนผ่านกระดิ่งเมื่อราคาถึงเกณฑ์ (ต่ำกว่า/สูงกว่า)
+   triggered = สถานะว่าเคยแจ้งรอบนี้แล้ว (แจ้งครั้งเดียวต่อการข้ามเกณฑ์ — รีเซ็ตเมื่อราคากลับด้าน) */
+const WATCHLIST_KEY = 'poeAssist.watchlist.v1';
+let watchlist = (function loadWatchlist() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(WATCHLIST_KEY));
+    if (Array.isArray(raw)) return raw.filter(w => w && w.name);
+  } catch (e) { /* malformed */ }
+  return [];
+})();
+function persistWatchlist() {
+  try { localStorage.setItem(WATCHLIST_KEY, JSON.stringify(watchlist)); } catch (e) { /* storage */ }
+}
+function addWatch(name, threshold, dir) {
+  const th = parseFloat(threshold);
+  if (!name || isNaN(th) || th <= 0) return false;
+  const d = dir === 'above' ? 'above' : 'below';
+  const existing = watchlist.find(w => w.name === name);
+  if (existing) { existing.threshold = th; existing.dir = d; existing.triggered = false; }
+  else watchlist.unshift({ name: name, threshold: th, dir: d, triggered: false, at: new Date().toISOString() });
+  persistWatchlist();
+  checkWatchlist();
+  return true;
+}
+function removeWatch(name) {
+  watchlist = watchlist.filter(w => w.name !== name);
+  persistWatchlist();
+}
+function marketItemByName(name) {
+  const items = (radarData && Array.isArray(radarData.marketItems)) ? radarData.marketItems : [];
+  return items.find(it => it.name === name) || null;
+}
+// เทียบราคาปัจจุบันกับเกณฑ์ทุกตัว → แจ้งเตือนเมื่อ "เพิ่งข้าม" เกณฑ์
+function checkWatchlist() {
+  if (!radarData || !Array.isArray(radarData.marketItems)) return;
+  let changed = false;
+  watchlist.forEach(w => {
+    const it = marketItemByName(w.name);
+    if (!it || typeof it.value !== 'number') return;
+    const hit = w.dir === 'above' ? (it.value >= w.threshold) : (it.value <= w.threshold);
+    if (hit && !w.triggered) {
+      w.triggered = true; changed = true;
+      const arrow = w.dir === 'above' ? '≥' : '≤';
+      if (typeof pushNotification === 'function') pushNotification({
+        type: 'watchlist',
+        title: 'ราคาถึงเกณฑ์: ' + w.name,
+        body: w.name + ' ตอนนี้ ' + radarFmtValue(it.value, it.valueCurrency) + ' (เฝ้าไว้ ' + arrow + ' ' + w.threshold + ' Div)',
+        act: { price: true },
+        dedupeKey: 'watch-' + w.name + '-' + w.dir + '-' + w.threshold,
+      });
+    } else if (!hit && w.triggered) {
+      w.triggered = false; changed = true; // ราคากลับด้าน → พร้อมแจ้งใหม่รอบหน้า
+    }
+  });
+  if (changed) persistWatchlist();
+}
+document.addEventListener('poeassist:radarloaded', checkWatchlist);
+setInterval(checkWatchlist, 60000);
+
 (function initPriceLookup() {
   const input = document.getElementById('priceLookupInput');
   const box = document.getElementById('priceLookupResults');
@@ -14484,6 +14580,21 @@ loadRadar();
       }
       body.appendChild(line);
       card.appendChild(body);
+      // ปุ่มเฝ้าดูราคา (patch 0.60) — ตั้งเกณฑ์แล้วแจ้งเตือนผ่านกระดิ่ง
+      const watched = watchlist.some(w => w.name === it.name);
+      const watchBtn = document.createElement('button');
+      watchBtn.type = 'button';
+      watchBtn.className = 'price-watch-btn' + (watched ? ' on' : '');
+      watchBtn.textContent = watched ? '👁 เฝ้าอยู่' : '👁 เฝ้าดู';
+      watchBtn.title = watched ? 'แก้/ยกเลิกการเฝ้าดูได้ในรายการด้านล่าง' : 'เฝ้าราคาไอเทมนี้';
+      watchBtn.addEventListener('click', () => {
+        const def = typeof it.value === 'number' ? it.value : '';
+        const ans = prompt('เฝ้าราคา "' + it.name + '"\nแจ้งเตือนเมื่อราคา ≤ กี่ Divine? (ราคาปัจจุบัน ' + radarFmtValue(it.value, it.valueCurrency) + ')', String(def));
+        if (ans === null) return;
+        if (addWatch(it.name, ans, 'below')) { renderPriceWatchlist(); render(); showSuccessToast('เพิ่มเข้ารายการเฝ้าดูแล้ว', { key: 'watch' }); }
+        else showErrorToast('กรอกราคาเป็นตัวเลขมากกว่า 0');
+      });
+      card.appendChild(watchBtn);
       if (it.sourceUrl) {
         const a = document.createElement('a');
         a.className = 'farm-link-chip';
@@ -14495,9 +14606,48 @@ loadRadar();
     });
   }
 
+  // แผงรายการเฝ้าดู (patch 0.60) — โชว์ราคาปัจจุบัน + สถานะถึงเกณฑ์ + ปุ่มลบ
+  window.renderPriceWatchlist = function renderPriceWatchlist() {
+    const wrap = document.getElementById('priceWatchlist');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    if (!watchlist.length) return;
+    const head = document.createElement('p');
+    head.className = 'price-watch-title';
+    head.textContent = '👁 รายการเฝ้าดู (' + watchlist.length + ')';
+    wrap.appendChild(head);
+    watchlist.forEach(w => {
+      const it = marketItemByName(w.name);
+      const row = document.createElement('div');
+      row.className = 'price-watch-row';
+      const nm = document.createElement('span');
+      nm.className = 'price-watch-name';
+      nm.textContent = w.name;
+      const cond = document.createElement('span');
+      cond.className = 'price-watch-cond';
+      cond.textContent = (w.dir === 'above' ? '≥ ' : '≤ ') + w.threshold + ' Div';
+      const cur = document.createElement('span');
+      cur.className = 'price-watch-cur';
+      if (it && typeof it.value === 'number') {
+        const hit = w.dir === 'above' ? it.value >= w.threshold : it.value <= w.threshold;
+        cur.textContent = 'ตอนนี้ ' + radarFmtValue(it.value, it.valueCurrency);
+        cur.classList.toggle('hit', hit);
+      } else {
+        cur.textContent = 'ไม่พบในตลาดรอบนี้';
+        cur.classList.add('miss');
+      }
+      const del = document.createElement('button');
+      del.type = 'button'; del.className = 'price-watch-del'; del.textContent = '✕'; del.title = 'เลิกเฝ้าดู';
+      del.addEventListener('click', () => { removeWatch(w.name); renderPriceWatchlist(); render(); });
+      row.appendChild(nm); row.appendChild(cond); row.appendChild(cur); row.appendChild(del);
+      wrap.appendChild(row);
+    });
+  };
+
   input.addEventListener('input', render);
-  // snapshot โหลดเสร็จ/รีเฟรช → วาดผลใหม่ถ้ากำลังค้นอยู่
-  document.addEventListener('poeassist:radarloaded', () => { if (input.value.trim()) render(); });
+  // snapshot โหลดเสร็จ/รีเฟรช → วาดผลใหม่ถ้ากำลังค้นอยู่ + อัปเดตรายการเฝ้าดู
+  document.addEventListener('poeassist:radarloaded', () => { if (input.value.trim()) render(); renderPriceWatchlist(); });
+  renderPriceWatchlist();
   // ให้ Command Palette เรียกโฟกัสได้
   window.focusPriceLookup = () => {
     switchTab('radar');
