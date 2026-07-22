@@ -147,8 +147,8 @@ To add a brand-new static JSON data source: follow the `market-radar.json`/`home
 
 | File / function | Feature | What it computes | How to extend safely |
 |---|---|---|---|
-| `index.html` — `radarItemScore()`, `buildRadarRecos()` (search `function radarItemScore`) | Market Radar | Item score → content-bucket Farm Score/Recommendation Score | Keep wording "Farm Score"/"Recommendation Score", never "drop chance". The 0.39 helpers `radarConfidenceInfo()`/`radarSignalInfo()`/`radarSnapshotAgeHours()` are **presentation-only** — they read the reco's existing fields and must never feed back into the score |
-| `index.html` — `recalc()`, `STATS`, `PENALTY` (search `function recalc`) | Gear Checker | Resistance totals, cap/penalty math, rarity | `PENALTY` is a single constant (~line with `const PENALTY`) — change there only |
+| `src/tabs/radar-scoring.ts` — `radarItemScore()`, `buildRadarRecos()` (moved to TS in patch 0.67; bound via `window.EA`, edit there → `npm run build:bridge`) | Market Radar | Item score → content-bucket Farm Score/Recommendation Score | Keep wording "Farm Score"/"Recommendation Score", never "drop chance". Presentation helpers: `radarSignalInfo()` (patch 0.70, now in `src/tabs/radar-format.ts`) + `radarConfidenceInfo()`/`radarSnapshotAgeHours()` (still inline — read `radarData`/`RADAR_FRESH_HOURS`) are **presentation-only** — they read the reco's existing fields and must never feed back into the score |
+| `index.html` — `recalc()`, `STATS` (search `function recalc`); constants `CAP`/`PENALTY` in `src/lib/constants.ts` | Gear Checker | Resistance totals, cap/penalty math, rarity | `CAP` (75) + `PENALTY` (-40) moved to `src/lib/constants.ts` in patch 0.70 (bound via `window.EA`; edit there → `npm run build:bridge`, never redeclare inline); `formatResValue()` → `src/tabs/forge-format.ts`. Forge scoring stays inline and reads them via the top binding |
 
 ## Styling / Theme Notes
 

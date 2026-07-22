@@ -5637,6 +5637,9 @@ const { GAME_ASSETS, ASSET_ALIASES, RADAR_ASSET_BY_KEY, normalizeAssetKey, getLo
 const { showToast, showSuccessToast, showWarningToast, showErrorToast, showInfoToast, uxEmptyState, uxSkeleton, uxFlash, uxBusy } = window.EA;
 // Market Radar scoring brain (→ src/tabs/radar-scoring.ts, patch 0.67) — สูตร Farm Score; DOM ยังอยู่ที่นี่
 const { radarItemScore, buildRadarRecos } = window.EA;
+// State-module foundation (patch 0.70): scoring/state constants + pure consumer ที่พึ่ง constant เท่านั้น
+// (CAP → formatResValue; RADAR_FRESH_HOURS ใช้ต่อ inline; radarSignalInfo pure) — bind บนสุดให้ available ทุกจุด
+const { CAP, PENALTY, RADAR_FRESH_HOURS, formatResValue, radarSignalInfo } = window.EA;
 
 /* ==================== Keyword Help Bridge (patch 0.30) ====================
    สะพานเชื่อม data/keyword-codex.json ให้เป็นระบบช่วยเหลือกลไกทั้งแอป:
@@ -6018,8 +6021,8 @@ const STATS = [
 const RES_STATS = STATS.filter(s => s.group === 'res');
 const MF_STATS = STATS.filter(s => s.group === 'mf');
 
-const CAP = 75;
-const PENALTY = -40; // fixed per user setting (real endgame value is -60%, see penalty-note)
+// CAP (75) + PENALTY (-40) ย้ายไป src/lib/constants.ts แล้ว (patch 0.70) — bind จาก window.EA ที่ต้นสคริปต์
+// (PENALTY = fixed per user setting; real endgame value is -60%, see penalty-note)
 
 const EQUIP_SLOTS = [
   { key: 'helmet', label: 'Helmet', icon: ICONS.helmet, area: 'helmet' },
@@ -6435,10 +6438,7 @@ document.getElementById('addRowBtn').addEventListener('click', () => {
 /* เกจแนวนอน (renderResGauges/renderMfGauges + แผง Resistance totals) ถูกถอดใน patch 0.48 —
    ค่าทั้งหมดย้ายไปแสดงในกราฟเรดาร์ (updateForgeChart) + รายการสถานะใน Resistance Check แทน */
 
-function formatResValue(total) {
-  if (total > CAP) return `${CAP}%(${total}%)`;
-  return (total > 0 ? '+' : '') + total + '%';
-}
+// formatResValue() ย้ายไป src/tabs/forge-format.ts แล้ว (patch 0.70) — bind จาก window.EA ที่ต้นสคริปต์
 
 function recalc() {
   const totals = {
@@ -13380,7 +13380,7 @@ renderFarmGrid();
 // อ่านไฟล์ static ที่ GitHub Actions สร้างไว้เท่านั้น — ห้าม fetch poe.ninja ตรงจากเบราว์เซอร์
 // ตำแหน่งไฟล์: data/market-radar.json (แก้ path ได้ที่ค่าคงที่ด้านล่าง)
 const RADAR_URL = 'data/market-radar.json';
-const RADAR_FRESH_HOURS = 2; // เก่ากว่านี้ = Stale
+// RADAR_FRESH_HOURS (2 ชม. — เก่ากว่านี้ = Stale) ย้ายไป src/lib/constants.ts แล้ว (patch 0.70) — bind ที่ต้นสคริปต์
 
 /* ---- Value filter (data/market-radar.json ใช้ Divine เป็นฐาน) ----
    เรทแปลงหน่วยอื่น (Exalted/Chaos/THB) ผู้ใช้กรอกเองเท่านั้น — ห้าม hardcode เรทเด็ดขาด */
@@ -13543,28 +13543,8 @@ function radarConfidenceInfo(rc) {
   return { level: 'medium', label: 'Medium', cls: 'conf-med', why: n + ' items · mapping ' + Math.round(conf * 100) + '%' };
 }
 
-/* กลุ่ม/สัญญาณต่อการ์ด — การ์ดหนึ่งใบอยู่กลุ่มหลักกลุ่มเดียว:
-   - TOP PICK (ใบแรกที่มี evidence + score > 0)     → top
-   - ไม่มี evidence                                  → nosignal ("No signal" ไม่ใช่ "ไม่มีค่า")
-   - มี evidence แต่ score ปัดเป็น 0                 → watch (Low confidence)
-   - เทรนด์เฉลี่ยไอเทมท็อป ≥ +5%                     → rising
-   - เทรนด์เฉลี่ย ≤ −5%                              → watch (ราคากำลังลง)
-   - ที่เหลือ (−5%..+5%)                             → stable (ราคานิ่ง = รายได้สม่ำเสมอ ไม่ใช่ศูนย์) */
-function radarSignalInfo(rc, isTopPick) {
-  if (!rc || rc.hasEvidence === false) {
-    return { group: 'nosignal', label: 'No signal', sub: 'INSUFFICIENT DATA',
-      note: 'ไม่มีไอเทมราคาผ่านเกณฑ์ใน snapshot ปัจจุบัน — ไม่ได้แปลว่า content นี้ไม่มีค่า แค่ยังไม่มีหลักฐานราคา' };
-  }
-  if (isTopPick) return { group: 'top', label: null, sub: 'FARM SCORE', note: '' };
-  const trend = typeof rc.avgTrend === 'number' ? rc.avgTrend : 0;
-  if (!(rc.score > 0)) {
-    return { group: 'watch', label: 'Low confidence', sub: 'WEAK SIGNAL',
-      note: 'มีหลักฐานราคาแต่สัญญาณอ่อนจนคะแนนปัดเป็น 0 — จับตาไว้ก่อน' };
-  }
-  if (trend >= 5) return { group: 'rising', label: null, sub: 'FARM SCORE', note: 'ราคาไอเทมท็อปกำลังขึ้น (+' + trend.toFixed(1) + '% 7d)' };
-  if (trend <= -5) return { group: 'watch', label: null, sub: 'FARM SCORE', note: 'ราคาไอเทมท็อปกำลังลง (' + trend.toFixed(1) + '% 7d) — จับตาก่อนลงแรง' };
-  return { group: 'stable', label: null, sub: 'FARM SCORE', note: 'ราคาแทบไม่ขยับใน 7 วัน (' + (trend >= 0 ? '+' : '') + trend.toFixed(1) + '%) — รายได้ค่อนข้างนิ่ง' };
-}
+// radarSignalInfo() (กลุ่ม/สัญญาณต่อการ์ด — pure presentation) ย้ายไป src/tabs/radar-format.ts แล้ว
+// (patch 0.70) — bind จาก window.EA ที่ต้นสคริปต์ · logic byte-identical (top/rising/stable/watch/nosignal)
 
 const RADAR_GROUP_META = {
   top: { title: '★ Top Pick', desc: 'คอนเทนต์ที่หลักฐานตลาดสนับสนุนแรงที่สุดตอนนี้' },

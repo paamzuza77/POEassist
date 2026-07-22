@@ -1,5 +1,6 @@
 // P5 Phase 4 (patch 0.68) — Market Radar display helpers, ported from index.html.
 // Pure (input → string / SVG string). Byte-identical logic. DOM insertion stays in the monolith.
+import type { RadarReco } from './radar-scoring';
 
 export interface PricePoint {
   t?: number;
@@ -35,4 +36,35 @@ export function priceSparkline(points: unknown, w?: number, h?: number): string 
   return '<svg class="price-spark" viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" aria-hidden="true">' +
     '<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + color + '" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>' +
     '<circle cx="' + last[0] + '" cy="' + last[1] + '" r="1.8" fill="' + color + '"/></svg>';
+}
+
+// ผลลัพธ์ signal ต่อการ์ด — group เดียว + ป้าย/หมายเหตุที่ renderRadar เอาไปแสดง
+export interface RadarSignal {
+  group: 'nosignal' | 'top' | 'watch' | 'rising' | 'stable';
+  label: string | null;
+  sub: string;
+  note: string;
+}
+
+/* กลุ่ม/สัญญาณต่อการ์ด (การนำเสนอเท่านั้น — ไม่แตะสูตร score) — การ์ดหนึ่งใบอยู่กลุ่มหลักกลุ่มเดียว:
+   - TOP PICK (ใบแรกที่มี evidence + score > 0)     → top
+   - ไม่มี evidence                                  → nosignal ("No signal" ไม่ใช่ "ไม่มีค่า")
+   - มี evidence แต่ score ปัดเป็น 0                 → watch (Low confidence)
+   - เทรนด์เฉลี่ยไอเทมท็อป ≥ +5%                     → rising
+   - เทรนด์เฉลี่ย ≤ −5%                              → watch (ราคากำลังลง)
+   - ที่เหลือ (−5%..+5%)                             → stable (ราคานิ่ง = รายได้สม่ำเสมอ ไม่ใช่ศูนย์) */
+export function radarSignalInfo(rc: RadarReco | null | undefined, isTopPick: boolean): RadarSignal {
+  if (!rc || rc.hasEvidence === false) {
+    return { group: 'nosignal', label: 'No signal', sub: 'INSUFFICIENT DATA',
+      note: 'ไม่มีไอเทมราคาผ่านเกณฑ์ใน snapshot ปัจจุบัน — ไม่ได้แปลว่า content นี้ไม่มีค่า แค่ยังไม่มีหลักฐานราคา' };
+  }
+  if (isTopPick) return { group: 'top', label: null, sub: 'FARM SCORE', note: '' };
+  const trend = typeof rc.avgTrend === 'number' ? rc.avgTrend : 0;
+  if (!(rc.score > 0)) {
+    return { group: 'watch', label: 'Low confidence', sub: 'WEAK SIGNAL',
+      note: 'มีหลักฐานราคาแต่สัญญาณอ่อนจนคะแนนปัดเป็น 0 — จับตาไว้ก่อน' };
+  }
+  if (trend >= 5) return { group: 'rising', label: null, sub: 'FARM SCORE', note: 'ราคาไอเทมท็อปกำลังขึ้น (+' + trend.toFixed(1) + '% 7d)' };
+  if (trend <= -5) return { group: 'watch', label: null, sub: 'FARM SCORE', note: 'ราคาไอเทมท็อปกำลังลง (' + trend.toFixed(1) + '% 7d) — จับตาก่อนลงแรง' };
+  return { group: 'stable', label: null, sub: 'FARM SCORE', note: 'ราคาแทบไม่ขยับใน 7 วัน (' + (trend >= 0 ? '+' : '') + trend.toFixed(1) + '%) — รายได้ค่อนข้างนิ่ง' };
 }

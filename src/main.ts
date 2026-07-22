@@ -10,8 +10,13 @@ export type { DurationParts } from './lib/format';
 
 // Phase 4 (patch 0.68) — more pure logic: fuzzy matcher + radar display formatters
 export { cmdkFuzzyScore } from './lib/fuzzy';
-export { radarFmtValue, priceSparkline } from './tabs/radar-format';
-export type { PricePoint } from './tabs/radar-format';
+export { radarFmtValue, priceSparkline, radarSignalInfo } from './tabs/radar-format';
+export type { PricePoint, RadarSignal } from './tabs/radar-format';
+
+// Phase 4 (patch 0.70) — state-module foundation: shared scoring constants + their pure consumers.
+// Lifting CAP/PENALTY/RADAR_FRESH_HOURS to src/ unblocks the constant-dependent scoring migrations.
+export { CAP, PENALTY, RADAR_FRESH_HOURS } from './lib/constants';
+export { formatResValue } from './tabs/forge-format';
 
 // Phase 3 (patch 0.65) — Game asset registry (ex js/asset-registry.js). Importing it also
 // runs its top-level image-error listener (side effect) when ea.js loads, before the monolith.

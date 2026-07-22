@@ -101,6 +101,36 @@ var EA = function(exports) {
     const last = pts[pts.length - 1].split(",");
     return '<svg class="price-spark" viewBox="0 0 ' + W + " " + H + '" width="' + W + '" height="' + H + '" aria-hidden="true"><polyline points="' + pts.join(" ") + '" fill="none" stroke="' + color + '" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="' + last[0] + '" cy="' + last[1] + '" r="1.8" fill="' + color + '"/></svg>';
   }
+  function radarSignalInfo(rc, isTopPick) {
+    if (!rc || rc.hasEvidence === false) {
+      return {
+        group: "nosignal",
+        label: "No signal",
+        sub: "INSUFFICIENT DATA",
+        note: "ไม่มีไอเทมราคาผ่านเกณฑ์ใน snapshot ปัจจุบัน — ไม่ได้แปลว่า content นี้ไม่มีค่า แค่ยังไม่มีหลักฐานราคา"
+      };
+    }
+    if (isTopPick) return { group: "top", label: null, sub: "FARM SCORE", note: "" };
+    const trend = typeof rc.avgTrend === "number" ? rc.avgTrend : 0;
+    if (!(rc.score > 0)) {
+      return {
+        group: "watch",
+        label: "Low confidence",
+        sub: "WEAK SIGNAL",
+        note: "มีหลักฐานราคาแต่สัญญาณอ่อนจนคะแนนปัดเป็น 0 — จับตาไว้ก่อน"
+      };
+    }
+    if (trend >= 5) return { group: "rising", label: null, sub: "FARM SCORE", note: "ราคาไอเทมท็อปกำลังขึ้น (+" + trend.toFixed(1) + "% 7d)" };
+    if (trend <= -5) return { group: "watch", label: null, sub: "FARM SCORE", note: "ราคาไอเทมท็อปกำลังลง (" + trend.toFixed(1) + "% 7d) — จับตาก่อนลงแรง" };
+    return { group: "stable", label: null, sub: "FARM SCORE", note: "ราคาแทบไม่ขยับใน 7 วัน (" + (trend >= 0 ? "+" : "") + trend.toFixed(1) + "%) — รายได้ค่อนข้างนิ่ง" };
+  }
+  const CAP = 75;
+  const PENALTY = -40;
+  const RADAR_FRESH_HOURS = 2;
+  function formatResValue(total) {
+    if (total > CAP) return `${CAP}%(${total}%)`;
+    return (total > 0 ? "+" : "") + total + "%";
+  }
   const ASSET_BASE = "image/";
   const GAME_ASSETS = {
     divine: { file: "divine.webp", label: "Divine Orb" },
@@ -430,8 +460,11 @@ var EA = function(exports) {
     return recos;
   }
   exports.ASSET_ALIASES = ASSET_ALIASES;
+  exports.CAP = CAP;
   exports.GAME_ASSETS = GAME_ASSETS;
+  exports.PENALTY = PENALTY;
   exports.RADAR_ASSET_BY_KEY = RADAR_ASSET_BY_KEY;
+  exports.RADAR_FRESH_HOURS = RADAR_FRESH_HOURS;
   exports.acNum = acNum;
   exports.acPct = acPct;
   exports.buildRadarRecos = buildRadarRecos;
@@ -439,6 +472,7 @@ var EA = function(exports) {
   exports.fmtDuration = fmtDuration;
   exports.fmtNum = fmtNum;
   exports.formatDurationParts = formatDurationParts;
+  exports.formatResValue = formatResValue;
   exports.getLocalAssetForName = getLocalAssetForName;
   exports.kwHelpEsc = kwHelpEsc;
   exports.normalizeAssetKey = normalizeAssetKey;
@@ -447,6 +481,7 @@ var EA = function(exports) {
   exports.priceSparkline = priceSparkline;
   exports.radarFmtValue = radarFmtValue;
   exports.radarItemScore = radarItemScore;
+  exports.radarSignalInfo = radarSignalInfo;
   exports.renderAssetIcon = renderAssetIcon;
   exports.showErrorToast = showErrorToast;
   exports.showInfoToast = showInfoToast;
