@@ -4645,6 +4645,91 @@ window.ensureRawblockFonts = function () {
   }
   /* Work Queue ในแผง Gear Check — ชิดคะแนน เว้นระยะเท่า sr-stat-list */
   .sr-side .shop-attention { margin-top: 12px; }
+
+  /* ==================== Command Palette (patch 0.52) ==================== */
+  .cmdk-overlay[hidden] { display: none; }
+  .cmdk-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    background: rgba(10, 7, 14, 0.6);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 12vh 16px 20px;
+    backdrop-filter: blur(2px);
+  }
+  .cmdk-panel {
+    width: 100%;
+    max-width: 560px;
+    background: var(--panel, var(--void));
+    border: 3px solid var(--border);
+    border-radius: 0;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    max-height: 66vh;
+    overflow: hidden;
+  }
+  .cmdk-input {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--void);
+    border: none;
+    border-bottom: 2px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 15px;
+    padding: 15px 18px;
+    outline: none;
+  }
+  .cmdk-input::placeholder { color: var(--text-dim); }
+  .cmdk-list { overflow-y: auto; padding: 6px; }
+  .cmdk-empty {
+    padding: 20px 16px;
+    text-align: center;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .cmdk-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    color: var(--text);
+    padding: 10px 12px;
+    cursor: pointer;
+    text-align: left;
+    font-family: var(--font-sans, inherit);
+  }
+  .cmdk-row.active { background: var(--text); color: var(--void); }
+  .cmdk-ico { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+  .cmdk-label { flex: 1; min-width: 0; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cmdk-hint {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+  .cmdk-row.active .cmdk-hint { color: var(--void); opacity: 0.7; }
+  .cmdk-foot {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    padding: 8px 14px;
+    border-top: 2px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+  .cmdk-foot b { color: var(--text-muted); }
+  .cmdk-foot-hint { margin-left: auto; letter-spacing: 0.08em; }
 </style>
 <!-- Modularization Phase 1 (patch 0.34): helper CSS ที่แยกออกจาก inline <style> ด้านบน
      วางหลัง </style> เพื่อคงลำดับ cascade เดิม (rule พื้นฐาน specificity ต่ำ — override ของ Trust theme ชนะด้วย specificity อยู่แล้ว) -->
@@ -10603,6 +10688,13 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.52',
+    date: '2026-07-23',
+    notes: [
+      'Command Palette — กด Ctrl+K (หรือ ⌘K) จากหน้าไหนก็ได้ เปิดกล่องคำสั่งด่วน: พิมพ์แบบ fuzzy เพื่อกระโดดไปแท็บ, เพิ่มแถว/วางไอเทม, สลับธีม/Light-Dark/Simple-Advanced, รีเฟรช Radar, Export backup, เปิด Settings/Patch Notes และค้นหา Codex/Keyword/Todo/ไอเทมได้ในที่เดียว',
+    ],
+  },
   {
     version: '0.51',
     date: '2026-07-23',
@@ -16844,40 +16936,8 @@ function renderToday() {
   applyPlaceholder();
   document.addEventListener('poeassist:prefschange', applyPlaceholder);
 
-  function buildResults(q) {
-    const needle = String(q || '').trim().toLowerCase();
-    const out = [];
-    if (!needle) return out;
-    const match = (s) => typeof s === 'string' && s.toLowerCase().includes(needle);
-    const push = (type, label, run) => out.push({ type, label, run });
-    // 1) แท็บ (ชื่อ + กลุ่ม)
-    Object.keys(TAB_TITLES).forEach(k => {
-      if (match(TAB_TITLES[k]) || match(TAB_GROUPS[k])) push('tab', TAB_TITLES[k], () => switchTab(k));
-    });
-    // 2) Content Codex — เปิด entry ผ่าน deep link เดิม
-    try {
-      const entries = (codexData && Array.isArray(codexData.entries)) ? codexData.entries : [];
-      entries.filter(en => match(en.name)).slice(0, 5)
-        .forEach(en => push('content', en.name || en.id, () => todayOpenCodexEntry(en.id)));
-    } catch (e) { /* ข้อมูลยังไม่โหลด — ข้าม */ }
-    // 3) Keyword Codex — ชื่อไทย/อังกฤษ
-    try {
-      const kws = (kwcData && Array.isArray(kwcData.keywords)) ? kwcData.keywords : [];
-      kws.filter(kw => match(kw.nameTh) || match(kw.nameEn)).slice(0, 5)
-        .forEach(kw => push('keyword', kw.nameTh || kw.nameEn || kw.id, () => openKeywordCodexEntry(kw.id)));
-    } catch (e) { /* ข้าม */ }
-    // 4) Todo (Today) — เปิด popup รายละเอียดงานเดิม
-    try {
-      (Array.isArray(todayTodos) ? todayTodos : []).filter(x => match(x.title)).slice(0, 4)
-        .forEach(x => push('todo', x.title, () => { switchTab('today'); openTodayTodoModal(x.id); }));
-    } catch (e) { /* ข้าม */ }
-    // 5) แถว Gear Planner — jump ด้วย goToShopRow (เปิดส่วนตารางที่พับอยู่ให้เอง)
-    try {
-      (Array.isArray(shopRows) ? shopRows : []).filter(r => match(r.name)).slice(0, 4)
-        .forEach(r => push('gear', r.name, () => { switchTab('shop'); goToShopRow(r); }));
-    } catch (e) { /* ข้าม */ }
-    return out.slice(0, 12);
-  }
+  // ย้ายเนื้อไป global buildSearchResults() (patch 0.52) เพื่อแชร์กับ Command Palette — พฤติกรรมเดิมทุกอย่าง
+  const buildResults = (q) => buildSearchResults(q);
 
   function closeResults() {
     box.hidden = true;
@@ -16963,6 +17023,192 @@ function renderToday() {
     }
   });
   document.addEventListener('click', (e) => { if (!wrap.contains(e.target)) closeResults(); });
+})();
+
+/* ==================== Global search + Command Palette (patch 0.52) ====================
+   buildSearchResults(): แหล่งค้นหา nav/data ใช้ร่วมกันระหว่าง topbar search กับ ⌘K palette
+   (ย้ายออกมา global จาก initTopbarSearch — พฤติกรรม substring เดิมทุกอย่าง) */
+function buildSearchResults(q) {
+  const needle = String(q || '').trim().toLowerCase();
+  const out = [];
+  if (!needle) return out;
+  const match = (s) => typeof s === 'string' && s.toLowerCase().includes(needle);
+  const push = (type, label, run) => out.push({ type, label, run });
+  Object.keys(TAB_TITLES).forEach(k => {
+    if (match(TAB_TITLES[k]) || match(TAB_GROUPS[k])) push('tab', TAB_TITLES[k], () => switchTab(k));
+  });
+  try {
+    const entries = (codexData && Array.isArray(codexData.entries)) ? codexData.entries : [];
+    entries.filter(en => match(en.name)).slice(0, 5)
+      .forEach(en => push('content', en.name || en.id, () => todayOpenCodexEntry(en.id)));
+  } catch (e) { /* ยังไม่โหลด */ }
+  try {
+    const kws = (kwcData && Array.isArray(kwcData.keywords)) ? kwcData.keywords : [];
+    kws.filter(kw => match(kw.nameTh) || match(kw.nameEn)).slice(0, 5)
+      .forEach(kw => push('keyword', kw.nameTh || kw.nameEn || kw.id, () => openKeywordCodexEntry(kw.id)));
+  } catch (e) { /* ข้าม */ }
+  try {
+    (Array.isArray(todayTodos) ? todayTodos : []).filter(x => match(x.title)).slice(0, 4)
+      .forEach(x => push('todo', x.title, () => { switchTab('today'); openTodayTodoModal(x.id); }));
+  } catch (e) { /* ข้าม */ }
+  try {
+    (Array.isArray(shopRows) ? shopRows : []).filter(r => match(r.name)).slice(0, 4)
+      .forEach(r => push('gear', r.name, () => { switchTab('shop'); goToShopRow(r); }));
+  } catch (e) { /* ข้าม */ }
+  return out.slice(0, 12);
+}
+
+// fuzzy subsequence scoring — คืน -1 ถ้าไม่ match; ยิ่งตัวติดกัน/ต้นคำ ยิ่งคะแนนสูง
+function cmdkFuzzyScore(text, q) {
+  text = String(text || '').toLowerCase();
+  q = String(q || '').toLowerCase().trim();
+  if (!q) return 0;
+  let ti = 0, score = 0, streak = 0;
+  for (let qi = 0; qi < q.length; qi++) {
+    const c = q[qi];
+    if (c === ' ') { streak = 0; continue; }
+    let found = -1;
+    for (let i = ti; i < text.length; i++) { if (text[i] === c) { found = i; break; } }
+    if (found === -1) return -1;
+    if (found === ti) { streak++; score += 2 + streak; } else { streak = 0; score += 1; }
+    if (found === 0 || /[\s\-–—/·:()]/.test(text[found - 1])) score += 3; // โบนัสต้นคำ
+    ti = found + 1;
+  }
+  return score;
+}
+
+/* Command Palette (patch 0.52) — เรียกด้วย Ctrl/⌘+K จากทุกที่: สั่ง action + นำทาง + fuzzy
+   ต่อยอด buildSearchResults() ตามแผน P1 — ไม่สร้างระบบนำทางคู่ขนาน */
+(function initCommandPalette() {
+  // static commands: action ที่ทำได้เกินการนำทาง — ทุกตัวเรียก function เดิมของแอป
+  function baseCommands() {
+    const cmds = [];
+    // นำทางแท็บ (ทางลัดหลักตอนเปิด palette เปล่าๆ)
+    Object.keys(TAB_TITLES).forEach(k => {
+      cmds.push({ icon: '→', label: 'ไปที่ ' + TAB_TITLES[k], hint: TAB_GROUPS[k] || 'แท็บ', kw: k + ' tab ' + (TAB_GROUPS[k] || ''), run: () => switchTab(k) });
+    });
+    cmds.push({ icon: '➕', label: 'เพิ่มแถวใหม่ (Gear Planner)', hint: 'action', kw: 'add row gear shop เพิ่มแถว', run: () => { switchTab('shop'); document.getElementById('shopAddRowBtn').click(); } });
+    cmds.push({ icon: '📋', label: 'วางข้อความไอเทม (Gear Planner)', hint: 'action', kw: 'paste item วางไอเทม', run: () => { switchTab('shop'); openShopPasteModal(); } });
+    cmds.push({ icon: '📡', label: 'รีเฟรช Market Radar', hint: 'action', kw: 'refresh radar market รีเฟรช', run: () => { switchTab('radar'); if (typeof loadRadar === 'function') loadRadar(); } });
+    cmds.push({ icon: '💾', label: 'Export backup (ดาวน์โหลดข้อมูลทั้งหมด)', hint: 'action', kw: 'export backup save ดาวน์โหลด สำรอง', run: () => { if (typeof exportAppData === 'function') exportAppData(); } });
+    cmds.push({ icon: '⚙', label: 'เปิด Settings', hint: 'action', kw: 'settings ตั้งค่า config', run: () => { const b = document.getElementById('settingsBtn'); if (b) b.click(); } });
+    cmds.push({ icon: '📜', label: 'เปิด Patch Notes', hint: 'action', kw: 'patch notes อัปเดต', run: () => { const b = document.getElementById('patchNotesBtn'); if (b) b.click(); } });
+    cmds.push({ icon: '🌓', label: 'สลับโหมด ' + (appMode === 'dark' ? 'Light' : 'Dark'), hint: 'action', kw: 'light dark mode สว่าง มืด theme', run: () => setAppColorMode(appMode === 'dark' ? 'light' : 'dark') });
+    cmds.push({ icon: '◈', label: 'สลับมุมมอง ' + (appDisplay === 'advanced' ? 'Simple' : 'Advanced'), hint: 'action', kw: 'simple advanced display มุมมอง', run: () => setAppDisplayMode(appDisplay === 'advanced' ? 'simple' : 'advanced') });
+    (Array.isArray(APP_THEMES) ? APP_THEMES : []).forEach(th => {
+      cmds.push({ icon: '🎨', label: 'ธีม: ' + (th.label || th.id), hint: 'theme', kw: 'theme ธีม ' + (th.label || '') + ' ' + th.id, run: () => setAppTheme(th.id) });
+    });
+    return cmds;
+  }
+
+  const overlay = document.createElement('div');
+  overlay.className = 'cmdk-overlay';
+  overlay.hidden = true;
+  overlay.innerHTML =
+    '<div class="cmdk-panel" role="dialog" aria-modal="true" aria-label="Command palette">' +
+    '<input type="text" class="cmdk-input" id="cmdkInput" placeholder="พิมพ์คำสั่งหรือค้นหา… (Esc ปิด)" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="true" aria-controls="cmdkList">' +
+    '<div class="cmdk-list" id="cmdkList" role="listbox"></div>' +
+    '<div class="cmdk-foot"><span><b>↑↓</b> เลือก</span><span><b>↵</b> ทำ</span><span><b>Esc</b> ปิด</span><span class="cmdk-foot-hint">Ctrl/⌘ K</span></div>' +
+    '</div>';
+  document.body.appendChild(overlay);
+  const input = overlay.querySelector('#cmdkInput');
+  const list = overlay.querySelector('#cmdkList');
+
+  let rows = [];   // [{icon,label,hint,run}]
+  let active = 0;
+  let open = false;
+
+  function compute(q) {
+    const query = String(q || '').trim();
+    const cmds = baseCommands();
+    if (!query) {
+      // เปล่า → แสดง commands หลัก (นำทาง + action) เป็นค่าเริ่มต้น
+      return cmds.slice(0, 12).map(c => ({ icon: c.icon, label: c.label, hint: c.hint, run: c.run }));
+    }
+    // 1) commands แบบ fuzzy (label + keywords)
+    const scored = [];
+    cmds.forEach(c => {
+      const s = Math.max(cmdkFuzzyScore(c.label, query), cmdkFuzzyScore(c.kw, query) - 1);
+      if (s >= 0) scored.push({ c, s });
+    });
+    scored.sort((a, b) => b.s - a.s);
+    const res = scored.slice(0, 8).map(x => ({ icon: x.c.icon, label: x.c.label, hint: x.c.hint, run: x.c.run }));
+    // 2) ผลค้นหา nav/data (substring) จากแหล่งเดิม — เติมท้าย
+    const navIcon = { tab: '→', content: '📖', keyword: '🔑', todo: '✓', gear: '🛒' };
+    buildSearchResults(query).forEach(r => {
+      res.push({ icon: navIcon[r.type] || '·', label: r.label, hint: t('search.type.' + r.type) || r.type, run: r.run });
+    });
+    return res.slice(0, 14);
+  }
+
+  function render() {
+    list.innerHTML = '';
+    if (!rows.length) {
+      const d = document.createElement('div');
+      d.className = 'cmdk-empty';
+      d.textContent = 'ไม่พบคำสั่งหรือรายการที่ตรง';
+      list.appendChild(d);
+      return;
+    }
+    rows.forEach((r, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'cmdk-row' + (i === active ? ' active' : '');
+      b.setAttribute('role', 'option');
+      const ico = document.createElement('span'); ico.className = 'cmdk-ico'; ico.textContent = r.icon || '·';
+      const lab = document.createElement('span'); lab.className = 'cmdk-label'; lab.textContent = r.label;
+      const hint = document.createElement('span'); hint.className = 'cmdk-hint'; hint.textContent = r.hint || '';
+      b.appendChild(ico); b.appendChild(lab); b.appendChild(hint);
+      b.addEventListener('click', () => runRow(i));
+      b.addEventListener('mousemove', () => { if (active !== i) { active = i; highlight(); } });
+      list.appendChild(b);
+    });
+  }
+  function highlight() {
+    Array.from(list.querySelectorAll('.cmdk-row')).forEach((el, i) => {
+      el.classList.toggle('active', i === active);
+      if (i === active && el.scrollIntoView) el.scrollIntoView({ block: 'nearest' });
+    });
+  }
+  function refresh() { rows = compute(input.value); active = 0; render(); }
+  function runRow(i) {
+    const r = rows[i];
+    if (!r) return;
+    closePalette();
+    r.run();
+  }
+  function openPalette() {
+    if (open) return;
+    open = true;
+    overlay.hidden = false;
+    input.value = '';
+    refresh();
+    requestAnimationFrame(() => input.focus());
+  }
+  function closePalette() {
+    open = false;
+    overlay.hidden = true;
+    input.blur();
+  }
+
+  input.addEventListener('input', refresh);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') { active = Math.min(active + 1, rows.length - 1); highlight(); e.preventDefault(); }
+    else if (e.key === 'ArrowUp') { active = Math.max(active - 1, 0); highlight(); e.preventDefault(); }
+    else if (e.key === 'Enter') { runRow(active); e.preventDefault(); }
+    else if (e.key === 'Escape') { closePalette(); e.preventDefault(); e.stopPropagation(); }
+  });
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closePalette(); });
+
+  // Ctrl/⌘+K จากทุกที่ (ยกเว้นตอนพิมพ์ในช่องอื่นก็ยังเปิดได้ — เป็น quick switcher)
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+      e.preventDefault();
+      if (open) closePalette(); else openPalette();
+    }
+  });
+  // เผยแพร่ให้ที่อื่นเรียกเปิดได้ (เช่นปุ่มบน topbar ในอนาคต)
+  window.openCommandPalette = openPalette;
 })();
 
 /* ==================== Codex background warmup (patch 0.47, boot perf) ====================

@@ -1227,3 +1227,16 @@ html[data-theme="modern"] .bg-thumb.active {
   border-color: var(--gold);
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
+
+/* Command Palette (patch 0.52) — glass rounded ให้เข้ากับ Modern */
+html[data-theme="modern"] .cmdk-panel {
+  border: 1px solid var(--glass-border, var(--border-soft));
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: var(--shadow-lg);
+}
+html[data-theme="modern"] .cmdk-input { border-bottom: 1px solid var(--border-soft); font-family: var(--font-sans); }
+html[data-theme="modern"] .cmdk-row { border-radius: 10px; }
+html[data-theme="modern"] .cmdk-row.active { background: var(--accent-soft); color: var(--text); }
+html[data-theme="modern"] .cmdk-row.active .cmdk-hint { color: var(--text-muted); opacity: 1; }
+html[data-theme="modern"] .cmdk-foot { border-top: 1px solid var(--border-soft); }
