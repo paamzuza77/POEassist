@@ -776,6 +776,30 @@ window.ensureRawblockFonts = function () {
     white-space: pre-wrap;
     word-break: break-word;
   }
+
+  /* วางข้อความไอเทม → shop row modal (patch 0.51) */
+  .shop-paste-hint { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); margin: 0 0 10px; line-height: 1.5; }
+  .shop-paste-input {
+    width: 100%;
+    background: var(--void);
+    border: 2px solid var(--border);
+    border-radius: 0;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.5;
+    padding: 10px 12px;
+    resize: vertical;
+  }
+  .shop-paste-input:focus-visible { outline: 2px solid var(--border); outline-offset: 1px; }
+  .shop-paste-preview { margin: 12px 0; display: grid; gap: 6px; }
+  .shop-paste-preview:empty { display: none; }
+  .sp-row { display: grid; grid-template-columns: 60px 1fr; gap: 10px; align-items: baseline; }
+  .sp-k {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim);
+  }
+  .sp-v { font-size: 12.5px; color: var(--text); word-break: break-word; }
   .ocr-review .res-row { grid-template-columns: 1fr 84px 22px; }
   .ocr-slot-row {
     display: flex;
@@ -5119,6 +5143,7 @@ window.ensureRawblockFonts = function () {
       </div>
       <div class="shop-tool-group shop-tool-rows">
         <button class="ocr-btn primary" type="button" id="shopAddRowBtn">+ Add Row</button>
+        <button class="ocr-btn" type="button" id="shopPasteItemBtn" title="วางข้อความไอเทมจากเกม (Ctrl+C ในเกม) แล้วสร้างแถวให้อัตโนมัติ">📋 วางไอเทม</button>
         <button class="ocr-btn" type="button" id="shopExportBtn">Export JSON</button>
         <button class="ocr-btn" type="button" id="shopImportBtn">Import JSON</button>
         <input type="file" id="shopImportFile" accept="application/json,.json" hidden>
@@ -9921,6 +9946,162 @@ function quickAddToSlot(slotId) {
   focusShopRowName(idx);
 }
 
+/* ---------- Paste item text → shop row (patch 0.51) ----------
+   วางข้อความไอเทม (Ctrl+C จากเกม) แล้วสร้างแถวช้อปปิ้งให้: ชื่อ + ช่อง (จาก Item Class) + สรุป res mods
+   reuse slotFromItemClass()/parseItemText() ของ Resistance Checker — ไม่มี parser ซ้ำ */
+
+// forge slot key (chest/ringL/jewel...) → SHOP_SLOTS id (body/ring1/jewel1...)
+const FORGE_TO_SHOP_SLOT = {
+  helmet: 'helmet', weapon: 'weapon', chest: 'body', offhand: 'offhand',
+  gloves: 'gloves', belt: 'belt', boots: 'boots', ringL: 'ring1', ringR: 'ring2',
+  amulet: 'amulet', jewel: 'jewel1',
+};
+// Item Class → ป้าย type (เก็บใน row.type — คอลัมน์ถูกถอดไปแต่ field ยัง export/ค้นได้)
+const ITEM_CLASS_TYPE = [
+  { re: /body\s*armour/i, type: 'Body Armour' }, { re: /helmet/i, type: 'Helmet' },
+  { re: /glove/i, type: 'Gloves' }, { re: /boot/i, type: 'Boots' }, { re: /belt/i, type: 'Belt' },
+  { re: /amulet/i, type: 'Amulet' }, { re: /ring/i, type: 'Ring' }, { re: /jewel/i, type: 'Jewel' },
+  { re: /shield|buckler/i, type: 'Shield' }, { re: /foci|focus/i, type: 'Focus' }, { re: /quiver/i, type: 'Quiver' },
+  { re: /wand/i, type: 'Wand' }, { re: /sceptre|scepter/i, type: 'Sceptre' }, { re: /quarterstaff/i, type: 'Quarterstaff' },
+  { re: /stave|staff/i, type: 'Staff' }, { re: /crossbow/i, type: 'Crossbow' }, { re: /bow/i, type: 'Bow' },
+  { re: /spear/i, type: 'Spear' }, { re: /flail/i, type: 'Flail' }, { re: /mace/i, type: 'Mace' },
+];
+
+function typeFromItemClass(text) {
+  const m = text.match(/Item\s*Class:\s*(.+)/i);
+  if (!m) return '';
+  for (const e of ITEM_CLASS_TYPE) if (e.re.test(m[1])) return e.type;
+  return '';
+}
+
+// ชื่อไอเทม = 1–2 บรรทัดระหว่าง "Rarity:" กับเส้นคั่นแรก (rare/unique name + base type)
+function itemNameFromText(text) {
+  const lines = text.split(/\r?\n/).map(l => l.trim());
+  const ri = lines.findIndex(l => /^Rarity:/i.test(l));
+  if (ri === -1) {
+    const first = lines.find(l => l && !/^Item\s*Class:/i.test(l));
+    return first || '';
+  }
+  const out = [];
+  for (let i = ri + 1; i < lines.length && out.length < 2; i++) {
+    if (/^-{3,}$/.test(lines[i])) break;
+    if (lines[i]) out.push(lines[i]);
+  }
+  return out.join(' — ');
+}
+
+const SHOP_STAT_LABEL = { fire: 'Fire', cold: 'Cold', lightning: 'Light', chaos: 'Chaos', rarity: 'Rarity' };
+
+// แปลงข้อความไอเทม → ร่าง shop row (ยังไม่ push) + ข้อมูล preview
+function parseShopItemText(text) {
+  const parsed = parseItemText(text);
+  const forgeSlot = slotFromItemClass(text); // ใช้ Item Class เท่านั้น (แม่น) — ไม่เดาจากชื่อใน shop
+  const slotId = forgeSlot && FORGE_TO_SHOP_SLOT[forgeSlot] ? FORGE_TO_SHOP_SLOT[forgeSlot] : '';
+  const name = itemNameFromText(text);
+  const type = typeFromItemClass(text);
+  // สรุป res/rarity mods เป็น option เริ่มต้น (รวมค่าธาตุซ้ำจากหลายบรรทัด)
+  const agg = {};
+  parsed.stats.forEach(s => { agg[s.stat] = (agg[s.stat] || 0) + s.value; });
+  const optionSummary = Object.keys(agg)
+    .map(k => (SHOP_STAT_LABEL[k] || k) + ' +' + agg[k] + '%')
+    .join(', ');
+  return { name, slotId, type, option: optionSummary, statCount: parsed.stats.length };
+}
+
+// modal วางข้อความไอเทม — สร้างสดทุกครั้งที่เปิด (ข้อความไทยคงที่)
+function openShopPasteModal() {
+  const overlay = document.createElement('div');
+  overlay.className = 'patch-overlay';
+  const panel = document.createElement('div');
+  panel.className = 'patch-panel shop-paste-modal';
+  overlay.appendChild(panel);
+
+  const h = document.createElement('h2');
+  h.textContent = 'วางข้อความไอเทมจากเกม';
+  const close = document.createElement('button');
+  close.className = 'patch-close'; close.type = 'button'; close.textContent = '✕ ปิด';
+  h.appendChild(close);
+  panel.appendChild(h);
+
+  const hint = document.createElement('p');
+  hint.className = 'shop-paste-hint';
+  hint.textContent = 'ในเกมกด Ctrl+C ที่ไอเทม แล้ว Ctrl+V ในช่องนี้ — ระบบเดาชื่อ ช่องอุปกรณ์ และสรุป mod ต้านทานให้';
+  panel.appendChild(hint);
+
+  const ta = document.createElement('textarea');
+  ta.className = 'shop-paste-input';
+  ta.placeholder = 'วางข้อความไอเทมที่นี่…';
+  ta.rows = 7;
+  panel.appendChild(ta);
+
+  const preview = document.createElement('div');
+  preview.className = 'shop-paste-preview';
+  panel.appendChild(preview);
+
+  const actions = document.createElement('div');
+  actions.className = 'ocr-actions';
+  const addBtn = document.createElement('button');
+  addBtn.className = 'ocr-btn primary'; addBtn.type = 'button'; addBtn.textContent = '✓ เพิ่มลงลิสต์';
+  addBtn.disabled = true;
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'ocr-btn'; cancelBtn.type = 'button'; cancelBtn.textContent = 'ยกเลิก';
+  actions.appendChild(addBtn); actions.appendChild(cancelBtn);
+  panel.appendChild(actions);
+
+  let draft = null;
+  function refreshPreview() {
+    const text = ta.value.trim();
+    if (text.length < 8) { draft = null; preview.innerHTML = ''; addBtn.disabled = true; return; }
+    draft = parseShopItemText(text);
+    const slotLabel = draft.slotId
+      ? (SHOP_SLOTS.find(s => s.id === draft.slotId) || {}).label || draft.slotId
+      : 'ไม่ระบุ (Unassigned)';
+    preview.innerHTML = '';
+    const mk = (k, v) => {
+      const row = document.createElement('div');
+      row.className = 'sp-row';
+      const kk = document.createElement('span'); kk.className = 'sp-k'; kk.textContent = k;
+      const vv = document.createElement('span'); vv.className = 'sp-v'; vv.textContent = v || '—';
+      row.appendChild(kk); row.appendChild(vv); preview.appendChild(row);
+    };
+    mk('ชื่อ', draft.name);
+    mk('ช่อง', slotLabel + (draft.type ? ' · ' + draft.type : ''));
+    mk('Mods', draft.option);
+    addBtn.disabled = false;
+  }
+
+  ta.addEventListener('input', refreshPreview);
+  // auto-parse ทันทีที่วาง
+  ta.addEventListener('paste', () => setTimeout(refreshPreview, 0));
+
+  function done() { overlay.remove(); document.removeEventListener('keydown', onKey); }
+  function onKey(e) { if (e.key === 'Escape') done(); }
+  document.addEventListener('keydown', onKey);
+  close.addEventListener('click', done);
+  cancelBtn.addEventListener('click', done);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) done(); });
+
+  addBtn.addEventListener('click', () => {
+    if (!draft) return;
+    const row = newShopRow();
+    row.name = draft.name;
+    row.slot = draft.slotId; // '' = unassigned (ปลอดภัย — โหลด tolerant อยู่แล้ว)
+    row.type = draft.type;
+    row.option = draft.option;
+    const idx = shopRows.push(row) - 1;
+    shopSelectedSlot = draft.slotId || 'unassigned';
+    resetShopViewFilters();
+    persistShopRows();
+    renderShopTable();
+    done();
+    focusShopRowName(idx);
+    showSuccessToast('เพิ่มแถวจากข้อความไอเทมแล้ว' + (draft.slotId ? ' → ช่อง ' + (SHOP_SLOTS.find(s => s.id === draft.slotId) || {}).label : ''), { key: 'shop-paste' });
+  });
+
+  document.body.appendChild(overlay);
+  ta.focus();
+}
+
 // สร้างปุ่ม slot หนึ่งปุ่ม (โครงคงที่ — ตัวเลข/สถานะถูกอัปเดตทีหลังใน updateShopGearPanel)
 // เป็น div role=button เพื่อฝังปุ่ม + (quick-add) ได้โดยไม่เป็น button ซ้อน button
 function makeShopSlotBtn(id, label, fullLabel, wide, iconSvg) {
@@ -10226,6 +10407,8 @@ document.getElementById('shopAddRowBtn').addEventListener('click', () => {
   focusShopRowName(idx); // โฟกัส + ไฮไลต์แถวใหม่
 });
 
+document.getElementById('shopPasteItemBtn').addEventListener('click', openShopPasteModal);
+
 document.getElementById('shopClearAllBtn').addEventListener('click', () => {
   if (shopRows.length === 0) { showInfoToast('ไม่มีแถวให้ลบอยู่แล้ว'); return; }
   const n = shopRows.length;
@@ -10420,6 +10603,13 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.51',
+    date: '2026-07-23',
+    notes: [
+      'Gear Planner: ปุ่ม "📋 วางไอเทม" — ก็อปไอเทมในเกม (Ctrl+C) วางในกล่อง แล้วสร้างแถวช้อปปิ้งให้อัตโนมัติ พร้อม preview ชื่อ / ช่องอุปกรณ์ (เดาจาก Item Class) / สรุป mod ต้านทาน ก่อนกดเพิ่ม',
+    ],
+  },
   {
     version: '0.50',
     date: '2026-07-23',
