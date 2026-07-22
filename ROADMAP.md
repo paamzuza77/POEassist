@@ -57,10 +57,14 @@ Status: ongoing. Done ล่าสุด: Resistance Check redesign (0.48), Gear
 3. **i18n เต็มระบบ TH/EN** ทั้งแอป (โครง `I18N` มีแล้ว — migrate ให้ครบ)
 > เฟสนี้ยกเลิกกฎ "no build step" อย่างเป็นทางการเมื่อเริ่มทำ — ต้องยืนยันอีกครั้งก่อนเริ่ม
 
-### P6 — Cloud (optional — ข้าม boundary "no backend", ทำเมื่อพร้อมเท่านั้น)
+### P6 — Cloud + API/Tracker (optional — ข้าม boundary "no backend", ทำเมื่อพร้อมเท่านั้น)
 1. **Sync ข้ามเครื่อง** — ทางเลือกเบา: GitHub Gist token ของผู้ใช้เอง / ทางเลือกเต็ม: worker เล็กๆ
 2. **GGG OAuth** — ดึงตัวละคร/stash จริงอัตโนมัติ + มูลค่า stash (ถ้าฟื้น Build Doctor จะกลับมาที่เฟสนี้)
+3. **Farm tracker ระหว่างเล่นจริง** — อ่าน `Client.txt` (ต้องมี desktop companion; เว็บอ่านไฟล์สดไม่ได้) →
+   จับเวลา/นับแมพ/ตาย ต่อยอด Run Tracker; loot ต่อแมพต้องรอ PoE2 stash API เปิด
 > ต้องมี proxy/backend + นโยบาย token ปลอดภัย — เฟสเดียวที่แตะกฎ "ข้อมูลไม่ออกจากเบราว์เซอร์"
+> **📄 อ่าน `POE2_API_RESEARCH.md` ก่อนเริ่ม** — สรุปว่า API PoE2 ตัวไหนดึงได้ (character/league/currency ✅,
+> stash ❌ ยังไม่เปิด), ข้อจำกัด OAuth, และแผน 3 เฟส (A: OAuth import · B: Client.txt tracker · C: loot diff รอ GGG).
 
 ## พักไว้ (ผู้ใช้สั่งพัก — ไม่ใช่ตัดถาวร)
 

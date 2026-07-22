@@ -15,6 +15,7 @@ Read this before opening any large file. Do not read everything — jump straigh
 | Actionable tasks, deferred work, known issues | `TODO.md` |
 | Session history | `CHANGELOG.md` (git history for full detail) |
 | When docs must be updated | `DOC_UPDATE_RULES.md` |
+| PoE2 API / in-map tracker research (for P6) | `POE2_API_RESEARCH.md` |
 
 ## Current status (as of 2026-07-22)
 
