@@ -545,6 +545,12 @@ window.ensureRawblockFonts = function () {
     white-space: nowrap;
   }
   @media (max-width: 1023px) { .topbar-sub { display: none; } }
+  /* accent bar หน้าหัวข้อ topbar (patch 0.63) — ทุกธีมได้ (Modern มีเวอร์ชัน glow ทับ) */
+  .topbar-context { position: relative; padding-left: 14px; }
+  .topbar-context::before {
+    content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 4px; height: 22px; background: var(--gold, var(--text));
+  }
 
   /* max-width กว้างขึ้นเพื่อใช้พื้นที่จอกว้างให้คุ้ม (เดิม 1400 เหลือช่องว่างขวาเยอะ); margin auto กันจอ ultra-wide ชิดซ้าย */
   .content { flex: 1; width: 100%; max-width: 1760px; margin: 0 auto; padding: 22px 32px 60px; }
@@ -11300,6 +11306,14 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.63',
+    date: '2026-07-23',
+    notes: [
+      'Exile Hub: เพิ่มลิงก์แหล่งข้อมูล — Hideout Showcase, Hideout Hub และ Item Filter Ladder (ทางการ)',
+      'ปรับดีไซน์แถบบน (topbar) ให้ดูทันสมัยขึ้น: มีแถบ accent เรืองแสงหน้าหัวข้อ, ชื่อแท็บไล่เฉดสี, กลุ่มปุ่มขวาบนเป็นกระจกฝ้า และช่องค้นหา/ปุ่ม hover เด่นขึ้น (ธีม Modern)',
+    ],
+  },
+  {
     version: '0.62',
     date: '2026-07-23',
     notes: [
@@ -14893,6 +14907,8 @@ const RAW_ICONS = {
   mods: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><rect x="1" y="3" width="14" height="2"/><rect x="3" y="2" width="2" height="4"/><rect x="1" y="7" width="14" height="2"/><rect x="10" y="6" width="2" height="4"/><rect x="1" y="11" width="14" height="2"/><rect x="6" y="10" width="2" height="4"/></svg>',
   api: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6 2 1 8l5 6 1.5-1.5L3 8l4.5-4.5zM10 2l5 6-5 6-1.5-1.5L13 8 8.5 3.5z"/></svg>',
   tool: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 4h9V1l4 4-4 4V6H2zM14 12H5V9l-4 4 4 4v-3h9z"/></svg>',
+  hideout: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1 1 6.5V7h2v7h3v-4h4v4h3V7h2v-.5zM7 4h2v2H7z"/></svg>',
+  filter: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1 2h14l-5.5 6.5V14l-3 1V8.5z"/></svg>',
 };
 
 const HUB_RESOURCES = [
@@ -14908,6 +14924,9 @@ const HUB_RESOURCES = [
   { title: 'PoE2DB Modifiers', url: 'https://poe2db.tw/us/Modifiers', cat: 'Modifiers', desc: 'Modifier pools, tiers, required levels, and weights.', icon: 'mods' },
   { title: 'GGG Developer Docs', url: 'https://www.pathofexile.com/developer/docs/reference', cat: 'API', desc: 'Official Path of Exile developer API reference.', icon: 'api' },
   { title: 'Exiled Exchange 2', url: 'https://github.com/Kvan7/Exiled-Exchange-2', cat: 'Tool', desc: 'Community trade overlay/tool reference.', icon: 'tool' },
+  { title: 'Hideout Showcase', url: 'https://hideoutshowcase.com/', cat: 'Hideout', desc: 'Browse and download community hideouts.', icon: 'hideout' },
+  { title: 'Hideout Hub', url: 'https://www.hideouthub.net/', cat: 'Hideout', desc: 'Hideout builds, showcases, and downloads.', icon: 'hideout' },
+  { title: 'Item Filter Ladder', url: 'https://pathofexile2.com/item-filter/ladder', cat: 'Filter', desc: 'Official popular community loot filters.', icon: 'filter' },
 ];
 
 (function renderHubLinks() {

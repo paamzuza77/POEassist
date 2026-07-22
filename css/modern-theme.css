@@ -898,6 +898,50 @@ html[data-theme="modern"] .topbar-actions{margin-left:auto;padding:4px;border:1p
 html[data-theme="modern"] .display-toggle,html[data-theme="modern"] .mode-toggle{min-height:34px;border-radius:9px}
 html[data-theme="modern"] .content{width:min(100%,1540px);margin:0 auto;padding:18px 4px 70px}
 
+/* ---- Topbar redesign (patch 0.63) — accent-tinted glass + glow bar + gradient title ----
+   ไม่ใส่ overflow:hidden (จะบัง dropdown ค้นหา/popover); accent bar อยู่ที่ .topbar-context แทน */
+html[data-theme="modern"] .topbar{
+  position:relative;
+  background:
+    radial-gradient(140% 200% at 0% 0%, color-mix(in srgb,var(--gold) 13%,transparent), transparent 42%),
+    var(--glass);
+  box-shadow:var(--shadow-md), inset 0 1px 0 rgba(255,255,255,.06), 0 0 0 1px color-mix(in srgb,var(--gold) 9%,transparent);
+}
+html[data-theme="modern"] .topbar-context{position:relative;padding-left:16px}
+html[data-theme="modern"] .topbar-context::before{
+  content:'';position:absolute;left:2px;top:50%;transform:translateY(-50%);
+  width:3px;height:26px;border-radius:3px;
+  background:linear-gradient(180deg,var(--gold),color-mix(in srgb,var(--gold) 25%,transparent));
+  box-shadow:0 0 9px color-mix(in srgb,var(--gold) 55%,transparent);
+}
+html[data-theme="modern"] .topbar-title{
+  background:linear-gradient(92deg,var(--text) 60%,color-mix(in srgb,var(--text) 55%,var(--gold)));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+html[data-theme="modern"] .topbar-crumb{
+  border-color:color-mix(in srgb,var(--gold) 32%,var(--border-soft));
+  color:var(--gold);
+  background:color-mix(in srgb,var(--gold) 9%,var(--panel-sunken));
+}
+html[data-theme="modern"] .topbar-actions{
+  border-color:var(--glass-border);
+  background:color-mix(in srgb,var(--void) 28%,var(--panel-sunken));
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+}
+/* ปุ่มในกลุ่ม action: hover ยกเด่น + accent เมื่อ active/เปิด popover */
+html[data-theme="modern"] .app-menu-btn:hover,
+html[data-theme="modern"] .build-switch-btn:hover,
+html[data-theme="modern"] .app-menu-btn[aria-expanded="true"],
+html[data-theme="modern"] .build-switch-btn[aria-expanded="true"]{
+  background:color-mix(in srgb,var(--gold) 16%,transparent);
+  border-color:color-mix(in srgb,var(--gold) 45%,var(--border-soft));
+  color:var(--text);
+}
+html[data-theme="modern"] .topbar-search-input:focus{
+  border-color:color-mix(in srgb,var(--gold) 45%,var(--border-soft));
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 14%,transparent);
+}
+
 /* Shared command-center primitives */
 html[data-theme="modern"] .ux-command-surface{
   overflow:hidden;border:1px solid var(--glass-border);border-radius:20px;
