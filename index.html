@@ -813,21 +813,20 @@ window.ensureRawblockFonts = function () {
   .corner.bl { bottom: -3px; left: -3px; }
   .corner.br { bottom: -3px; right: -3px; }
 
-  /* ---------- Layout: paperdoll + editor + stat radar side by side ---------- */
+  /* ---------- Layout: gear-layout เหลือแค่ workbench (stat radar ย้ายขึ้น .forge-top ใน patch 0.48) ---------- */
   .gear-layout {
-    display: grid;
-    grid-template-columns: minmax(280px, 350px) minmax(280px, 1fr) minmax(280px, 400px);
-    gap: 24px;
-    align-items: start;
+    display: block;
     margin-bottom: 32px;
   }
-  /* จอกลาง: radar ลงมาเต็มแถวใต้ paperdoll+editor */
-  @media (max-width: 1180px) {
-    .gear-layout { grid-template-columns: minmax(280px, 350px) minmax(0, 1fr); }
-    .stat-radar { grid-column: 1 / -1; }
+  /* กริดใน workbench: paperdoll ซ้าย / editor+aug ขวา (base ทุกธีม — Modern มี override ของตัวเอง) */
+  .forge-workbench-grid {
+    display: grid;
+    grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
   }
   @media (max-width: 760px) {
-    .gear-layout { grid-template-columns: 1fr; }
+    .forge-workbench-grid { grid-template-columns: 1fr; }
   }
 
   /* ---------- Paperdoll ---------- */
@@ -1098,118 +1097,10 @@ window.ensureRawblockFonts = function () {
   button.add-row:hover { background: var(--text); color: var(--void); border-style: solid; }
   button.add-row:focus-visible { outline: 2px solid var(--border); outline-offset: 1px; }
 
-  /* ---------- Totals ---------- */
-  .totals-panel {
-    background: var(--void);
-    border: 3px solid var(--border);
-    border-radius: 0;
-    padding: 24px 22px 22px;
-  }
-
-  .totals-title {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--text);
-    margin: 0 0 18px;
-  }
-  .totals-title.mf-title { margin-top: 22px; }
-  /* ตัวนับธาตุที่ถึง cap ข้างหัวข้อ Total Resistance — ครบ 4/4 = เขียว */
+  /* ---------- Totals — แผงเกจถูกถอดใน patch 0.48 (เหลือแต่ตัวนับ cap ที่ย้ายไปหัว Resistance Check) ---------- */
+  /* ตัวนับธาตุที่ถึง cap — ครบ 4/4 = เขียว */
   .totals-cap-count { font-size: 10px; letter-spacing: 0.1em; color: var(--text-dim); margin-left: 8px; }
   .totals-cap-count.all-capped { color: var(--ok); }
-
-  .gauge-row {
-    display: grid;
-    grid-template-columns: 100px 1fr 110px;
-    align-items: center;
-    gap: 16px;
-    padding: 10px 0;
-  }
-  .gauge-row + .gauge-row { border-top: 1px solid var(--border); }
-
-  .gauge-label {
-    font-family: var(--font-mono);
-    font-weight: 700;
-    font-size: 12px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-  .gauge-label.fire { color: var(--fire); }
-  .gauge-label.cold { color: var(--cold); }
-  .gauge-label.lightning { color: var(--lightning); }
-  .gauge-label.chaos { color: var(--chaos); }
-  .gauge-label.rarity { color: var(--text); }
-
-  .gauge-track {
-    position: relative;
-    height: 16px;
-    background: var(--void);
-    border: 2px solid var(--border);
-    border-radius: 0;
-    overflow: hidden;
-  }
-
-  .gauge-fill {
-    position: absolute;
-    top: 0; left: 0; bottom: 0;
-    border-radius: 0;
-    transition: width 0.25s ease, background 0.25s ease;
-  }
-  .gauge-fill.negative { border-radius: 0; }
-
-  .gauge-cap-marker {
-    position: absolute;
-    top: -2px; bottom: -2px;
-    width: 3px;
-    background: var(--border);
-  }
-
-  .gauge-zero-marker {
-    position: absolute;
-    top: -2px; bottom: -2px;
-    width: 1px;
-    background: var(--border);
-  }
-
-  .gauge-soft-marker {
-    position: absolute;
-    top: -2px; bottom: -2px;
-    width: 1px;
-    border-left: 1px dashed var(--text-dim);
-  }
-
-  .gauge-overflow-tick {
-    position: absolute;
-    top: -6px;
-    width: 0; height: 0;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-top: 6px solid var(--ok);
-  }
-
-  .gauge-value {
-    font-family: var(--font-mono);
-    font-weight: 700;
-    font-size: 15px;
-    text-align: right;
-    white-space: nowrap;
-  }
-  .gauge-value.under { color: var(--text-muted); }
-  .gauge-value.capped { color: var(--ok); }
-  .gauge-value.negative { color: var(--fire); }
-  .gauge-value.mf-zero { color: var(--text-dim); }
-  .gauge-value.mf-positive { color: var(--text); }
-
-  .totals-footnote {
-    margin-top: 18px;
-    font-size: 11.5px;
-    color: var(--text-dim);
-    line-height: 1.7;
-    font-family: var(--font-mono);
-  }
-  .totals-footnote strong { color: var(--text); }
 
   /* ---------- Build Shopping List: summary ledger ---------- */
   .shop-summary {
@@ -4619,6 +4510,41 @@ window.ensureRawblockFonts = function () {
   .bg-opacity-row input[type="range"] { flex: 1; max-width: 220px; accent-color: var(--gold); }
   .bg-opacity-label { font-size: 12px; color: var(--text-muted); }
   .bg-opacity-val { font-family: var(--font-mono); font-size: 11px; font-weight: 700; min-width: 36px; text-align: right; }
+
+  /* ==================== Resistance Check redesign (patch 0.48) ====================
+     แถวบนของแท็บ Resistance: 2 กลุ่มซ้าย-ขวา (intake | Resistance Check) + กราฟเรดาร์ธาตุใน sr-duo
+     แผง Resistance totals (เกจแนวนอน) ถูกถอด — ค่าย้ายมาอยู่ในกราฟ + รายการสถานะทั้งหมด */
+  .forge-top {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+    gap: 24px;
+    align-items: stretch;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 1180px) {
+    .forge-top { grid-template-columns: 1fr; }
+  }
+  .sr-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .sr-head .sr-title { margin: 0; }
+  .sr-head .totals-cap-count { margin-left: auto; }
+  .sr-duo {
+    display: grid;
+    grid-template-columns: minmax(210px, 300px) minmax(0, 1fr);
+    gap: 8px 18px;
+    align-items: center;
+    margin: 10px 0 6px;
+  }
+  @media (max-width: 640px) {
+    .sr-duo { grid-template-columns: 1fr; }
+  }
+  .sr-chart { min-width: 0; }
+  .sr-chart svg { display: block; width: 100%; height: auto; }
+  .sr-side { min-width: 0; }
 </style>
 <!-- Modularization Phase 1 (patch 0.34): helper CSS ที่แยกออกจาก inline <style> ด้านบน
      วางหลัง </style> เพื่อคงลำดับ cascade เดิม (rule พื้นฐาน specificity ต่ำ — override ของ Trust theme ชนะด้วย specificity อยู่แล้ว) -->
@@ -4876,6 +4802,8 @@ window.ensureRawblockFonts = function () {
   </div><!-- /pageFarm -->
 
   <div id="pageForge" hidden>
+  <!-- patch 0.48: แถวบนเป็น 2 กลุ่มซ้าย-ขวา — ซ้าย intake (Check resistance readiness) / ขวา Resistance Check (radar chart + readiness + สถานะรายค่า) -->
+  <div class="forge-top">
   <section class="ux-command-surface forge-command">
     <div class="forge-command-copy">
       <span class="forge-command-kicker">Loadout intake</span>
@@ -4903,6 +4831,44 @@ window.ensureRawblockFonts = function () {
     <div class="ocr-review" id="ocrReview" hidden></div>
   </div>
   </section>
+
+  <div class="stat-radar ornate" id="statRadar">
+    <div class="sr-head">
+      <h2 class="sr-title">Resistance Check</h2>
+      <span class="totals-cap-count" id="resCapCount" title="จำนวนธาตุที่ถึง cap 75% แล้ว"></span>
+    </div>
+
+    <div class="sr-duo">
+      <!-- กราฟเรดาร์ 4 ธาตุ (SVG สร้างโดย updateForgeChart จาก totals ชุดเดียวกับ Missing list) -->
+      <div class="sr-chart" id="srChart" role="img" aria-label="Element resistance radar"></div>
+
+      <div class="sr-side">
+        <div class="sr-score-box">
+          <div class="sr-score-line">
+            <span class="sr-score-label">Readiness Score</span>
+            <span class="sr-score" id="readinessScore">–</span>
+          </div>
+          <div class="sr-bar"><div class="sr-bar-fill" id="readinessBarFill"></div></div>
+          <div class="sr-breakdown" id="readinessBreakdown"></div>
+        </div>
+        <div class="sr-stat-list" id="srStatList"></div>
+      </div>
+    </div>
+
+    <ul class="sr-reco" id="srReco"></ul>
+
+    <div class="sr-targets">
+      <p class="sr-targets-title">เป้าหมาย (แก้ได้ · บันทึกอัตโนมัติ)</p>
+      <div class="sr-target-row">
+        <label>Elemental <input type="number" id="srTargetElemental" class="sr-target-input"></label>
+        <label>Chaos <input type="number" id="srTargetChaos" class="sr-target-input"></label>
+        <label>Rarity <input type="number" id="srTargetRarity" class="sr-target-input"></label>
+      </div>
+    </div>
+
+    <p class="sr-footnote">คะแนนเป็น checklist ความพร้อมด้านต้านทาน/rarity/ช่องอุปกรณ์ — ไม่ใช่ DPS ของบิลด์ · 75%(xx%) = เกิน cap (ยอดจริง xx%) · เป้า Rarity 150% = จุด diminishing returns</p>
+  </div>
+  </div><!-- /forge-top -->
 
   <div class="gear-layout">
     <details class="ux-disclosure forge-workbench" data-command-panel="forgeWorkbench">
@@ -4955,58 +4921,13 @@ window.ensureRawblockFonts = function () {
               <tbody id="acItemBody"></tbody>
             </table>
           </div>
-          <p class="ac-footnote">คำนวณจากค่ารวมหลัง penalty ชุดเดียวกับเกจ/Missing Stat Radar และใช้เป้าหมายชุดเดียวกัน — จำนวนชิ้นปัดขึ้นเสมอ (ตัวเลขในวงเล็บคือค่าดิบก่อนปัด)</p>
+          <p class="ac-footnote">คำนวณจากค่ารวมหลัง penalty ชุดเดียวกับกราฟ/รายการสถานะใน Resistance Check และใช้เป้าหมายชุดเดียวกัน — จำนวนชิ้นปัดขึ้นเสมอ (ตัวเลขในวงเล็บคือค่าดิบก่อนปัด)</p>
         </div>
       </div>
     </div>
       </div>
     </details>
-
-    <div class="stat-radar ornate" id="statRadar">
-      <h2 class="sr-title">Missing Stat Radar</h2>
-
-      <div class="sr-score-box">
-        <div class="sr-score-line">
-          <span class="sr-score-label">Readiness Score</span>
-          <span class="sr-score" id="readinessScore">–</span>
-        </div>
-        <div class="sr-bar"><div class="sr-bar-fill" id="readinessBarFill"></div></div>
-        <div class="sr-breakdown" id="readinessBreakdown"></div>
-      </div>
-
-      <div class="sr-stat-list" id="srStatList"></div>
-
-      <ul class="sr-reco" id="srReco"></ul>
-
-      <div class="sr-targets">
-        <p class="sr-targets-title">เป้าหมาย (แก้ได้ · บันทึกอัตโนมัติ)</p>
-        <div class="sr-target-row">
-          <label>Elemental <input type="number" id="srTargetElemental" class="sr-target-input"></label>
-          <label>Chaos <input type="number" id="srTargetChaos" class="sr-target-input"></label>
-          <label>Rarity <input type="number" id="srTargetRarity" class="sr-target-input"></label>
-        </div>
-      </div>
-
-      <p class="sr-footnote">คะแนนนี้เป็น checklist ความพร้อมด้านต้านทาน/rarity/ช่องอุปกรณ์เท่านั้น — ไม่ใช่คะแนนความแรงหรือ DPS ของบิลด์</p>
-    </div>
   </div>
-
-  <details class="ux-disclosure forge-totals" data-command-panel="forgeTotals">
-    <summary><span>Resistance totals</span><span class="ux-disclosure-hint">Gauges / overcap / magic find</span></summary>
-    <div class="ux-disclosure-body">
-  <div class="totals-panel ornate">
-    <p class="totals-title">Total Resistance <span class="totals-cap-count" id="resCapCount" title="จำนวนธาตุที่ถึง cap 75% แล้ว"></span></p>
-    <div id="gaugesRes"></div>
-    <p class="totals-title mf-title">Magic Find</p>
-    <div id="gaugesMf"></div>
-    <p class="totals-footnote">
-      เส้นขาวจาง = 75% (cap มาตรฐาน) · ถ้ารวมได้เกิน 75% จะแสดงเป็น <strong>75%(xx%)</strong> หมายถึงยอดจริงคือ xx% แต่ถูก cap ไว้ที่ 75% — การ overcap ยังมีประโยชน์เพราะ curse/debuff บางอย่างลดต้านทานคุณชั่วคราว (บางไอเทม/พาสซีฟหายากดัน max resistance ได้ถึง 90%)<br>
-      เส้นประทอง = 150% ของ Item Rarity ซึ่งเป็นช่วงที่ผลตอบแทนเริ่มลดลง (diminishing returns)<br>
-      Preset ที่เลือกจะถูกบันทึกไว้ในเบราว์เซอร์นี้อัตโนมัติ (localStorage)
-    </p>
-  </div>
-    </div>
-  </details>
   </div><!-- /pageForge -->
 
   <div id="pageShop" hidden>
@@ -6035,87 +5956,8 @@ document.getElementById('addRowBtn').addEventListener('click', () => {
   });
 });
 
-function renderResGauges() {
-  const wrap = document.getElementById('gaugesRes');
-  wrap.innerHTML = '';
-  RES_STATS.forEach(el => {
-    const row = document.createElement('div');
-    row.className = 'gauge-row';
-    row.dataset.el = el.key;
-
-    const label = document.createElement('div');
-    label.className = `gauge-label ${el.key}`;
-    // ชื่อสเตตัส + ป้าย ? เปิด tooltip คำอธิบาย keyword (patch 0.30) — ข้อความคงที่ ปลอดภัยที่จะ escape+ต่อ
-    label.innerHTML = kwHelpEsc(el.label.replace(' Resistance', ''))
-      + renderKeywordHelpBadge(KW_HELP_STAT_IDS[el.key], el.label);
-
-    const track = document.createElement('div');
-    track.className = 'gauge-track';
-    const fill = document.createElement('div');
-    fill.className = 'gauge-fill';
-    fill.style.background = `linear-gradient(90deg, ${el.color}, ${el.glow})`;
-    track.appendChild(fill);
-
-    const capMarker = document.createElement('div');
-    capMarker.className = 'gauge-cap-marker';
-    capMarker.style.left = '100%';
-    track.appendChild(capMarker);
-
-    const zeroMarker = document.createElement('div');
-    zeroMarker.className = 'gauge-zero-marker';
-    track.appendChild(zeroMarker);
-
-    const overflowTick = document.createElement('div');
-    overflowTick.className = 'gauge-overflow-tick';
-    overflowTick.style.display = 'none';
-    overflowTick.style.left = '100%';
-    track.appendChild(overflowTick);
-
-    const value = document.createElement('div');
-    value.className = 'gauge-value';
-
-    row.appendChild(label);
-    row.appendChild(track);
-    row.appendChild(value);
-    wrap.appendChild(row);
-  });
-}
-
-function renderMfGauges() {
-  const wrap = document.getElementById('gaugesMf');
-  wrap.innerHTML = '';
-  MF_STATS.forEach(el => {
-    const row = document.createElement('div');
-    row.className = 'gauge-row';
-    row.dataset.el = el.key;
-
-    const label = document.createElement('div');
-    label.className = `gauge-label ${el.key}`;
-    label.innerHTML = kwHelpEsc(el.label.replace('Item ', ''))
-      + renderKeywordHelpBadge(KW_HELP_STAT_IDS[el.key], el.label);
-
-    const track = document.createElement('div');
-    track.className = 'gauge-track';
-    const fill = document.createElement('div');
-    fill.className = 'gauge-fill';
-    fill.style.background = `linear-gradient(90deg, ${el.color}, ${el.glow})`;
-    track.appendChild(fill);
-
-    const softMarker = document.createElement('div');
-    softMarker.className = 'gauge-soft-marker';
-    softMarker.style.left = '50%'; // 150 / 300
-    softMarker.title = 'จุดที่ผลตอบแทนของ Item Rarity เริ่มลดลง (~150%)';
-    track.appendChild(softMarker);
-
-    const value = document.createElement('div');
-    value.className = 'gauge-value';
-
-    row.appendChild(label);
-    row.appendChild(track);
-    row.appendChild(value);
-    wrap.appendChild(row);
-  });
-}
+/* เกจแนวนอน (renderResGauges/renderMfGauges + แผง Resistance totals) ถูกถอดใน patch 0.48 —
+   ค่าทั้งหมดย้ายไปแสดงในกราฟเรดาร์ (updateForgeChart) + รายการสถานะใน Resistance Check แทน */
 
 function formatResValue(total) {
   if (total > CAP) return `${CAP}%(${total}%)`;
@@ -6133,43 +5975,7 @@ function recalc() {
     });
   });
 
-  RES_STATS.forEach(el => {
-    const total = totals[el.key];
-    const row = document.querySelector(`#gaugesRes .gauge-row[data-el="${el.key}"]`);
-    const fill = row.querySelector('.gauge-fill');
-    const zeroMarker = row.querySelector('.gauge-zero-marker');
-    const overflowTick = row.querySelector('.gauge-overflow-tick');
-    const valueEl = row.querySelector('.gauge-value');
-
-    const rangeMin = -70, rangeMax = CAP;
-    const widthTotal = Math.max(rangeMin, Math.min(total, rangeMax));
-    const zeroPct = ((0 - rangeMin) / (rangeMax - rangeMin)) * 100;
-    zeroMarker.style.left = zeroPct + '%';
-
-    if (widthTotal >= 0) {
-      const startPct = zeroPct;
-      const endPct = ((widthTotal - rangeMin) / (rangeMax - rangeMin)) * 100;
-      fill.classList.remove('negative');
-      fill.style.left = startPct + '%';
-      fill.style.width = Math.max(0, endPct - startPct) + '%';
-    } else {
-      const endPct = zeroPct;
-      const startPct = ((widthTotal - rangeMin) / (rangeMax - rangeMin)) * 100;
-      fill.classList.add('negative');
-      fill.style.left = startPct + '%';
-      fill.style.width = Math.max(0, endPct - startPct) + '%';
-    }
-
-    overflowTick.style.display = total > CAP ? 'block' : 'none';
-
-    valueEl.textContent = formatResValue(total);
-    valueEl.classList.remove('under', 'capped', 'negative');
-    if (total < 0) valueEl.classList.add('negative');
-    else if (total >= CAP) valueEl.classList.add('capped');
-    else valueEl.classList.add('under');
-  });
-
-  // สรุปหัวข้อ: ถึง cap แล้วกี่ธาตุจาก 4 — ครบ = เขียว
+  // สรุปหัวข้อ: ถึง cap แล้วกี่ธาตุจาก 4 — ครบ = เขียว (ป้ายอยู่ในหัว Resistance Check ตั้งแต่ patch 0.48)
   const capEl = document.getElementById('resCapCount');
   if (capEl) {
     const cappedCount = RES_STATS.filter(el => totals[el.key] >= CAP).length;
@@ -6177,23 +5983,6 @@ function recalc() {
     capEl.classList.toggle('all-capped', cappedCount === RES_STATS.length);
   }
   updatePresetDots();
-
-  MF_STATS.forEach(el => {
-    const total = totals[el.key];
-    const row = document.querySelector(`#gaugesMf .gauge-row[data-el="${el.key}"]`);
-    const fill = row.querySelector('.gauge-fill');
-    const valueEl = row.querySelector('.gauge-value');
-
-    const rangeMax = 300;
-    const widthPct = Math.max(0, Math.min(total, rangeMax)) / rangeMax * 100;
-    fill.classList.remove('negative');
-    fill.style.left = '0%';
-    fill.style.width = widthPct + '%';
-
-    valueEl.textContent = (total > 0 ? '+' : '') + total + '%';
-    valueEl.classList.remove('mf-zero', 'mf-positive');
-    valueEl.classList.add(total > 0 ? 'mf-positive' : 'mf-zero');
-  });
 
   updateForgeRadar(totals);
 }
@@ -6314,6 +6103,104 @@ function buildForgeRecos(missing, readiness) {
   return recos;
 }
 
+/* ---------- Element radar chart (patch 0.48) ----------
+   กราฟเรดาร์ 4 ธาตุใน Resistance Check — ใช้ totals ชุดเดียวกับรายการสถานะ (รวม penalty แล้ว ไม่มีสูตรใหม่)
+   สเกล 0 → cap 75: ค่าติดลบ/เกิน cap ถูก clamp เฉพาะ "รูป" แต่ป้ายตัวเลขโชว์ค่าจริงเสมอ
+   สีตามธาตุจาก STATS (var(--fire) ฯลฯ) — ใส่ผ่าน style attribute เพราะ CSS var ใช้ใน presentation attribute ตรงๆ ไม่ได้ */
+const SR_CHART_ANGLES = [-90, 0, 90, 180]; // Fire บน · Cold ขวา · Lightning ล่าง · Chaos ซ้าย (ตามลำดับ RES_STATS)
+const SR_CHART_NAMES = { fire: 'FIRE', cold: 'COLD', lightning: 'LIGHT', chaos: 'CHAOS' };
+
+function updateForgeChart(totals) {
+  const wrap = document.getElementById('srChart');
+  if (!wrap) return;
+  const W = 360, H = 320, cx = W / 2, cy = H / 2 + 6, R = 106;
+  const rnd = n => Math.round(n * 10) / 10;
+  const pt = (deg, r) => {
+    const a = deg * Math.PI / 180;
+    return [cx + Math.cos(a) * r, cy + Math.sin(a) * r];
+  };
+  const ringPts = v => SR_CHART_ANGLES.map(deg => pt(deg, R * v / CAP).map(rnd).join(',')).join(' ');
+
+  const verts = RES_STATS.map((s, i) => {
+    const raw = totals[s.key];
+    const clamped = Math.max(0, Math.min(CAP, raw));
+    const [x, y] = pt(SR_CHART_ANGLES[i], R * clamped / CAP);
+    return { s, raw, clamped, x: rnd(x), y: rnd(y), deg: SR_CHART_ANGLES[i] };
+  });
+
+  let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">';
+
+  // ขอบโพลิกอนไล่สีธาตุ → ธาตุถัดไป (gradient ต่อ edge, พิกัดแบบ userSpaceOnUse)
+  svg += '<defs>';
+  verts.forEach((v, i) => {
+    const n = verts[(i + 1) % verts.length];
+    svg += '<linearGradient id="srEdge' + i + '" gradientUnits="userSpaceOnUse" x1="' + v.x + '" y1="' + v.y + '" x2="' + n.x + '" y2="' + n.y + '">'
+      + '<stop offset="0" style="stop-color:' + v.s.color + '"/>'
+      + '<stop offset="1" style="stop-color:' + n.s.color + '"/></linearGradient>';
+  });
+  svg += '</defs>';
+
+  // วงแหวน 25/50 (ประ) + วง cap 75 (ทึบ เด่นสุด) + ป้ายเลขบนแกนบน
+  [25, 50].forEach(v => {
+    svg += '<polygon points="' + ringPts(v) + '" style="fill:none;stroke:var(--border-soft);stroke-dasharray:3 4"/>';
+  });
+  svg += '<polygon points="' + ringPts(CAP) + '" style="fill:none;stroke:var(--border);stroke-width:1.5"/>';
+  [25, 50, 75].forEach(v => {
+    const [x, y] = pt(-90, R * v / CAP);
+    svg += '<text x="' + rnd(x + 6) + '" y="' + rnd(y + 3) + '" style="fill:var(--text-dim);font:600 8.5px var(--font-mono)">' + v + '</text>';
+  });
+
+  // เป้า elemental แบบ custom (ต่ำกว่า cap) = วงประทอง · เป้า chaos > 0 = ขีดทองบนแกน Chaos
+  if (forgeTargets.elemental > 0 && forgeTargets.elemental < CAP) {
+    svg += '<polygon points="' + ringPts(forgeTargets.elemental) + '" style="fill:none;stroke:var(--gold);stroke-dasharray:5 4;opacity:.7"/>';
+  }
+  if (forgeTargets.chaos > 0 && forgeTargets.chaos <= CAP) {
+    const [tx, ty] = pt(180, R * forgeTargets.chaos / CAP);
+    svg += '<line x1="' + rnd(tx) + '" y1="' + rnd(ty - 6) + '" x2="' + rnd(tx) + '" y2="' + rnd(ty + 6) + '" style="stroke:var(--gold);stroke-width:2"/>';
+  }
+
+  // spoke สีธาตุจางๆ จากศูนย์กลางถึงปลายแกน
+  verts.forEach(v => {
+    const [ex, ey] = pt(v.deg, R);
+    svg += '<line x1="' + cx + '" y1="' + cy + '" x2="' + rnd(ex) + '" y2="' + rnd(ey) + '" style="stroke:' + v.s.color + ';opacity:.3"/>';
+  });
+
+  // โพลิกอนข้อมูล (fill ทองจาง) + ขอบไล่สี + จุดยอดสีธาตุพร้อม tooltip
+  svg += '<polygon points="' + verts.map(v => v.x + ',' + v.y).join(' ') + '" style="fill:var(--gold);fill-opacity:.14"/>';
+  verts.forEach((v, i) => {
+    const n = verts[(i + 1) % verts.length];
+    svg += '<line x1="' + v.x + '" y1="' + v.y + '" x2="' + n.x + '" y2="' + n.y + '" stroke-linecap="round" style="stroke:url(#srEdge' + i + ');stroke-width:2.5"/>';
+  });
+  verts.forEach(v => {
+    svg += '<circle cx="' + v.x + '" cy="' + v.y + '" r="4.5" style="fill:' + v.s.color + ';stroke:var(--void);stroke-width:2">'
+      + '<title>' + v.s.label.replace(' Resistance', '') + ' ' + v.raw + '% (เป้า ' + forgeTargetFor(v.s.key) + '%)</title></circle>';
+  });
+
+  // ป้ายค่าจริง (pill สีธาตุ ตัวเลขเข้ม) — วางตามแกน ห่างศูนย์กลางอย่างน้อย 34px กันป้ายซ้อนตอนค่าต่ำ
+  verts.forEach(v => {
+    const txt = (v.raw > 0 ? '+' : '') + v.raw + '%';
+    const w = rnd(txt.length * 6.6 + 12), h = 17;
+    const br = Math.min(Math.max(R * v.clamped / CAP + 16, 34), R + 4);
+    const [bx, by] = pt(v.deg, br);
+    svg += '<g><rect x="' + rnd(bx - w / 2) + '" y="' + rnd(by - h / 2) + '" width="' + w + '" height="' + h + '" rx="8.5" style="fill:' + v.s.color + '"/>'
+      + '<text x="' + rnd(bx) + '" y="' + rnd(by + 3.5) + '" text-anchor="middle" style="fill:#14101d;font:700 11px var(--font-mono)">' + txt + '</text></g>';
+  });
+
+  // ชื่อธาตุปลายแกน (นอกวง cap — เว้นระยะไม่ชนป้ายค่าตอนถึง cap)
+  verts.forEach(v => {
+    let x, y, anchor = 'middle';
+    if (v.deg === -90) { x = cx; y = cy - R - 16; }
+    else if (v.deg === 90) { x = cx; y = cy + R + 22; }
+    else if (v.deg === 0) { x = cx + R + 26; y = cy + 4; anchor = 'start'; }
+    else { x = cx - R - 26; y = cy + 4; anchor = 'end'; }
+    svg += '<text x="' + rnd(x) + '" y="' + rnd(y) + '" text-anchor="' + anchor + '" style="fill:' + v.s.color + ';font:700 11px var(--font-mono);letter-spacing:.08em">' + SR_CHART_NAMES[v.s.key] + '</text>';
+  });
+
+  svg += '</svg>';
+  wrap.innerHTML = svg;
+  wrap.setAttribute('aria-label', 'ค่าต้านทานรวม: ' + verts.map(v => SR_CHART_NAMES[v.s.key] + ' ' + v.raw + '%').join(', '));
+}
+
 // อัปเดตแผงทั้งหมด — เรียกจากท้าย recalc() ทุกครั้งที่ค่าเปลี่ยน (ทุกสตริงเป็น internal ไม่มี user HTML)
 function updateForgeRadar(totals) {
   const scoreEl = document.getElementById('readinessScore');
@@ -6345,6 +6232,7 @@ function updateForgeRadar(totals) {
   document.getElementById('srReco').innerHTML = buildForgeRecos(missing, readiness).map(r =>
     '<li class="sr-' + r.cls + '">' + r.text + '</li>').join('');
 
+  updateForgeChart(totals);
   updateForgeAugCalc(totals);
 }
 
@@ -6853,15 +6741,12 @@ renderPresetBar();
 renderPaperdoll();
 renderJewelRow();
 renderEditor();
-renderResGauges();
-renderMfGauges();
 recalc();
 
 addCorners(document.querySelector('.paperdoll-frame'));
 addCorners(document.querySelector('.item-editor'));
 addCorners(document.querySelector('.aug-calc'));
 addCorners(document.querySelector('.stat-radar'));
-addCorners(document.querySelector('.totals-panel'));
 
 /* ==================== Tabs ==================== */
 
@@ -10321,6 +10206,15 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.48',
+    date: '2026-07-22',
+    notes: [
+      'Resistance Checker โฉมใหม่: แถวบนเป็น 2 กลุ่มชิดกันซ้าย-ขวา — ซ้าย Check resistance readiness (paste/OCR + preset) · ขวา Resistance Check ที่กะทัดรัดขึ้น',
+      'เพิ่มกราฟเรดาร์ 4 ธาตุ (Fire/Cold/Lightning/Chaos) สี-เส้นตามธาตุ พร้อมป้ายตัวเลขค่าจริงบนกราฟ วงแหวน 25/50/75 (cap) และแสดงเป้าหมายที่ตั้งเอง — อัปเดตสดทุกครั้งที่แก้ค่า',
+      'ถอดแผง Resistance totals (เกจแนวนอน) ออก — ค่าทั้งหมดดูได้จากกราฟ + รายการสถานะรายค่า (75%(xx%) = เกิน cap เหมือนเดิม) หน้าจอโล่งและอ่านง่ายขึ้น',
+    ],
+  },
   {
     version: '0.47',
     date: '2026-07-16',

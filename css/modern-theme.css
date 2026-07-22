@@ -998,26 +998,22 @@ html[data-theme="modern"] .farm-detail-col{display:grid;gap:14px;min-width:0}
 html[data-theme="modern"] .farm-run-summary{min-height:190px;padding:24px;border:1px solid var(--glass-border);border-radius:20px;background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 12%,var(--panel-raised)),var(--panel));box-shadow:var(--shadow-md)}
 html[data-theme="modern"] .frs-insight{border-radius:13px;border-left-width:3px}
 
-/* Resistance Checker - readiness first */
+/* Resistance Checker - patch 0.48: forge-top 2 กลุ่มซ้าย-ขวา (intake | Resistance Check + radar chart) */
 html[data-theme="modern"] #pageForge{display:grid;gap:16px}
 html[data-theme="modern"] #pageForge[hidden]{display:none}
-html[data-theme="modern"] .forge-command{display:grid;grid-template-columns:minmax(250px,.7fr) minmax(0,1.3fr);gap:18px;align-items:center;min-height:190px;padding:24px}
-html[data-theme="modern"] .forge-command-copy{grid-column:1}
-html[data-theme="modern"] .forge-command .penalty-readout,html[data-theme="modern"] .forge-command .penalty-note,
-html[data-theme="modern"] .forge-command .preset-bar,html[data-theme="modern"] .forge-command .ocr-zone{grid-column:2}
+html[data-theme="modern"] .forge-top{display:grid;grid-template-columns:minmax(320px,.92fr) minmax(0,1.08fr);gap:16px;align-items:stretch}
+html[data-theme="modern"] .forge-command{display:grid;grid-template-columns:1fr;gap:12px;align-content:start;min-height:0;padding:24px}
 html[data-theme="modern"] .forge-command .ocr-zone{border:1px dashed color-mix(in srgb,var(--gold) 48%,var(--border));border-radius:16px;background:color-mix(in srgb,var(--gold) 7%,var(--panel-sunken))}
 html[data-theme="modern"] .gear-layout{display:grid;grid-template-columns:1fr;gap:16px}
-html[data-theme="modern"] .stat-radar{grid-row:1;padding:24px;border:1px solid var(--glass-border);border-radius:21px;background:radial-gradient(circle at 94% 6%,color-mix(in srgb,var(--gold) 16%,transparent),transparent 28%),var(--panel);box-shadow:var(--shadow-lg)}
-html[data-theme="modern"] .sr-title{font-size:clamp(25px,3vw,38px);letter-spacing:-.045em}
-html[data-theme="modern"] .sr-score{font-size:clamp(38px,5vw,68px)}
-html[data-theme="modern"] .sr-stat-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+html[data-theme="modern"] .stat-radar{padding:22px 24px;border:1px solid var(--glass-border);border-radius:21px;background:radial-gradient(circle at 94% 6%,color-mix(in srgb,var(--gold) 16%,transparent),transparent 28%),var(--panel);box-shadow:var(--shadow-lg)}
+html[data-theme="modern"] .sr-title{font-size:clamp(20px,2.2vw,26px);letter-spacing:-.035em}
+html[data-theme="modern"] .sr-score{font-size:clamp(30px,3.4vw,44px)}
+html[data-theme="modern"] .sr-stat-list{display:grid;grid-template-columns:1fr;gap:6px}
 html[data-theme="modern"] .sr-row{min-width:0;border-radius:13px}
-html[data-theme="modern"] .forge-workbench{grid-row:2}
 html[data-theme="modern"] .forge-workbench-grid{display:grid;grid-template-columns:minmax(290px,.72fr) minmax(0,1.28fr);gap:16px;align-items:start}
-html[data-theme="modern"] .paperdoll-frame,html[data-theme="modern"] .item-editor,html[data-theme="modern"] .aug-calc,
-html[data-theme="modern"] .totals-panel{border:1px solid var(--border-soft);border-radius:16px;background:var(--panel);box-shadow:var(--shadow-sm)}
+html[data-theme="modern"] .paperdoll-frame,html[data-theme="modern"] .item-editor,html[data-theme="modern"] .aug-calc{border:1px solid var(--border-soft);border-radius:16px;background:var(--panel);box-shadow:var(--shadow-sm)}
 html[data-theme="modern"] .editor-col{display:grid;gap:14px}
-html[data-theme="modern"] .forge-totals{margin-top:0}
+@media (max-width:1180px){html[data-theme="modern"] .forge-top{grid-template-columns:1fr}}
 html[data-theme="modern"][data-display="simple"] #readinessBreakdown,html[data-theme="modern"][data-display="simple"] .sr-targets,
 html[data-theme="modern"][data-display="simple"] .sr-footnote,html[data-theme="modern"][data-display="simple"] .ac-footnote{display:none}
 

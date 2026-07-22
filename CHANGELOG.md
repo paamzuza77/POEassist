@@ -2,6 +2,10 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-22
+
+- **Resistance Checker redesign (patch 0.48)** (`index.html` + `css/modern-theme.css` + docs): the top of `#pageForge` is now a `.forge-top` 2-column row — LEFT `.forge-command` intake ("Check resistance readiness", now a single-column stack in Modern) · RIGHT `#statRadar` renamed **"Resistance Check"** (moved out of `.gear-layout`). Inside it a new `.sr-duo` grid pairs a **4-element SVG radar chart** (`updateForgeChart(totals)` — element-colored spokes/edge-gradients/vertex dots, real-value pill badges clamped-min 34px from center, rings 25/50 + cap 75, dashed custom elemental-target ring + chaos-target tick, native `<title>` tooltips, aria-label; values clamp to 0–75 in the drawing only, badges always show the raw number) with the compact Readiness box + per-stat status list. **The Resistance totals panel (horizontal gauges + Magic Find gauge + `forge-totals` disclosure) was removed** — `renderResGauges`/`renderMfGauges` deleted, `recalc()` lost its gauge loops (totals math/`updateForgeRadar` chain unchanged), `#resCapCount` relocated into the `.sr-head`; rarity/overcap info lives in the stat list + footnote. `.gear-layout` now only wraps the workbench (base `.forge-workbench-grid` 2-col added for RawBlock/Trust). No storage/formula change; OCR untouched. Verified in-browser: all 3 themes side-by-side + no overflow, 375px stacks, Simple/Advanced breakdown toggle intact, live chart updates incl. overcap `+80%` badge with capped polygon, other tabs + console clean.
+
 ## 2026-07-16 (3)
 
 - **Boot Performance Pass (patch 0.47)** (`index.html` + `background/` + docs): faster app open, **no visible product change, no formula/storage-key change**. Three deferrals:
