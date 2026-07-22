@@ -5,8 +5,13 @@
 // Migration pattern: move a pure helper into src/lib/*.ts (typed), re-export it here,
 // rebuild the bridge (npm run build:bridge), then in index.html delete the old inline
 // definition and bind `const <name> = window.EA.<name>;` near the top of the script.
-export { formatDurationParts, fmtDuration, fmtNum } from './lib/format';
+export { formatDurationParts, fmtDuration, fmtNum, parseIso } from './lib/format';
 export type { DurationParts } from './lib/format';
+
+// Phase 4 (patch 0.68) — more pure logic: fuzzy matcher + radar display formatters
+export { cmdkFuzzyScore } from './lib/fuzzy';
+export { radarFmtValue, priceSparkline } from './tabs/radar-format';
+export type { PricePoint } from './tabs/radar-format';
 
 // Phase 3 (patch 0.65) — Game asset registry (ex js/asset-registry.js). Importing it also
 // runs its top-level image-error listener (side effect) when ea.js loads, before the monolith.

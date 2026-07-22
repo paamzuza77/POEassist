@@ -22,6 +22,65 @@ var EA = function(exports) {
       maximumFractionDigits: 2
     });
   }
+  function parseIso(s) {
+    if (!s) return null;
+    const d = new Date(s);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  function cmdkFuzzyScore(textIn, qIn) {
+    const text = String(textIn || "").toLowerCase();
+    const q = String(qIn || "").toLowerCase().trim();
+    if (!q) return 0;
+    let ti = 0, score = 0, streak = 0;
+    for (let qi = 0; qi < q.length; qi++) {
+      const c = q[qi];
+      if (c === " ") {
+        streak = 0;
+        continue;
+      }
+      let found = -1;
+      for (let i = ti; i < text.length; i++) {
+        if (text[i] === c) {
+          found = i;
+          break;
+        }
+      }
+      if (found === -1) return -1;
+      if (found === ti) {
+        streak++;
+        score += 2 + streak;
+      } else {
+        streak = 0;
+        score += 1;
+      }
+      if (found === 0 || /[\s\-–—/·:()]/.test(text[found - 1])) score += 3;
+      ti = found + 1;
+    }
+    return score;
+  }
+  function radarFmtValue(v, cur) {
+    if (typeof v !== "number" || Number.isNaN(v)) return "—";
+    const num = v >= 100 ? Math.round(v).toLocaleString("en-US") : v >= 1 ? v.toFixed(2) : v.toPrecision(2);
+    return num + " " + (cur || "Div");
+  }
+  function priceSparkline(points, w, h) {
+    if (!Array.isArray(points) || points.length < 2) return null;
+    const vals = points.map((p) => p.v).filter((v) => typeof v === "number");
+    if (vals.length < 2) return null;
+    const min = Math.min(...vals), max = Math.max(...vals);
+    const range = max - min || 1;
+    const W = w || 64, H = h || 18, pad = 2;
+    const stepX = (W - pad * 2) / (vals.length - 1);
+    const pts = vals.map((v, i) => {
+      const x = pad + i * stepX;
+      const y = pad + (H - pad * 2) * (1 - (v - min) / range);
+      return Math.round(x * 10) / 10 + "," + Math.round(y * 10) / 10;
+    });
+    const up = vals[vals.length - 1] >= vals[0];
+    const color = up ? "var(--ok, #4a4)" : "var(--fire, #d33)";
+    const last = pts[pts.length - 1].split(",");
+    return '<svg class="price-spark" viewBox="0 0 ' + W + " " + H + '" width="' + W + '" height="' + H + '" aria-hidden="true"><polyline points="' + pts.join(" ") + '" fill="none" stroke="' + color + '" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="' + last[0] + '" cy="' + last[1] + '" r="1.8" fill="' + color + '"/></svg>';
+  }
   const ASSET_BASE = "image/";
   const GAME_ASSETS = {
     divine: { file: "divine.webp", label: "Divine Orb" },
@@ -354,11 +413,15 @@ var EA = function(exports) {
   exports.GAME_ASSETS = GAME_ASSETS;
   exports.RADAR_ASSET_BY_KEY = RADAR_ASSET_BY_KEY;
   exports.buildRadarRecos = buildRadarRecos;
+  exports.cmdkFuzzyScore = cmdkFuzzyScore;
   exports.fmtDuration = fmtDuration;
   exports.fmtNum = fmtNum;
   exports.formatDurationParts = formatDurationParts;
   exports.getLocalAssetForName = getLocalAssetForName;
   exports.normalizeAssetKey = normalizeAssetKey;
+  exports.parseIso = parseIso;
+  exports.priceSparkline = priceSparkline;
+  exports.radarFmtValue = radarFmtValue;
   exports.radarItemScore = radarItemScore;
   exports.renderAssetIcon = renderAssetIcon;
   exports.showErrorToast = showErrorToast;

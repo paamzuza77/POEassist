@@ -5626,7 +5626,9 @@ window.ensureRawblockFonts = function () {
 /* ===== P5 bridge (patch 0.64–0.66) — ชื่อที่ย้ายไป src/ แล้ว ผูกจาก window.EA =====
    logic อยู่ใน src/lib/*.ts (typed) — ที่นี่แค่ bind ชื่อให้ call site เดิมทั้งหมดใช้ต่อได้เหมือนเดิม
    ต้องอยู่บนสุด (ก่อนใช้งานครั้งแรก) — window.EA มาจาก js/ea.js ที่โหลดไปแล้วด้านบน */
-const { formatDurationParts, fmtDuration, fmtNum } = window.EA;
+const { formatDurationParts, fmtDuration, fmtNum, parseIso } = window.EA;
+// pure logic เพิ่มเติม (patch 0.68): fuzzy matcher (palette) + radar display formatters
+const { cmdkFuzzyScore, radarFmtValue, priceSparkline } = window.EA;
 // Game asset registry (ex js/asset-registry.js → src/lib/asset-registry.ts, patch 0.65)
 const { GAME_ASSETS, ASSET_ALIASES, RADAR_ASSET_BY_KEY, normalizeAssetKey, getLocalAssetForName, renderAssetIcon } = window.EA;
 // Modern UX Foundation (ex js/ux-foundation.js → src/lib/ux-foundation.ts, patch 0.66)
@@ -13789,13 +13791,7 @@ function radarSetStatus(kind, text) {
   badge.textContent = text;
 }
 
-function radarFmtValue(v, cur) {
-  if (typeof v !== 'number' || isNaN(v)) return '—';
-  const num = v >= 100 ? Math.round(v).toLocaleString('en-US')
-    : v >= 1 ? v.toFixed(2)
-    : v.toPrecision(2);
-  return num + ' ' + (cur || 'Div');
-}
+// radarFmtValue() ย้ายไป src/tabs/radar-format.ts แล้ว (patch 0.68) — bind จาก window.EA ที่ต้นสคริปต์
 
 function renderRadar(data) {
   const body = document.getElementById('radarBody');
@@ -14417,26 +14413,7 @@ let priceHistory = null;
 })();
 
 // SVG sparkline จิ๋วจากจุดราคา [{t,v}] — ต้องมี ≥2 จุด; สีเขียว/แดงตามขึ้น-ลงรวม
-function priceSparkline(points, w, h) {
-  if (!Array.isArray(points) || points.length < 2) return null;
-  const vals = points.map(p => p.v).filter(v => typeof v === 'number');
-  if (vals.length < 2) return null;
-  const min = Math.min(...vals), max = Math.max(...vals);
-  const range = max - min || 1;
-  const W = w || 64, H = h || 18, pad = 2;
-  const stepX = (W - pad * 2) / (vals.length - 1);
-  const pts = vals.map((v, i) => {
-    const x = pad + i * stepX;
-    const y = pad + (H - pad * 2) * (1 - (v - min) / range);
-    return (Math.round(x * 10) / 10) + ',' + (Math.round(y * 10) / 10);
-  });
-  const up = vals[vals.length - 1] >= vals[0];
-  const color = up ? 'var(--ok, #4a4)' : 'var(--fire, #d33)';
-  const last = pts[pts.length - 1].split(',');
-  return '<svg class="price-spark" viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" aria-hidden="true">' +
-    '<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + color + '" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>' +
-    '<circle cx="' + last[0] + '" cy="' + last[1] + '" r="1.8" fill="' + color + '"/></svg>';
-}
+// priceSparkline() ย้ายไป src/tabs/radar-format.ts แล้ว (patch 0.68) — bind จาก window.EA ที่ต้นสคริปต์
 
 /* ---- Watchlist + price alerts (patch 0.60) ----
    เฝ้าราคาไอเทมจาก radarData.marketItems — แจ้งเตือนผ่านกระดิ่งเมื่อราคาถึงเกณฑ์ (ต่ำกว่า/สูงกว่า)
@@ -14897,11 +14874,7 @@ let homeStatus = null;
 
 // formatDurationParts() + fmtDuration() ย้ายไป src/lib/format.ts แล้ว (patch 0.64) — bind จาก window.EA ที่ต้นสคริปต์
 
-function parseIso(s) {
-  if (!s) return null;
-  const d = new Date(s);
-  return isNaN(d) ? null : d;
-}
+// parseIso() ย้ายไป src/lib/format.ts แล้ว (patch 0.68) — bind จาก window.EA ที่ต้นสคริปต์
 
 function homeFreshness() {
   const upd = homeStatus && parseIso(homeStatus.updatedAt);
@@ -17980,23 +17953,7 @@ function buildSearchResults(q) {
 }
 
 // fuzzy subsequence scoring — คืน -1 ถ้าไม่ match; ยิ่งตัวติดกัน/ต้นคำ ยิ่งคะแนนสูง
-function cmdkFuzzyScore(text, q) {
-  text = String(text || '').toLowerCase();
-  q = String(q || '').toLowerCase().trim();
-  if (!q) return 0;
-  let ti = 0, score = 0, streak = 0;
-  for (let qi = 0; qi < q.length; qi++) {
-    const c = q[qi];
-    if (c === ' ') { streak = 0; continue; }
-    let found = -1;
-    for (let i = ti; i < text.length; i++) { if (text[i] === c) { found = i; break; } }
-    if (found === -1) return -1;
-    if (found === ti) { streak++; score += 2 + streak; } else { streak = 0; score += 1; }
-    if (found === 0 || /[\s\-–—/·:()]/.test(text[found - 1])) score += 3; // โบนัสต้นคำ
-    ti = found + 1;
-  }
-  return score;
-}
+// cmdkFuzzyScore() ย้ายไป src/lib/fuzzy.ts แล้ว (patch 0.68) — bind จาก window.EA ที่ต้นสคริปต์
 
 /* Command Palette (patch 0.52) — เรียกด้วย Ctrl/⌘+K จากทุกที่: สั่ง action + นำทาง + fuzzy
    ต่อยอด buildSearchResults() ตามแผน P1 — ไม่สร้างระบบนำทางคู่ขนาน */

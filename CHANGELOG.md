@@ -2,6 +2,10 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-23 (21)
+
+- **P5 Phase 4 batch — migrate 4 more pure helpers to TypeScript (patch 0.68, internal)** (`src/lib/format.ts` +`fuzzy.ts`, `src/tabs/radar-format.ts`, `js/ea.js`, `index.html`, docs): moved `parseIso` (→ `format.ts`), `cmdkFuzzyScore` (→ new `lib/fuzzy.ts`, palette matcher), and `radarFmtValue` + `priceSparkline` (→ new `tabs/radar-format.ts`, radar display). All pure, typed, byte-identical; re-exported via `src/main.ts` → `js/ea.js` (24 exports, 17KB); monolith binds them from `window.EA`, old defs deleted. Verified known values (`radarFmtValue` 1234.5→"1,235 Div"/5.678→"5.68 Div"/0.0456→"0.046 Div"/'x'→"—", `parseIso` valid/bad/empty, `cmdkFuzzyScore` match≥0/no-match −1/empty 0, `priceSparkline` 2-pts→SVG/1-pt→null) + real integration (price sparkline in DOM, palette fuzzy 4 results) + no console errors.
+
 ## 2026-07-23 (20)
 
 - **P5 Phase 4 start — migrate Market Radar scoring to TypeScript (patch 0.67, internal)** (`src/tabs/radar-scoring.ts`, `js/ea.js`, `index.html`, `src/main.ts`, docs): moved the Farm Score "brain" — pure functions `radarItemScore(it)` + `buildRadarRecos(items, allBuckets)` — out of the monolith into typed `src/tabs/radar-scoring.ts` (`MarketItem`/`BucketMeta`/`RadarReco` interfaces). Re-exported via `src/main.ts` → rebuilt `js/ea.js` (20 exports, 14.5KB); monolith binds the two names from `window.EA`; DOM rendering (`renderRadar`) stays inline. **Farm Score formula byte-identical** — verified with known-value math (`radarItemScore({})`=0.2025 matching the exact formula, low-liq spike penalty, evidence-first sort, empty-bucket→score 0/no-evidence) + Market Radar renders 10 reco cards + no console errors. First Phase-4 (tab-logic) migration; approach = move pure per-tab logic first, DOM later. Plan in `P5_MIGRATION.md`.

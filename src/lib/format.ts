@@ -37,3 +37,10 @@ export function fmtNum(n: number): string {
     maximumFractionDigits: 2,
   });
 }
+
+/** Parse an ISO string (or falsy) to a Date, or null if missing/invalid. (legacy parseIso) */
+export function parseIso(s: string | number | Date | null | undefined): Date | null {
+  if (!s) return null;
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? null : d; // isNaN(Date) coerces via getTime() — byte-identical
+}
