@@ -152,6 +152,20 @@ var EA = function(exports) {
     }
     return { level: "medium", label: "Medium", cls: "conf-med", why: n + " items · mapping " + Math.round(conf * 100) + "%" };
   }
+  function isBought(row) {
+    return typeof row.bought === "number" && !isNaN(row.bought);
+  }
+  function rowEstPrice(row) {
+    if (typeof row.dealPrice === "number" && !isNaN(row.dealPrice)) return row.dealPrice;
+    if (typeof row.min === "number" && !isNaN(row.min)) return row.min;
+    if (typeof row.max === "number" && !isNaN(row.max)) return row.max;
+    return null;
+  }
+  function shopBuyNextCandidates(shopRows) {
+    const candidates = shopRows.filter((r) => !isBought(r) && rowEstPrice(r) !== null);
+    candidates.sort((a, b) => Number(b.checked === true) - Number(a.checked === true) || rowEstPrice(a) - rowEstPrice(b));
+    return candidates;
+  }
   function formatResValue(total) {
     if (total > CAP) return `${CAP}%(${total}%)`;
     return (total > 0 ? "+" : "") + total + "%";
@@ -499,6 +513,7 @@ var EA = function(exports) {
   exports.formatDurationParts = formatDurationParts;
   exports.formatResValue = formatResValue;
   exports.getLocalAssetForName = getLocalAssetForName;
+  exports.isBought = isBought;
   exports.kwHelpEsc = kwHelpEsc;
   exports.normalizeAssetKey = normalizeAssetKey;
   exports.notifFmtAgo = notifFmtAgo;
@@ -510,6 +525,8 @@ var EA = function(exports) {
   exports.radarSignalInfo = radarSignalInfo;
   exports.radarSnapshotAgeHours = radarSnapshotAgeHours;
   exports.renderAssetIcon = renderAssetIcon;
+  exports.rowEstPrice = rowEstPrice;
+  exports.shopBuyNextCandidates = shopBuyNextCandidates;
   exports.showErrorToast = showErrorToast;
   exports.showInfoToast = showInfoToast;
   exports.showSuccessToast = showSuccessToast;

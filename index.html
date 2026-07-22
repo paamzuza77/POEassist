@@ -5642,6 +5642,8 @@ const { radarItemScore, buildRadarRecos } = window.EA;
 const { CAP, PENALTY, RADAR_FRESH_HOURS, formatResValue, radarSignalInfo } = window.EA;
 // Radar state helpers (patch 0.71): พึ่ง radarData → รับเป็น argument ที่ call site (radarData เป็น let ท้ายไฟล์)
 const { radarSnapshotAgeHours, radarConfidenceInfo } = window.EA;
+// Gear Planner shop logic (patch 0.72): isBought/rowEstPrice pure; shopBuyNextCandidates รับ shopRows เป็น arg
+const { isBought, rowEstPrice, shopBuyNextCandidates } = window.EA;
 
 /* ==================== Keyword Help Bridge (patch 0.30) ====================
    สะพานเชื่อม data/keyword-codex.json ให้เป็นระบบช่วยเหลือกลไกทั้งแอป:
@@ -9602,21 +9604,13 @@ function persistDivineRate() {
 
 // fmtNum() ย้ายไป src/lib/format.ts แล้ว (patch 0.64) — bind จาก window.EA ที่ต้นสคริปต์
 
-function isBought(row) {
-  return typeof row.bought === 'number' && !isNaN(row.bought);
-}
+// isBought() ย้ายไป src/tabs/shop-logic.ts แล้ว (patch 0.72) — bind จาก window.EA ที่ต้นสคริปต์ (pure)
 
 function rowHasPrice(row) {
   return (typeof row.min === 'number' && !isNaN(row.min)) || (typeof row.max === 'number' && !isNaN(row.max));
 }
 
-// ราคาที่คาดว่าจะจ่ายจริงของแถว: deal ที่เซฟไว้ > Min > Max (ใช้กับแถบ "ซื้อต่อไป")
-function rowEstPrice(row) {
-  if (typeof row.dealPrice === 'number' && !isNaN(row.dealPrice)) return row.dealPrice;
-  if (typeof row.min === 'number' && !isNaN(row.min)) return row.min;
-  if (typeof row.max === 'number' && !isNaN(row.max)) return row.max;
-  return null;
-}
+// rowEstPrice() ย้ายไป src/tabs/shop-logic.ts แล้ว (patch 0.72) — bind จาก window.EA (pure: dealPrice > min > max)
 
 function rowDisplayName(row) {
   return (row.name || '').trim() || (row.type || '').trim() || (row.option || '').trim() ||
@@ -9766,11 +9760,7 @@ function updateShopSummary() {
 
 // คิว "ซื้อต่อไป" เรียงแล้ว (patch 0.42 — แยกออกมาให้ hero + Work Queue ใช้แหล่งเดียวกัน)
 // ตรรกะเดิมของ renderShopBuyNext เป๊ะ: ยังไม่ซื้อ + มีราคา, แถวที่มาร์กมาก่อน, จากนั้นถูกสุดก่อน
-function shopBuyNextCandidates() {
-  const candidates = shopRows.filter(r => !isBought(r) && rowEstPrice(r) !== null);
-  candidates.sort((a, b) => ((b.checked === true) - (a.checked === true)) || (rowEstPrice(a) - rowEstPrice(b)));
-  return candidates;
-}
+// shopBuyNextCandidates() ย้ายไป src/tabs/shop-logic.ts แล้ว (patch 0.72) — bind จาก window.EA · รับ shopRows เป็น arg
 
 // แถบ "ซื้อต่อไป": เลือกจากแถวที่ยังไม่ซื้อ + มีราคา — แถวที่ติ๊กมาร์กไว้ถือว่าสำคัญกว่า จากนั้นเอาถูกสุดก่อน
 // หมายเหตุ: แนะนำจาก "ทุก slot" เสมอ (ตอบคำถามว่าควรซื้ออะไรต่อในภาพรวม — ไม่ตาม slot ที่เลือกอยู่)
@@ -9794,7 +9784,7 @@ function renderShopBuyNext() {
   }
 
   tag.textContent = 'ซื้อต่อไป';
-  const candidates = shopBuyNextCandidates(); // เรียงมาแล้ว (มาร์กก่อน → ถูกสุดก่อน)
+  const candidates = shopBuyNextCandidates(shopRows); // เรียงมาแล้ว (มาร์กก่อน → ถูกสุดก่อน)
   if (candidates.length === 0) {
     body.textContent = 'ยังแนะนำไม่ได้ — ใส่ราคา Min/Max หรือราคา deal ให้รายการที่เหลืออย่างน้อย 1 แถวก่อน';
     box.appendChild(tag); box.appendChild(body);
@@ -10011,7 +10001,7 @@ function renderShopAttention() {
   box.appendChild(title);
 
   // คิวซื้อถัดไป (สูงสุด 3) — คิวเดียวกับแถบ "ซื้อต่อไป" (shopBuyNextCandidates)
-  const queue = shopBuyNextCandidates().slice(0, 3);
+  const queue = shopBuyNextCandidates(shopRows).slice(0, 3);
   if (queue.length > 0) {
     const qwrap = document.createElement('div');
     qwrap.className = 'shop-att-queue';
