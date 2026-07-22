@@ -2,6 +2,10 @@
 
 Dated, session-based record of notable work. Newest first. One entry per session/task, a few lines each. (User-visible app changes additionally need a `PATCH_NOTES` entry in `index.html` — see `PROJECT_INDEX.md` → Patch Notes.)
 
+## 2026-07-23 (6)
+
+- **Housekeeping: webp currency icons + junk cleanup (no patch — internal)** (`js/asset-registry.js`, `image/`): converted the three tracked full-res PNG currency icons to 64px webp q80 via `sharp` (exalt.png 157KB→exalt.webp 2KB, mirror.png 106KB→2KB, chaos.png 40KB→3KB — **~287KB off the deployed payload**; `divine` already used webp). `GAME_ASSETS` `file:` refs repointed to the webp; old PNGs `git rm`'d. Deleted the local untracked/gitignored junk that was never published: `image/logo.png` (trademark), `image/the-divine-orb-…webp` (dup), `image/divine.png` (dup), and the stale `Index.md` (untracked duplicate of `PROJECT_INDEX.md`). Verified all webp load (64px) + registry points to them + no console errors. Closes the long-standing "re-encode oversized currency icons" TODO.
+
 ## 2026-07-23 (5)
 
 - **P1 housekeeping (no patch — internal/docs)** (`README.md`, `index.html`, `css/modern-theme.css`, docs): replaced the placeholder `# POEassist` README with a real public-facing description (features, no-backend architecture, dev-doc pointers, GGG disclaimer). Removed 4 confirmed-dead `.totals-panel` CSS refs (the panel was deleted in patch 0.48) — 1 in the index Trust selector list (`.gauge-track` alongside), 3 in `css/modern-theme.css`. Verified all 3 themes render with no overflow, forge radar chart + gear board intact, no console errors. **Not done (needs user/tooling):** webp currency icons (no local encoder), `Index.md` deletion (untracked, not agent-created — stale dup of `PROJECT_INDEX.md`; ask first), junk images `logo.png`/`the-divine-orb-…webp` (surface, don't delete unprompted). This completes P1's core (items 1a/1b/2/3 shipped as 0.50–0.53).

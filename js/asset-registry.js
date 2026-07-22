@@ -25,9 +25,9 @@ const ASSET_BASE = 'image/';
 // key → ไฟล์จริงใน image/ (ชื่อไฟล์คงเดิม ไม่เปลี่ยนชื่อ/ย้าย)
 const GAME_ASSETS = {
   divine:        { file: 'divine.webp',                 label: 'Divine Orb' },
-  chaos:         { file: 'chaos.png',                   label: 'Chaos Orb' },
-  exalted:       { file: 'exalt.png',                   label: 'Exalted Orb' },
-  mirror:        { file: 'mirror.png',                  label: 'Mirror of Kalandra' },
+  chaos:         { file: 'chaos.webp',                  label: 'Chaos Orb' },
+  exalted:       { file: 'exalt.webp',                  label: 'Exalted Orb' },
+  mirror:        { file: 'mirror.webp',                 label: 'Mirror of Kalandra' },
   abyss:         { file: 'abyss.webp',                  label: 'Abyss' },
   breach:        { file: 'breach.webp',                 label: 'Breach' },
   ritual:        { file: 'ritual.webp',                 label: 'Ritual' },
