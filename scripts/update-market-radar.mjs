@@ -127,6 +127,20 @@ const HISTORY_MIN_VALUE_DIVINE = 0.5;
 // ---------------------------------------------------------------------------
 
 const NINJA_BASE = 'https://poe.ninja';
+
+// slug หน้าเว็บ poe.ninja ต่อหมวด (0.80) — ใช้สร้าง sourceUrl ให้คลิกแล้วไปหน้าที่ถูกจริง
+// (เดิมใช้ category.toLowerCase() — ผิดกับหมวดหลายคำ เช่น UniqueArmours → 'uniquearmours' ไม่มีหน้า)
+// ★ = ยืนยันจากเว็บจริง; ที่เหลือ kebab-case ตาม convention เดียวกัน — ตรงกับ NINJA_CAT_SLUGS ฝั่ง index.html
+const CATEGORY_PAGE_SLUGS = {
+  Currency: 'currency', Fragments: 'fragments', Abyss: 'abyssal-bones', UncutGems: 'uncut-gems',
+  LineageSupportGems: 'lineage-support-gems', Essences: 'essences', SoulCores: 'soul-cores',
+  Idols: 'idols', Runes: 'runes', Ritual: 'omens', Expedition: 'expedition',
+  Delirium: 'delirium', Breach: 'breach', Verisium: 'verisium',
+  UniqueTablets: 'unique-tablets', UniqueWeapons: 'unique-weapons', UniqueArmours: 'unique-armours',
+  UniqueAccessories: 'unique-accessories', UniqueJewels: 'unique-jewels',
+  UniqueFlasks: 'unique-flasks', UniqueCharms: 'unique-charms',
+};
+const categoryPageSlug = (cat) => CATEGORY_PAGE_SLUGS[cat] || String(cat || '').toLowerCase();
 const USER_AGENT = 'POEassist-market-radar/1.0 (github.com/paamzuza77/POEassist; hourly static snapshot)';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -382,7 +396,7 @@ async function main() {
       contentKey: x.bucket ? x.bucket.contentKey : '',
       confidence: x.confidence,
       score: Math.round(x.score),
-      sourceUrl: `${NINJA_BASE}/poe2/economy/${LEAGUE}/${x.category.toLowerCase()}`,
+      sourceUrl: `${NINJA_BASE}/poe2/economy/${LEAGUE}/${categoryPageSlug(x.category)}`,
       wikiUrl: x.bucket ? x.bucket.wikiUrl : '',
       risk: x.riskNote,
     }));
@@ -441,7 +455,7 @@ async function main() {
       relatedItems: top.map((x) => x.name), // backward compat กับหน้าเว็บเก่า
       risk: riskiest ? riskiest.risk : '',
       sourceUrls: [
-        `${NINJA_BASE}/poe2/economy/${LEAGUE}/${(bucket.categories[0] || '').toLowerCase()}`,
+        `${NINJA_BASE}/poe2/economy/${LEAGUE}/${categoryPageSlug(bucket.categories[0] || '')}`,
         ...bucket.sourceUrls,
       ].filter(Boolean),
     };

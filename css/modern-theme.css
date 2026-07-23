@@ -781,6 +781,23 @@ html[data-theme="modern"] .shop-tool-danger { border-left-color: var(--border-so
 html[data-theme="modern"] .radar-hero { padding: 18px 20px; }
 html[data-theme="modern"] .radar-hero-name { letter-spacing: -0.01em; }
 html[data-theme="modern"] .radar-hero-score { color: var(--gold); }
+/* patch 0.80: compact bucket rows + Item Browser — เงา/ยก hover ตามภาษา Modern v2 */
+html[data-theme="modern"] .radar-rank-row,
+html[data-theme="modern"] .radar-browse-row {
+  background: var(--panel);
+  border-color: var(--panel-border);
+  box-shadow: var(--shadow-sm);
+}
+html[data-theme="modern"] .radar-rank-row:hover {
+  box-shadow: var(--shadow-md);
+  border-color: color-mix(in srgb, var(--gold) 45%, var(--panel-border));
+}
+html[data-theme="modern"] .radar-rank-row.top-pick {
+  background: color-mix(in srgb, var(--gold) 7%, var(--panel));
+}
+html[data-theme="modern"] .radar-browse-chip.on { box-shadow: var(--shadow-sm); }
+html[data-theme="modern"] .radar-item-tip { box-shadow: var(--shadow-lg); border-color: var(--panel-border); }
+html[data-theme="modern"] .radar-bucket-modal { box-shadow: var(--shadow-lg); }
 html[data-theme="modern"] .radar-fresh-chip { border-color: transparent; background: color-mix(in srgb, var(--ok) 12%, var(--panel)); }
 html[data-theme="modern"] .radar-fresh-chip.is-stale { background: color-mix(in srgb, var(--lightning) 14%, var(--panel)); }
 html[data-theme="modern"] .radar-why-chip {

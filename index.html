@@ -206,6 +206,11 @@ window.ensureRawblockFonts = function () {
   html[data-theme="trust-blue-pay"] .radar-item-card,
   html[data-theme="trust-blue-pay"] .radar-item-rows-wrap,
   html[data-theme="trust-blue-pay"] .radar-item-row,
+  html[data-theme="trust-blue-pay"] .radar-rank-row,
+  html[data-theme="trust-blue-pay"] .radar-browse-row,
+  html[data-theme="trust-blue-pay"] .radar-browse-search,
+  html[data-theme="trust-blue-pay"] .radar-item-tip,
+  html[data-theme="trust-blue-pay"] .radar-bucket-modal,
   html[data-theme="trust-blue-pay"] .radar-score-info,
   html[data-theme="trust-blue-pay"] .radar-filter,
   html[data-theme="trust-blue-pay"] .radar-errors,
@@ -4956,6 +4961,108 @@ window.ensureRawblockFonts = function () {
   @media (prefers-reduced-motion: reduce) {
     ::view-transition-old(root),
     ::view-transition-new(root) { animation: none; }
+  }
+
+  /* ==================== Market Radar redesign (patch 0.80) ====================
+     bucket compact rows (คลิกเปิด popup) + Item Browser (ค้น/หมวด/Top Rising/tooltip/เฝ้าราคา)
+     ใช้ token ธีมล้วน (--card/--border/--gold/--ok/--fire) — ดูดีทั้ง 3 ธีมโดยไม่ fork สี */
+  .radar-rank-list { display: flex; flex-direction: column; gap: 6px; margin: 4px 0 14px; }
+  .radar-rank-row {
+    display: grid;
+    grid-template-columns: 30px minmax(120px, 1fr) 84px 76px 74px minmax(70px, 150px) 16px;
+    align-items: center; gap: 10px;
+    padding: 8px 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .radar-rank-row:hover, .radar-rank-row:focus-visible { border-color: var(--gold); transform: translateX(2px); }
+  .radar-rank-row.top-pick { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
+  .radar-rank-row.dimmed { opacity: 0.55; }
+  .rrr-icon { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; }
+  .rrr-icon img { width: 24px; height: 24px; object-fit: contain; }
+  .rrr-name { font-weight: 700; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rrr-trend { font-size: 11px; font-family: var(--font-mono); text-align: right; }
+  .rrr-conf { font-size: 10px; justify-self: start; }
+  .rrr-score { font-size: 13px; font-weight: 800; text-align: right; justify-self: end; }
+  .rrr-bar { position: relative; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .rrr-bar-fill { position: absolute; inset: 0 auto 0 0; background: var(--gold); border-radius: 3px; }
+  .rrr-chev { color: var(--text-dim); font-size: 14px; }
+  /* popup รายละเอียด bucket */
+  .radar-bucket-modal { max-width: 560px; width: min(560px, calc(100vw - 32px)); max-height: 84vh; overflow-y: auto; }
+  .rbm-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .rbm-head h3 { margin: 0; flex: 1; font-size: 16px; }
+  .rbm-ev-title { margin: 12px 0 6px; font-size: 12px; font-weight: 700; color: var(--text-muted); }
+  .rbm-ev { display: flex; flex-direction: column; gap: 4px; }
+  .rbm-ev-row {
+    display: grid; grid-template-columns: minmax(120px, 1fr) 90px 74px 60px;
+    gap: 8px; align-items: center;
+    padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 12px;
+  }
+  .rbm-ev-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rbm-ev-name a { color: inherit; }
+  .rbm-foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  /* Item Browser */
+  .radar-browser { margin-top: 8px; }
+  .radar-browse-search-row { margin-bottom: 8px; }
+  .radar-browse-search {
+    width: 100%; max-width: 460px;
+    padding: 8px 12px; font-size: 13px;
+    background: var(--card); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+  }
+  .radar-browse-search:focus { outline: none; border-color: var(--gold); }
+  .radar-browse-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .radar-browse-chip {
+    padding: 4px 10px; font-size: 11px; cursor: pointer;
+    background: var(--card); color: var(--text-muted);
+    border: 1px solid var(--border); border-radius: 999px;
+  }
+  .radar-browse-chip:hover { border-color: var(--gold); color: var(--text); }
+  .radar-browse-chip.on { background: var(--gold); color: var(--void); border-color: var(--gold); font-weight: 700; }
+  .radar-browse-meta { margin: 4px 0 8px; }
+  .radar-browse-rows { display: flex; flex-direction: column; gap: 3px; }
+  .radar-browse-row {
+    display: grid;
+    grid-template-columns: 26px minmax(140px, 1fr) 120px 92px 78px 34px;
+    gap: 8px; align-items: center;
+    padding: 5px 10px; font-size: 12px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--card);
+  }
+  .radar-browse-row:hover { border-color: var(--gold); }
+  .radar-browse-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+  .radar-browse-name a { color: inherit; }
+  .radar-browse-name a:hover { color: var(--gold); text-decoration: underline; }
+  .radar-browse-watch {
+    background: none; border: 1px solid var(--border); border-radius: 6px;
+    cursor: pointer; font-size: 12px; padding: 2px 6px; color: var(--text-dim);
+  }
+  .radar-browse-watch:hover { border-color: var(--gold); color: var(--text); }
+  .radar-browse-watch.on { color: var(--gold); border-color: var(--gold); }
+  .radar-browse-more { margin-top: 10px; }
+  /* hover tooltip ของไอเทม */
+  .radar-item-tip {
+    display: none; position: fixed; z-index: 260;
+    max-width: 280px; padding: 10px 12px;
+    background: var(--card); color: var(--text);
+    border: 1px solid var(--gold); border-radius: 10px;
+    font-size: 12px; line-height: 1.5; pointer-events: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+  .rit-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .rit-head img { width: 26px; height: 26px; object-fit: contain; }
+  .rit-cat { color: var(--text-dim); font-size: 11px; }
+  .rit-spark { margin-top: 6px; }
+  @media (max-width: 700px) {
+    .radar-rank-row { grid-template-columns: 26px minmax(90px, 1fr) 70px 64px 16px; }
+    .rrr-conf, .rrr-bar { display: none; }
+    .radar-browse-row { grid-template-columns: 24px minmax(110px, 1fr) 84px 70px 32px; }
+    .radar-item-cat { display: none; }
+    .rbm-ev-row { grid-template-columns: minmax(100px, 1fr) 80px 64px; }
+    .rbm-ev-row > :nth-child(4) { display: none; }
   }
 </style>
 <!-- Modularization Phase 1 (patch 0.34): helper CSS ที่แยกออกจาก inline <style> ด้านบน
@@ -11239,6 +11346,15 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.80',
+    date: '2026-07-23',
+    notes: [
+      'Market Radar โฉมใหม่ — ลดความรกครั้งใหญ่: การ์ดคอนเทนต์ยักษ์ 15+ ใบถูกแทนด้วยแถวจัดอันดับกะทัดรัด (ชื่อ·เทรนด์·Confidence·Farm Score) คลิกแถวเพื่อเปิด popup รายละเอียดเต็ม (breakdown คะแนน, เหตุผล, ไอเทมหลักฐานท็อปพร้อมราคา/เทรนด์, ปุ่ม Content Codex)',
+      '🛒 Item Browser ใหม่ (แทนตาราง Top Rising ยาว ~1,350 แถว): ช่องค้นหาเฉพาะ + ชิปหมวดหมู่ทุกหมวด + หมวดพิเศษ 🔥 Top Rising (เทรนด์ ≥ +5% เรียงจากแรงสุด กัน junk) แสดงทีละ 60 แถว + ปุ่มแสดงเพิ่ม',
+      'ทุกแถวไอเทม: รูปไอคอนจริง, ชื่อคลิกไปหน้าไอเทมบน poe.ninja, ปุ่ม 👁 เฝ้าราคาได้จากแถวเลย, เอาเมาส์ชี้ดูข้อมูลย่อ (ราคา+เงินจริง, เทรนด์, สภาพคล่อง, กราฟราคาย้อนหลังถ้ามี)',
+    ],
+  },
+  {
     version: '0.79',
     date: '2026-07-23',
     notes: [
@@ -13846,172 +13962,76 @@ function renderRadar(data) {
   } else {
     // การ์ดอันดับ 1 (ที่มี evidence + คะแนน > 0) ติดป้าย TOP PICK — topKey/groupsMap/hiddenNoSignal
     // ถูกคำนวณไว้ข้างบนแล้ว (ใช้ร่วมกับ hero/summary, patch 0.43)
-    const buildCard = (rc, sig, isTop) => {
-      const cardEl = document.createElement('div');
-      cardEl.className = 'reco-card' + (rc.hasEvidence === false ? ' dimmed' : '') + (isTop ? ' top-pick' : '');
+    // patch 0.80: การ์ดยักษ์ → แถว compact แถวเดียวต่อ bucket — คลิก/Enter เปิด popup รายละเอียดเต็ม
+    // (openRadarBucketModal ด้านล่างเก็บทุกอย่างที่การ์ดเดิมเคยโชว์: breakdown/เหตุผล/evidence/ปุ่ม Codex)
+    const buildBucketRow = (rc, sig, isTop) => {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'radar-rank-row' + (rc.hasEvidence === false ? ' dimmed' : '') + (isTop ? ' top-pick' : '');
+      rowEl.setAttribute('role', 'button');
+      rowEl.tabIndex = 0;
+      rowEl.title = 'คลิกดูรายละเอียด — คะแนนคิดจากอะไร + ไอเทมหลักฐาน';
 
-      const headEl = document.createElement('div');
-      headEl.className = 'reco-head';
-
-      // ไอคอน content (patch 0.32): map จาก contentKey ของ bucket → รูปใน image/ ที่ตรวจแล้ว
-      // bucket ที่ไม่มีรูป (essence/simulacrum/strongboxes/runes/fragments/generic) = ไม่มีไอคอน
-      // trial_soulcores จงใจไม่ใส่ — มีรูป trial สองใบ เลือกไม่ได้ว่าอันไหนตรง
+      // ไอคอน content (patch 0.32): map จาก contentKey → รูปที่ตรวจแล้วเท่านั้น (ไม่มี = เว้นว่าง)
       const rcAsset = RADAR_ASSET_BY_KEY[rc.contentKey]
         ? getLocalAssetForName(GAME_ASSETS[RADAR_ASSET_BY_KEY[rc.contentKey]].label) : null;
+      const iconWrap = document.createElement('span');
+      iconWrap.className = 'rrr-icon';
       if (rcAsset) {
         const ico = document.createElement('img');
-        ico.className = 'game-ico game-ico-md game-thumb';
+        ico.className = 'game-ico game-thumb';
         ico.src = rcAsset.src;
-        ico.alt = '';                     // ชื่อ content อยู่ใน .reco-name ข้างๆ แล้ว
+        ico.alt = '';
         ico.setAttribute('aria-hidden', 'true');
         ico.loading = 'lazy';
-        ico.title = rcAsset.label;
-        headEl.appendChild(ico);
+        iconWrap.appendChild(ico);
       }
+      rowEl.appendChild(iconWrap);
 
       const nm = document.createElement('span');
-      nm.className = 'reco-name';
-      nm.textContent = rc.content || '?';
-      headEl.appendChild(nm);
-      if (isTop) {
-        const tp = document.createElement('span');
-        tp.className = 'reco-top-badge';
-        tp.textContent = '★ TOP PICK';
-        headEl.appendChild(tp);
+      nm.className = 'rrr-name';
+      nm.textContent = (isTop ? '★ ' : '') + (rc.content || '?');
+      rowEl.appendChild(nm);
+
+      const tr = document.createElement('span');
+      tr.className = 'rrr-trend';
+      if (typeof rc.avgTrend === 'number') {
+        tr.classList.add(rc.avgTrend >= 0 ? 'trend-up' : 'trend-down');
+        tr.textContent = (rc.avgTrend >= 0 ? '▲ +' : '▼ ') + rc.avgTrend.toFixed(1) + '%';
       }
-      // ค่าหลักของการ์ด (patch 0.39): คะแนน > 0 → "N%" / คะแนน 0 หรือไม่มีสัญญาณ → ป้ายสถานะ
-      // ("No signal"/"Low confidence") — ห้ามโชว์ "0%" โตๆ เพราะอ่านเหมือนคำแนะนำฟาร์มที่ไร้ค่า
-      const score = document.createElement('span');
+      rowEl.appendChild(tr);
+
+      const confInfo = radarConfidenceInfo(rc, radarData);
+      const cd = document.createElement('span');
+      cd.className = 'rrr-conf conf-badge ' + confInfo.cls;
+      cd.textContent = confInfo.label;
+      cd.title = confInfo.why || '';
+      rowEl.appendChild(cd);
+
+      // คะแนน (กติกา 0.39 คงเดิม: score 0/no signal → ป้ายสถานะ ไม่ใช่ "0%")
       const sVal = typeof rc.score === 'number' ? Math.round(rc.score) : null;
       const showLabel = sig.label !== null && sig.label !== undefined;
-      score.className = 'score-badge' + (showLabel ? ' score-badge-label' : '');
+      const score = document.createElement('span');
+      score.className = 'rrr-score score-badge' + (showLabel ? ' score-badge-label' : '');
       score.textContent = showLabel ? sig.label : (sVal === null ? '—' : sVal + '%');
-      const sLabel = document.createElement('small');
-      sLabel.textContent = showLabel ? sig.sub : 'FARM SCORE';
-      score.appendChild(sLabel);
-      headEl.appendChild(score);
-      cardEl.appendChild(headEl);
+      rowEl.appendChild(score);
 
-      const bar = document.createElement('div');
-      bar.className = 'score-bar';
-      const fill = document.createElement('div');
-      fill.className = 'score-bar-fill';
+      const barWrap = document.createElement('span');
+      barWrap.className = 'rrr-bar';
+      const fill = document.createElement('span');
+      fill.className = 'rrr-bar-fill';
       fill.style.width = (sVal === null ? 0 : Math.max(0, Math.min(100, sVal))) + '%';
-      bar.appendChild(fill);
-      cardEl.appendChild(bar);
+      barWrap.appendChild(fill);
+      rowEl.appendChild(barWrap);
 
-      // "ทำไมการ์ดนี้อยู่กลุ่มนี้" (patch 0.39) — คำอธิบายสัญญาณสั้นๆ โปร่งใสจากข้อมูลเดิม
-      if (sig.note) {
-        const sn = document.createElement('p');
-        sn.className = 'reco-signal-note';
-        sn.textContent = sig.note;
-        cardEl.appendChild(sn);
-      }
+      const chev = document.createElement('span');
+      chev.className = 'rrr-chev';
+      chev.textContent = '›';
+      rowEl.appendChild(chev);
 
-      // รายละเอียดการ์ด (patch 0.43): เหตุผลเต็ม + breakdown + รายชื่อไอเทม ย้ายเข้า disclosure
-      // ต่อการ์ด — Simple พับไว้ (การ์ดโล่ง อ่านคำตอบก่อน), Advanced เปิดให้ครบ (default ตอน render)
-      const more = document.createElement('details');
-      more.className = 'reco-more';
-      if (radarDisplayAdvanced()) more.open = true;
-      const moreSummary = document.createElement('summary');
-      moreSummary.textContent = 'รายละเอียด / Details';
-      more.appendChild(moreSummary);
-
-      if (Array.isArray(rc.reason) && rc.reason.length) {
-        const ul = document.createElement('ul');
-        ul.className = 'reason-list';
-        rc.reason.forEach(r => {
-          const li = document.createElement('li');
-          li.textContent = r;
-          ul.appendChild(li);
-        });
-        more.appendChild(ul);
-      } else if (rc.status && rc.hasEvidence === false) {
-        // สถานะดิบจาก snapshot (เช่น "No qualifying 1D+ items") — เก็บไว้เป็นบรรทัดรองแบบ muted
-        const st = document.createElement('p');
-        st.className = 'rf-note';
-        st.style.margin = '4px 0';
-        st.textContent = rc.status;
-        cardEl.appendChild(st);
-      }
-
-      // Score breakdown (patch 0.39) — เฉพาะการ์ดที่มี evidence และใช้แค่ค่าที่คำนวณอยู่แล้ว
-      // (avgValue/avgTrend/itemCount/lowLiq/risk/confidence) — ไม่มีตัวเลขใหม่ ไม่มี fake precision
-      if (rc.hasEvidence) {
-        const confInfo = radarConfidenceInfo(rc, radarData);
-        const bd = document.createElement('div');
-        bd.className = 'reco-breakdown';
-        const bdRow = (k, v, title) => {
-          const row = document.createElement('div');
-          row.className = 'bd-row';
-          const kEl = document.createElement('span');
-          kEl.className = 'bd-k';
-          kEl.textContent = k;
-          const vEl = document.createElement('span');
-          vEl.className = 'bd-v';
-          vEl.textContent = v;
-          if (title) row.title = title;
-          row.appendChild(kEl);
-          row.appendChild(vEl);
-          bd.appendChild(row);
-        };
-        bdRow('Profit', typeof rc.avgValue === 'number' ? rc.avgValue.toFixed(2) + ' Div' : '—', 'มูลค่าเฉลี่ยไอเทมท็อป (จาก snapshot)');
-        bdRow('Trend', typeof rc.avgTrend === 'number' ? (rc.avgTrend >= 0 ? '+' : '') + rc.avgTrend.toFixed(1) + '% 7d' : '—', 'เทรนด์ราคาเฉลี่ยไอเทมท็อป 7 วัน');
-        bdRow('Coverage', (typeof rc.itemCount === 'number' ? rc.itemCount : 0) + ' items'
-          + (rc.lowLiqCount > 0 ? ' · ' + rc.lowLiqCount + ' low-liq' : ''), 'จำนวนไอเทมที่ผ่านเกณฑ์ราคา (หลักฐานของการ์ดนี้)');
-        bdRow('Risk', rc.risk ? '⚠ มี' : '—', rc.risk || 'ไม่มีความเสี่ยงเด่นจากข้อมูลชุดนี้');
-        bdRow('Confidence', confInfo.label, confInfo.why);
-        more.appendChild(bd);
-      }
-
-      if (Array.isArray(rc.relatedItems) && rc.relatedItems.length) {
-        const rel = document.createElement('div');
-        rel.className = 'reco-related';
-        rel.textContent = 'Items: ' + rc.relatedItems.join(', ');
-        more.appendChild(rel);
-      }
-
-      // แนบ disclosure เฉพาะเมื่อมีเนื้อหาข้างในจริง (การ์ด No Signal ไม่มี — ไม่ต้องมีปุ่มเปล่า)
-      if (more.childNodes.length > 1) cardEl.appendChild(more);
-
-      if (rc.risk) {
-        const rk = document.createElement('div');
-        rk.className = 'reco-risk';
-        rk.textContent = '⚠ ' + rc.risk;
-        cardEl.appendChild(rk);
-      }
-
-      const footEl = document.createElement('div');
-      footEl.className = 'reco-foot';
-      // Confidence badge (patch 0.39) แทนข้อความ "confidence NN%" เดิม — hover ดูเหตุผลของระดับ
-      const confBadgeInfo = radarConfidenceInfo(rc, radarData);
-      const cf = document.createElement('span');
-      cf.className = 'conf-badge ' + confBadgeInfo.cls;
-      cf.textContent = 'Confidence: ' + confBadgeInfo.label;
-      cf.title = confBadgeInfo.why || '';
-      footEl.appendChild(cf);
-      // Deep-link → Content Codex (patch 0.40): เฉพาะ bucket ที่อยู่ในตาราง RADAR_CODEX_LINKS เท่านั้น
-      if (RADAR_CODEX_LINKS[rc.contentKey]) {
-        const cx = document.createElement('button');
-        cx.type = 'button';
-        cx.className = 'ocr-btn reco-codex-btn';
-        cx.textContent = '📖 ' + t('radar.viewcontent');
-        cx.title = 'เปิดข้อมูล content นี้ใน Content Codex (วิธีฟาร์ม / ของที่ดรอป)';
-        cx.addEventListener('click', () => openRadarCodexEntry(rc.contentKey, rc.content));
-        footEl.appendChild(cx);
-      }
-      (Array.isArray(rc.sourceUrls) ? rc.sourceUrls : []).forEach((u, i) => {
-        if (!u) return;
-        const a = document.createElement('a');
-        a.className = 'farm-link-chip';
-        a.href = u;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        a.textContent = 'source ' + (i + 1);
-        footEl.appendChild(a);
-      });
-      cardEl.appendChild(footEl);
-      return cardEl;
+      const open = () => openRadarBucketModal(rc, sig, isTop);
+      rowEl.addEventListener('click', open);
+      rowEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+      return rowEl;
     };
 
     // วาดทีละกลุ่มตามลำดับคงที่ — กลุ่มว่างไม่วาดหัวข้อ / No Signal วาดเฉพาะตอนผู้ใช้เลือกแสดง
@@ -14026,10 +14046,10 @@ function renderRadar(data) {
       gt.textContent = meta2.title + ' · ' + entries.length;
       gt.title = meta2.desc;
       body.appendChild(gt);
-      const grid = document.createElement('div');
-      grid.className = 'reco-grid';
-      entries.forEach(e => grid.appendChild(buildCard(e.rc, e.sig, e.isTop)));
-      body.appendChild(grid);
+      const listEl = document.createElement('div');
+      listEl.className = 'radar-rank-list';
+      entries.forEach(e => listEl.appendChild(buildBucketRow(e.rc, e.sig, e.isTop)));
+      body.appendChild(listEl);
     });
 
     if (hiddenNoSignal > 0) {
@@ -14066,10 +14086,10 @@ function renderRadar(data) {
   rsIco.className = 'shop-disc-ico';
   rsIco.textContent = '▸';
   risingSummary.appendChild(rsIco);
-  risingSummary.appendChild(document.createTextNode(' Evidence — Top Rising Items Used '));
+  risingSummary.appendChild(document.createTextNode(' 🛒 Item Browser — ราคาทั้งตลาด '));
   const rsHint = document.createElement('span');
   rsHint.className = 'shop-disc-hint';
-  rsHint.textContent = '(' + items.length + ' รายการ · ลิสต์อ้างอิง ไม่ใช่ต้นทางคำนวณ)';
+  rsHint.textContent = '(ค้นหา · หมวดหมู่ · Top Rising · เฝ้าราคา — ลิสต์อ้างอิง ไม่ใช่ต้นทางคำนวณ)';
   risingSummary.appendChild(rsHint);
   risingBox.appendChild(risingSummary);
   // สร้างใหม่ทุก render — เปิด persist หลังคิว toggle event ตอนตั้งค่า default ระบายแล้ว
@@ -14081,118 +14101,13 @@ function renderRadar(data) {
   });
   setTimeout(() => { risingReady = true; }, 0);
   body.appendChild(risingBox);
-  const risingNote = document.createElement('p');
-  risingNote.className = 'rf-note';
-  risingNote.style.margin = '8px 0';
-  risingNote.textContent = 'Used as a rising-item reference list only. Farm recommendations above are calculated from filtered marketItems, not from this list.';
-  risingBox.appendChild(risingNote);
-
-  if (items.length === 0) {
-    const none = document.createElement('div');
-    none.className = 'radar-fallback';
-    if (allItems.length === 0 && fallbackItems.length > 0) {
-      none.textContent = 'No marketItems in this local snapshot yet — showing fallback Top Rising list only (not used for recommendations). Run scripts/update-market-radar.mjs to refresh.';
-    } else {
-      none.textContent = 'No market items in the current local snapshot pass this filter. Try lowering the minimum price or update market-radar.json.';
-    }
-    risingBox.appendChild(none);
-  } else {
-    const wrap = document.createElement('div');
-    wrap.className = 'radar-item-rows-wrap';
-    const rows = document.createElement('div');
-    rows.className = 'radar-item-rows';
-
-    const headRow = document.createElement('div');
-    headRow.className = 'radar-item-row radar-item-row-head';
-    ['', 'Item', 'Category', 'Value', '7d', 'Liquidity', 'Score', 'Content'].forEach(label => {
-      const cell = document.createElement('span');
-      cell.textContent = label;
-      headRow.appendChild(cell);
-    });
-    rows.appendChild(headRow);
-
-    items.forEach(it => {
-      const row = document.createElement('div');
-      row.className = 'radar-item-row';
-      if (it.risk) row.title = '⚠ ' + it.risk;
-
-      const iconCell = document.createElement('span');
-      iconCell.className = 'radar-row-icon';
-      if (it.icon) {
-        const img = document.createElement('img');
-        img.src = it.icon;
-        img.alt = '';
-        img.loading = 'lazy';
-        img.onerror = () => img.remove();
-        iconCell.appendChild(img);
-      }
-      row.appendChild(iconCell);
-
-      const nm = document.createElement('span');
-      nm.className = 'radar-item-name';
-      if (it.sourceUrl) {
-        const a = document.createElement('a');
-        a.href = it.sourceUrl;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        a.style.color = 'inherit';
-        a.textContent = it.name || '?';
-        nm.appendChild(a);
-      } else {
-        nm.textContent = it.name || '?';
-      }
-      nm.title = it.name || '';
-      if (it.risk) {
-        const rk = document.createElement('span');
-        rk.className = 'radar-item-risk-badge';
-        rk.textContent = '⚠';
-        rk.title = it.risk;
-        nm.appendChild(rk);
-      }
-      row.appendChild(nm);
-
-      const cat = document.createElement('span');
-      cat.className = 'radar-item-cat';
-      cat.textContent = it.category || '—';
-      row.appendChild(cat);
-
-      const price = document.createElement('span');
-      price.className = 'radar-price';
-      price.textContent = radarFmtValue(it.value, it.valueCurrency);
-      row.appendChild(price);
-
-      const tr = document.createElement('span');
-      if (typeof it.trend7d === 'number') {
-        tr.className = it.trend7d >= 0 ? 'trend-up' : 'trend-down';
-        tr.textContent = (it.trend7d >= 0 ? '▲ +' : '▼ ') + it.trend7d.toFixed(1) + '%';
-      } else {
-        tr.className = 'radar-liq';
-        tr.textContent = '—';
-      }
-      row.appendChild(tr);
-
-      const liq = document.createElement('span');
-      liq.className = 'radar-liq';
-      liq.textContent = it.liquidityLabel || '—';
-      row.appendChild(liq);
-
-      const sc = document.createElement('span');
-      sc.className = 'radar-row-score';
-      sc.textContent = Math.round(radarItemScore(it) * 100) + '%';
-      row.appendChild(sc);
-
-      const map = document.createElement('span');
-      map.className = 'radar-item-map';
-      map.textContent = it.mappedContent || it.contentKey || '—';
-      map.title = it.mappedContent || it.contentKey || '';
-      row.appendChild(map);
-
-      rows.appendChild(row);
-    });
-
-    wrap.appendChild(rows);
-    risingBox.appendChild(wrap);
-  }
+  // patch 0.80: Item Browser แทนตารางยาว 8 คอลัมน์เดิม — ค้นหา/หมวด/Top Rising/ลิงก์/เฝ้าราคา
+  // source = market-prices.json ครบทุกหมวด (โหลด lazy — fallback radar marketItems ระหว่างโหลด)
+  // render cap 60 แถว + ปุ่มแสดงเพิ่ม (1,351 แถวเต็มคือสาเหตุ "ยาวแบบนี้" ที่ผู้ใช้รายงาน)
+  const browserWrap = document.createElement('div');
+  browserWrap.className = 'radar-browser';
+  risingBox.appendChild(browserWrap);
+  renderRadarItemBrowser(browserWrap);
 
   // หมายเหตุ: content ที่ไม่มี evidence (ไม่ว่าเพราะฟิลเตอร์ หรือไม่มีข้อมูลเลย) แสดงเป็น
   // muted card ใน "Recommended Farm Now" ด้านบนแล้ว (buildRadarRecos คืน hasEvidence:false)
@@ -14213,6 +14128,437 @@ function renderRadar(data) {
     });
     det.appendChild(ul);
     body.appendChild(det);
+  }
+}
+
+/* ==================== Market Radar redesign (patch 0.80) ====================
+   1) bucket compact rows + คลิกเปิด popup รายละเอียดเต็ม (แทนการ์ดยักษ์ 15 ใบ — ลด over-information)
+   2) Item Browser: ค้น/หมวด/Top Rising/ไอคอน/ลิงก์หน้าไอเทม poe.ninja/hover tooltip/เฝ้าราคาในแถว
+   ทั้งหมด presentation — ไม่มีสูตรใหม่ (คะแนน/กลุ่มมาจาก pipeline เดิม) */
+
+// ตาราง slug หน้าไอเทม poe.ninja ต่อหมวด (hand-verified ★ + kebab-case ตาม convention ที่ยืนยันซ้ำหลายหมวด)
+// URL = /poe2/economy/{league}/{slug}/{item id} — หมวดที่ไม่อยู่ในตาราง → ไม่มีลิงก์ (แสดงชื่อเฉยๆ)
+const NINJA_CAT_SLUGS = {
+  Currency: 'currency',                       // ★
+  Fragments: 'fragments',                     // ★
+  Abyss: 'abyssal-bones',                     // ★ (sidebar "Abyssal Bones")
+  UncutGems: 'uncut-gems',                    // ★
+  LineageSupportGems: 'lineage-support-gems', // ★
+  Essences: 'essences',                       // ★
+  SoulCores: 'soul-cores',                    // ★
+  Idols: 'idols',                             // ★
+  Runes: 'runes',                             // ★
+  Ritual: 'omens',                            // ★ (Omens = subset ของ type Ritual)
+  Expedition: 'expedition',                   // ★
+  Delirium: 'delirium', Breach: 'breach', Verisium: 'verisium', // kebab guess (โครงเดียวกับหมวดอื่น)
+  UniqueTablets: 'unique-tablets',            // ★
+  UniqueWeapons: 'unique-weapons', UniqueArmours: 'unique-armours',
+  UniqueAccessories: 'unique-accessories', UniqueJewels: 'unique-jewels',
+  UniqueFlasks: 'unique-flasks', UniqueCharms: 'unique-charms', // kebab ตาม unique-tablets ที่ยืนยัน
+};
+function ninjaItemUrl(it) {
+  const slug = NINJA_CAT_SLUGS[it.category];
+  if (slug && it.id) return 'https://poe.ninja/poe2/economy/' + (radarData && radarData.league ? radarData.league : 'runesofaldur') + '/' + slug + '/' + encodeURIComponent(it.id);
+  return it.sourceUrl || null; // radar items เก่าไม่มี id — ตกไปหน้าหมวด
+}
+
+// ---- popup รายละเอียด bucket (ข้อ 1.7) — เนื้อหาการ์ดเดิมทั้งหมด + evidence ละเอียด ----
+function openRadarBucketModal(rc, sig, isTop) {
+  const overlay = document.createElement('div');
+  overlay.className = 'patch-overlay';
+  const panel = document.createElement('div');
+  panel.className = 'patch-panel radar-bucket-modal';
+  const close = () => { overlay.remove(); document.removeEventListener('keydown', onKey); };
+  const onKey = (e) => { if (e.key === 'Escape') close(); };
+  document.addEventListener('keydown', onKey);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+
+  const head = document.createElement('div');
+  head.className = 'rbm-head';
+  const asset = RADAR_ASSET_BY_KEY[rc.contentKey] && GAME_ASSETS[RADAR_ASSET_BY_KEY[rc.contentKey]]
+    ? getLocalAssetForName(GAME_ASSETS[RADAR_ASSET_BY_KEY[rc.contentKey]].label) : null;
+  if (asset) {
+    const ico = document.createElement('img');
+    ico.className = 'game-ico game-ico-md game-thumb';
+    ico.src = asset.src; ico.alt = ''; ico.setAttribute('aria-hidden', 'true');
+    head.appendChild(ico);
+  }
+  const ttl = document.createElement('h3');
+  ttl.textContent = (isTop ? '★ ' : '') + (rc.content || '?');
+  head.appendChild(ttl);
+  const sVal = typeof rc.score === 'number' ? Math.round(rc.score) : null;
+  const scoreEl = document.createElement('span');
+  scoreEl.className = 'score-badge' + (sig.label ? ' score-badge-label' : '');
+  scoreEl.textContent = sig.label ? sig.label : (sVal === null ? '—' : sVal + '%');
+  head.appendChild(scoreEl);
+  const x = document.createElement('button');
+  x.type = 'button'; x.className = 'patch-close'; x.textContent = '✕'; x.title = 'ปิด';
+  x.addEventListener('click', close);
+  head.appendChild(x);
+  panel.appendChild(head);
+
+  const bar = document.createElement('div');
+  bar.className = 'score-bar';
+  const fill = document.createElement('div');
+  fill.className = 'score-bar-fill';
+  fill.style.width = (sVal === null ? 0 : Math.max(0, Math.min(100, sVal))) + '%';
+  bar.appendChild(fill);
+  panel.appendChild(bar);
+
+  if (sig.note) {
+    const sn = document.createElement('p');
+    sn.className = 'reco-signal-note';
+    sn.textContent = sig.note;
+    panel.appendChild(sn);
+  }
+
+  // breakdown — ค่าที่คำนวณอยู่แล้วเท่านั้น (แบบเดียวกับการ์ดเดิม 0.39)
+  if (rc.hasEvidence) {
+    const confInfo = radarConfidenceInfo(rc, radarData);
+    const bd = document.createElement('div');
+    bd.className = 'reco-breakdown';
+    const bdRow = (k, v, title) => {
+      const row = document.createElement('div'); row.className = 'bd-row';
+      const kEl = document.createElement('span'); kEl.className = 'bd-k'; kEl.textContent = k;
+      const vEl = document.createElement('span'); vEl.className = 'bd-v'; vEl.textContent = v;
+      if (title) row.title = title;
+      row.appendChild(kEl); row.appendChild(vEl); bd.appendChild(row);
+    };
+    bdRow('Profit', typeof rc.avgValue === 'number' ? rc.avgValue.toFixed(2) + ' Div' : '—', 'มูลค่าเฉลี่ยไอเทมท็อป');
+    bdRow('Trend', typeof rc.avgTrend === 'number' ? (rc.avgTrend >= 0 ? '+' : '') + rc.avgTrend.toFixed(1) + '% 7d' : '—', 'เทรนด์เฉลี่ยไอเทมท็อป 7 วัน');
+    bdRow('Coverage', (rc.itemCount || 0) + ' items' + (rc.lowLiqCount > 0 ? ' · ' + rc.lowLiqCount + ' low-liq' : ''), 'จำนวนไอเทมหลักฐานของ content นี้');
+    bdRow('Risk', rc.risk ? '⚠ มี' : '—', rc.risk || 'ไม่มีความเสี่ยงเด่น');
+    bdRow('Confidence', confInfo.label, confInfo.why);
+    panel.appendChild(bd);
+  }
+
+  if (Array.isArray(rc.reason) && rc.reason.length) {
+    const ul = document.createElement('ul');
+    ul.className = 'reason-list';
+    rc.reason.forEach(r => { const li = document.createElement('li'); li.textContent = r; ul.appendChild(li); });
+    panel.appendChild(ul);
+  } else if (rc.status && rc.hasEvidence === false) {
+    const st = document.createElement('p'); st.className = 'rf-note'; st.textContent = rc.status;
+    panel.appendChild(st);
+  }
+
+  // หลักฐานท็อป — ประกอบสดจาก marketItems ของ snapshot (pipeline หน้าเว็บไม่มี evidenceItems field;
+  // เรียงด้วย radarItemScore ตัวเดียวกับที่ buildRadarRecos ใช้ — ไม่มีสูตรใหม่)
+  const evidence = (radarData && Array.isArray(radarData.marketItems))
+    ? radarData.marketItems
+      .filter(x => x.contentKey === rc.contentKey)
+      .sort((a, b) => radarItemScore(b) - radarItemScore(a))
+      .slice(0, 6)
+    : [];
+  if (evidence.length) {
+    const evTitle = document.createElement('p');
+    evTitle.className = 'rbm-ev-title';
+    evTitle.textContent = 'ไอเทมหลักฐานท็อป (' + evidence.length + (rc.itemCount > evidence.length ? ' จาก ' + rc.itemCount : '') + ')';
+    panel.appendChild(evTitle);
+    const evWrap = document.createElement('div');
+    evWrap.className = 'rbm-ev';
+    evidence.forEach(ev => {
+      const row = document.createElement('div');
+      row.className = 'rbm-ev-row';
+      const nm = document.createElement('span'); nm.className = 'rbm-ev-name';
+      if (ev.sourceUrl) {
+        const a = document.createElement('a');
+        a.href = ev.sourceUrl; a.target = '_blank'; a.rel = 'noopener noreferrer';
+        a.textContent = ev.name || '?';
+        nm.appendChild(a);
+      } else nm.textContent = ev.name || '?';
+      const val = document.createElement('span'); val.className = 'radar-price';
+      val.textContent = radarFmtValue(ev.value, ev.valueCurrency);
+      const tr = document.createElement('span');
+      if (typeof ev.trend7d === 'number') {
+        tr.className = ev.trend7d >= 0 ? 'trend-up' : 'trend-down';
+        tr.textContent = (ev.trend7d >= 0 ? '▲ +' : '▼ ') + ev.trend7d.toFixed(1) + '%';
+      } else { tr.className = 'radar-liq'; tr.textContent = '—'; }
+      const liq = document.createElement('span'); liq.className = 'radar-liq';
+      liq.textContent = ev.liquidityLabel || '—';
+      row.appendChild(nm); row.appendChild(val); row.appendChild(tr); row.appendChild(liq);
+      evWrap.appendChild(row);
+    });
+    panel.appendChild(evWrap);
+  }
+
+  if (rc.risk) {
+    const rk = document.createElement('div'); rk.className = 'reco-risk'; rk.textContent = '⚠ ' + rc.risk;
+    panel.appendChild(rk);
+  }
+
+  const foot = document.createElement('div');
+  foot.className = 'rbm-foot';
+  const confInfo2 = radarConfidenceInfo(rc, radarData);
+  const cf = document.createElement('span');
+  cf.className = 'conf-badge ' + confInfo2.cls;
+  cf.textContent = 'Confidence: ' + confInfo2.label;
+  cf.title = confInfo2.why || '';
+  foot.appendChild(cf);
+  if (RADAR_CODEX_LINKS[rc.contentKey]) {
+    const cx = document.createElement('button');
+    cx.type = 'button'; cx.className = 'ocr-btn reco-codex-btn';
+    cx.textContent = '📖 ' + t('radar.viewcontent');
+    cx.addEventListener('click', () => { close(); openRadarCodexEntry(rc.contentKey, rc.content); });
+    foot.appendChild(cx);
+  }
+  (Array.isArray(rc.sourceUrls) ? rc.sourceUrls : []).forEach(u => {
+    if (!u) return;
+    const a = document.createElement('a');
+    a.className = 'farm-link-chip';
+    a.href = u; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.textContent = 'poe.ninja ↗';
+    foot.appendChild(a);
+  });
+  panel.appendChild(foot);
+
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+}
+
+// ---- hover tooltip ของไอเทม (ข้อ 1.6) — สร้างครั้งเดียว ใช้ร่วมทุกแถว ----
+let radarItemTipEl = null;
+function showRadarItemTip(anchorEl, it) {
+  if (!radarItemTipEl) {
+    radarItemTipEl = document.createElement('div');
+    radarItemTipEl.className = 'radar-item-tip';
+    radarItemTipEl.setAttribute('role', 'tooltip');
+    document.body.appendChild(radarItemTipEl);
+  }
+  const tip = radarItemTipEl;
+  tip.innerHTML = '';
+  const head = document.createElement('div'); head.className = 'rit-head';
+  if (it.icon) {
+    const img = document.createElement('img'); img.src = it.icon; img.alt = ''; img.loading = 'lazy';
+    img.onerror = () => img.remove();
+    head.appendChild(img);
+  }
+  const nm = document.createElement('b'); nm.textContent = it.name || '?';
+  head.appendChild(nm);
+  tip.appendChild(head);
+  const cat = document.createElement('div'); cat.className = 'rit-line rit-cat'; cat.textContent = it.category || '—';
+  tip.appendChild(cat);
+  const val = document.createElement('div'); val.className = 'rit-line';
+  const rate = getDivineFiatRate();
+  val.textContent = 'ราคา: ' + radarFmtValue(it.value, it.valueCurrency)
+    + (rate > 0 && typeof it.value === 'number' ? ' (≈ ' + fmtNum(it.value * rate) + ' ' + fiatSymbol() + ')' : '');
+  tip.appendChild(val);
+  const tr = document.createElement('div'); tr.className = 'rit-line';
+  tr.textContent = 'เทรนด์ 7 วัน: ' + (typeof it.trend7d === 'number' ? (it.trend7d >= 0 ? '+' : '') + it.trend7d.toFixed(1) + '%' : '—');
+  if (typeof it.trend7d === 'number') tr.classList.add(it.trend7d >= 0 ? 'trend-up' : 'trend-down');
+  tip.appendChild(tr);
+  const liq = document.createElement('div'); liq.className = 'rit-line';
+  liq.textContent = 'สภาพคล่อง: ' + (it.liquidityLabel || '—')
+    + (typeof it.volume === 'number' ? ' (vol ' + fmtNum(it.volume) + ' Div/ชม.)' : '');
+  tip.appendChild(liq);
+  if (priceHistory && priceHistory.points && Array.isArray(priceHistory.points[it.name])) {
+    const svg = priceSparkline(priceHistory.points[it.name], 120, 26);
+    if (svg) { const sp = document.createElement('div'); sp.className = 'rit-spark'; sp.innerHTML = svg; tip.appendChild(sp); }
+  }
+  // ตำแหน่ง: ใต้แถว (fixed) — แปลง px ด้วย uiZoom เหมือน tooltip อื่น (ดู initAcHelpTips)
+  const zoom = uiZoom();
+  const rect = anchorEl.getBoundingClientRect();
+  tip.style.display = 'block';
+  const tw = tip.offsetWidth * zoom;
+  let left = rect.left;
+  if (left + tw > window.innerWidth - 12) left = Math.max(8, window.innerWidth - 12 - tw);
+  let top = rect.bottom + 6;
+  if (top + tip.offsetHeight * zoom > window.innerHeight - 8) top = rect.top - tip.offsetHeight * zoom - 6;
+  tip.style.left = (left / zoom) + 'px';
+  tip.style.top = (Math.max(4, top) / zoom) + 'px';
+}
+function hideRadarItemTip() {
+  if (radarItemTipEl) radarItemTipEl.style.display = 'none';
+}
+
+// ---- Item Browser (ข้อ 1.1-1.6) — ราคาทั้งตลาด: ค้น + หมวด + Top Rising + เฝ้าราคาในแถว ----
+let radarBrowseCat = 'rising';   // in-memory: 'rising' | 'all' | ชื่อหมวด
+let radarBrowseQuery = '';
+let radarBrowseLimit = 60;
+const RADAR_BROWSE_STEP = 60;
+function radarBrowseSource() {
+  // Browser ใช้ market-prices เท่านั้น (มี id → ลิงก์ระดับไอเทมถูกต้อง) — ยังไม่โหลด = คืนว่าง
+  // (renderRadarItemBrowser จะโชว์ "กำลังโหลด" + ensure แล้ว re-render เอง — ไม่ fallback radar
+  // เพราะ radar items ไม่มี id ทำให้ลิงก์ตกไปหน้าหมวดที่ slug อาจผิด)
+  if (marketPrices && Array.isArray(marketPrices.items) && marketPrices.items.length) {
+    return marketPrices.items.map(normalizePriceItem);
+  }
+  return [];
+}
+// หมวดพิเศษ "🔥 Top Rising" (ข้อ 1.4) — เกณฑ์: เทรนด์ 7 วัน ≥ +5% เรียงจากแรงสุด,
+// กัน junk ด้วยมูลค่าขั้นต่ำ 0.3 Div และ (มี volume ≥ 0.5 Div/ชม. หรือเป็นหมวดไม่มี volume เช่น uniques)
+function radarBrowseTopRising(items) {
+  return items
+    .filter(it => typeof it.trend7d === 'number' && it.trend7d >= 5
+      && typeof it.value === 'number' && it.value >= 0.3
+      && (typeof it.volume !== 'number' || it.volume >= 0.5))
+    .sort((a, b) => b.trend7d - a.trend7d)
+    .slice(0, 40);
+}
+function renderRadarItemBrowser(container) {
+  container.innerHTML = '';
+  const all = radarBrowseSource();
+  if (!all.length) {
+    const d = document.createElement('div');
+    d.className = 'radar-fallback';
+    d.textContent = 'กำลังโหลดราคาทั้งตลาด…';
+    container.appendChild(d);
+    ensureMarketPrices().then(() => renderRadarItemBrowser(container));
+    return;
+  }
+  ensureMarketPrices(); // อัปเกรดเป็นชุดเต็มถ้ายังไม่มา (แล้วผู้ใช้กด chip/ค้นจะ re-render เอง)
+
+  // แถวค้นหา (ข้อ 1.2)
+  const searchRow = document.createElement('div');
+  searchRow.className = 'radar-browse-search-row';
+  const inp = document.createElement('input');
+  inp.type = 'text'; inp.className = 'radar-browse-search';
+  inp.placeholder = '🔍 ค้นหาไอเทมทั้งตลาด (' + all.length + ' รายการ)…';
+  inp.value = radarBrowseQuery;
+  inp.autocomplete = 'off'; inp.spellcheck = false;
+  let debounceT = null;
+  inp.addEventListener('input', () => {
+    clearTimeout(debounceT);
+    debounceT = setTimeout(() => {
+      radarBrowseQuery = inp.value;
+      radarBrowseLimit = RADAR_BROWSE_STEP;
+      renderRadarItemBrowser(container);
+      const again = container.querySelector('.radar-browse-search');
+      if (again) { again.focus(); again.setSelectionRange(again.value.length, again.value.length); }
+    }, 220);
+  });
+  searchRow.appendChild(inp);
+  container.appendChild(searchRow);
+
+  // ชิปหมวด (ข้อ 1.3/1.4) — นับจำนวนจริงต่อหมวด
+  const catCounts = new Map();
+  all.forEach(it => catCounts.set(it.category, (catCounts.get(it.category) || 0) + 1));
+  const chipRow = document.createElement('div');
+  chipRow.className = 'radar-browse-chips';
+  const makeChip = (key, label) => {
+    const c = document.createElement('button');
+    c.type = 'button';
+    c.className = 'radar-browse-chip' + (radarBrowseCat === key ? ' on' : '');
+    c.textContent = label;
+    c.addEventListener('click', () => {
+      radarBrowseCat = key;
+      radarBrowseLimit = RADAR_BROWSE_STEP;
+      renderRadarItemBrowser(container);
+    });
+    chipRow.appendChild(c);
+  };
+  makeChip('rising', '🔥 Top Rising');
+  makeChip('all', 'ทั้งหมด (' + all.length + ')');
+  [...catCounts.keys()].sort().forEach(cat => makeChip(cat, cat + ' (' + catCounts.get(cat) + ')'));
+  container.appendChild(chipRow);
+
+  // กรอง: มีคำค้น = ค้น "ทั้งตลาด" ข้ามหมวดเสมอ (จะได้ไม่พลาดของที่อยู่นอก chip ที่เลือก) ·
+  // ไม่มีคำค้น = ตาม chip (Top Rising = trend desc / อื่น = value desc)
+  const q = radarBrowseQuery.trim().toLowerCase();
+  let list;
+  if (q) {
+    list = all.filter(it => (it.name || '').toLowerCase().includes(q));
+    list.sort((a, b) => (b.value || 0) - (a.value || 0));
+  } else {
+    list = radarBrowseCat === 'rising' ? radarBrowseTopRising(all)
+      : radarBrowseCat === 'all' ? all.slice()
+      : all.filter(it => it.category === radarBrowseCat);
+    if (radarBrowseCat !== 'rising') list.sort((a, b) => (b.value || 0) - (a.value || 0));
+  }
+
+  const meta = document.createElement('p');
+  meta.className = 'rf-note radar-browse-meta';
+  meta.textContent = q
+    ? 'ค้นทั้งตลาด "' + radarBrowseQuery.trim() + '" — ' + list.length + ' รายการ'
+    : (radarBrowseCat === 'rising' ? 'Top Rising: เทรนด์ 7 วัน ≥ +5% เรียงจากแรงสุด (กัน junk: มูลค่า ≥0.3 Div + มีสภาพคล่อง) · ' : '')
+      + list.length + ' รายการ';
+  container.appendChild(meta);
+
+  if (!list.length) {
+    container.appendChild(uxEmptyState({ icon: '🔎', title: 'ไม่พบไอเทม', desc: 'ลองเปลี่ยนคำค้นหรือหมวด' }));
+    return;
+  }
+
+  const rows = document.createElement('div');
+  rows.className = 'radar-browse-rows';
+  list.slice(0, radarBrowseLimit).forEach(it => {
+    const row = document.createElement('div');
+    row.className = 'radar-browse-row';
+    // hover tooltip (ข้อ 1.6)
+    row.addEventListener('mouseenter', () => showRadarItemTip(row, it));
+    row.addEventListener('mouseleave', hideRadarItemTip);
+
+    const iconCell = document.createElement('span');
+    iconCell.className = 'radar-row-icon';
+    if (it.icon) {
+      const img = document.createElement('img');
+      img.src = it.icon; img.alt = ''; img.loading = 'lazy';
+      img.onerror = () => img.remove();
+      iconCell.appendChild(img);
+    }
+    row.appendChild(iconCell);
+
+    const nm = document.createElement('span');
+    nm.className = 'radar-browse-name';
+    const url = ninjaItemUrl(it);
+    if (url) {
+      const a = document.createElement('a');
+      a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      a.textContent = it.name || '?';
+      nm.appendChild(a);
+    } else nm.textContent = it.name || '?';
+    row.appendChild(nm);
+
+    const catEl = document.createElement('span');
+    catEl.className = 'radar-item-cat';
+    catEl.textContent = it.category || '—';
+    row.appendChild(catEl);
+
+    const val = document.createElement('span');
+    val.className = 'radar-price';
+    val.textContent = radarFmtValue(it.value, it.valueCurrency);
+    row.appendChild(val);
+
+    const tr = document.createElement('span');
+    if (typeof it.trend7d === 'number') {
+      tr.className = it.trend7d >= 0 ? 'trend-up' : 'trend-down';
+      tr.textContent = (it.trend7d >= 0 ? '▲ +' : '▼ ') + it.trend7d.toFixed(1) + '%';
+    } else { tr.className = 'radar-liq'; tr.textContent = '—'; }
+    row.appendChild(tr);
+
+    // เฝ้าราคาในแถว (ข้อ 1.1) — flow เดียวกับปุ่มในกล่องเช็คราคา (0.60)
+    const watched = watchlist.some(w => w.name === it.name);
+    const wb = document.createElement('button');
+    wb.type = 'button';
+    wb.className = 'radar-browse-watch' + (watched ? ' on' : '');
+    wb.textContent = '👁';
+    wb.title = watched ? 'เฝ้าอยู่ — แก้/ยกเลิกในรายการเฝ้าดู (กล่องเช็คราคา)' : 'เฝ้าราคา ' + (it.name || '');
+    wb.addEventListener('click', () => {
+      const def = typeof it.value === 'number' ? it.value : '';
+      const ans = prompt('เฝ้าราคา "' + it.name + '"\nแจ้งเตือนเมื่อราคา ≤ กี่ Divine? (ตอนนี้ ' + radarFmtValue(it.value, it.valueCurrency) + ')', String(def));
+      if (ans === null) return;
+      if (addWatch(it.name, ans, 'below')) {
+        if (typeof window.renderPriceWatchlist === 'function') window.renderPriceWatchlist();
+        wb.classList.add('on');
+        showSuccessToast('เพิ่มเข้ารายการเฝ้าดูแล้ว', { key: 'watch' });
+      } else showErrorToast('กรอกราคาเป็นตัวเลขมากกว่า 0');
+    });
+    row.appendChild(wb);
+
+    rows.appendChild(row);
+  });
+  container.appendChild(rows);
+
+  if (list.length > radarBrowseLimit) {
+    const moreBtn = document.createElement('button');
+    moreBtn.type = 'button';
+    moreBtn.className = 'ocr-btn radar-browse-more';
+    moreBtn.textContent = 'แสดงเพิ่ม (' + (list.length - radarBrowseLimit) + ' ที่เหลือ)';
+    moreBtn.addEventListener('click', () => {
+      radarBrowseLimit += RADAR_BROWSE_STEP;
+      renderRadarItemBrowser(container);
+    });
+    container.appendChild(moreBtn);
   }
 }
 
@@ -14320,6 +14666,7 @@ function priceLiqLabel(volume) {
 // แปลงแถว market-prices.json → shape เดียวกับ radarData.marketItems (ให้ render/watchlist เดิมใช้ได้)
 function normalizePriceItem(x) {
   return {
+    id: x.id, // 0.80: ใช้สร้างลิงก์หน้าไอเทม poe.ninja (ninjaItemUrl)
     name: x.name, icon: x.icon, category: x.category,
     value: x.valueDiv, valueCurrency: 'Divine',
     trend7d: x.trend7d, volume: x.volumeDiv,
