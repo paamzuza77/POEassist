@@ -1,17 +1,14 @@
 # P5 Phase 5 (patch 0.75) — deploy the Vite build to GitHub Pages.
 #
-# เริ่มแบบ manual (workflow_dispatch) ก่อน — จะได้ไม่มี run แดงก่อนผู้ใช้สลับ Pages source.
-# ขั้นตอนเปิดใช้:
-#   1) GitHub repo → Settings → Pages → Source = "GitHub Actions" (จาก "Deploy from a branch")
-#   2) Actions tab → "Deploy to GitHub Pages" → Run workflow (test ครั้งแรก)
-#   3) เช็คว่าเว็บ deploy ถูก แล้วค่อยเพิ่ม trigger `push: branches: [main]` ให้ deploy อัตโนมัติทุก commit
-# ก่อนสลับ Pages source: deploy เดิม (branch) ยังเสิร์ฟ = ไม่มีดาวน์ไทม์. สลับกลับได้ทุกเมื่อ.
+# ✅ เปิดใช้แล้ว (patch 0.76): Pages source = "GitHub Actions", deploy อัตโนมัติทุก push main.
+# ประวัติ: 0.75 สร้างแบบ workflow_dispatch (manual) ก่อน → test ผ่าน (live เสิร์ฟ Vite build, asset ครบ, console สะอาด)
+#   → 0.76 เปิด push trigger. legacy branch deploy ถูกแทนแล้ว. สลับกลับได้ที่ Settings → Pages → Source.
 name: Deploy to GitHub Pages
 
 on:
+  push:
+    branches: [main]      # auto-deploy ทุก push main (รวม data update รายชั่วโมงจาก update-market-radar.yml → live data สด)
   workflow_dispatch: {}
-  # push:                 # ← เปิดหลัง test manual ผ่าน (auto-deploy ทุก push main รวม data update รายชั่วโมง)
-  #   branches: [main]
 
 permissions:
   contents: read          # checkout
