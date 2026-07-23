@@ -35,9 +35,11 @@ Status: ongoing. Done ล่าสุด: Resistance Check redesign (0.48), Gear
 4. **ลูกเล่นล้ำ (เว็บล้วน ไม่ใช่ PWA)** — View Transitions API ตอนสลับแท็บ, skeleton shimmer ทุกจุดโหลด,
    แจ้งเตือน**ในหน้า** (toast) เมื่อ Stash Sale ใกล้เริ่มขณะเปิดเว็บอยู่ (เคารพ `prefers-reduced-motion`)
 
-### P3 — Play-session tools: เครื่องมือระหว่างเล่นจริง
+### P3 — Play-session tools: เครื่องมือระหว่างเล่นจริง ← **ปลุกแล้ว (ผู้ใช้สั่ง 2026-07-23) — แผนเต็มใน `docs/LIVE_TRACKER_PLAN.md`**
 1. **Live Farm Session** — โหมดจับเวลาสดใน Farm Planner: start/stop, นับแมพ, จดของหลุดเร็วๆ,
    Div/ชม. คำนวณสดระหว่างเล่น (ต่อยอด Run Tracker ที่มีอยู่ — ไม่มีสูตรเดาใหม่)
+   → ยกระดับเป็นแผน 3 เฟสแบบ dillapoe2stat: A เว็บล้วน (+ ราคา poe.ninja ครบทุกหมวด) ·
+   B desktop companion อ่าน Client.txt (นับแมพอัตโนมัติ) · C loot diff อัตโนมัติ (รอ GGG เปิด inventory API)
 2. **League Checklist** — เช็คลิสต์รางวัลถาวรของแคมเปญที่ห้ามพลาด (quest res/spirit ฯลฯ) ต่อ 1 ตัวละคร
    + เช็คลิสต์ day-1 ต้นลีค — ข้อมูล static + ติ๊กเก็บใน localStorage
 3. **New League Mode** — ปุ่มเดียว: อาร์ไคฟ์แผน/การ์ดของลีคเก่าแล้วเริ่มลีคใหม่สะอาดๆ (ข้อมูลเก่าไม่หาย ดูย้อนได้)

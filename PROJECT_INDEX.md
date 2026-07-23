@@ -16,6 +16,7 @@ Read this before opening any large file. Do not read everything — jump straigh
 | Session history | `CHANGELOG.md` (git history for full detail) |
 | When docs must be updated | `DOC_UPDATE_RULES.md` |
 | PoE2 API / in-map tracker research (for P6) | `POE2_API_RESEARCH.md` |
+| Live Farm Session tracker plan (dillapoe2stat study + poe.ninja all-categories + 3-phase roadmap) | `docs/LIVE_TRACKER_PLAN.md` (+ reference screenshots in `docs/ref-tracker/`) |
 | Vite + TypeScript migration plan (P5) | `P5_MIGRATION.md` |
 
 ## Current status (as of 2026-07-22)
@@ -77,7 +78,7 @@ Exile Assistant (repo: POEassist) is a single-page, static GitHub Pages app for 
 | `data/keyword-codex.json` | Generated poe2db TH/EN keyword encyclopedia for Keyword Codex (manual refresh, not in Actions) |
 | `assets/icons/*.svg` | Original pixel-art currency icons (divine/exalted/chaos orb) referenced by `icon-map.json` — **original artwork, keep them** |
 | `image/*.webp\|png` | Official GGG game artwork (currency orbs + league-mechanic icons), used via the **Game asset registry** (patch 0.32). `logo.png` is present but **deliberately never used** (trademark). See the registry section for the licensing/attribution rules |
-| `background/*.jfif\|webp\|jpg` | User-prepared app background images (patch 0.46) — offered in Settings → Appearance via the static `APP_BACKGROUNDS` registry in `index.html` (add a file = add a registry row). Rendered only through `#appBgLayer` at ≤20% opacity; unrelated to the Game asset registry. **Patch 0.47:** `4.jpg`/`5.jpg` got optimized siblings `4.optimized.jpg`/`5.optimized.jpg` (the app renders those via the registry's additive `file:` field + `appBgRenderSrc()`; the `src:` identity is unchanged so saved selections still resolve). Originals kept |
+| `background/*.jfif\|webp\|jpg` | User-prepared app background images (patch 0.46) — offered in Settings → Appearance via the static `APP_BACKGROUNDS` registry in `index.html` (add a file = add a registry row). Rendered only through `#appBgLayer` at ≤50% opacity (patch 0.77 raised the cap from 20%; `APP_BG_OPACITY_MAX` — slider max derives from it); unrelated to the Game asset registry. **Patch 0.47:** `4.jpg`/`5.jpg` got optimized siblings `4.optimized.jpg`/`5.optimized.jpg` (the app renders those via the registry's additive `file:` field + `appBgRenderSrc()`; the `src:` identity is unchanged so saved selections still resolve). Originals kept |
 | `scripts/update-home-status.mjs` | Generates `data/home-status.json` (scrapes poe2db.tw) |
 | `scripts/update-market-radar.mjs` | Generates `data/market-radar.json` (fetches poe.ninja) |
 | `scripts/update-content-codex.mjs` | Generates `data/content-codex.json` (poe2wiki MediaWiki API — run manually: `node scripts/update-content-codex.mjs`) |

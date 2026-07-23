@@ -4555,7 +4555,7 @@ window.ensureRawblockFonts = function () {
   /* ==================== App background (patch 0.46) ====================
      เลเยอร์ภาพพื้นหลังจางๆ (เลือกใน Settings → Appearance) — z-index:-1 = วาดเหนือพื้นหลัง
      ธีม (body canvas) แต่ใต้เนื้อหาทั้งหมด · opacity/รูปถูกตั้งด้วย inline style จาก
-     applyAppBackground() (สูงสุด 0.2 — บังคับใน JS) · ไม่มี transition/animation (นิ่งเสมอ,
+     applyAppBackground() (สูงสุด 0.5 ตั้งแต่ 0.77; เดิม 0.2 — บังคับใน JS) · ไม่มี transition/animation (นิ่งเสมอ,
      เคารพ reduced-motion โดยปริยาย) · pointer-events:none = ไม่บังการคลิกใดๆ */
   #appBgLayer {
     position: fixed;
@@ -7446,12 +7446,12 @@ applyDisplayMode(); // ยืนยัน attribute เผื่อ head script 
    (fixed, z-index:-1, pointer-events:none) เหนือพื้นหลังธีมแต่ใต้เนื้อหา/การ์ดทุกชิ้น
    - GitHub Pages เป็น static → ลิสต์ไฟล์ตอนรันไม่ได้ — APP_BACKGROUNDS คือทะเบียนคงที่
      ของไฟล์ในโฟลเดอร์ background/ (ตรวจด้วยตาตอน implement) · เพิ่มรูป = วางไฟล์ + เพิ่มแถว
-   - คีย์ additive poeAssist.background.v1: {mode:'none'|'image', src:'background/<file>', opacity:0–0.2}
+   - คีย์ additive poeAssist.background.v1: {mode:'none'|'image', src:'background/<file>', opacity:0–0.5 (0.77; เดิม 0.2)}
      tolerant load (src ไม่อยู่ในทะเบียน → none) · ค่าเริ่มต้น: ไม่มีพื้นหลัง, opacity 0.08
    - อยู่ทั้งใน APP_DATA_KEYS (backup) และ UI_PREF_KEYS (Reset UI = กลับเป็นไม่มีพื้นหลัง) */
 const APP_BG_KEY = 'poeAssist.background.v1';
 const APP_BG_OPACITY_DEFAULT = 0.08;
-const APP_BG_OPACITY_MAX = 0.2;
+const APP_BG_OPACITY_MAX = 0.5; // patch 0.77: เดิม 0.2 — ผู้ใช้อยากได้เข้มขึ้น (slider max derive จากค่านี้)
 // ทะเบียนไฟล์ใน background/ — ชื่อไฟล์ตรงตามจริง (ไม่มีช่องว่าง; ใส่ผ่าน encodeURI ตอนใช้เสมอ)
 // src = identity คงที่ (เก็บใน localStorage/backup) — ห้ามเปลี่ยน ไม่งั้น selection เก่าของผู้ใช้พัง
 // file (patch 0.47) = ไฟล์จริงที่จะ "วาด" ถ้ามี variant ที่ optimize แล้ว (default = src)
@@ -8754,7 +8754,7 @@ function deleteBuildProfile(id) {
   bgOpInput.type = 'range';
   bgOpInput.id = 'settingsBgOpacity';
   bgOpInput.min = '0';
-  bgOpInput.max = String(Math.round(APP_BG_OPACITY_MAX * 100)); // 20 (%)
+  bgOpInput.max = String(Math.round(APP_BG_OPACITY_MAX * 100)); // 50 (%) — ตาม APP_BG_OPACITY_MAX (0.77)
   bgOpInput.step = '1';
   const bgOpVal = document.createElement('span');
   bgOpVal.className = 'bg-opacity-val';
@@ -11237,6 +11237,13 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.77',
+    date: '2026-07-23',
+    notes: [
+      'พื้นหลังแอป: ปรับความเข้มได้สูงขึ้น — สไลเดอร์ใน Settings → Appearance ขยายจากสูงสุด 20% เป็น 50% (ค่าที่ตั้งไว้เดิมไม่เปลี่ยน)',
+    ],
+  },
   {
     version: '0.63',
     date: '2026-07-23',
