@@ -21,6 +21,10 @@ export type { RadarSnapshot, RadarConfidence } from './tabs/radar-format';
 export { isBought, rowEstPrice, shopBuyNextCandidates } from './tabs/shop-logic';
 export type { ShopRow } from './tabs/shop-logic';
 
+// Phase 4 (patch 0.73) — Resistance Checker (forge) scoring; forgeTargets/stats/filled passed as args.
+export { forgeTargetFor, computeForgeMissing, computeForgeReadiness, buildForgeRecos } from './tabs/forge-scoring';
+export type { ForgeTargets, StatDef, ForgeMissing, ForgeReadiness, ForgeReco } from './tabs/forge-scoring';
+
 // Phase 4 (patch 0.70) — state-module foundation: shared scoring constants + their pure consumers.
 // Lifting CAP/PENALTY/RADAR_FRESH_HOURS to src/ unblocks the constant-dependent scoring migrations.
 export { CAP, PENALTY, RADAR_FRESH_HOURS } from './lib/constants';

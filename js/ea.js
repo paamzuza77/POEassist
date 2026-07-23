@@ -166,6 +166,88 @@ var EA = function(exports) {
     candidates.sort((a, b) => Number(b.checked === true) - Number(a.checked === true) || rowEstPrice(a) - rowEstPrice(b));
     return candidates;
   }
+  function forgeTargetFor(statKey, forgeTargets) {
+    if (statKey === "chaos") return forgeTargets.chaos;
+    if (statKey === "rarity") return forgeTargets.rarity;
+    return forgeTargets.elemental;
+  }
+  function forgeProgress(current, floor, target) {
+    if (target <= floor) return current >= target ? 1 : 0;
+    return Math.max(0, Math.min(1, (current - floor) / (target - floor)));
+  }
+  function computeForgeMissing(totals, stats, forgeTargets) {
+    return stats.map((s) => {
+      const target = forgeTargetFor(s.key, forgeTargets);
+      const current = totals[s.key];
+      const shortBy = Math.max(0, Math.ceil(target - current));
+      let status, cls;
+      if (s.key === "rarity") {
+        if (target <= 0) {
+          status = "tracking only";
+          cls = "opt";
+        } else if (current >= target) {
+          status = "ready";
+          cls = "ready";
+        } else {
+          status = "+" + shortBy + " to target";
+          cls = "opt";
+        }
+      } else if (current >= target) {
+        status = current >= CAP ? "capped" : "ready";
+        cls = "ready";
+      } else {
+        status = "short +" + shortBy;
+        cls = "short";
+      }
+      return { key: s.key, label: s.label, group: s.group, current, target, shortBy, status, cls };
+    });
+  }
+  function computeForgeReadiness(totals, forgeTargets, filled, slotCount) {
+    let elem = 0;
+    ["fire", "cold", "lightning"].forEach((k) => {
+      elem += 15 * forgeProgress(totals[k], PENALTY, forgeTargets.elemental);
+    });
+    const chaosT = forgeTargets.chaos;
+    const chaos = 20 * (chaosT <= 0 ? totals.chaos >= chaosT ? 1 : 0 : forgeProgress(totals.chaos, 0, chaosT));
+    const rarT = forgeTargets.rarity;
+    const rarity = 15 * (rarT <= 0 ? 1 : forgeProgress(totals.rarity, 0, rarT));
+    const gear = 20 * (filled / slotCount);
+    return {
+      score: Math.max(0, Math.min(100, Math.round(elem + chaos + rarity + gear))),
+      filled,
+      parts: [
+        { label: "Elemental", pts: Math.round(elem), max: 45 },
+        { label: "Chaos", pts: Math.round(chaos), max: 20 },
+        { label: "Rarity", pts: Math.round(rarity), max: 15 },
+        { label: "Gear Filled", pts: Math.round(gear), max: 20 }
+      ]
+    };
+  }
+  function buildForgeRecos(missing, readiness, slotCount) {
+    const recos = [];
+    const elemShort = missing.filter((m) => (m.key === "fire" || m.key === "cold" || m.key === "lightning") && m.current < m.target);
+    if (elemShort.length) {
+      const worst = elemShort.reduce((a, b) => b.shortBy > a.shortBy ? b : a);
+      recos.push({ cls: "short", text: "เติม " + worst.label.replace(" Resistance", "") + " ก่อน — ขาดอีก +" + worst.shortBy + "%" });
+      const rest = elemShort.filter((m) => m !== worst);
+      if (rest.length) {
+        recos.push({ cls: "short", text: "ธาตุอื่นที่ยังขาด: " + rest.map((m) => m.label.replace(" Resistance", "") + " +" + m.shortBy + "%").join(" · ") });
+      }
+    }
+    const chaos = missing.find((m) => m.key === "chaos");
+    if (chaos && chaos.current < chaos.target) {
+      recos.push({ cls: "short", text: "Chaos ยังขาด +" + chaos.shortBy + "% (เป้า " + chaos.target + "%)" });
+    }
+    const rar = missing.find((m) => m.key === "rarity");
+    if (rar && rar.target > 0 && rar.current < rar.target) {
+      recos.push({ cls: "opt", text: "Rarity อีก +" + rar.shortBy + "% ถึงเป้า " + rar.target + "% (nice to have)" });
+    }
+    if (!recos.length) recos.push({ cls: "ready", text: "✓ เป้าหมายหลักครบแล้ว — ชุดนี้พร้อมใช้งาน" });
+    if (readiness.filled < slotCount) {
+      recos.push({ cls: "opt", text: "ช่องอุปกรณ์ที่ยังไม่มีข้อมูล: " + (slotCount - readiness.filled) + "/" + slotCount + " ช่อง" });
+    }
+    return recos;
+  }
   function formatResValue(total) {
     if (total > CAP) return `${CAP}%(${total}%)`;
     return (total > 0 ? "+" : "") + total + "%";
@@ -506,10 +588,14 @@ var EA = function(exports) {
   exports.RADAR_FRESH_HOURS = RADAR_FRESH_HOURS;
   exports.acNum = acNum;
   exports.acPct = acPct;
+  exports.buildForgeRecos = buildForgeRecos;
   exports.buildRadarRecos = buildRadarRecos;
   exports.cmdkFuzzyScore = cmdkFuzzyScore;
+  exports.computeForgeMissing = computeForgeMissing;
+  exports.computeForgeReadiness = computeForgeReadiness;
   exports.fmtDuration = fmtDuration;
   exports.fmtNum = fmtNum;
+  exports.forgeTargetFor = forgeTargetFor;
   exports.formatDurationParts = formatDurationParts;
   exports.formatResValue = formatResValue;
   exports.getLocalAssetForName = getLocalAssetForName;

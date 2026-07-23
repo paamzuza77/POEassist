@@ -5644,6 +5644,8 @@ const { CAP, PENALTY, RADAR_FRESH_HOURS, formatResValue, radarSignalInfo } = win
 const { radarSnapshotAgeHours, radarConfidenceInfo } = window.EA;
 // Gear Planner shop logic (patch 0.72): isBought/rowEstPrice pure; shopBuyNextCandidates รับ shopRows เป็น arg
 const { isBought, rowEstPrice, shopBuyNextCandidates } = window.EA;
+// Resistance Checker forge scoring (patch 0.73): forgeTargets/STATS/filled ส่งเป็น arg ที่ call site
+const { forgeTargetFor, computeForgeMissing, computeForgeReadiness, buildForgeRecos } = window.EA;
 
 /* ==================== Keyword Help Bridge (patch 0.30) ====================
    สะพานเชื่อม data/keyword-codex.json ให้เป็นระบบช่วยเหลือกลไกทั้งแอป:
@@ -6143,6 +6145,9 @@ function slotHasAnyData(slotKey) {
   return state[slotKey].some(r => (r.value || 0) !== 0);
 }
 
+// จำนวนช่องอุปกรณ์ที่มีข้อมูล — ป้อนให้ computeForgeReadiness (ย้ายเป็น TS patch 0.73; slotHasAnyData/EQUIP_SLOTS คงใน monolith)
+function forgeFilledSlots() { return EQUIP_SLOTS.filter(sl => slotHasAnyData(sl.key)).length; }
+
 function renderPaperdoll() {
   const grid = document.getElementById('paperdoll');
   grid.innerHTML = '';
@@ -6496,92 +6501,15 @@ function persistForgeTargets() {
   try { localStorage.setItem(FORGE_TARGETS_KEY, JSON.stringify(forgeTargets)); } catch (e) { /* storage unavailable */ }
 }
 
-function forgeTargetFor(statKey) {
-  if (statKey === 'chaos') return forgeTargets.chaos;
-  if (statKey === 'rarity') return forgeTargets.rarity;
-  return forgeTargets.elemental;
-}
+// forgeTargetFor() + forgeProgress() ย้ายไป src/tabs/forge-scoring.ts แล้ว (patch 0.73)
+// forgeTargetFor รับ (statKey, forgeTargets) · forgeProgress เป็น module-internal (ใช้แค่ใน computeForgeReadiness)
 
-// ความคืบหน้า 0..1 จาก floor → target (กัน target <= floor)
-function forgeProgress(current, floor, target) {
-  if (target <= floor) return current >= target ? 1 : 0;
-  return Math.max(0, Math.min(1, (current - floor) / (target - floor)));
-}
+// computeForgeMissing() ย้ายไป src/tabs/forge-scoring.ts แล้ว (patch 0.73) — รับ (totals, STATS, forgeTargets)
 
-// สถานะรายค่า: ready/capped (เขียว) · short +X (ส้ม) · optional (จาง สำหรับ rarity)
-function computeForgeMissing(totals) {
-  return STATS.map(s => {
-    const target = forgeTargetFor(s.key);
-    const current = totals[s.key];
-    const shortBy = Math.max(0, Math.ceil(target - current));
-    let status, cls;
-    if (s.key === 'rarity') {
-      if (target <= 0) { status = 'tracking only'; cls = 'opt'; }
-      else if (current >= target) { status = 'ready'; cls = 'ready'; }
-      else { status = '+' + shortBy + ' to target'; cls = 'opt'; }
-    } else if (current >= target) {
-      status = current >= CAP ? 'capped' : 'ready';
-      cls = 'ready';
-    } else {
-      status = 'short +' + shortBy;
-      cls = 'short';
-    }
-    return { key: s.key, label: s.label, group: s.group, current, target, shortBy, status, cls };
-  });
-}
+// computeForgeReadiness() ย้ายไป src/tabs/forge-scoring.ts แล้ว (patch 0.73) — รับ (totals, forgeTargets, filled, slotCount)
+// filled = forgeFilledSlots() (นับจาก slotHasAnyData ใน monolith), slotCount = EQUIP_SLOTS.length
 
-// Readiness Score 0-100 (สูตรโปร่งใส): Elemental 45 (ธาตุละ 15, วัดจาก penalty → เป้า)
-// + Chaos 20 + Rarity 15 (เป้า ≤ 0 = tracking only ให้เต็ม) + ช่องอุปกรณ์ที่มีข้อมูล 20 (10 ช่องหลัก)
-function computeForgeReadiness(totals) {
-  let elem = 0;
-  ['fire', 'cold', 'lightning'].forEach(k => {
-    elem += 15 * forgeProgress(totals[k], PENALTY, forgeTargets.elemental);
-  });
-  const chaosT = forgeTargets.chaos;
-  const chaos = 20 * (chaosT <= 0 ? (totals.chaos >= chaosT ? 1 : 0) : forgeProgress(totals.chaos, 0, chaosT));
-  const rarT = forgeTargets.rarity;
-  const rarity = 15 * (rarT <= 0 ? 1 : forgeProgress(totals.rarity, 0, rarT));
-  const filled = EQUIP_SLOTS.filter(sl => slotHasAnyData(sl.key)).length;
-  const gear = 20 * (filled / EQUIP_SLOTS.length);
-  return {
-    score: Math.max(0, Math.min(100, Math.round(elem + chaos + rarity + gear))),
-    filled,
-    parts: [
-      { label: 'Elemental', pts: Math.round(elem), max: 45 },
-      { label: 'Chaos', pts: Math.round(chaos), max: 20 },
-      { label: 'Rarity', pts: Math.round(rarity), max: 15 },
-      { label: 'Gear Filled', pts: Math.round(gear), max: 20 },
-    ],
-  };
-}
-
-// คำแนะนำสั้นๆ: ธาตุที่ขาดมากสุดก่อน → chaos → rarity → ช่องว่าง; ครบหมด = ข้อความพร้อมใช้
-function buildForgeRecos(missing, readiness) {
-  const recos = [];
-  const elemShort = missing.filter(m =>
-    (m.key === 'fire' || m.key === 'cold' || m.key === 'lightning') && m.current < m.target);
-  if (elemShort.length) {
-    const worst = elemShort.reduce((a, b) => (b.shortBy > a.shortBy ? b : a));
-    recos.push({ cls: 'short', text: 'เติม ' + worst.label.replace(' Resistance', '') + ' ก่อน — ขาดอีก +' + worst.shortBy + '%' });
-    const rest = elemShort.filter(m => m !== worst);
-    if (rest.length) {
-      recos.push({ cls: 'short', text: 'ธาตุอื่นที่ยังขาด: ' + rest.map(m => m.label.replace(' Resistance', '') + ' +' + m.shortBy + '%').join(' · ') });
-    }
-  }
-  const chaos = missing.find(m => m.key === 'chaos');
-  if (chaos && chaos.current < chaos.target) {
-    recos.push({ cls: 'short', text: 'Chaos ยังขาด +' + chaos.shortBy + '% (เป้า ' + chaos.target + '%)' });
-  }
-  const rar = missing.find(m => m.key === 'rarity');
-  if (rar && rar.target > 0 && rar.current < rar.target) {
-    recos.push({ cls: 'opt', text: 'Rarity อีก +' + rar.shortBy + '% ถึงเป้า ' + rar.target + '% (nice to have)' });
-  }
-  if (!recos.length) recos.push({ cls: 'ready', text: '✓ เป้าหมายหลักครบแล้ว — ชุดนี้พร้อมใช้งาน' });
-  if (readiness.filled < EQUIP_SLOTS.length) {
-    recos.push({ cls: 'opt', text: 'ช่องอุปกรณ์ที่ยังไม่มีข้อมูล: ' + (EQUIP_SLOTS.length - readiness.filled) + '/' + EQUIP_SLOTS.length + ' ช่อง' });
-  }
-  return recos;
-}
+// buildForgeRecos() ย้ายไป src/tabs/forge-scoring.ts แล้ว (patch 0.73) — รับ (missing, readiness, slotCount=EQUIP_SLOTS.length)
 
 /* ---------- Element radar chart (patch 0.48) ----------
    กราฟเรดาร์ 4 ธาตุใน Resistance Check — ใช้ totals ชุดเดียวกับรายการสถานะ (รวม penalty แล้ว ไม่มีสูตรใหม่)
@@ -6653,7 +6581,7 @@ function updateForgeChart(totals) {
   });
   verts.forEach(v => {
     svg += '<circle cx="' + v.x + '" cy="' + v.y + '" r="4.5" style="fill:' + v.s.color + ';stroke:var(--void);stroke-width:2">'
-      + '<title>' + v.s.label.replace(' Resistance', '') + ' ' + v.raw + '% (เป้า ' + forgeTargetFor(v.s.key) + '%)</title></circle>';
+      + '<title>' + v.s.label.replace(' Resistance', '') + ' ' + v.raw + '% (เป้า ' + forgeTargetFor(v.s.key, forgeTargets) + '%)</title></circle>';
   });
 
   // ป้ายค่าจริง (pill สีธาตุ ตัวเลขเข้ม) — วางตามแกน ห่างศูนย์กลางอย่างน้อย 34px กันป้ายซ้อนตอนค่าต่ำ
@@ -6685,8 +6613,8 @@ function updateForgeChart(totals) {
 function updateForgeRadar(totals) {
   const scoreEl = document.getElementById('readinessScore');
   if (!scoreEl) return;
-  const missing = computeForgeMissing(totals);
-  const readiness = computeForgeReadiness(totals);
+  const missing = computeForgeMissing(totals, STATS, forgeTargets);
+  const readiness = computeForgeReadiness(totals, forgeTargets, forgeFilledSlots(), EQUIP_SLOTS.length);
   const stateCls = readiness.score >= 80 ? 'sr-good' : readiness.score >= 50 ? 'sr-mid' : 'sr-low';
 
   scoreEl.textContent = readiness.score;
@@ -6709,7 +6637,7 @@ function updateForgeRadar(totals) {
       '</div>';
   }).join('');
 
-  document.getElementById('srReco').innerHTML = buildForgeRecos(missing, readiness).map(r =>
+  document.getElementById('srReco').innerHTML = buildForgeRecos(missing, readiness, EQUIP_SLOTS.length).map(r =>
     '<li class="sr-' + r.cls + '">' + r.text + '</li>').join('');
 
   updateForgeChart(totals);
@@ -6740,7 +6668,7 @@ function updateForgeAugCalc(totals) {
 
   // SECTION 1: Augment Result — result = current + (augmentValue × count); เขียว = ถึงเป้า, ส้ม = ยังขาด
   augBody.innerHTML = AUG_CALC_ROWS.map(el => {
-    const target = forgeTargetFor(el.key);
+    const target = forgeTargetFor(el.key, forgeTargets);
     const current = totals[el.key];
     const need = Math.max(0, Math.ceil(target - current));
     const augCells = [1, 2, 3].map(n => {
@@ -6756,7 +6684,7 @@ function updateForgeAugCalc(totals) {
 
   // SECTION 2: Items Needed Estimate — missing / roll → ปัดขึ้น; missing ≤ 0 = Ready / 0 ชิ้น
   itemBody.innerHTML = AUG_CALC_ROWS.map(el => {
-    const target = forgeTargetFor(el.key);
+    const target = forgeTargetFor(el.key, forgeTargets);
     const current = totals[el.key];
     const missing = target - current;
     const ready = missing <= 0;
@@ -16471,8 +16399,8 @@ function renderTodayForgeCard() {
   if (!card) return;
   card.innerHTML = '';
   const totals = todayForgeTotals();
-  const readiness = computeForgeReadiness(totals);
-  const missing = computeForgeMissing(totals);
+  const readiness = computeForgeReadiness(totals, forgeTargets, forgeFilledSlots(), EQUIP_SLOTS.length);
+  const missing = computeForgeMissing(totals, STATS, forgeTargets);
   todayCardHead(card, t('today.card.forge'), {
     openTab: 'forge',
     icon: TODAY_ICONS.forge,
@@ -16504,7 +16432,7 @@ function renderTodayForgeCard() {
   });
   card.appendChild(list);
 
-  const recos = buildForgeRecos(missing, readiness);
+  const recos = buildForgeRecos(missing, readiness, EQUIP_SLOTS.length);
   if (recos.length) {
     const p = document.createElement('p');
     p.className = 'today-sub';
@@ -16647,7 +16575,7 @@ function renderTodayAttentionCard() {
   if (s && s.missingCount > 0) {
     items.push({ text: tFmt('today.attn.noprice', { n: s.missingCount }), tone: 'warn', action: todayOpenShopNoPrice });
   }
-  const readiness = computeForgeReadiness(todayForgeTotals());
+  const readiness = computeForgeReadiness(todayForgeTotals(), forgeTargets, forgeFilledSlots(), EQUIP_SLOTS.length);
   if (readiness.filled > 0 && readiness.score < 50) {
     items.push({ text: tFmt('today.attn.lowres', { n: readiness.score }), tone: 'danger', action: () => switchTab('forge') });
   }
@@ -17496,7 +17424,7 @@ function todayBuildSummaryText() {
     L.push(t('today.sum.buynext') + ': ' + (bn.pick ? rowDisplayName(bn.pick) + ' ~' + fmtNum(rowEstPrice(bn.pick)) + ' Div' : '—')
       + ' · ' + t('today.gear.need') + ' ' + fmtNum(s.needMin) + '–' + fmtNum(s.needMax) + ' Div');
   }
-  L.push(t('today.sum.readiness') + ': ' + computeForgeReadiness(todayForgeTotals()).score + '/100');
+  L.push(t('today.sum.readiness') + ': ' + computeForgeReadiness(todayForgeTotals(), forgeTargets, forgeFilledSlots(), EQUIP_SLOTS.length).score + '/100');
   if (farmCards.length) {
     const sel = farmCards.find(c => c.id === farmSelectedId) || farmCards.find(c => c.favorite) || farmCards[0];
     const a = computeFarmRunAnalytics(sel);
