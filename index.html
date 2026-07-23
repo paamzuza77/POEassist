@@ -5147,7 +5147,8 @@ window.ensureRawblockFonts = function () {
   </div><!-- /pageHome -->
 
   <div id="pageRadar" hidden>
-    <!-- เช็คราคาไอเทม (patch 0.53) — ค้นจาก snapshot ที่โหลดอยู่แล้ว (radarData.marketItems) ไม่ fetch เพิ่ม -->
+    <!-- เช็คราคาไอเทม (patch 0.53; source ครบทุกหมวดตั้งแต่ 0.78) — ค้นจาก data/market-prices.json
+         (ทุกหมวดทุกชิ้น โหลด lazy ตอนใช้) · fallback เป็น radarData.marketItems ระหว่างโหลด -->
     <div class="price-panel" id="pricePanel">
       <div class="price-head">
         <h2 class="price-title">💰 เช็คราคาไอเทม</h2>
@@ -11238,6 +11239,14 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.78',
+    date: '2026-07-23',
+    notes: [
+      'เช็คราคาไอเทม: ค้นหาเจอครบทุกหมวดทุกชิ้นแล้ว (~634 รายการ รวม Lineage Gems / Uncut Gems / Idols และของราคาต่ำกว่า 1 Divine) — เดิมค้นได้เฉพาะ 86 ชิ้นที่ราคา ≥1 Divine ใน 11 หมวดของ Market Radar',
+      'Watchlist เฝ้าราคาได้ทุกไอเทมในระบบใหม่ด้วยเช่นกัน',
+    ],
+  },
+  {
     version: '0.77',
     date: '2026-07-23',
     notes: [
@@ -14268,8 +14277,53 @@ document.getElementById('radarRefreshBtn').addEventListener('click', async () =>
 loadRadar();
 
 /* ---- Price-this-item lookup (patch 0.53) ----
-   ค้นราคาไอเทมจาก radarData.marketItems ที่โหลดไว้แล้ว — ไม่ fetch เพิ่ม, ไม่มีคณิตใหม่
-   (value เป็น Divine ตามฐานข้อมูล; แปลง fiat ด้วยเรทที่ผู้ใช้ตั้งเองเท่านั้นผ่าน getDivineFiatRate) */
+   ค้นราคาไอเทมจาก snapshot ตลาด — ไม่มีคณิตใหม่
+   (value เป็น Divine ตามฐานข้อมูล; แปลง fiat ด้วยเรทที่ผู้ใช้ตั้งเองเท่านั้นผ่าน getDivineFiatRate)
+   patch 0.78 (docs/LIVE_TRACKER_PLAN.md A3): source หลัก = data/market-prices.json (ทุกหมวดทุกชิ้น
+   ~634 items ไม่มีเกณฑ์ขั้นต่ำ — โหลด lazy ตอนผู้ใช้เริ่มค้น/มี watchlist) · ระหว่างยังไม่โหลด
+   fallback เป็น radarData.marketItems (86 ชิ้น ≥1 Div) เหมือนเดิม — พฤติกรรมเดิมไม่หาย */
+let marketPrices = null;         // { items: [...] } จาก data/market-prices.json (null = ยังไม่โหลด)
+let marketPricesLoading = null;  // shared promise กันโหลดซ้ำ
+function ensureMarketPrices() {
+  if (marketPrices || marketPricesLoading) return marketPricesLoading || Promise.resolve(marketPrices);
+  marketPricesLoading = fetch('data/market-prices.json?t=' + Date.now(), { cache: 'no-store' })
+    .then(r => (r.ok ? r.json() : null))
+    .then(p => {
+      if (p && Array.isArray(p.items)) {
+        marketPrices = p;
+        // ถ้าหน้าเช็คราคากำลังเปิดผลอยู่ → วาดใหม่ให้ครบทุกหมวด
+        const inp = document.getElementById('priceLookupInput');
+        if (inp && inp.value.trim()) inp.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      return marketPrices;
+    })
+    .catch(() => null); // โหลดพลาด → fallback radarData เดิมทำงานต่อ
+  return marketPricesLoading;
+}
+// label สภาพคล่องจาก volume (display-only — threshold เดียวกับ generator ฝั่ง script)
+function priceLiqLabel(volume) {
+  if (typeof volume !== 'number' || volume <= 0) return 'Unknown';
+  if (volume >= 1000) return 'High';
+  if (volume >= 100) return 'Good';
+  if (volume >= 10) return 'OK';
+  return 'Low';
+}
+// แปลงแถว market-prices.json → shape เดียวกับ radarData.marketItems (ให้ render/watchlist เดิมใช้ได้)
+function normalizePriceItem(x) {
+  return {
+    name: x.name, icon: x.icon, category: x.category,
+    value: x.valueDiv, valueCurrency: 'Divine',
+    trend7d: x.trend7d, volume: x.volumeDiv,
+    liquidityLabel: priceLiqLabel(x.volumeDiv),
+  };
+}
+// รายการค้นหา: prices ครบทุกหมวดถ้าโหลดแล้ว · ไม่งั้น radar เดิม (fallback)
+function priceSearchItems() {
+  if (marketPrices && Array.isArray(marketPrices.items) && marketPrices.items.length) {
+    return marketPrices.items.map(normalizePriceItem);
+  }
+  return (radarData && Array.isArray(radarData.marketItems)) ? radarData.marketItems : [];
+}
 /* ---- Price history + sparkline (patch 0.61) ----
    อ่าน data/price-history.json (สร้าง/ต่อจุดโดย GitHub Actions) → วาดกราฟจิ๋วบอกเทรนด์ราคา
    เบราว์เซอร์ไม่เรียก poe.ninja ตรงๆ — อ่านไฟล์ static เท่านั้น */
@@ -14321,12 +14375,22 @@ function removeWatch(name) {
   persistWatchlist();
 }
 function marketItemByName(name) {
+  // radar ก่อน (field ครบ/พฤติกรรมเดิม) → แล้วค่อยหาใน market-prices (ครบทุกหมวด, patch 0.78)
   const items = (radarData && Array.isArray(radarData.marketItems)) ? radarData.marketItems : [];
-  return items.find(it => it.name === name) || null;
+  const hit = items.find(it => it.name === name);
+  if (hit) return hit;
+  if (marketPrices && Array.isArray(marketPrices.items)) {
+    const p = marketPrices.items.find(it => it.name === name);
+    if (p) return normalizePriceItem(p);
+  }
+  return null;
 }
 // เทียบราคาปัจจุบันกับเกณฑ์ทุกตัว → แจ้งเตือนเมื่อ "เพิ่งข้าม" เกณฑ์
 function checkWatchlist() {
-  if (!radarData || !Array.isArray(radarData.marketItems)) return;
+  // ต้องมี source อย่างน้อยหนึ่ง (radar หรือ market-prices) — มี watchlist แต่ prices ยังไม่โหลด → โหลด (ครั้งเดียว)
+  if (watchlist.length && !marketPrices) ensureMarketPrices();
+  const haveRadar = radarData && Array.isArray(radarData.marketItems);
+  if (!haveRadar && !marketPrices) return;
   let changed = false;
   watchlist.forEach(w => {
     const it = marketItemByName(w.name);
@@ -14363,11 +14427,12 @@ setInterval(checkWatchlist, 60000);
     const q = input.value.trim().toLowerCase();
     box.innerHTML = '';
     if (!q) return;
-    const items = (radarData && Array.isArray(radarData.marketItems)) ? radarData.marketItems : [];
+    ensureMarketPrices(); // ครั้งแรกที่ค้น → โหลดราคาครบทุกหมวด (โหลดเสร็จจะ re-render เอง)
+    const items = priceSearchItems(); // prices ครบทุกหมวด (0.78) หรือ radar เดิมระหว่างโหลด
     if (!items.length) {
       const d = document.createElement('div');
       d.className = 'price-empty';
-      d.textContent = radarData ? 'ยังไม่มีข้อมูลตลาดในรอบนี้' : 'กำลังโหลดข้อมูลตลาด… ลองพิมพ์อีกครั้ง';
+      d.textContent = (radarData || marketPrices) ? 'ยังไม่มีข้อมูลตลาดในรอบนี้' : 'กำลังโหลดข้อมูลตลาด… ลองพิมพ์อีกครั้ง';
       box.appendChild(d);
       if (!radarData) loadRadar();
       return;
