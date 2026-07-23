@@ -72,7 +72,8 @@ Exile Assistant (repo: POEassist) is a single-page, static GitHub Pages app for 
 | `css/modern-theme.css` | **"Modern" theme (patch 0.35; rebuilt in 0.44)** — light/dark tokens + scoped structural overrides; section 12 owns the dark-first atmospheric canvas, floating glass shell, page composition, strong highlights, hover elevation, Settings frame, and responsive behavior. `<link>`ed **last** so it wins the cascade |
 | `README.md` | Placeholder (just a title) — not a source of project info |
 | `data/home-status.json` | Generated snapshot for Exile Hub (league timing, stash sale) |
-| `data/market-radar.json` | Generated poe.ninja snapshot for Market Radar |
+| `data/market-radar.json` | Generated poe.ninja snapshot for Market Radar (scoring pipeline — 11 fixed categories, ≥1-Div floor) |
+| `data/market-prices.json` | **All-category all-item price snapshot (2026-07-23, `docs/LIVE_TRACKER_PLAN.md` A1)** — same generator, no value floor, ~634 items / 14 real categories (+auto-probed candidates), compact JSON ~197KB. For price lookup / Live Farm Session; load lazily, never feed into radar scoring |
 | `data/icon-map.json` | Currency/menu icon lookup, with emoji fallback |
 | `data/content-codex.json` | Generated poe2wiki boss/content drop knowledge base for Content Codex (manual refresh, not in Actions) |
 | `data/keyword-codex.json` | Generated poe2db TH/EN keyword encyclopedia for Keyword Codex (manual refresh, not in Actions) |

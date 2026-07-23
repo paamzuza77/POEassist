@@ -24,12 +24,26 @@ import { fileURLToPath } from 'node:url';
 const LEAGUE = 'runesofaldur';
 const LEAGUE_DISPLAY = 'Runes of Aldur';
 
-// หมวดที่จะดึงจาก poe.ninja — เพิ่ม/ลบชื่อหมวดได้ที่นี่
+// หมวดที่ป้อนเข้า RADAR SCORING — ห้ามเพิ่มที่นี่โดยไม่ตั้งใจ: การเพิ่มหมวดเปลี่ยนผล Farm Score
 // (ชื่อต้องตรงกับพารามิเตอร์ type ของ API เช่นเดียวกับ path ในหน้าเว็บ poe.ninja)
 // หมวดไหนดึงพลาดจะถูกบันทึกลง errors[] แต่ไม่ทำให้ทั้ง script ล้ม
 const CATEGORIES = [
   'Currency', 'Fragments', 'Abyss', 'Runes', 'Ritual', 'Delirium',
   'Breach', 'SoulCores', 'Essences', 'Expedition', 'Verisium',
+];
+
+// หมวดเพิ่มเติมสำหรับ data/market-prices.json (ราคาครบทุกหมวดทุกชิ้น — 2026-07-23):
+// ดึง "ทุกหมวดที่มีข้อมูล" (CATEGORIES + รายการนี้) แต่ **ไม่ป้อนเข้า radar scoring** (สูตรเดิมคงผลเป๊ะ)
+// ชื่อ type ยืนยันจาก network ของหน้า poe.ninja จริง — sidebar ชื่อไม่ตรง type เสมอไป:
+//   Uncut Gems → UncutGems · Idols → Idols · Lineage Gems → LineageSupportGems ·
+//   Omens → Ritual (มีใน CATEGORIES แล้ว) · Abyssal Bones → Abyss (มีแล้ว)
+// ⇒ 3 ชื่อแรก = มีข้อมูลจริงในลีคปัจจุบัน; ที่เหลือเป็น candidate จากลีคเก่า/อนาคต — probe ทุกงวด
+// หมวดที่คืน 0 items จะลง skippedCategories[] (ไม่ใช่ error) — ลีคหน้ามีของก็ติดมาอัตโนมัติ
+const EXTRA_PRICE_CATEGORIES = [
+  'UncutGems', 'Idols', 'LineageSupportGems',
+  // candidates (ว่างในลีคปัจจุบัน — เผื่อ GGG/poe.ninja เพิ่มคืนในลีคหน้า):
+  'Catalysts', 'Waystones', 'Talismans', 'Gems', 'Omens', 'Distilled',
+  'Artifacts', 'Logbooks', 'LiquidEmotions', 'Tablets',
 ];
 
 // ===== Content bucket mapping (จุดเดียวที่คุมว่าหมวด poe.ninja ไหน → farm content ไหน) =====
@@ -212,7 +226,9 @@ function itemFarmScore(item, confidence) {
 
 async function main() {
   const errors = [];
-  const allItems = [];
+  const allItems = [];        // เฉพาะ CATEGORIES (radar scoring — pipeline เดิมเป๊ะ)
+  const priceItems = [];      // ทุกหมวด (CATEGORIES + EXTRA) → data/market-prices.json
+  const priceCategoryCounts = {}; // ชื่อหมวด → จำนวน items (สำหรับ summary/skipped)
 
   let version = null;
   try {
@@ -223,19 +239,29 @@ async function main() {
   }
 
   if (version) {
-    for (const cat of CATEGORIES) {
+    // ดึงหมวดละครั้งเดียว: หมวด radar ป้อนทั้ง allItems + priceItems, หมวด extra ป้อนเฉพาะ priceItems
+    const RADAR_SET = new Set(CATEGORIES);
+    for (const cat of [...CATEGORIES, ...EXTRA_PRICE_CATEGORIES]) {
       try {
         const items = await fetchCategory(version, cat);
-        console.log(`${cat}: ${items.length} items`);
-        allItems.push(...items);
+        console.log(`${cat}: ${items.length} items${RADAR_SET.has(cat) ? '' : ' (prices only)'}`);
+        priceCategoryCounts[cat] = items.length;
+        priceItems.push(...items);
+        if (RADAR_SET.has(cat)) allItems.push(...items);
       } catch (err) {
         // หมวดไหนพัง ข้ามหมวดนั้น — จดไว้ใน errors ให้หน้าเว็บโชว์เตือน
         errors.push(`${cat}: ${err.message}`);
+        priceCategoryCounts[cat] = -1; // -1 = fetch พัง (ต่างจาก 0 = หมวดว่าง)
       }
       // เว้นจังหวะเล็กน้อย ไม่ยิงรัว
       await new Promise((r) => setTimeout(r, 250));
     }
   }
+
+  // --- data/market-prices.json — ราคาครบทุกหมวดทุกชิ้น (ไม่มีเกณฑ์ขั้นต่ำ) ---
+  // ใช้โดย price lookup / Live Farm Session (แผนใน docs/LIVE_TRACKER_PLAN.md) — แยกไฟล์จาก radar
+  // เพื่อไม่แตะ scoring และให้หน้าเว็บโหลด lazy เฉพาะตอนใช้
+  writeMarketPrices(priceItems, priceCategoryCounts, errors);
 
   // ถ้าดึงไม่ได้เลย: เก็บข้อมูลเดิมไว้ (ปลอดภัยกว่าเขียนไฟล์ว่าง)
   // แล้วเติม error ให้หน้าเว็บเห็นว่า snapshot รอบนี้ fail — updatedAt เดิมจะทำให้ขึ้น Stale เอง
@@ -417,6 +443,54 @@ function updatePriceHistory(marketItems) {
   hist.updatedAt = new Date().toISOString();
   writeFileSync(HISTORY_FILE, JSON.stringify(hist) + '\n');
   console.log(`wrote ${HISTORY_FILE}: ${Object.keys(hist.points).length} items tracked`);
+}
+
+// ---------------------------------------------------------------------------
+// data/market-prices.json — ราคาครบทุกหมวดทุกชิ้น (2026-07-23, docs/LIVE_TRACKER_PLAN.md A1)
+// แยกไฟล์จาก market-radar.json โดยตั้งใจ: radar = scoring (เกณฑ์ ≥1 Div, สูตรห้ามแตะ) ·
+// prices = ราคาดิบทุกชิ้นสำหรับ price lookup / Live Farm Session (โหลด lazy ฝั่งเว็บ)
+// ---------------------------------------------------------------------------
+const PRICES_FILE = join(__dirname, '..', 'data', 'market-prices.json');
+function writeMarketPrices(priceItems, categoryCounts, errors) {
+  // กัน id ซ้ำข้ามหมวด (ไอเทมเดียวกันโผล่หลาย overview ได้ เช่น Divine Orb) — เก็บตัวแรกพอ
+  const seen = new Set();
+  const items = priceItems
+    .filter((x) => {
+      const key = x.id + '|' + x.category;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .map((x) => ({
+      id: x.id,
+      name: x.name,
+      icon: x.icon,
+      category: x.category,
+      valueDiv: round2(x.value),                                  // หน่วย divine เสมอ (core.primary)
+      trend7d: x.trend7d === null ? null : round2(x.trend7d),
+      volumeDiv: x.volume === null ? null : round2(x.volume),
+    }));
+
+  // ดึงไม่ได้เลยทั้งรอบ → คงไฟล์เดิม (แบบเดียวกับ radar) ดีกว่าเขียนไฟล์ว่างทับของดี
+  if (items.length === 0) {
+    console.error('market-prices: no items fetched — keeping previous file');
+    return;
+  }
+
+  const skippedCategories = Object.keys(categoryCounts).filter((c) => categoryCounts[c] === 0);
+  const out = {
+    version: 1,
+    league: LEAGUE,
+    updatedAt: new Date().toISOString(),
+    source: { name: 'poe.ninja', url: `${NINJA_BASE}/poe2/economy/${LEAGUE}/currency` },
+    categories: categoryCounts,   // ชื่อหมวด → จำนวน items (-1 = fetch พัง, 0 = หมวดว่าง/ชื่อไม่ตรง)
+    skippedCategories,
+    errors,
+    items,
+  };
+  mkdirSync(dirname(PRICES_FILE), { recursive: true });
+  writeFileSync(PRICES_FILE, JSON.stringify(out) + '\n'); // ไม่ pretty-print — ไฟล์ใหญ่ ประหยัดขนาด
+  console.log(`wrote ${PRICES_FILE}: ${items.length} items across ${Object.keys(categoryCounts).length} categories (${skippedCategories.length} skipped)`);
 }
 
 main().catch((err) => {
