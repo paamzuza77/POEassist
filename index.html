@@ -11239,6 +11239,15 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.79',
+    date: '2026-07-23',
+    notes: [
+      'Market Radar ครอบคลุมตลาดทั้งหมดแล้ว: เพิ่มหมวด Unique ทั้ง 7 (Weapons/Armours/Accessories/Jewels/Flasks/Charms/Tablets ~717 ชิ้น จาก endpoint ใหม่ของ poe.ninja) — เคส "หา Unique Tablet ไม่เจอ" จบแล้ว ค้นหา/เฝ้าราคาได้ทุกชิ้นจริง (~1,350 รายการ)',
+      'คะแนนความน่าฟาร์มคิดจากไอเท็มทุกชิ้นทุกราคาแล้ว — ยกเลิกเกณฑ์ขั้นต่ำ 1 Divine แต่ของที่ราคาต่ำกว่า 1 Divine โดน "ภาษีคะแนน" แรง (คูณ 0.35) เพื่อให้ของ 1 Divine+ ชนะการจัดอันดับเสมอ',
+      'เพิ่มกลุ่มคอนเทนต์ฟาร์มใหม่: Uncut Gems, Idols, Lineage Gems (Endgame), Uniques (General/Bossing) และ Waystones/Mapping มีหลักฐานจริงแล้ว (Unique Tablets)',
+    ],
+  },
+  {
     version: '0.78',
     date: '2026-07-23',
     notes: [
@@ -13808,7 +13817,7 @@ function renderRadar(data) {
   scoreSummary.textContent = 'Farm Score คำนวณยังไง? / How is Farm Score calculated?';
   scoreInfo.appendChild(scoreSummary);
   const scoreInfoBody = document.createElement('p');
-  scoreInfoBody.textContent = 'Farm Score คือคะแนนจัดอันดับคอนเทนต์ที่น่าฟาร์มจากหลักฐานราคาในตลาด (marketItems ที่ผ่านฟิลเตอร์เท่านั้น) โดยดูจากมูลค่าไอเท็ม, เทรนด์ 7 วัน, liquidity, ความมั่นใจของการ map ไอเท็มเข้าคอนเทนต์ และความเสี่ยง คะแนนนี้ไม่ใช่โอกาสดรอป คะแนนยิ่งสูงแปลว่ามีหลักฐานตลาดสนับสนุนคอนเทนต์นั้นแรงกว่าตอนนี้ ถ้าไม่มีไอเท็ม 1 Divine+ เป็นหลักฐานใน snapshot ปัจจุบัน คอนเทนต์นั้นจะได้ 0 คะแนนแต่ยังแสดงอยู่ ข้อมูลอิงจาก market-radar.json ที่ดึงมาแล้วในเครื่อง ไม่ใช่การดึงสดจาก poe.ninja ในเบราว์เซอร์';
+  scoreInfoBody.textContent = 'Farm Score คือคะแนนจัดอันดับคอนเทนต์ที่น่าฟาร์มจากหลักฐานราคาในตลาด (marketItems ที่ผ่านฟิลเตอร์เท่านั้น) โดยดูจากมูลค่าไอเท็ม, เทรนด์ 7 วัน, liquidity, ความมั่นใจของการ map ไอเท็มเข้าคอนเทนต์ และความเสี่ยง คะแนนนี้ไม่ใช่โอกาสดรอป คะแนนยิ่งสูงแปลว่ามีหลักฐานตลาดสนับสนุนคอนเทนต์นั้นแรงกว่าตอนนี้ ตั้งแต่แพตช์ 0.79 ไอเท็มทุกราคาเข้าคำนวณ (ไม่มีเกณฑ์ 1 Divine ขั้นต่ำแล้ว) แต่ของที่ราคาต่ำกว่า 1 Divine โดนหักคะแนนแรง (คูณ 0.35) เพื่อให้ของมูลค่า 1 Divine ขึ้นไปชนะการจัดอันดับเสมอ ถ้าไม่มีไอเท็มมีราคาเป็นหลักฐานใน snapshot ปัจจุบัน คอนเทนต์นั้นจะได้ 0 คะแนนแต่ยังแสดงอยู่ ข้อมูลอิงจาก market-radar.json ที่ดึงมาแล้วในเครื่อง ไม่ใช่การดึงสดจาก poe.ninja ในเบราว์เซอร์';
   scoreInfo.appendChild(scoreInfoBody);
   body.appendChild(scoreInfo);
 

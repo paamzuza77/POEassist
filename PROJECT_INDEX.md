@@ -72,8 +72,8 @@ Exile Assistant (repo: POEassist) is a single-page, static GitHub Pages app for 
 | `css/modern-theme.css` | **"Modern" theme (patch 0.35; rebuilt in 0.44)** — light/dark tokens + scoped structural overrides; section 12 owns the dark-first atmospheric canvas, floating glass shell, page composition, strong highlights, hover elevation, Settings frame, and responsive behavior. `<link>`ed **last** so it wins the cascade |
 | `README.md` | Placeholder (just a title) — not a source of project info |
 | `data/home-status.json` | Generated snapshot for Exile Hub (league timing, stash sale) |
-| `data/market-radar.json` | Generated poe.ninja snapshot for Market Radar (scoring pipeline — 11 fixed categories, ≥1-Div floor) |
-| `data/market-prices.json` | **All-category all-item price snapshot (2026-07-23, `docs/LIVE_TRACKER_PLAN.md` A1)** — same generator, no value floor, ~634 items / 14 real categories (+auto-probed candidates), compact JSON ~197KB. For price lookup / Live Farm Session; load lazily, never feed into radar scoring |
+| `data/market-radar.json` | Generated poe.ninja snapshot for Market Radar. **Since patch 0.79: ALL categories from BOTH endpoints (exchange + item/overview) feed scoring — ~1,351 items, no ≥1-Div floor (sub-Divine tax ×0.35 instead), 17 content buckets (incl. uncut_gems/idols/lineage_gems/uniques_general; waystones_mapping now has UniqueTablets evidence)**. ~988KB pretty-printed (gzip serves much smaller) |
+| `data/market-prices.json` | **All-category all-item price snapshot (A1 + 0.79)** — same generator, no floor, ~1,351 items (exchange 14 real categories + item endpoint 7 Unique categories: Weapons/Armours/Accessories/Jewels/Flasks/Charms/Tablets), compact ~454KB. For price lookup / watchlist / Live Farm Session; loaded lazily |
 | `data/icon-map.json` | Currency/menu icon lookup, with emoji fallback |
 | `data/content-codex.json` | Generated poe2wiki boss/content drop knowledge base for Content Codex (manual refresh, not in Actions) |
 | `data/keyword-codex.json` | Generated poe2db TH/EN keyword encyclopedia for Keyword Codex (manual refresh, not in Actions) |

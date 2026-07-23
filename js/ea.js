@@ -499,6 +499,7 @@ var EA = function(exports) {
       }
     }
   }
+  const SUB_DIVINE_TAX = 0.35;
   function radarItemScore(it) {
     const t = Math.max(-50, Math.min(150, typeof it.trend7d === "number" ? it.trend7d : 0));
     const trendScore = (t + 50) / 200;
@@ -509,6 +510,7 @@ var EA = function(exports) {
     if (it.liquidityLabel === "Low" && t > 100) s *= 0.75;
     else if (it.liquidityLabel === "Low") s *= 0.9;
     if (it.risk) s *= 0.95;
+    if (v > 0 && v < 1) s *= SUB_DIVINE_TAX;
     return Math.max(0, Math.min(1, s));
   }
   function buildRadarRecos(items, allBuckets) {

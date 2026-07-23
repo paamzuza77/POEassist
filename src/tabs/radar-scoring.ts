@@ -1,7 +1,14 @@
 // P5 Phase 4 (patch 0.67) — Market Radar scoring "brain", ported from index.html to TypeScript.
-// Pure functions (input → output, no DOM/global). LOGIC BYTE-IDENTICAL — this is the Farm Score
-// formula; never change it here without an explicit product decision (see SKILL.md / EDIT_GUIDE.md).
+// Pure functions (input → output, no DOM/global). This is the Farm Score formula — change it ONLY
+// on an explicit product decision (see SKILL.md / EDIT_GUIDE.md).
+// Formula changes so far: patch 0.79 (user decision 2026-07-23) — added the sub-Divine tax:
+// every price now enters scoring (no ≥1-Div floor), but 0 < value < 1 Div multiplies the item
+// score by SUB_DIVINE_TAX so ≥1-Div items always rank higher. Mirrors the generator's tax in
+// scripts/update-market-radar.mjs — keep both in sync.
 // DOM rendering (renderRadar) stays in the monolith and calls these via window.EA.
+
+// ภาษี sub-Divine (0.79): ตัวคูณคะแนนเมื่อ 0 < value < 1 Div — ต้องตรงกับ generator
+const SUB_DIVINE_TAX = 0.35;
 
 export interface MarketItem {
   name?: string;
@@ -56,6 +63,9 @@ export function radarItemScore(it: MarketItem): number {
   if (it.liquidityLabel === 'Low' && t > 100) s *= 0.75;          // spike + สภาพคล่องต่ำ = หักแรง
   else if (it.liquidityLabel === 'Low') s *= 0.9;
   if (it.risk) s *= 0.95;
+  // patch 0.79 — ภาษี sub-Divine (product decision ผู้ใช้ 2026-07-23): ของ <1 Div เข้าระบบได้
+  // แต่คะแนนโดนคูณแรง เพื่อให้ของ ≥1 Div ชนะการจัดอันดับเสมอ (v=0/ไม่มีราคา ไม่โดน — คะแนน value เป็น 0 อยู่แล้ว)
+  if (v > 0 && v < 1) s *= SUB_DIVINE_TAX;
   return Math.max(0, Math.min(1, s));
 }
 

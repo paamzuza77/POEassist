@@ -163,6 +163,13 @@ README ประกาศ: **"currently not working — GGG has disabled invento
   ทุกงวด (ลีคหน้ามีของก็ติดมาอัตโนมัติ)
 - **บทเรียน probe:** เช็คว่า "หมวดมีจริง" ต้องนับ `lines[].length` — เช็คแค่โครง response หลอกได้
   (ทุก type คืน 200 + โครงเต็มเสมอ แม้หมวดไม่มีของ)
+- **อัปเดต patch 0.79 (เคส "หา Unique Tablet ไม่เจอ"):** poe.ninja มี **endpoint ที่สอง** —
+  `/poe2/api/economy/stash/{version}/item/overview?league=&type=` สำหรับหมวด "ไอเทม" (unique):
+  `UniqueWeapons`(149)/`UniqueArmours`(440)/`UniqueAccessories`(87)/`UniqueJewels`(14)/`UniqueFlasks`(6)/
+  `UniqueCharms`(12)/`UniqueTablets`(9) ≈ 717 ชิ้น (`UniqueRelics` = 404 ในลีคนี้ — candidate).
+  โครง lines ต่างจาก exchange: `primaryValue` (divine เหมือนกัน), `sparkLine` (L ใหญ่), `listingCount`
+  (ไม่มี volume). **รวมสองแหล่ง = ~1,351 ชิ้น เข้า market-prices + radar scoring ทั้งคู่** (สูตรภาษี
+  sub-Divine ×0.35 สำหรับของ <1 Div — product decision ผู้ใช้; ดู CHANGELOG 35)
 
 ### 4.2 แผนแก้ `scripts/update-market-radar.mjs`
 

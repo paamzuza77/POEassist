@@ -46,6 +46,15 @@ const EXTRA_PRICE_CATEGORIES = [
   'Artifacts', 'Logbooks', 'LiquidEmotions', 'Tablets',
 ];
 
+// หมวด "ไอเทม" (endpoint คนละตัว! — 2026-07-23, แก้เคส "หา Unique Tablet ไม่เจอ"):
+//   /poe2/api/economy/stash/{version}/item/overview?league=&type=
+// ต่างจาก exchange: lines[] มี primaryValue (divine เหมือนกัน), sparkLine (L ใหญ่), listingCount (ไม่มี volume)
+// ยืนยันมีข้อมูลจริง 7 หมวด (~717 ชิ้น); UniqueRelics = candidate เผื่ออนาคต
+const ITEM_CATEGORIES = [
+  'UniqueWeapons', 'UniqueArmours', 'UniqueAccessories', 'UniqueJewels',
+  'UniqueFlasks', 'UniqueCharms', 'UniqueTablets', 'UniqueRelics',
+];
+
 // ===== Content bucket mapping (จุดเดียวที่คุมว่าหมวด poe.ninja ไหน → farm content ไหน) =====
 // นี่คือ "แหล่งความจริง" เดียวของ content mapping ทั้งระบบ — ห้าม hardcode ที่อื่น
 // - contentKey/displayName: ใช้แสดงผลและจัดกลุ่ม evidence items
@@ -64,15 +73,24 @@ const CONTENT_BUCKETS = [
   { contentKey: 'runes', displayName: 'Runes / Remnants', categories: ['Runes'], confidence: 0.9 },
   { contentKey: 'trial_soulcores', displayName: 'Trial / Soul Cores', categories: ['SoulCores'], confidence: 0.75 },
   { contentKey: 'fragments_bossing', displayName: 'Fragments / Bossing', categories: ['Fragments'], confidence: 0.75 },
-  { contentKey: 'waystones_mapping', displayName: 'Waystones / Mapping', categories: [], confidence: 0.6 },
+  // patch 0.79: Unique/Precursor Tablets = ของสาย mapping โดยตรง → เข้า bucket นี้ (เดิมว่างตลอด)
+  { contentKey: 'waystones_mapping', displayName: 'Waystones / Mapping', categories: ['UniqueTablets', 'Waystones', 'Tablets'], confidence: 0.7 },
   { contentKey: 'abyss', displayName: 'Abyss', categories: ['Abyss'], confidence: 0.85 },
   { contentKey: 'strongboxes', displayName: 'Strongboxes', categories: [], confidence: 0.6 },
   { contentKey: 'generic_currency', displayName: 'Generic Currency', categories: ['Currency', 'Verisium'], confidence: 0.5 },
+  // ===== patch 0.79: bucket ใหม่ตามการฟาร์ม PoE2 (หมวดที่เพิ่งดึงครบ — คำสั่งผู้ใช้ 2026-07-23) =====
+  { contentKey: 'uncut_gems', displayName: 'Uncut Gems (General)', categories: ['UncutGems', 'Gems'], confidence: 0.6 },
+  { contentKey: 'idols', displayName: 'Idols', categories: ['Idols'], confidence: 0.7 },
+  { contentKey: 'lineage_gems', displayName: 'Lineage Gems (Endgame)', categories: ['LineageSupportGems'], confidence: 0.6 },
+  // uniques ดรอปได้ทั่วไป/บอส — ฟาร์มเจาะจงยาก → confidence ต่ำสุดกันคะแนนเวอร์จากของแพงรายชิ้น
+  { contentKey: 'uniques_general', displayName: 'Uniques (General / Bossing)',
+    categories: ['UniqueWeapons', 'UniqueArmours', 'UniqueAccessories', 'UniqueJewels', 'UniqueFlasks', 'UniqueCharms', 'UniqueRelics'],
+    confidence: 0.4 },
 ].map((b) => ({
   ...b,
   wikiUrl: '',
   sourceUrls: [],
-  noEvidenceStatus: 'No qualifying 1D+ items in current snapshot',
+  noEvidenceStatus: 'No priced items in current snapshot', // 0.79: ไม่มีเกณฑ์ 1D+ แล้ว
 }));
 
 // reverse lookup: poe.ninja category name → bucket (มาจาก CONTENT_BUCKETS เท่านั้น จุดเดียว)
@@ -84,7 +102,13 @@ for (const bucket of CONTENT_BUCKETS) {
 const TOP_RISING_COUNT = 12;    // จำนวนไอเทมในกล่อง Top Rising (แสดงผล/fallback เท่านั้น ไม่ใช่ต้นทางคำนวณ)
 const EVIDENCE_ITEM_COUNT = 5;  // จำนวน evidence item สูงสุดต่อ content bucket
 const MIN_VOLUME_DIVINE = 0.5;  // ไอเทมที่ volume ต่ำกว่านี้ (หน่วย divine) ไม่เอาเข้า Top Rising
-const MIN_ITEM_VALUE_DIVINE = 1; // เกณฑ์ขั้นต่ำของ marketItems — ต่ำกว่านี้ไม่ถูกใช้คิดคะแนน/คำแนะนำ
+// patch 0.79 (product decision จากผู้ใช้ 2026-07-23): ยกเลิกเกณฑ์ ≥1 Divine —
+// ทุกไอเทมทุกราคาเข้าคำนวณ/แสดงผล แต่ของที่ต่ำกว่า 1 Divine โดน "ภาษี" คะแนนแรง (SUB_DIVINE_TAX)
+// เพื่อให้ของ >1 Divine ชนะเสมอในการจัดอันดับความน่าฟาร์ม
+const MIN_ITEM_VALUE_DIVINE = 0; // เดิม 1 — ตอนนี้ทุกราคาเข้าระบบ
+const SUB_DIVINE_TAX = 0.35;     // ตัวคูณคะแนนเมื่อ 0 < value < 1 Div (ต้องตรงกับ src/tabs/radar-scoring.ts)
+// ประวัติราคา: เก็บเฉพาะไอเทม ≥0.5 Div กันไฟล์ price-history บวม (จาก ~1,350 ชิ้นหลังรวม endpoint ใหม่)
+const HISTORY_MIN_VALUE_DIVINE = 0.5;
 
 // ---------------------------------------------------------------------------
 // poe.ninja API (PoE2)
@@ -153,6 +177,30 @@ async function fetchCategory(version, category) {
   }).filter((x) => x.value !== null);
 }
 
+// ดึงหนึ่งหมวด "ไอเทม" (endpoint คนละตัวกับ exchange — patch 0.79, เคส Unique Tablets)
+//   GET /poe2/api/economy/stash/{version}/item/overview?league=&type=
+// lines[] แบนกว่า: name/baseType/icon ในตัว, sparkLine (L ใหญ่), listingCount (ไม่มี volume แบบ divine)
+// normalize เป็น shape เดียวกับ fetchCategory (volume=null — สภาพคล่องขึ้น Unknown ตามพฤติกรรมเดิมของ shape)
+async function fetchItemCategory(version, category) {
+  const url = `${NINJA_BASE}/poe2/api/economy/stash/${version}/item/overview` +
+    `?league=${encodeURIComponent(LEAGUE_DISPLAY)}&type=${encodeURIComponent(category)}`;
+  const data = await fetchJson(url);
+  const lines = Array.isArray(data.lines) ? data.lines : [];
+  return lines.map((ln) => {
+    const spark = ln.sparkLine || {};
+    return {
+      id: ln.detailsId || String(ln.id || ln.name || '?'),
+      name: ln.name ? (ln.baseType && ln.baseType !== ln.name ? `${ln.name} (${ln.baseType})` : ln.name) : (ln.baseType || '?'),
+      icon: typeof ln.icon === 'string' ? ln.icon : '',
+      category,
+      value: typeof ln.primaryValue === 'number' ? ln.primaryValue : null, // divine (core.primary ยืนยันแล้ว)
+      trend7d: typeof spark.totalChange === 'number' ? spark.totalChange : null,
+      volume: null, // endpoint นี้ให้ listingCount ไม่ใช่ volume-divine — ไม่เดาเป็น volume
+      listingCount: typeof ln.listingCount === 'number' ? ln.listingCount : null,
+    };
+  }).filter((x) => x.value !== null);
+}
+
 // ---------------------------------------------------------------------------
 // 🧮 Item Score — สูตรคะแนน (0-100, "คะแนนความน่าฟาร์ม" ไม่ใช่ % drop chance)
 //
@@ -211,12 +259,16 @@ function riskInfo(item) {
 
 function itemFarmScore(item, confidence) {
   const risk = riskInfo(item);
-  const raw =
+  let raw =
     trendScore(item.trend7d) * 0.30 +
     priceScore(item.value) * 0.30 +
     volumeScore(item.volume) * 0.20 +
     clamp(confidence, 0, 1) * 100 * 0.15 -
     risk.score * 0.05;
+  // patch 0.79 — "ภาษี sub-Divine" (product decision ผู้ใช้ 2026-07-23): ของราคาต่ำกว่า 1 Divine
+  // เข้าระบบได้ทุกชิ้น แต่คะแนนโดนคูณ SUB_DIVINE_TAX (0.35) เพื่อให้ของ ≥1 Divine ชนะการจัดอันดับเสมอ
+  // (v=0/ไม่มีราคา ไม่โดนภาษี — priceScore เป็น 0 อยู่แล้ว) — ต้องตรงกับ src/tabs/radar-scoring.ts
+  if (typeof item.value === 'number' && item.value > 0 && item.value < 1) raw *= SUB_DIVINE_TAX;
   return { score: clamp(raw, 0, 100), risk };
 }
 
@@ -239,19 +291,30 @@ async function main() {
   }
 
   if (version) {
-    // ดึงหมวดละครั้งเดียว: หมวด radar ป้อนทั้ง allItems + priceItems, หมวด extra ป้อนเฉพาะ priceItems
-    const RADAR_SET = new Set(CATEGORIES);
-    for (const cat of [...CATEGORIES, ...EXTRA_PRICE_CATEGORIES]) {
+    // patch 0.79: ทุกหมวด (exchange + item endpoint) เข้า radar scoring ทั้งหมด — "คะแนนจากทุกไอเทม"
+    // (คำสั่งผู้ใช้ 2026-07-23; ของ <1 Div โดนภาษีคะแนนใน itemFarmScore แทนการตัดทิ้ง)
+    const plan = [
+      ...[...CATEGORIES, ...EXTRA_PRICE_CATEGORIES].map((c) => ({ cat: c, kind: 'exchange' })),
+      ...ITEM_CATEGORIES.map((c) => ({ cat: c, kind: 'item' })),
+    ];
+    for (const { cat, kind } of plan) {
       try {
-        const items = await fetchCategory(version, cat);
-        console.log(`${cat}: ${items.length} items${RADAR_SET.has(cat) ? '' : ' (prices only)'}`);
+        const items = kind === 'item'
+          ? await fetchItemCategory(version, cat)
+          : await fetchCategory(version, cat);
+        console.log(`${cat} [${kind}]: ${items.length} items`);
         priceCategoryCounts[cat] = items.length;
         priceItems.push(...items);
-        if (RADAR_SET.has(cat)) allItems.push(...items);
+        allItems.push(...items);
       } catch (err) {
-        // หมวดไหนพัง ข้ามหมวดนั้น — จดไว้ใน errors ให้หน้าเว็บโชว์เตือน
-        errors.push(`${cat}: ${err.message}`);
-        priceCategoryCounts[cat] = -1; // -1 = fetch พัง (ต่างจาก 0 = หมวดว่าง)
+        if (/HTTP 404/.test(err.message)) {
+          // 404 = หมวดนี้ไม่มีในลีคนี้ (candidate ที่ตั้งใจ probe) — นับเป็นหมวดว่าง ไม่ใช่ error เตือน UI
+          priceCategoryCounts[cat] = 0;
+        } else {
+          // พังจริง (network/5xx/โครงเปลี่ยน) — จดไว้ใน errors ให้หน้าเว็บโชว์เตือน
+          errors.push(`${cat}: ${err.message}`);
+          priceCategoryCounts[cat] = -1; // -1 = fetch พัง (ต่างจาก 0 = หมวดว่าง)
+        }
       }
       // เว้นจังหวะเล็กน้อย ไม่ยิงรัว
       await new Promise((r) => setTimeout(r, 250));
@@ -364,7 +427,7 @@ async function main() {
       displayName: bucket.displayName,
       farmScore,
       confidence: bucket.confidence,
-      status: `${evidence.length} item(s) ≥1 Divine mapped to this content`,
+      status: `${evidence.length} priced item(s) mapped to this content`, // 0.79: ไม่มีเกณฑ์ 1D+ แล้ว
       evidenceItems: top.map((x) => ({
         name: x.name,
         value: x.value,
@@ -402,7 +465,7 @@ async function main() {
   mkdirSync(dirname(OUT_FILE), { recursive: true });
   writeFileSync(OUT_FILE, JSON.stringify(out, null, 2) + '\n');
   const withEvidence = contentRecommendations.filter((c) => c.evidenceItems.length > 0).length;
-  console.log(`wrote ${OUT_FILE}: ${marketItems.length} marketItems (>=1D), ${topRising.length} rising items, ${contentRecommendations.length} content buckets (${withEvidence} with evidence), ${errors.length} errors`);
+  console.log(`wrote ${OUT_FILE}: ${marketItems.length} marketItems (all prices, 0.79), ${topRising.length} rising items, ${contentRecommendations.length} content buckets (${withEvidence} with evidence), ${errors.length} errors`);
 
   // --- STEP 4: price history — ต่อจุดราคาสะสมไว้ให้ frontend วาด sparkline (patch 0.61) ---
   updatePriceHistory(marketItems);
@@ -423,6 +486,8 @@ function updatePriceHistory(marketItems) {
   const names = new Set();
   marketItems.forEach((it) => {
     if (!it || typeof it.value !== 'number' || !it.name) return;
+    // 0.79: marketItems รวมของทุกราคาแล้ว (~1,300+) — history เก็บเฉพาะ ≥ HISTORY_MIN_VALUE_DIVINE กันไฟล์บวม
+    if (it.value < HISTORY_MIN_VALUE_DIVINE) return;
     names.add(it.name);
     const arr = Array.isArray(hist.points[it.name]) ? hist.points[it.name] : [];
     const last = arr[arr.length - 1];
