@@ -219,7 +219,8 @@ async function fetchCategory(version, category) {
     return {
       id: ln.id,
       name: meta.name || ln.id || '?',
-      icon: meta.image ? NINJA_BASE + meta.image : '',
+      // 0.82: รูป exchange อยู่บน CDN ของ GGG (web.poecdn.com) ไม่ใช่ poe.ninja — prefix เดิมทำ 404 ทุกรูป
+      icon: meta.image ? 'https://web.poecdn.com' + meta.image : '',
       category,
       value: typeof ln.primaryValue === 'number' ? ln.primaryValue : null, // divine
       trend7d: typeof spark.totalChange === 'number' ? spark.totalChange : null, // % 7 วัน

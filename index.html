@@ -5043,15 +5043,17 @@ window.ensureRawblockFonts = function () {
   .radar-browse-watch:hover { border-color: var(--gold); color: var(--text); }
   .radar-browse-watch.on { color: var(--gold); border-color: var(--gold); }
   .radar-browse-more { margin-top: 10px; }
-  /* hover tooltip ของไอเทม */
+  /* hover tooltip ของไอเทม — 0.82: พื้นหลังต้อง "ทึบแน่นอน" (เดิม var(--card) ไม่ทึบในบางธีม
+     → ตัวหนังสือทับซ้อนกับแถวอ่านไม่ออก — บั๊กที่ผู้ใช้รายงาน) */
   .radar-item-tip {
     display: none; position: fixed; z-index: 260;
     max-width: 280px; padding: 10px 12px;
-    background: var(--card); color: var(--text);
+    background: var(--void, #101014); color: var(--text);
     border: 1px solid var(--gold); border-radius: 10px;
     font-size: 12px; line-height: 1.5; pointer-events: none;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   }
+  html[data-mode="light"] .radar-item-tip { background: #ffffff; }
   .rit-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
   .rit-head img { width: 26px; height: 26px; object-fit: contain; }
   .rit-cat { color: var(--text-dim); font-size: 11px; }
@@ -5083,6 +5085,59 @@ window.ensureRawblockFonts = function () {
   .topbar-rate-input:focus { outline: none; border-color: var(--gold); }
   .topbar-rate-sym { font-weight: 700; }
   @media (max-width: 1023px) { .topbar-rate { display: none; } } /* จอแคบ topbar แน่น — เรทยังแก้ได้ใน Gear/Settings */
+
+  /* ---- patch 0.82: Market Radar dashboard ---- */
+  .radar-kpis {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px; margin: 0 0 14px;
+  }
+  .radar-kpi {
+    display: flex; flex-direction: column; gap: 3px; align-items: flex-start; text-align: left;
+    padding: 12px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    font: inherit; color: var(--text);
+  }
+  .radar-kpi.clickable { cursor: pointer; transition: border-color 0.15s ease, transform 0.15s ease; }
+  .radar-kpi.clickable:hover { border-color: var(--gold); transform: translateY(-1px); }
+  .rk-label { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: var(--text-dim); text-transform: uppercase; }
+  .rk-value { font-size: 17px; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
+  .rk-sub { font-size: 11px; color: var(--text-muted); }
+  .radar-rank-head { margin: 4px 0 8px; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; color: var(--text-dim); text-transform: uppercase; }
+  .rrr-rank { font-size: 11px; color: var(--text-dim); font-family: var(--font-mono); white-space: nowrap; }
+  .radar-rank-row { grid-template-columns: 44px 30px minmax(110px, 1fr) 84px 76px 74px minmax(70px, 150px) 16px; }
+  /* Item Browser: select หมวด + ตาราง sort ได้ */
+  .radar-browse-catsel {
+    margin-left: 8px; padding: 8px 10px; font-size: 12px; max-width: 220px;
+    background: var(--card); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+  }
+  .radar-browse-search-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .radar-browse-tablewrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
+  .radar-browse-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .radar-browse-table thead th {
+    position: sticky; top: 0; z-index: 2;
+    background: var(--card); color: var(--text-muted);
+    font-size: 11px; font-weight: 800; text-align: left;
+    padding: 8px 10px; border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  .radar-browse-table th.sortable { cursor: pointer; user-select: none; }
+  .radar-browse-table th.sortable:hover { color: var(--text); }
+  .radar-browse-table th.sorted { color: var(--gold); }
+  .radar-browse-table td { padding: 6px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .radar-browse-table tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--text) 3%, transparent); }
+  .radar-browse-table tbody tr:hover td { background: color-mix(in srgb, var(--gold) 8%, transparent); }
+  .rbt-name { display: flex; align-items: center; gap: 8px; min-width: 160px; font-weight: 600; }
+  .rbt-name img { width: 22px; height: 22px; object-fit: contain; flex-shrink: 0; }
+  .rbt-name a { color: inherit; }
+  .rbt-name a:hover { color: var(--gold); text-decoration: underline; }
+  .rbt-cat { color: var(--text-muted); white-space: nowrap; font-size: 11px; }
+  .rbt-val { white-space: nowrap; }
+  .rbt-trend { white-space: nowrap; font-family: var(--font-mono); font-size: 11px; }
+  .rbt-watch { text-align: center; }
+  @media (max-width: 700px) {
+    .radar-rank-row { grid-template-columns: 34px 24px minmax(80px, 1fr) 66px 60px 16px; }
+    .rbt-cat { display: none; }
+    .radar-browse-catsel { max-width: 150px; }
+  }
 </style>
 <!-- Modularization Phase 1 (patch 0.34): helper CSS ที่แยกออกจาก inline <style> ด้านบน
      วางหลัง </style> เพื่อคงลำดับ cascade เดิม (rule พื้นฐาน specificity ต่ำ — override ของ Trust theme ชนะด้วย specificity อยู่แล้ว) -->
@@ -11398,6 +11453,16 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.82',
+    date: '2026-07-23',
+    notes: [
+      'Market Radar เป็น Dashboard เต็มตัว: แถวการ์ดสถิติ (ฟาร์มต่อไป · มาแรง 7 วัน · ไอเทมในระบบ · ความสด snapshot) แทน hero ใหญ่กับแถบตัวกรองเดิมที่เกะกะ, ตารางจัดอันดับความน่าฟาร์มเดียวจบ (เลขอันดับ + สัญญาณเป็นไอคอนเล็ก) ไม่มีหัวข้อกลุ่มคั่นอีก',
+      'Item Browser เป็นตารางจริง: คลิกหัวคอลัมน์เรียงได้ (ไอเทม/หมวด/Value/7วัน), เลือกหมวดจาก dropdown จัดกลุ่ม GENERAL/EQUIPMENT/ATLAS, แถบสลับสี + hover ชัดเจน',
+      'แก้บั๊ก: รูปไอเทมหมวด currency/fragments ฯลฯ ที่หายไปหลายร้อยชิ้น (Mirror of Kalandra ด้วย) — ที่แท้ URL รูปชี้ผิดเซิร์ฟเวอร์ (ต้องเป็น web.poecdn.com) ตอนนี้รูปครบทุกชิ้น',
+      'แก้บั๊ก: tooltip ตอน hover ไอเทมพื้นหลังโปร่งจนตัวหนังสือทับกัน — ตอนนี้ทึบอ่านชัด + เลื่อนจอแล้วหายเอง',
+    ],
+  },
+  {
     version: '0.81',
     date: '2026-07-23',
     notes: [
@@ -13970,8 +14035,9 @@ function renderRadar(data) {
   const hiddenNoSignal = radarFilter.showNoSignal ? 0 : groupsMap.nosignal.length;
 
   // --- Hero "ฟาร์มต่อไป" + แถบสรุปสัญญาณ (patch 0.43 — การนำเสนอจากค่าที่คำนวณแล้วด้านบน) ---
-  renderRadarHero(recos, groupsMap, updatedValid, ageH);
-  renderRadarSummary(groupsMap, hiddenNoSignal);
+  // patch 0.82 (dashboard): hero ใหญ่ + summary strip เดิมถูกแทนด้วยแถว KPI กะทัดรัด (คำสั่งผู้ใช้ —
+  // "Farm Next ใหญ่เกิน / ตัวกรอง Top Pick, Rising เอาออก") · renderRadarHero/Summary เดิมไม่ถูกเรียกแล้ว
+  renderRadarKpis(recos, groupsMap, updatedValid, ageH);
   // hint บนหัวกล่องฟิลเตอร์ — เห็นค่าฟิลเตอร์ปัจจุบันแม้กล่องพับอยู่
   const filterHint = document.getElementById('radarFilterHint');
   if (filterHint) {
@@ -14026,12 +14092,20 @@ function renderRadar(data) {
     // ถูกคำนวณไว้ข้างบนแล้ว (ใช้ร่วมกับ hero/summary, patch 0.43)
     // patch 0.80: การ์ดยักษ์ → แถว compact แถวเดียวต่อ bucket — คลิก/Enter เปิด popup รายละเอียดเต็ม
     // (openRadarBucketModal ด้านล่างเก็บทุกอย่างที่การ์ดเดิมเคยโชว์: breakdown/เหตุผล/evidence/ปุ่ม Codex)
-    const buildBucketRow = (rc, sig, isTop) => {
+    const buildBucketRow = (rc, sig, isTop, rankN) => {
       const rowEl = document.createElement('div');
       rowEl.className = 'radar-rank-row' + (rc.hasEvidence === false ? ' dimmed' : '') + (isTop ? ' top-pick' : '');
       rowEl.setAttribute('role', 'button');
       rowEl.tabIndex = 0;
       rowEl.title = 'คลิกดูรายละเอียด — คะแนนคิดจากอะไร + ไอเทมหลักฐาน';
+
+      // เลขอันดับ + emoji สัญญาณ (0.82 — แทนหัวข้อกลุ่มเดิม)
+      const rk = document.createElement('span');
+      rk.className = 'rrr-rank';
+      const SIG_EMOJI = { top: '★', rising: '📈', stable: '🪙', watch: '👁', nosignal: '⋯' };
+      rk.textContent = (rankN || '') + ' ' + (SIG_EMOJI[sig.group] || '');
+      rk.title = (RADAR_GROUP_META[sig.group] || {}).title || '';
+      rowEl.appendChild(rk);
 
       // ไอคอน content (patch 0.32): map จาก contentKey → รูปที่ตรวจแล้วเท่านั้น (ไม่มี = เว้นว่าง)
       const rcAsset = RADAR_ASSET_BY_KEY[rc.contentKey]
@@ -14096,23 +14170,23 @@ function renderRadar(data) {
       return rowEl;
     };
 
-    // วาดทีละกลุ่มตามลำดับคงที่ — กลุ่มว่างไม่วาดหัวข้อ / No Signal วาดเฉพาะตอนผู้ใช้เลือกแสดง
+    // patch 0.82 (dashboard): ตารางจัดอันดับเดียว — ไม่มีหัวข้อกลุ่ม (ผู้ใช้ตัด "Top Pick/Rising") ·
+    // ลำดับเดิมตาม RADAR_GROUP_ORDER (evidence-first) · สัญญาณกลายเป็น emoji เล็กในแถว · No Signal ตาม toggle เดิม
+    const rankHead = document.createElement('p');
+    rankHead.className = 'radar-rank-head';
+    rankHead.textContent = 'จัดอันดับความน่าฟาร์ม — คลิกแถวเพื่อดูรายละเอียด';
+    body.appendChild(rankHead);
+    const listEl = document.createElement('div');
+    listEl.className = 'radar-rank-list';
+    let rankN = 0;
     RADAR_GROUP_ORDER.forEach(g => {
       if (g === 'nosignal' && !radarFilter.showNoSignal) return;
-      const entries = groupsMap[g];
-      if (!entries.length) return;
-      const meta2 = RADAR_GROUP_META[g];
-      const gt = document.createElement('p');
-      gt.className = 'radar-group-title';
-      gt.id = 'radarGroup-' + g; // anchor ให้ชิปในแถบสรุปสัญญาณ scroll มาหา (patch 0.43)
-      gt.textContent = meta2.title + ' · ' + entries.length;
-      gt.title = meta2.desc;
-      body.appendChild(gt);
-      const listEl = document.createElement('div');
-      listEl.className = 'radar-rank-list';
-      entries.forEach(e => listEl.appendChild(buildBucketRow(e.rc, e.sig, e.isTop)));
-      body.appendChild(listEl);
+      (groupsMap[g] || []).forEach(e => {
+        rankN += 1;
+        listEl.appendChild(buildBucketRow(e.rc, e.sig, e.isTop, rankN));
+      });
     });
+    body.appendChild(listEl);
 
     if (hiddenNoSignal > 0) {
       const note = document.createElement('div');
@@ -14389,12 +14463,15 @@ function showRadarItemTip(anchorEl, it) {
     radarItemTipEl.className = 'radar-item-tip';
     radarItemTipEl.setAttribute('role', 'tooltip');
     document.body.appendChild(radarItemTipEl);
+    // 0.82: เลื่อนจอแล้ว tip ต้องหาย (เดิมค้างที่ตำแหน่ง fixed ทับแถวอื่น — ส่วนหนึ่งของบั๊กซ้อนทับ)
+    window.addEventListener('scroll', hideRadarItemTip, { passive: true, capture: true });
   }
   const tip = radarItemTipEl;
   tip.innerHTML = '';
   const head = document.createElement('div'); head.className = 'rit-head';
   if (it.icon) {
     const img = document.createElement('img'); img.src = it.icon; img.alt = ''; img.loading = 'lazy';
+    img.referrerPolicy = 'no-referrer';
     img.onerror = () => img.remove();
     head.appendChild(img);
   }
@@ -14436,11 +14513,69 @@ function hideRadarItemTip() {
   if (radarItemTipEl) radarItemTipEl.style.display = 'none';
 }
 
+// ---- แถว KPI (patch 0.82 dashboard) — แทน hero ใหญ่ + summary strip เดิม ----
+// อ่านค่าที่คำนวณแล้วเท่านั้น (top pick / topRisingItems / จำนวน / ความสด) — ไม่มีตัวเลขใหม่
+function renderRadarKpis(recos, groupsMap, updatedValid, ageH) {
+  const sum = document.getElementById('radarSummary');
+  if (sum) { sum.hidden = true; sum.innerHTML = ''; } // strip เดิมถูกตัด (0.82)
+  const hero = document.getElementById('radarHero');
+  if (!hero) return;
+  hero.innerHTML = '';
+  hero.hidden = false;
+  hero.className = 'radar-kpis'; // ไม่ใช่ .radar-hero แล้ว — สไตล์ dashboard ของตัวเอง
+  const makeKpi = (icon, label, valueText, subText, onClick) => {
+    const card = document.createElement(onClick ? 'button' : 'div');
+    if (onClick) { card.type = 'button'; card.addEventListener('click', onClick); }
+    card.className = 'radar-kpi' + (onClick ? ' clickable' : '');
+    const lb = document.createElement('span');
+    lb.className = 'rk-label';
+    lb.textContent = icon + ' ' + label;
+    card.appendChild(lb);
+    const v = document.createElement('span');
+    v.className = 'rk-value';
+    v.textContent = valueText;
+    card.appendChild(v);
+    if (subText) {
+      const sb = document.createElement('span');
+      sb.className = 'rk-sub';
+      sb.textContent = subText;
+      card.appendChild(sb);
+    }
+    hero.appendChild(card);
+    return card;
+  };
+  // 1) ฟาร์มต่อไป (คำตอบหลักของหน้า) — คลิกเปิดรายละเอียดเต็ม
+  const topE = (groupsMap.top && groupsMap.top[0]) ? groupsMap.top[0] : null;
+  if (topE) {
+    makeKpi('🎯', 'ฟาร์มต่อไป', topE.rc.content || '?',
+      'Farm Score ' + Math.round(topE.rc.score) + '% · ' + radarConfidenceInfo(topE.rc, radarData).label,
+      () => openRadarBucketModal(topE.rc, topE.sig, true));
+  } else {
+    makeKpi('🎯', 'ฟาร์มต่อไป', 'ยังไม่มีสัญญาณ', 'ไม่มี content ที่มีหลักฐานพอใน snapshot นี้');
+  }
+  // 2) มาแรงสุด 7 วัน (จาก topRisingItems ที่ generator จัดให้ — display เท่านั้น)
+  const riser = (radarData && Array.isArray(radarData.topRisingItems) && radarData.topRisingItems[0]) ? radarData.topRisingItems[0] : null;
+  if (riser) {
+    makeKpi('📈', 'มาแรง 7 วัน', riser.name,
+      '+' + (typeof riser.trend7d === 'number' ? riser.trend7d.toFixed(1) : '?') + '% · ' + radarFmtValue(riser.value, riser.valueCurrency));
+  }
+  // 3) ขนาดตลาดที่ติดตาม
+  const nItems = (radarData && Array.isArray(radarData.marketItems)) ? radarData.marketItems.length : 0;
+  const withEv = recos.filter(r => r.hasEvidence).length;
+  makeKpi('🧾', 'ไอเทมในระบบ', nItems.toLocaleString('en-US'), withEv + '/' + recos.length + ' content มีหลักฐาน');
+  // 4) ความสดของ snapshot
+  makeKpi('⏱', 'Snapshot', !updatedValid || ageH === null ? 'ไม่ทราบอายุ'
+    : (ageH <= RADAR_FRESH_HOURS ? 'Fresh' : 'Stale'),
+    ageH === null ? '' : (ageH < 1 ? Math.max(0, Math.round(ageH * 60)) + ' นาทีที่แล้ว' : Math.round(ageH) + ' ชม.ที่แล้ว'));
+}
+
 // ---- Item Browser (ข้อ 1.1-1.6) — ราคาทั้งตลาด: ค้น + หมวด + Top Rising + เฝ้าราคาในแถว ----
 let radarBrowseCat = 'rising';   // in-memory: 'rising' | 'all' | ชื่อหมวด
 let radarBrowseQuery = '';
 let radarBrowseLimit = 60;
 const RADAR_BROWSE_STEP = 60;
+// 0.82: ตารางเรียงได้ — คลิกหัวคอลัมน์สลับ asc/desc (in-memory; 'rising' pseudo-หมวดบังคับเรียงตามเทรนด์)
+let radarBrowseSort = { key: 'value', dir: 'desc' };
 function radarBrowseSource() {
   // Browser ใช้ market-prices เท่านั้น (มี id → ลิงก์ระดับไอเทมถูกต้อง) — ยังไม่โหลด = คืนว่าง
   // (renderRadarItemBrowser จะโชว์ "กำลังโหลด" + ensure แล้ว re-render เอง — ไม่ fallback radar
@@ -14495,77 +14630,78 @@ function renderRadarItemBrowser(container) {
   searchRow.appendChild(inp);
   container.appendChild(searchRow);
 
-  // ชิปหมวด (ข้อ 1.3/1.4) — 0.81: จัดกลุ่มหลัก/ย่อยตาม sidebar ของ poe.ninja เป๊ะ
-  // (GENERAL / EQUIPMENT / ATLAS + label ตามเว็บ — metadata มากับ market-prices.json)
+  // หมวด (ข้อ 1.3/1.4) — 0.82 dashboard: dropdown เดียวจัด optgroup ตาม sidebar poe.ninja
+  // (GENERAL / EQUIPMENT / ATLAS + label ตามเว็บ) — แทนกำแพงชิปเดิมที่กินที่/ดูยาก
   const catCounts = new Map();
   all.forEach(it => catCounts.set(it.category, (catCounts.get(it.category) || 0) + 1));
   const catsMeta = (marketPrices && marketPrices.categoriesMeta) || {};
-  const makeChip = (parent, key, label) => {
-    const c = document.createElement('button');
-    c.type = 'button';
-    c.className = 'radar-browse-chip' + (radarBrowseCat === key ? ' on' : '');
-    c.textContent = label;
-    c.addEventListener('click', () => {
-      radarBrowseCat = key;
-      radarBrowseLimit = RADAR_BROWSE_STEP;
-      renderRadarItemBrowser(container);
-    });
-    parent.appendChild(c);
+  const catSel = document.createElement('select');
+  catSel.className = 'radar-browse-catsel';
+  catSel.setAttribute('aria-label', 'เลือกหมวดไอเทม');
+  const addOpt = (parent, value, label) => {
+    const o = document.createElement('option');
+    o.value = value; o.textContent = label;
+    if (radarBrowseCat === value) o.selected = true;
+    parent.appendChild(o);
   };
-  const topRow = document.createElement('div');
-  topRow.className = 'radar-browse-chips';
-  makeChip(topRow, 'rising', '🔥 Top Rising');
-  makeChip(topRow, 'all', 'ทั้งหมด (' + all.length + ')');
-  container.appendChild(topRow);
-  // เรียงหมวดตามลำดับใน categoriesMeta (= ลำดับ sidebar เว็บ); หมวดที่ไม่มี meta → กลุ่ม "อื่นๆ"
+  addOpt(catSel, 'rising', '🔥 Top Rising');
+  addOpt(catSel, 'all', 'ทั้งหมด (' + all.length + ')');
   const groupOrder = ['General', 'Equipment', 'Atlas', 'อื่นๆ'];
   const groupLabels = { General: 'GENERAL', Equipment: 'EQUIPMENT', Atlas: 'ATLAS', 'อื่นๆ': 'อื่นๆ' };
-  const grouped = new Map(groupOrder.map(g => [g, []]));
   const metaOrder = Object.keys(catsMeta);
   const orderedCats = [...catCounts.keys()].sort((a, b) => {
     const ia = metaOrder.indexOf(a), ib = metaOrder.indexOf(b);
     return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
   });
-  orderedCats.forEach(cat => {
-    const m = catsMeta[cat];
-    const g = (m && grouped.has(m.group)) ? m.group : 'อื่นๆ';
-    grouped.get(g).push(cat);
-  });
   groupOrder.forEach(g => {
-    const cats = grouped.get(g);
-    if (!cats || !cats.length) return;
-    const head = document.createElement('p');
-    head.className = 'radar-browse-group-head';
-    head.textContent = groupLabels[g];
-    container.appendChild(head);
-    const row = document.createElement('div');
-    row.className = 'radar-browse-chips';
-    cats.forEach(cat => {
+    const cats = orderedCats.filter(cat => {
       const m = catsMeta[cat];
-      makeChip(row, cat, ((m && m.label) || cat) + ' (' + catCounts.get(cat) + ')');
+      return ((m && groupOrder.includes(m.group)) ? m.group : 'อื่นๆ') === g;
     });
-    container.appendChild(row);
+    if (!cats.length) return;
+    const og = document.createElement('optgroup');
+    og.label = groupLabels[g];
+    cats.forEach(cat => addOpt(og, cat, ((catsMeta[cat] && catsMeta[cat].label) || cat) + ' (' + catCounts.get(cat) + ')'));
+    catSel.appendChild(og);
   });
+  catSel.addEventListener('change', () => {
+    radarBrowseCat = catSel.value;
+    radarBrowseLimit = RADAR_BROWSE_STEP;
+    renderRadarItemBrowser(container);
+  });
+  searchRow.appendChild(catSel); // อยู่แถวเดียวกับช่องค้น — ควบคุมครบในบรรทัดเดียว
 
-  // กรอง: มีคำค้น = ค้น "ทั้งตลาด" ข้ามหมวดเสมอ (จะได้ไม่พลาดของที่อยู่นอก chip ที่เลือก) ·
-  // ไม่มีคำค้น = ตาม chip (Top Rising = trend desc / อื่น = value desc)
+  // กรอง: มีคำค้น = ค้น "ทั้งตลาด" ข้ามหมวดเสมอ · ไม่มีคำค้น = ตามหมวดใน dropdown
   const q = radarBrowseQuery.trim().toLowerCase();
   let list;
   if (q) {
     list = all.filter(it => (it.name || '').toLowerCase().includes(q));
-    list.sort((a, b) => (b.value || 0) - (a.value || 0));
   } else {
     list = radarBrowseCat === 'rising' ? radarBrowseTopRising(all)
       : radarBrowseCat === 'all' ? all.slice()
       : all.filter(it => it.category === radarBrowseCat);
-    if (radarBrowseCat !== 'rising') list.sort((a, b) => (b.value || 0) - (a.value || 0));
+  }
+  // 0.82: เรียงตามหัวคอลัมน์ที่ผู้ใช้เลือก (ค่าเริ่มต้น Value มาก→น้อย; Top Rising ที่ยังไม่แตะ sort = ตามเทรนด์)
+  const sortKey = radarBrowseSort.key, sortDir = radarBrowseSort.dir === 'asc' ? 1 : -1;
+  const useRisingOrder = !q && radarBrowseCat === 'rising' && sortKey === 'value' && radarBrowseSort.dir === 'desc';
+  if (!useRisingOrder) {
+    list.sort((a, b) => {
+      if (sortKey === 'name') return sortDir * String(a.name || '').localeCompare(String(b.name || ''));
+      if (sortKey === 'category') return sortDir * String(a.category || '').localeCompare(String(b.category || ''));
+      if (sortKey === 'trend') {
+        const ta = typeof a.trend7d === 'number' ? a.trend7d : -Infinity;
+        const tb = typeof b.trend7d === 'number' ? b.trend7d : -Infinity;
+        return sortDir * (ta - tb);
+      }
+      return sortDir * ((a.value || 0) - (b.value || 0)); // value
+    });
   }
 
   const meta = document.createElement('p');
   meta.className = 'rf-note radar-browse-meta';
   meta.textContent = q
     ? 'ค้นทั้งตลาด "' + radarBrowseQuery.trim() + '" — ' + list.length + ' รายการ'
-    : (radarBrowseCat === 'rising' ? 'Top Rising: เทรนด์ 7 วัน ≥ +5% เรียงจากแรงสุด (กัน junk: มูลค่า ≥0.3 Div + มีสภาพคล่อง) · ' : '')
+    : (radarBrowseCat === 'rising' ? 'Top Rising: เทรนด์ 7 วัน ≥ +5% (กัน junk: มูลค่า ≥0.3 Div + มีสภาพคล่อง) · ' : '')
       + list.length + ' รายการ';
   container.appendChild(meta);
 
@@ -14574,63 +14710,85 @@ function renderRadarItemBrowser(container) {
     return;
   }
 
-  const rows = document.createElement('div');
-  rows.className = 'radar-browse-rows';
-  // 0.81: เรทเงินจริง (ผู้ใช้ตั้งเอง) — โชว์วงเล็บกำกับใน Value เหมือนผลค้นราคา
+  // 0.82: ตารางจริง — sticky หัว + คลิกหัวคอลัมน์เรียง (▲/▼) + zebra อ่านง่าย
   const fxRate = getDivineFiatRate();
   const fxSym = fiatSymbol();
+  const catsMeta2 = (marketPrices && marketPrices.categoriesMeta) || {};
+  const tblWrap = document.createElement('div');
+  tblWrap.className = 'radar-browse-tablewrap';
+  const tbl = document.createElement('table');
+  tbl.className = 'radar-browse-table';
+  const thead = document.createElement('thead');
+  const hr = document.createElement('tr');
+  [['name', 'ไอเทม'], ['category', 'หมวด'], ['value', 'Value'], ['trend', '7 วัน'], [null, '👁']].forEach(([key, label]) => {
+    const th = document.createElement('th');
+    if (key) {
+      th.className = 'sortable' + (sortKey === key ? ' sorted' : '');
+      th.textContent = label + (sortKey === key ? (radarBrowseSort.dir === 'asc' ? ' ▲' : ' ▼') : '');
+      th.title = 'คลิกเพื่อเรียงตาม' + label;
+      th.addEventListener('click', () => {
+        if (radarBrowseSort.key === key) radarBrowseSort.dir = radarBrowseSort.dir === 'asc' ? 'desc' : 'asc';
+        else radarBrowseSort = { key, dir: key === 'name' || key === 'category' ? 'asc' : 'desc' };
+        renderRadarItemBrowser(container);
+      });
+    } else th.textContent = label;
+    hr.appendChild(th);
+  });
+  thead.appendChild(hr);
+  tbl.appendChild(thead);
+  const tbody = document.createElement('tbody');
   list.slice(0, radarBrowseLimit).forEach(it => {
-    const row = document.createElement('div');
-    row.className = 'radar-browse-row';
+    const row = document.createElement('tr');
+    row.className = 'radar-browse-tr';
     // hover tooltip (ข้อ 1.6)
     row.addEventListener('mouseenter', () => showRadarItemTip(row, it));
     row.addEventListener('mouseleave', hideRadarItemTip);
 
-    const iconCell = document.createElement('span');
-    iconCell.className = 'radar-row-icon';
+    const nameTd = document.createElement('td');
+    nameTd.className = 'rbt-name';
     if (it.icon) {
       const img = document.createElement('img');
       img.src = it.icon; img.alt = ''; img.loading = 'lazy';
+      img.referrerPolicy = 'no-referrer';
       img.onerror = () => img.remove();
-      iconCell.appendChild(img);
+      nameTd.appendChild(img);
     }
-    row.appendChild(iconCell);
-
-    const nm = document.createElement('span');
-    nm.className = 'radar-browse-name';
     const url = ninjaItemUrl(it);
     if (url) {
       const a = document.createElement('a');
       a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
       a.textContent = it.name || '?';
-      nm.appendChild(a);
-    } else nm.textContent = it.name || '?';
-    row.appendChild(nm);
+      nameTd.appendChild(a);
+    } else nameTd.appendChild(document.createTextNode(it.name || '?'));
+    row.appendChild(nameTd);
 
-    const catEl = document.createElement('span');
-    catEl.className = 'radar-item-cat';
-    catEl.textContent = it.category || '—';
-    row.appendChild(catEl);
+    const catTd = document.createElement('td');
+    catTd.className = 'rbt-cat';
+    catTd.textContent = (catsMeta2[it.category] && catsMeta2[it.category].label) || it.category || '—';
+    row.appendChild(catTd);
 
-    const val = document.createElement('span');
-    val.className = 'radar-price';
-    val.textContent = radarFmtValue(it.value, it.valueCurrency);
+    const valTd = document.createElement('td');
+    valTd.className = 'rbt-val radar-price';
+    valTd.textContent = radarFmtValue(it.value, it.valueCurrency);
     if (fxRate > 0 && typeof it.value === 'number') {
       const fx = document.createElement('small');
       fx.className = 'radar-browse-fiat';
       fx.textContent = ' (≈' + fmtNum(it.value * fxRate) + ' ' + fxSym + ')';
-      val.appendChild(fx);
+      valTd.appendChild(fx);
     }
-    row.appendChild(val);
+    row.appendChild(valTd);
 
-    const tr = document.createElement('span');
+    const trTd = document.createElement('td');
+    trTd.className = 'rbt-trend';
     if (typeof it.trend7d === 'number') {
-      tr.className = it.trend7d >= 0 ? 'trend-up' : 'trend-down';
-      tr.textContent = (it.trend7d >= 0 ? '▲ +' : '▼ ') + it.trend7d.toFixed(1) + '%';
-    } else { tr.className = 'radar-liq'; tr.textContent = '—'; }
-    row.appendChild(tr);
+      trTd.classList.add(it.trend7d >= 0 ? 'trend-up' : 'trend-down');
+      trTd.textContent = (it.trend7d >= 0 ? '▲ +' : '▼ ') + it.trend7d.toFixed(1) + '%';
+    } else trTd.textContent = '—';
+    row.appendChild(trTd);
 
     // เฝ้าราคาในแถว (ข้อ 1.1) — flow เดียวกับปุ่มในกล่องเช็คราคา (0.60)
+    const wTd = document.createElement('td');
+    wTd.className = 'rbt-watch';
     const watched = watchlist.some(w => w.name === it.name);
     const wb = document.createElement('button');
     wb.type = 'button';
@@ -14647,11 +14805,14 @@ function renderRadarItemBrowser(container) {
         showSuccessToast('เพิ่มเข้ารายการเฝ้าดูแล้ว', { key: 'watch' });
       } else showErrorToast('กรอกราคาเป็นตัวเลขมากกว่า 0');
     });
-    row.appendChild(wb);
+    wTd.appendChild(wb);
+    row.appendChild(wTd);
 
-    rows.appendChild(row);
+    tbody.appendChild(row);
   });
-  container.appendChild(rows);
+  tbl.appendChild(tbody);
+  tblWrap.appendChild(tbl);
+  container.appendChild(tblWrap);
 
   if (list.length > radarBrowseLimit) {
     const moreBtn = document.createElement('button');
