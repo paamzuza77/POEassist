@@ -1,7 +1,7 @@
 {
   "version": 1,
   "league": "runesofaldur",
-  "updatedAt": "2026-07-23T00:07:31.346Z",
+  "updatedAt": "2026-07-23T00:14:37.350Z",
   "source": {
     "name": "poe.ninja",
     "url": "https://poe.ninja/poe2/economy/runesofaldur/currency"
@@ -1466,19 +1466,37 @@
       "risk": ""
     },
     {
+      "name": "Essence of Delirium",
+      "category": "Essences",
+      "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRXNzZW5jZS9Db3JydXB0ZWRFc3NlbmNlRGVsaXJpdW0iLCJzY2FsZSI6MSwicmVhbG0iOiJwb2UyIn1d/d67329e6ed/CorruptedEssenceDelirium.png",
+      "value": 1.16,
+      "valueCurrency": "Divine",
+      "trend7d": 2.18,
+      "volume": 277.5,
+      "volumeScore": 0.91,
+      "liquidityLabel": "Good",
+      "mappedContent": "Essence",
+      "contentKey": "essence",
+      "confidence": 0.8,
+      "score": 65,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/essences",
+      "wikiUrl": "",
+      "risk": ""
+    },
+    {
       "name": "Lesser Essence of Haste",
       "category": "Essences",
       "icon": "https://poe.ninja/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvRXNzZW5jZS9TcGVlZEVzc2VuY2VMZXNzZXIiLCJzY2FsZSI6MSwicmVhbG0iOiJwb2UyIn1d/e01693a14c/SpeedEssenceLesser.png",
       "value": 2,
       "valueCurrency": "Divine",
       "trend7d": 0,
-      "volume": 0.67,
-      "volumeScore": 0.47,
+      "volume": 0.33,
+      "volumeScore": 0.42,
       "liquidityLabel": "Low",
       "mappedContent": "Essence",
       "contentKey": "essence",
       "confidence": 0.8,
-      "score": 54,
+      "score": 53,
       "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/essences",
       "wikiUrl": "",
       "risk": "Low liquidity"
@@ -2331,22 +2349,33 @@
     {
       "contentKey": "essence",
       "displayName": "Essence",
-      "farmScore": 54,
+      "farmScore": 61,
       "confidence": 0.8,
-      "status": "1 item(s) ≥1 Divine mapped to this content",
+      "status": "2 item(s) ≥1 Divine mapped to this content",
       "evidenceItems": [
+        {
+          "name": "Essence of Delirium",
+          "value": 1.16,
+          "valueCurrency": "Divine",
+          "trend7d": 2.18,
+          "volumeScore": 0.91,
+          "liquidityLabel": "Good",
+          "score": 65,
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/essences"
+        },
         {
           "name": "Lesser Essence of Haste",
           "value": 2,
           "valueCurrency": "Divine",
           "trend7d": 0,
-          "volumeScore": 0.47,
+          "volumeScore": 0.42,
           "liquidityLabel": "Low",
-          "score": 54,
+          "score": 53,
           "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/essences"
         }
       ],
       "relatedItems": [
+        "Essence of Delirium",
         "Lesser Essence of Haste"
       ],
       "risk": "Low liquidity",
