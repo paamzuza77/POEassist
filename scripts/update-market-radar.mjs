@@ -49,10 +49,11 @@ const EXTRA_PRICE_CATEGORIES = [
 // หมวด "ไอเทม" (endpoint คนละตัว! — 2026-07-23, แก้เคส "หา Unique Tablet ไม่เจอ"):
 //   /poe2/api/economy/stash/{version}/item/overview?league=&type=
 // ต่างจาก exchange: lines[] มี primaryValue (divine เหมือนกัน), sparkLine (L ใหญ่), listingCount (ไม่มี volume)
-// ยืนยันมีข้อมูลจริง 7 หมวด (~717 ชิ้น); UniqueRelics = candidate เผื่ออนาคต
+// 0.81: ครบ sidebar เว็บ 100% — เพิ่ม UniqueSanctumRelics (หน้า "Unique Relics" — ไม่ใช่ 'UniqueRelics' ที่ 404)
+// + PrecursorTablets (กลุ่ม ATLAS; เคย probe พลาดเพราะยิงใส่ exchange endpoint)
 const ITEM_CATEGORIES = [
   'UniqueWeapons', 'UniqueArmours', 'UniqueAccessories', 'UniqueJewels',
-  'UniqueFlasks', 'UniqueCharms', 'UniqueTablets', 'UniqueRelics',
+  'UniqueFlasks', 'UniqueCharms', 'UniqueSanctumRelics', 'UniqueTablets', 'PrecursorTablets',
 ];
 
 // ===== Content bucket mapping (จุดเดียวที่คุมว่าหมวด poe.ninja ไหน → farm content ไหน) =====
@@ -63,28 +64,37 @@ const ITEM_CATEGORIES = [
 //   bucket จะยังโชว์อยู่เสมอ แต่ evidenceItems ว่างจนกว่าจะมีข้อมูล
 // - confidence: ความมั่นใจว่าไอเทมหมวดนี้มาจาก content นี้จริง (0-1)
 // - noEvidenceStatus: ข้อความตอนไม่มีไอเทม >=1 Divine เข้าเกณฑ์
+// 0.81: เพิ่ม `nameRules` — รายการ substring (lowercase, hand-verified) จับไอเทมเข้า content จากชื่อ
+// **ก่อน** category mapping (เช่น "Simulacrum Splinter" อยู่หมวดไหนก็เข้า simulacrum) — ลำดับ bucket ใน
+// array นี้ = priority เมื่อชนกัน. แก้เคส "Simulacrum ไม่มีคะแนนทั้งที่ของแพง" ตามคำสั่งผู้ใช้.
 const CONTENT_BUCKETS = [
+  { contentKey: 'simulacrum', displayName: 'Simulacrum', categories: [], confidence: 0.85,
+    nameRules: ['simulacrum'] },
+  { contentKey: 'breach', displayName: 'Breach', categories: ['Breach'], confidence: 0.95,
+    nameRules: ['breachstone', 'breach splinter'] },
   { contentKey: 'ritual', displayName: 'Ritual', categories: ['Ritual'], confidence: 0.9 },
-  { contentKey: 'expedition', displayName: 'Expedition', categories: ['Expedition'], confidence: 0.85 },
+  { contentKey: 'expedition', displayName: 'Expedition', categories: ['Expedition'], confidence: 0.85,
+    nameRules: ['logbook'] },
   { contentKey: 'delirium', displayName: 'Delirium', categories: ['Delirium'], confidence: 0.95 },
-  { contentKey: 'simulacrum', displayName: 'Simulacrum', categories: [], confidence: 0.7 },
-  { contentKey: 'breach', displayName: 'Breach', categories: ['Breach'], confidence: 0.95 },
   { contentKey: 'essence', displayName: 'Essence', categories: ['Essences'], confidence: 0.8 },
   { contentKey: 'runes', displayName: 'Runes / Remnants', categories: ['Runes'], confidence: 0.9 },
-  { contentKey: 'trial_soulcores', displayName: 'Trial / Soul Cores', categories: ['SoulCores'], confidence: 0.75 },
+  // 0.81: Sanctum Relics = ของ Trial of the Sekhemas โดยตรง + กุญแจ trial ทั้งสอง (จับจากชื่อเป๊ะๆ)
+  { contentKey: 'trial_soulcores', displayName: 'Trial / Soul Cores', categories: ['SoulCores', 'UniqueSanctumRelics'], confidence: 0.75,
+    nameRules: ['djinn barya', 'inscribed ultimatum'] },
   { contentKey: 'fragments_bossing', displayName: 'Fragments / Bossing', categories: ['Fragments'], confidence: 0.75 },
-  // patch 0.79: Unique/Precursor Tablets = ของสาย mapping โดยตรง → เข้า bucket นี้ (เดิมว่างตลอด)
-  { contentKey: 'waystones_mapping', displayName: 'Waystones / Mapping', categories: ['UniqueTablets', 'Waystones', 'Tablets'], confidence: 0.7 },
+  // 0.79/0.81: Tablets (Unique + Precursor) = ของสาย mapping โดยตรง + waystone จากชื่อ
+  { contentKey: 'waystones_mapping', displayName: 'Waystones / Mapping', categories: ['UniqueTablets', 'PrecursorTablets', 'Waystones', 'Tablets'], confidence: 0.7,
+    nameRules: ['waystone'] },
   { contentKey: 'abyss', displayName: 'Abyss', categories: ['Abyss'], confidence: 0.85 },
-  { contentKey: 'strongboxes', displayName: 'Strongboxes', categories: [], confidence: 0.6 },
+  { contentKey: 'strongboxes', displayName: 'Strongboxes', categories: [], confidence: 0.6,
+    nameRules: ['strongbox'] },
   { contentKey: 'generic_currency', displayName: 'Generic Currency', categories: ['Currency', 'Verisium'], confidence: 0.5 },
-  // ===== patch 0.79: bucket ใหม่ตามการฟาร์ม PoE2 (หมวดที่เพิ่งดึงครบ — คำสั่งผู้ใช้ 2026-07-23) =====
   { contentKey: 'uncut_gems', displayName: 'Uncut Gems (General)', categories: ['UncutGems', 'Gems'], confidence: 0.6 },
   { contentKey: 'idols', displayName: 'Idols', categories: ['Idols'], confidence: 0.7 },
   { contentKey: 'lineage_gems', displayName: 'Lineage Gems (Endgame)', categories: ['LineageSupportGems'], confidence: 0.6 },
   // uniques ดรอปได้ทั่วไป/บอส — ฟาร์มเจาะจงยาก → confidence ต่ำสุดกันคะแนนเวอร์จากของแพงรายชิ้น
   { contentKey: 'uniques_general', displayName: 'Uniques (General / Bossing)',
-    categories: ['UniqueWeapons', 'UniqueArmours', 'UniqueAccessories', 'UniqueJewels', 'UniqueFlasks', 'UniqueCharms', 'UniqueRelics'],
+    categories: ['UniqueWeapons', 'UniqueArmours', 'UniqueAccessories', 'UniqueJewels', 'UniqueFlasks', 'UniqueCharms'],
     confidence: 0.4 },
 ].map((b) => ({
   ...b,
@@ -97,6 +107,15 @@ const CONTENT_BUCKETS = [
 const CATEGORY_TO_BUCKET = new Map();
 for (const bucket of CONTENT_BUCKETS) {
   for (const cat of bucket.categories) CATEGORY_TO_BUCKET.set(cat, bucket);
+}
+// 0.81: map ไอเทม → bucket — nameRules (substring จากชื่อ, hand-verified) ชนะ category mapping
+// เพื่อให้ของอย่าง "Simulacrum Splinter" เข้า content ที่ถูกไม่ว่าจะอยู่หมวด poe.ninja ไหน
+function bucketForItem(item) {
+  const nm = String(item.name || '').toLowerCase();
+  for (const bucket of CONTENT_BUCKETS) {
+    if (Array.isArray(bucket.nameRules) && bucket.nameRules.some((r) => nm.includes(r))) return bucket;
+  }
+  return CATEGORY_TO_BUCKET.get(item.category) || null;
 }
 
 const TOP_RISING_COUNT = 12;    // จำนวนไอเทมในกล่อง Top Rising (แสดงผล/fallback เท่านั้น ไม่ใช่ต้นทางคำนวณ)
@@ -131,16 +150,34 @@ const NINJA_BASE = 'https://poe.ninja';
 // slug หน้าเว็บ poe.ninja ต่อหมวด (0.80) — ใช้สร้าง sourceUrl ให้คลิกแล้วไปหน้าที่ถูกจริง
 // (เดิมใช้ category.toLowerCase() — ผิดกับหมวดหลายคำ เช่น UniqueArmours → 'uniquearmours' ไม่มีหน้า)
 // ★ = ยืนยันจากเว็บจริง; ที่เหลือ kebab-case ตาม convention เดียวกัน — ตรงกับ NINJA_CAT_SLUGS ฝั่ง index.html
-const CATEGORY_PAGE_SLUGS = {
-  Currency: 'currency', Fragments: 'fragments', Abyss: 'abyssal-bones', UncutGems: 'uncut-gems',
-  LineageSupportGems: 'lineage-support-gems', Essences: 'essences', SoulCores: 'soul-cores',
-  Idols: 'idols', Runes: 'runes', Ritual: 'omens', Expedition: 'expedition',
-  Delirium: 'delirium', Breach: 'breach', Verisium: 'verisium',
-  UniqueTablets: 'unique-tablets', UniqueWeapons: 'unique-weapons', UniqueArmours: 'unique-armours',
-  UniqueAccessories: 'unique-accessories', UniqueJewels: 'unique-jewels',
-  UniqueFlasks: 'unique-flasks', UniqueCharms: 'unique-charms',
+// 0.81: ครบทุกหมวดของ sidebar จริง + จัดกลุ่ม/label ตามเว็บเป๊ะ (GENERAL / EQUIPMENT / ATLAS)
+// ทุก slug ยืนยันจาก href ใน sidebar จริง — รวมเคสพิเศษ: Delirium→liquid-emotions, Breach→breach-catalyst
+const CATEGORY_META = {
+  Currency:           { group: 'General',   label: 'Currency',          slug: 'currency' },
+  Fragments:          { group: 'General',   label: 'Fragments',         slug: 'fragments' },
+  Abyss:              { group: 'General',   label: 'Abyssal Bones',     slug: 'abyssal-bones' },
+  UncutGems:          { group: 'General',   label: 'Uncut Gems',        slug: 'uncut-gems' },
+  LineageSupportGems: { group: 'General',   label: 'Lineage Gems',      slug: 'lineage-support-gems' },
+  Essences:           { group: 'General',   label: 'Essences',          slug: 'essences' },
+  SoulCores:          { group: 'General',   label: 'Soul Cores',        slug: 'soul-cores' },
+  Idols:              { group: 'General',   label: 'Idols',             slug: 'idols' },
+  Runes:              { group: 'General',   label: 'Runes',             slug: 'runes' },
+  Ritual:             { group: 'General',   label: 'Omens',             slug: 'omens' },
+  Expedition:         { group: 'General',   label: 'Expedition',        slug: 'expedition' },
+  Delirium:           { group: 'General',   label: 'Liquid Emotions',   slug: 'liquid-emotions' },
+  Breach:             { group: 'General',   label: 'Catalysts',         slug: 'breach-catalyst' },
+  Verisium:           { group: 'General',   label: 'Verisium',          slug: 'verisium' },
+  UniqueWeapons:      { group: 'Equipment', label: 'Unique Weapons',    slug: 'unique-weapons' },
+  UniqueArmours:      { group: 'Equipment', label: 'Unique Armours',    slug: 'unique-armours' },
+  UniqueAccessories:  { group: 'Equipment', label: 'Unique Accessories', slug: 'unique-accessories' },
+  UniqueFlasks:       { group: 'Equipment', label: 'Unique Flasks',     slug: 'unique-flasks' },
+  UniqueCharms:       { group: 'Equipment', label: 'Unique Charms',     slug: 'unique-charms' },
+  UniqueJewels:       { group: 'Equipment', label: 'Unique Jewels',     slug: 'unique-jewels' },
+  UniqueSanctumRelics: { group: 'Equipment', label: 'Unique Relics',    slug: 'unique-relics' },
+  UniqueTablets:      { group: 'Atlas',     label: 'Unique Tablets',    slug: 'unique-tablets' },
+  PrecursorTablets:   { group: 'Atlas',     label: 'Precursor Tablets', slug: 'precursor-tablets' },
 };
-const categoryPageSlug = (cat) => CATEGORY_PAGE_SLUGS[cat] || String(cat || '').toLowerCase();
+const categoryPageSlug = (cat) => (CATEGORY_META[cat] && CATEGORY_META[cat].slug) || String(cat || '').toLowerCase();
 const USER_AGENT = 'POEassist-market-radar/1.0 (github.com/paamzuza77/POEassist; hourly static snapshot)';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -364,7 +401,7 @@ async function main() {
 
   // --- ให้คะแนน + map content ให้ไอเทมทุกตัวที่ normalize มาแล้ว ---
   const scored = allItems.map((item) => {
-    const bucket = CATEGORY_TO_BUCKET.get(item.category) || null;
+    const bucket = bucketForItem(item); // 0.81: nameRules ก่อน category (Simulacrum ฯลฯ)
     const confidence = bucket ? bucket.confidence : 0.5;
     const { score, risk } = itemFarmScore(item, confidence);
     return { ...item, bucket, confidence, score, riskScore: risk.score, riskNote: risk.note };
@@ -557,12 +594,18 @@ function writeMarketPrices(priceItems, categoryCounts, errors) {
   }
 
   const skippedCategories = Object.keys(categoryCounts).filter((c) => categoryCounts[c] === 0);
+  // 0.81: metadata กลุ่ม/label/slug ตาม sidebar poe.ninja จริง — ให้หน้าเว็บจัดหมวดหมู่เหมือนเขาเป๊ะ
+  const categoriesMeta = {};
+  Object.keys(categoryCounts).forEach((cat) => {
+    if (categoryCounts[cat] > 0 && CATEGORY_META[cat]) categoriesMeta[cat] = CATEGORY_META[cat];
+  });
   const out = {
     version: 1,
     league: LEAGUE,
     updatedAt: new Date().toISOString(),
     source: { name: 'poe.ninja', url: `${NINJA_BASE}/poe2/economy/${LEAGUE}/currency` },
     categories: categoryCounts,   // ชื่อหมวด → จำนวน items (-1 = fetch พัง, 0 = หมวดว่าง/ชื่อไม่ตรง)
+    categoriesMeta,               // หมวดที่มีของ → { group: General|Equipment|Atlas, label, slug } ตามเว็บ
     skippedCategories,
     errors,
     items,

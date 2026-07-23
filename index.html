@@ -5064,6 +5064,25 @@ window.ensureRawblockFonts = function () {
     .rbm-ev-row { grid-template-columns: minmax(100px, 1fr) 80px 64px; }
     .rbm-ev-row > :nth-child(4) { display: none; }
   }
+
+  /* ---- patch 0.81: กลุ่มหมวด (แบบ sidebar poe.ninja) + fiat กำกับ + เรทบน topbar ---- */
+  .radar-browse-group-head {
+    margin: 10px 0 4px; font-size: 10px; font-weight: 800; letter-spacing: 0.12em;
+    color: var(--text-dim); text-transform: uppercase;
+  }
+  .radar-browse-fiat { color: var(--text-dim); font-size: 10px; font-weight: 400; }
+  .topbar-rate {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; color: var(--text-muted); white-space: nowrap;
+  }
+  .topbar-rate-input {
+    width: 58px; padding: 4px 6px; font-size: 12px; text-align: right;
+    background: var(--card); color: var(--text);
+    border: 1px solid var(--border); border-radius: 7px;
+  }
+  .topbar-rate-input:focus { outline: none; border-color: var(--gold); }
+  .topbar-rate-sym { font-weight: 700; }
+  @media (max-width: 1023px) { .topbar-rate { display: none; } } /* จอแคบ topbar แน่น — เรทยังแก้ได้ใน Gear/Settings */
 </style>
 <!-- Modularization Phase 1 (patch 0.34): helper CSS ที่แยกออกจาก inline <style> ด้านบน
      วางหลัง </style> เพื่อคงลำดับ cascade เดิม (rule พื้นฐาน specificity ต่ำ — override ของ Trust theme ชนะด้วย specificity อยู่แล้ว) -->
@@ -5148,6 +5167,12 @@ window.ensureRawblockFonts = function () {
           <input type="text" id="topbarSearch" class="topbar-search-input" placeholder="ค้นหา…" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="topbarSearchResults" aria-label="Global search">
           <div id="topbarSearchResults" class="topbar-search-results" role="listbox" hidden></div>
         </div>
+        <!-- เรท 1 Dv = ? เงินจริง (patch 0.81) — กรอกที่นี่ sync ทุกจุด (Gear Planner/Settings/Radar) ผ่าน setDivineFiatRate -->
+        <span class="topbar-rate" id="topbarRateWrap" title="เรท 1 Divine เป็นเงินจริง (กรอกเอง — ใช้แปลงราคาทั้งแอป)">
+          <span class="topbar-rate-label">1 Dv =</span>
+          <input type="text" inputmode="decimal" class="num-input topbar-rate-input" id="topbarRate" placeholder="—" aria-label="เรท 1 Divine เป็นเงินจริง">
+          <span class="topbar-rate-sym" id="topbarRateSym">฿</span>
+        </span>
         <button class="display-toggle" type="button" id="displayToggle" title="สลับโหมดแสดงผล Simple/Advanced" aria-pressed="false"></button>
         <!-- ปุ่มโหมดสว่าง/มืดถูกย้ายเข้าเมนูขวาบน (patch 0.45) — ปุ่มเดิม "ซ่อนด้วย CSS" ไม่ลบทิ้ง:
              initModeToggle/syncAppearanceControls ยังอ้าง element นี้อยู่ (Settings sync เดิมไม่ถูกแตะ) -->
@@ -8437,6 +8462,32 @@ function setAppFiatCurrency(code) {
 document.documentElement.setAttribute('data-font-scale', appFontScale);
 updateFiatCurrencyUi(true);
 
+/* ---- Topbar Divine rate (patch 0.81): "1 Dv = ? <fiat>" ข้างช่องค้นหา ----
+   กรอกที่นี่ = setDivineFiatRate เดียวกับ Gear Planner/Settings → sync ทุกจุด
+   sync ผ่าน 2 event: poeassist:prefschange (Settings/สกุลเงินเปลี่ยน — มี toast อยู่แล้ว) +
+   poeassist:ratechange (ใหม่ — เงียบ ใช้ระหว่างช่องเรทด้วยกันเอง จะได้ไม่เด้ง toast ทุกตัวอักษร) */
+(function initTopbarRate() {
+  const inp = document.getElementById('topbarRate');
+  const sym = document.getElementById('topbarRateSym');
+  if (!inp) return;
+  const syncFromState = () => {
+    if (document.activeElement !== inp) { // ไม่ทับค่าที่ผู้ใช้กำลังพิมพ์
+      const r = getDivineFiatRate();
+      inp.value = r > 0 ? String(r) : '';
+    }
+    if (sym) sym.textContent = fiatSymbol();
+  };
+  inp.addEventListener('input', () => {
+    const v = parseFloat(inp.value);
+    setDivineFiatRate(!isNaN(v) && v > 0 ? v : NaN);
+    updateFiatCurrencyUi(false); // อัปเดต divineRate + ช่องเรทใน Gear Planner + summary (รันหลังบูตเสมอ — ไม่ติด TDZ)
+    document.dispatchEvent(new CustomEvent('poeassist:ratechange'));
+  });
+  document.addEventListener('poeassist:prefschange', syncFromState);
+  document.addEventListener('poeassist:ratechange', syncFromState);
+  syncFromState();
+})();
+
 /* ==================== Local data backup / reset ==================== */
 // ทุกคีย์ที่เป็น "ข้อมูลผู้ใช้/การตั้งค่า" ในเบราว์เซอร์ (ไม่รวมไฟล์ JSON ที่ generate มา)
 // ใช้ทั้งใน Export/Import ทั้งชุด — เก็บเป็น string ดิบตามที่อยู่ใน localStorage (lossless)
@@ -11233,6 +11284,7 @@ document.getElementById('divineRateInput').addEventListener('input', (e) => {
   divineRate = isNaN(v) || v < 0 ? 0 : v;
   persistDivineRate();
   updateShopSummary();
+  document.dispatchEvent(new CustomEvent('poeassist:ratechange')); // sync ช่องเรทบน topbar (patch 0.81 — event เงียบ)
 });
 
 document.getElementById('shopRowHDec').addEventListener('click', () => stepShopRowHeight(-SHOP_ROW_H.step));
@@ -11345,6 +11397,16 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 /* ==================== Patch Notes ==================== */
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
+  {
+    version: '0.81',
+    date: '2026-07-23',
+    notes: [
+      'ครอบตลาดครบ 100% ตาม poe.ninja แล้ว: เพิ่ม Unique Relics (เช่น The Last Flame 3,788 Div) และ Precursor Tablets — รวม ~1,377 รายการ และ Item Browser จัดหมวดหมู่เป็นกลุ่ม GENERAL / EQUIPMENT / ATLAS ชื่อตรงกับเว็บเป๊ะ (Liquid Emotions, Catalysts, Abyssal Bones ฯลฯ)',
+      'ทุกคอนเทนต์มีคะแนนจริงแล้ว: ระบบจับไอเทมเข้าคอนเทนต์จาก "ชื่อ" ได้ (เช่น Simulacrum/Splinter → Simulacrum ได้ 48 คะแนน จากเดิม 0) + Sanctum Relics เข้า Trial, Tablets เข้า Waystones/Mapping — เหลือเพียง Strongboxes ที่ตลาดไม่มีไอเทมจริง (0 อย่างซื่อสัตย์)',
+      'Value ใน Item Browser มีวงเล็บแปลงเป็นเงินจริงกำกับ (ตามเรทที่ตั้ง) เหมือนผลค้นราคา',
+      'เพิ่มช่องเรท "1 Dv = ? ฿" บนแถบบนข้างช่องค้นหา — กรอกที่เดียว sync ทุกจุดทั้งแอป (Gear Planner, Settings, Market Radar)',
+    ],
+  },
   {
     version: '0.80',
     date: '2026-07-23',
@@ -14150,14 +14212,17 @@ const NINJA_CAT_SLUGS = {
   Runes: 'runes',                             // ★
   Ritual: 'omens',                            // ★ (Omens = subset ของ type Ritual)
   Expedition: 'expedition',                   // ★
-  Delirium: 'delirium', Breach: 'breach', Verisium: 'verisium', // kebab guess (โครงเดียวกับหมวดอื่น)
+  Delirium: 'liquid-emotions', Breach: 'breach-catalyst', Verisium: 'verisium', // ★ 0.81 (ยืนยันจาก sidebar href จริง)
   UniqueTablets: 'unique-tablets',            // ★
   UniqueWeapons: 'unique-weapons', UniqueArmours: 'unique-armours',
   UniqueAccessories: 'unique-accessories', UniqueJewels: 'unique-jewels',
-  UniqueFlasks: 'unique-flasks', UniqueCharms: 'unique-charms', // kebab ตาม unique-tablets ที่ยืนยัน
+  UniqueFlasks: 'unique-flasks', UniqueCharms: 'unique-charms', // ★ 0.81
+  UniqueSanctumRelics: 'unique-relics', PrecursorTablets: 'precursor-tablets', // ★ 0.81 (หมวดใหม่)
 };
 function ninjaItemUrl(it) {
-  const slug = NINJA_CAT_SLUGS[it.category];
+  // 0.81: slug จาก categoriesMeta ใน market-prices.json ก่อน (generator ยืนยันจาก sidebar จริง) → ตาราง static
+  const meta = marketPrices && marketPrices.categoriesMeta && marketPrices.categoriesMeta[it.category];
+  const slug = (meta && meta.slug) || NINJA_CAT_SLUGS[it.category];
   if (slug && it.id) return 'https://poe.ninja/poe2/economy/' + (radarData && radarData.league ? radarData.league : 'runesofaldur') + '/' + slug + '/' + encodeURIComponent(it.id);
   return it.sourceUrl || null; // radar items เก่าไม่มี id — ตกไปหน้าหมวด
 }
@@ -14430,12 +14495,12 @@ function renderRadarItemBrowser(container) {
   searchRow.appendChild(inp);
   container.appendChild(searchRow);
 
-  // ชิปหมวด (ข้อ 1.3/1.4) — นับจำนวนจริงต่อหมวด
+  // ชิปหมวด (ข้อ 1.3/1.4) — 0.81: จัดกลุ่มหลัก/ย่อยตาม sidebar ของ poe.ninja เป๊ะ
+  // (GENERAL / EQUIPMENT / ATLAS + label ตามเว็บ — metadata มากับ market-prices.json)
   const catCounts = new Map();
   all.forEach(it => catCounts.set(it.category, (catCounts.get(it.category) || 0) + 1));
-  const chipRow = document.createElement('div');
-  chipRow.className = 'radar-browse-chips';
-  const makeChip = (key, label) => {
+  const catsMeta = (marketPrices && marketPrices.categoriesMeta) || {};
+  const makeChip = (parent, key, label) => {
     const c = document.createElement('button');
     c.type = 'button';
     c.className = 'radar-browse-chip' + (radarBrowseCat === key ? ' on' : '');
@@ -14445,12 +14510,42 @@ function renderRadarItemBrowser(container) {
       radarBrowseLimit = RADAR_BROWSE_STEP;
       renderRadarItemBrowser(container);
     });
-    chipRow.appendChild(c);
+    parent.appendChild(c);
   };
-  makeChip('rising', '🔥 Top Rising');
-  makeChip('all', 'ทั้งหมด (' + all.length + ')');
-  [...catCounts.keys()].sort().forEach(cat => makeChip(cat, cat + ' (' + catCounts.get(cat) + ')'));
-  container.appendChild(chipRow);
+  const topRow = document.createElement('div');
+  topRow.className = 'radar-browse-chips';
+  makeChip(topRow, 'rising', '🔥 Top Rising');
+  makeChip(topRow, 'all', 'ทั้งหมด (' + all.length + ')');
+  container.appendChild(topRow);
+  // เรียงหมวดตามลำดับใน categoriesMeta (= ลำดับ sidebar เว็บ); หมวดที่ไม่มี meta → กลุ่ม "อื่นๆ"
+  const groupOrder = ['General', 'Equipment', 'Atlas', 'อื่นๆ'];
+  const groupLabels = { General: 'GENERAL', Equipment: 'EQUIPMENT', Atlas: 'ATLAS', 'อื่นๆ': 'อื่นๆ' };
+  const grouped = new Map(groupOrder.map(g => [g, []]));
+  const metaOrder = Object.keys(catsMeta);
+  const orderedCats = [...catCounts.keys()].sort((a, b) => {
+    const ia = metaOrder.indexOf(a), ib = metaOrder.indexOf(b);
+    return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+  });
+  orderedCats.forEach(cat => {
+    const m = catsMeta[cat];
+    const g = (m && grouped.has(m.group)) ? m.group : 'อื่นๆ';
+    grouped.get(g).push(cat);
+  });
+  groupOrder.forEach(g => {
+    const cats = grouped.get(g);
+    if (!cats || !cats.length) return;
+    const head = document.createElement('p');
+    head.className = 'radar-browse-group-head';
+    head.textContent = groupLabels[g];
+    container.appendChild(head);
+    const row = document.createElement('div');
+    row.className = 'radar-browse-chips';
+    cats.forEach(cat => {
+      const m = catsMeta[cat];
+      makeChip(row, cat, ((m && m.label) || cat) + ' (' + catCounts.get(cat) + ')');
+    });
+    container.appendChild(row);
+  });
 
   // กรอง: มีคำค้น = ค้น "ทั้งตลาด" ข้ามหมวดเสมอ (จะได้ไม่พลาดของที่อยู่นอก chip ที่เลือก) ·
   // ไม่มีคำค้น = ตาม chip (Top Rising = trend desc / อื่น = value desc)
@@ -14481,6 +14576,9 @@ function renderRadarItemBrowser(container) {
 
   const rows = document.createElement('div');
   rows.className = 'radar-browse-rows';
+  // 0.81: เรทเงินจริง (ผู้ใช้ตั้งเอง) — โชว์วงเล็บกำกับใน Value เหมือนผลค้นราคา
+  const fxRate = getDivineFiatRate();
+  const fxSym = fiatSymbol();
   list.slice(0, radarBrowseLimit).forEach(it => {
     const row = document.createElement('div');
     row.className = 'radar-browse-row';
@@ -14517,6 +14615,12 @@ function renderRadarItemBrowser(container) {
     const val = document.createElement('span');
     val.className = 'radar-price';
     val.textContent = radarFmtValue(it.value, it.valueCurrency);
+    if (fxRate > 0 && typeof it.value === 'number') {
+      const fx = document.createElement('small');
+      fx.className = 'radar-browse-fiat';
+      fx.textContent = ' (≈' + fmtNum(it.value * fxRate) + ' ' + fxSym + ')';
+      val.appendChild(fx);
+    }
     row.appendChild(val);
 
     const tr = document.createElement('span');

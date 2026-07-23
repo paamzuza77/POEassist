@@ -1,7 +1,7 @@
 {
   "version": 1,
   "league": "runesofaldur",
-  "updatedAt": "2026-07-23T03:16:18.471Z",
+  "updatedAt": "2026-07-23T03:28:36.583Z",
   "source": {
     "name": "poe.ninja",
     "url": "https://poe.ninja/poe2/economy/runesofaldur/currency"
@@ -953,10 +953,10 @@
       "volume": 104.7,
       "volumeScore": 0.84,
       "liquidityLabel": "Good",
-      "mappedContent": "Fragments / Bossing",
-      "contentKey": "fragments_bossing",
-      "confidence": 0.75,
-      "score": 17,
+      "mappedContent": "Simulacrum",
+      "contentKey": "simulacrum",
+      "confidence": 0.85,
+      "score": 18,
       "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/fragments",
       "wikiUrl": "",
       "risk": ""
@@ -1097,10 +1097,10 @@
       "volume": 8167,
       "volumeScore": 1,
       "liquidityLabel": "High",
-      "mappedContent": "Fragments / Bossing",
-      "contentKey": "fragments_bossing",
-      "confidence": 0.75,
-      "score": 61,
+      "mappedContent": "Simulacrum",
+      "contentKey": "simulacrum",
+      "confidence": 0.85,
+      "score": 63,
       "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/fragments",
       "wikiUrl": "",
       "risk": ""
@@ -4899,7 +4899,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 21,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity"
     },
@@ -4917,7 +4917,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 57,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": ""
     },
@@ -4935,7 +4935,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 7,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity; Very cheap per unit — needs bulk selling"
     },
@@ -4953,7 +4953,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 13,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity; Very cheap per unit — needs bulk selling"
     },
@@ -4971,7 +4971,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 22,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": ""
     },
@@ -4989,7 +4989,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 64,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5007,7 +5007,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 8,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity; Very cheap per unit — needs bulk selling"
     },
@@ -5025,7 +5025,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 9,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity"
     },
@@ -5043,7 +5043,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 7,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity; Very cheap per unit — needs bulk selling"
     },
@@ -5061,7 +5061,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 9,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity; Very cheap per unit — needs bulk selling"
     },
@@ -5079,7 +5079,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 8,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity; Very cheap per unit — needs bulk selling"
     },
@@ -5097,7 +5097,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 12,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity"
     },
@@ -5115,7 +5115,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 17,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity"
     },
@@ -5133,7 +5133,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 12,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity"
     },
@@ -5151,7 +5151,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 18,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5169,7 +5169,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 24,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5187,7 +5187,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 11,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity; Very cheap per unit — needs bulk selling"
     },
@@ -5205,7 +5205,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 20,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5223,7 +5223,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 20,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity; Spiking hard — price may correct"
     },
@@ -5241,7 +5241,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 5,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity; Very cheap per unit — needs bulk selling"
     },
@@ -5259,7 +5259,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 8,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity; Very cheap per unit — needs bulk selling"
     },
@@ -5277,7 +5277,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 11,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity"
     },
@@ -5295,7 +5295,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 4,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity; Very cheap per unit — needs bulk selling"
     },
@@ -5313,7 +5313,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 4,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity; Very cheap per unit — needs bulk selling"
     },
@@ -5331,7 +5331,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 4,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity; Very cheap per unit — needs bulk selling"
     },
@@ -5349,7 +5349,7 @@
       "contentKey": "delirium",
       "confidence": 0.95,
       "score": 4,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions",
       "wikiUrl": "",
       "risk": "Low liquidity; Very cheap per unit — needs bulk selling"
     },
@@ -5367,7 +5367,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 12,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": "Very cheap per unit — needs bulk selling"
     },
@@ -5385,7 +5385,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 24,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5403,7 +5403,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 22,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5421,7 +5421,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 14,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5439,7 +5439,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 16,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5457,7 +5457,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 18,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5475,7 +5475,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 20,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5493,7 +5493,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 13,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5511,7 +5511,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 14,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5529,7 +5529,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 21,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5547,7 +5547,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 21,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5565,7 +5565,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 18,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5583,7 +5583,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 22,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5601,7 +5601,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 22,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5619,7 +5619,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 21,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5637,7 +5637,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 23,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5655,7 +5655,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 21,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5673,7 +5673,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 18,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5691,7 +5691,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 22,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5709,7 +5709,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 16,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5727,7 +5727,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 17,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5745,7 +5745,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 68,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5763,7 +5763,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 22,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5781,7 +5781,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 14,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5799,7 +5799,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 18,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5817,7 +5817,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 21,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": "Very cheap per unit — needs bulk selling"
     },
@@ -5835,7 +5835,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 68,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -5853,7 +5853,7 @@
       "contentKey": "breach",
       "confidence": 0.95,
       "score": 13,
-      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach",
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst",
       "wikiUrl": "",
       "risk": ""
     },
@@ -24164,6 +24164,96 @@
       "risk": "Very cheap per unit — needs bulk selling"
     },
     {
+      "name": "The Last Flame (Incense Relic)",
+      "category": "UniqueSanctumRelics",
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvUmVsaWNzL1JlbGljVW5pcXVlNHgxIiwidyI6NCwiaCI6MSwic2NhbGUiOjEsInJlYWxtIjoicG9lMiJ9XQ/65cba8a448/RelicUnique4x1.png",
+      "value": 3788,
+      "valueCurrency": "Divine",
+      "trend7d": -11.67,
+      "volume": null,
+      "volumeScore": 0.5,
+      "liquidityLabel": "Unknown",
+      "mappedContent": "Trial / Soul Cores",
+      "contentKey": "trial_soulcores",
+      "confidence": 0.75,
+      "score": 62,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/unique-relics",
+      "wikiUrl": "",
+      "risk": ""
+    },
+    {
+      "name": "The Desperate Alliance (Vase Relic)",
+      "category": "UniqueSanctumRelics",
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvUmVsaWNzL1JlbGljVW5pcXVlMXg0IiwidyI6MSwiaCI6NCwic2NhbGUiOjEsInJlYWxtIjoicG9lMiJ9XQ/865d5eb4fc/RelicUnique1x4.png",
+      "value": 4.23,
+      "valueCurrency": "Divine",
+      "trend7d": -21.39,
+      "volume": null,
+      "volumeScore": 0.5,
+      "liquidityLabel": "Unknown",
+      "mappedContent": "Trial / Soul Cores",
+      "contentKey": "trial_soulcores",
+      "confidence": 0.75,
+      "score": 50,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/unique-relics",
+      "wikiUrl": "",
+      "risk": ""
+    },
+    {
+      "name": "The Peacemaker's Draught (Amphora Relic)",
+      "category": "UniqueSanctumRelics",
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvUmVsaWNzL1JlbGljVW5pcXVlMXgzIiwidyI6MSwiaCI6Mywic2NhbGUiOjEsInJlYWxtIjoicG9lMiJ9XQ/9a0c871b8b/RelicUnique1x3.png",
+      "value": 0,
+      "valueCurrency": "Divine",
+      "trend7d": 8.8,
+      "volume": null,
+      "volumeScore": 0.5,
+      "liquidityLabel": "Unknown",
+      "mappedContent": "Trial / Soul Cores",
+      "contentKey": "trial_soulcores",
+      "confidence": 0.75,
+      "score": 16,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/unique-relics",
+      "wikiUrl": "",
+      "risk": "Very cheap per unit — needs bulk selling"
+    },
+    {
+      "name": "The Changing Seasons (Seal Relic)",
+      "category": "UniqueSanctumRelics",
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvUmVsaWNzL1JlbGljVW5pcXVlMngxIiwidyI6MiwiaCI6MSwic2NhbGUiOjEsInJlYWxtIjoicG9lMiJ9XQ/036203ffa6/RelicUnique2x1.png",
+      "value": 0,
+      "valueCurrency": "Divine",
+      "trend7d": 8.8,
+      "volume": null,
+      "volumeScore": 0.5,
+      "liquidityLabel": "Unknown",
+      "mappedContent": "Trial / Soul Cores",
+      "contentKey": "trial_soulcores",
+      "confidence": 0.75,
+      "score": 16,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/unique-relics",
+      "wikiUrl": "",
+      "risk": "Very cheap per unit — needs bulk selling"
+    },
+    {
+      "name": "The Burden of Leadership (Tapestry Relic)",
+      "category": "UniqueSanctumRelics",
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvUmVsaWNzL1JlbGljVW5pcXVlM3gxIiwidyI6MywiaCI6MSwic2NhbGUiOjEsInJlYWxtIjoicG9lMiJ9XQ/0fd744ac28/RelicUnique3x1.png",
+      "value": 0,
+      "valueCurrency": "Divine",
+      "trend7d": 8.8,
+      "volume": null,
+      "volumeScore": 0.5,
+      "liquidityLabel": "Unknown",
+      "mappedContent": "Trial / Soul Cores",
+      "contentKey": "trial_soulcores",
+      "confidence": 0.75,
+      "score": 16,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/unique-relics",
+      "wikiUrl": "",
+      "risk": "Very cheap per unit — needs bulk selling"
+    },
+    {
       "name": "The Grand Project (Irradiated Tablet)",
       "category": "UniqueTablets",
       "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUHJlY3Vyc29yVGFibGV0cy9QcmVjdXJzb3JUYWJsZXRHZW5lcmljVW5pcXVlMSIsInciOjEsImgiOjEsInNjYWxlIjoxLCJyZWFsbSI6InBvZTIifV0/acf337f58c/PrecursorTabletGenericUnique1.png",
@@ -24324,6 +24414,132 @@
       "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/unique-tablets",
       "wikiUrl": "",
       "risk": "Very cheap per unit — needs bulk selling"
+    },
+    {
+      "name": "Ritual Tablet",
+      "category": "PrecursorTablets",
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUHJlY3Vyc29yVGFibGV0cy9QcmVjdXJzb3JUYWJsZXRSaXR1YWwiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MSwicmVhbG0iOiJwb2UyIn1d/23c5248469/PrecursorTabletRitual.png",
+      "value": 0.95,
+      "valueCurrency": "Divine",
+      "trend7d": 63.29,
+      "volume": null,
+      "volumeScore": 0.5,
+      "liquidityLabel": "Unknown",
+      "mappedContent": "Waystones / Mapping",
+      "contentKey": "waystones_mapping",
+      "confidence": 0.7,
+      "score": 24,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/precursor-tablets",
+      "wikiUrl": "",
+      "risk": ""
+    },
+    {
+      "name": "Overseer Tablet",
+      "category": "PrecursorTablets",
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUHJlY3Vyc29yVGFibGV0cy9QcmVjdXJzb3JUYWJsZXRCb3NzIiwidyI6MSwiaCI6MSwic2NhbGUiOjEsInJlYWxtIjoicG9lMiJ9XQ/6a422fabb8/PrecursorTabletBoss.png",
+      "value": 0.81,
+      "valueCurrency": "Divine",
+      "trend7d": 10.22,
+      "volume": null,
+      "volumeScore": 0.5,
+      "liquidityLabel": "Unknown",
+      "mappedContent": "Waystones / Mapping",
+      "contentKey": "waystones_mapping",
+      "confidence": 0.7,
+      "score": 20,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/precursor-tablets",
+      "wikiUrl": "",
+      "risk": ""
+    },
+    {
+      "name": "Breach Tablet",
+      "category": "PrecursorTablets",
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUHJlY3Vyc29yVGFibGV0cy9QcmVjdXJzb3JUYWJsZXRCcmVhY2giLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MSwicmVhbG0iOiJwb2UyIn1d/b45b6e660e/PrecursorTabletBreach.png",
+      "value": 0.59,
+      "valueCurrency": "Divine",
+      "trend7d": 5.76,
+      "volume": null,
+      "volumeScore": 0.5,
+      "liquidityLabel": "Unknown",
+      "mappedContent": "Waystones / Mapping",
+      "contentKey": "waystones_mapping",
+      "confidence": 0.7,
+      "score": 19,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/precursor-tablets",
+      "wikiUrl": "",
+      "risk": ""
+    },
+    {
+      "name": "Abyss Tablet",
+      "category": "PrecursorTablets",
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUHJlY3Vyc29yVGFibGV0cy9QcmVjdXJzb3JUYWJsZXRBYnlzcyIsInciOjEsImgiOjEsInNjYWxlIjoxLCJyZWFsbSI6InBvZTIifV0/478e9f6ae2/PrecursorTabletAbyss.png",
+      "value": 0.27,
+      "valueCurrency": "Divine",
+      "trend7d": 21.21,
+      "volume": null,
+      "volumeScore": 0.5,
+      "liquidityLabel": "Unknown",
+      "mappedContent": "Waystones / Mapping",
+      "contentKey": "waystones_mapping",
+      "confidence": 0.7,
+      "score": 21,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/precursor-tablets",
+      "wikiUrl": "",
+      "risk": ""
+    },
+    {
+      "name": "Irradiated Tablet",
+      "category": "PrecursorTablets",
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUHJlY3Vyc29yVGFibGV0cy9QcmVjdXJzb3JUYWJsZXRHZW5lcmljIiwidyI6MSwiaCI6MSwic2NhbGUiOjEsInJlYWxtIjoicG9lMiJ9XQ/4fbc73f060/PrecursorTabletGeneric.png",
+      "value": 0.24,
+      "valueCurrency": "Divine",
+      "trend7d": -22.04,
+      "volume": null,
+      "volumeScore": 0.5,
+      "liquidityLabel": "Unknown",
+      "mappedContent": "Waystones / Mapping",
+      "contentKey": "waystones_mapping",
+      "confidence": 0.7,
+      "score": 15,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/precursor-tablets",
+      "wikiUrl": "",
+      "risk": ""
+    },
+    {
+      "name": "Temple Tablet",
+      "category": "PrecursorTablets",
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUHJlY3Vyc29yVGFibGV0cy9QcmVjdXJzb3JUYWJsZXRJbmN1cnNpb24iLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MSwicmVhbG0iOiJwb2UyIn1d/9beb68ac5d/PrecursorTabletIncursion.png",
+      "value": 0.21,
+      "valueCurrency": "Divine",
+      "trend7d": 15.09,
+      "volume": null,
+      "volumeScore": 0.5,
+      "liquidityLabel": "Unknown",
+      "mappedContent": "Waystones / Mapping",
+      "contentKey": "waystones_mapping",
+      "confidence": 0.7,
+      "score": 20,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/precursor-tablets",
+      "wikiUrl": "",
+      "risk": ""
+    },
+    {
+      "name": "Delirium Tablet",
+      "category": "PrecursorTablets",
+      "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvUHJlY3Vyc29yVGFibGV0cy9QcmVjdXJzb3JUYWJsZXREZWxpcml1bSIsInciOjEsImgiOjEsInNjYWxlIjoxLCJyZWFsbSI6InBvZTIifV0/8c2fac816e/PrecursorTabletDelirium.png",
+      "value": 0.1,
+      "valueCurrency": "Divine",
+      "trend7d": -8.72,
+      "volume": null,
+      "volumeScore": 0.5,
+      "liquidityLabel": "Unknown",
+      "mappedContent": "Waystones / Mapping",
+      "contentKey": "waystones_mapping",
+      "confidence": 0.7,
+      "score": 16,
+      "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/precursor-tablets",
+      "wikiUrl": "",
+      "risk": ""
     }
   ],
   "topRisingItems": [
@@ -24760,7 +24976,7 @@
       "displayName": "Fragments / Bossing",
       "farmScore": 84,
       "confidence": 0.75,
-      "status": "23 priced item(s) mapped to this content",
+      "status": "21 priced item(s) mapped to this content",
       "evidenceItems": [
         {
           "name": "Breachlord Sac",
@@ -25036,6 +25252,76 @@
       ]
     },
     {
+      "contentKey": "trial_soulcores",
+      "displayName": "Trial / Soul Cores",
+      "farmScore": 78,
+      "confidence": 0.75,
+      "status": "40 priced item(s) mapped to this content",
+      "evidenceItems": [
+        {
+          "name": "Jiquani's Thesis",
+          "value": 546.1,
+          "valueCurrency": "Divine",
+          "trend7d": -3.84,
+          "volumeScore": 1,
+          "liquidityLabel": "High",
+          "score": 75,
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/soul-cores"
+        },
+        {
+          "name": "Raven-Touched Shard",
+          "value": 92.57,
+          "valueCurrency": "Divine",
+          "trend7d": -10.12,
+          "volumeScore": 1,
+          "liquidityLabel": "High",
+          "score": 70,
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/soul-cores"
+        },
+        {
+          "name": "The Last Flame (Incense Relic)",
+          "value": 3788,
+          "valueCurrency": "Divine",
+          "trend7d": -11.67,
+          "volumeScore": 0.5,
+          "liquidityLabel": "Unknown",
+          "score": 62,
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/unique-relics"
+        },
+        {
+          "name": "Soul Core of Quipolatl",
+          "value": 1.62,
+          "valueCurrency": "Divine",
+          "trend7d": -4.75,
+          "volumeScore": 0.81,
+          "liquidityLabel": "OK",
+          "score": 60,
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/soul-cores"
+        },
+        {
+          "name": "Soul Core of Azcapa",
+          "value": 1.78,
+          "valueCurrency": "Divine",
+          "trend7d": -16.45,
+          "volumeScore": 0.77,
+          "liquidityLabel": "OK",
+          "score": 55,
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/soul-cores"
+        }
+      ],
+      "relatedItems": [
+        "Jiquani's Thesis",
+        "Raven-Touched Shard",
+        "The Last Flame (Incense Relic)",
+        "Soul Core of Quipolatl",
+        "Soul Core of Azcapa"
+      ],
+      "risk": "",
+      "sourceUrls": [
+        "https://poe.ninja/poe2/economy/runesofaldur/soul-cores"
+      ]
+    },
+    {
       "contentKey": "generic_currency",
       "displayName": "Generic Currency",
       "farmScore": 78,
@@ -25103,76 +25389,6 @@
       "risk": "",
       "sourceUrls": [
         "https://poe.ninja/poe2/economy/runesofaldur/currency"
-      ]
-    },
-    {
-      "contentKey": "trial_soulcores",
-      "displayName": "Trial / Soul Cores",
-      "farmScore": 72,
-      "confidence": 0.75,
-      "status": "35 priced item(s) mapped to this content",
-      "evidenceItems": [
-        {
-          "name": "Jiquani's Thesis",
-          "value": 546.1,
-          "valueCurrency": "Divine",
-          "trend7d": -3.84,
-          "volumeScore": 1,
-          "liquidityLabel": "High",
-          "score": 75,
-          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/soul-cores"
-        },
-        {
-          "name": "Raven-Touched Shard",
-          "value": 92.57,
-          "valueCurrency": "Divine",
-          "trend7d": -10.12,
-          "volumeScore": 1,
-          "liquidityLabel": "High",
-          "score": 70,
-          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/soul-cores"
-        },
-        {
-          "name": "Soul Core of Quipolatl",
-          "value": 1.62,
-          "valueCurrency": "Divine",
-          "trend7d": -4.75,
-          "volumeScore": 0.81,
-          "liquidityLabel": "OK",
-          "score": 60,
-          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/soul-cores"
-        },
-        {
-          "name": "Soul Core of Azcapa",
-          "value": 1.78,
-          "valueCurrency": "Divine",
-          "trend7d": -16.45,
-          "volumeScore": 0.77,
-          "liquidityLabel": "OK",
-          "score": 55,
-          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/soul-cores"
-        },
-        {
-          "name": "Citaqualotl's Thesis",
-          "value": 1.12,
-          "valueCurrency": "Divine",
-          "trend7d": 4.76,
-          "volumeScore": 0.5,
-          "liquidityLabel": "Low",
-          "score": 55,
-          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/soul-cores"
-        }
-      ],
-      "relatedItems": [
-        "Jiquani's Thesis",
-        "Raven-Touched Shard",
-        "Soul Core of Quipolatl",
-        "Soul Core of Azcapa",
-        "Citaqualotl's Thesis"
-      ],
-      "risk": "Low liquidity",
-      "sourceUrls": [
-        "https://poe.ninja/poe2/economy/runesofaldur/soul-cores"
       ]
     },
     {
@@ -25318,9 +25534,9 @@
     {
       "contentKey": "waystones_mapping",
       "displayName": "Waystones / Mapping",
-      "farmScore": 58,
+      "farmScore": 61,
       "confidence": 0.7,
-      "status": "9 priced item(s) mapped to this content",
+      "status": "16 priced item(s) mapped to this content",
       "evidenceItems": [
         {
           "name": "Visions of Paradise (Irradiated Tablet)",
@@ -25353,32 +25569,32 @@
           "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/unique-tablets"
         },
         {
-          "name": "Freedom of Faith (Ritual Tablet)",
-          "value": 0.36,
+          "name": "Ritual Tablet",
+          "value": 0.95,
           "valueCurrency": "Divine",
-          "trend7d": -3.62,
+          "trend7d": 63.29,
           "volumeScore": 0.5,
           "liquidityLabel": "Unknown",
-          "score": 18,
-          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/unique-tablets"
+          "score": 24,
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/precursor-tablets"
         },
         {
-          "name": "Mastered Domain (Irradiated Tablet)",
-          "value": 0.01,
+          "name": "Abyss Tablet",
+          "value": 0.27,
           "valueCurrency": "Divine",
-          "trend7d": 6.13,
+          "trend7d": 21.21,
           "volumeScore": 0.5,
           "liquidityLabel": "Unknown",
-          "score": 16,
-          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/unique-tablets"
+          "score": 21,
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/precursor-tablets"
         }
       ],
       "relatedItems": [
         "Visions of Paradise (Irradiated Tablet)",
         "The Grand Project (Irradiated Tablet)",
         "Unforeseen Consequences (Abyss Tablet)",
-        "Freedom of Faith (Ritual Tablet)",
-        "Mastered Domain (Irradiated Tablet)"
+        "Ritual Tablet",
+        "Abyss Tablet"
       ],
       "risk": "",
       "sourceUrls": [
@@ -25400,7 +25616,7 @@
           "volumeScore": 1,
           "liquidityLabel": "High",
           "score": 68,
-          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach"
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst"
         },
         {
           "name": "Refined Reaver Catalyst",
@@ -25410,7 +25626,7 @@
           "volumeScore": 1,
           "liquidityLabel": "High",
           "score": 68,
-          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach"
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst"
         },
         {
           "name": "Refined Necrotic Catalyst",
@@ -25420,7 +25636,7 @@
           "volumeScore": 0.85,
           "liquidityLabel": "Good",
           "score": 24,
-          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach"
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst"
         },
         {
           "name": "Refined Tul's Catalyst",
@@ -25430,7 +25646,7 @@
           "volumeScore": 0.83,
           "liquidityLabel": "OK",
           "score": 23,
-          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach"
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst"
         },
         {
           "name": "Sibilant Catalyst",
@@ -25440,7 +25656,7 @@
           "volumeScore": 1,
           "liquidityLabel": "High",
           "score": 22,
-          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach"
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst"
         }
       ],
       "relatedItems": [
@@ -25452,7 +25668,44 @@
       ],
       "risk": "",
       "sourceUrls": [
-        "https://poe.ninja/poe2/economy/runesofaldur/breach"
+        "https://poe.ninja/poe2/economy/runesofaldur/breach-catalyst"
+      ]
+    },
+    {
+      "contentKey": "simulacrum",
+      "displayName": "Simulacrum",
+      "farmScore": 48,
+      "confidence": 0.85,
+      "status": "2 priced item(s) mapped to this content",
+      "evidenceItems": [
+        {
+          "name": "Simulacrum",
+          "value": 3.19,
+          "valueCurrency": "Divine",
+          "trend7d": -14.92,
+          "volumeScore": 1,
+          "liquidityLabel": "High",
+          "score": 63,
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/fragments"
+        },
+        {
+          "name": "Simulacrum Splinter",
+          "value": 0.01,
+          "valueCurrency": "Divine",
+          "trend7d": -7.75,
+          "volumeScore": 0.84,
+          "liquidityLabel": "Good",
+          "score": 18,
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/fragments"
+        }
+      ],
+      "relatedItems": [
+        "Simulacrum",
+        "Simulacrum Splinter"
+      ],
+      "risk": "",
+      "sourceUrls": [
+        "https://poe.ninja/poe2/economy/runesofaldur/"
       ]
     },
     {
@@ -25470,7 +25723,7 @@
           "volumeScore": 0.96,
           "liquidityLabel": "Good",
           "score": 64,
-          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium"
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions"
         },
         {
           "name": "Potent Liquid Ferocity",
@@ -25480,7 +25733,7 @@
           "volumeScore": 1,
           "liquidityLabel": "High",
           "score": 57,
-          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium"
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions"
         },
         {
           "name": "Concentrated Liquid Isolation",
@@ -25490,7 +25743,7 @@
           "volumeScore": 0.81,
           "liquidityLabel": "OK",
           "score": 24,
-          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium"
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions"
         },
         {
           "name": "Potent Liquid Contempt",
@@ -25500,7 +25753,7 @@
           "volumeScore": 0.92,
           "liquidityLabel": "Good",
           "score": 22,
-          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium"
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions"
         },
         {
           "name": "Potent Liquid Melancholy",
@@ -25510,7 +25763,7 @@
           "volumeScore": 0.45,
           "liquidityLabel": "Low",
           "score": 21,
-          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/delirium"
+          "sourceUrl": "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions"
         }
       ],
       "relatedItems": [
@@ -25522,7 +25775,7 @@
       ],
       "risk": "Low liquidity",
       "sourceUrls": [
-        "https://poe.ninja/poe2/economy/runesofaldur/delirium"
+        "https://poe.ninja/poe2/economy/runesofaldur/liquid-emotions"
       ]
     },
     {
@@ -25594,17 +25847,6 @@
       "sourceUrls": [
         "https://poe.ninja/poe2/economy/runesofaldur/essences"
       ]
-    },
-    {
-      "contentKey": "simulacrum",
-      "displayName": "Simulacrum",
-      "farmScore": 0,
-      "confidence": 0.7,
-      "status": "No priced items in current snapshot",
-      "evidenceItems": [],
-      "relatedItems": [],
-      "risk": "",
-      "sourceUrls": []
     },
     {
       "contentKey": "strongboxes",
