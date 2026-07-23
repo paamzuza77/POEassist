@@ -70,8 +70,9 @@ const ITEM_CATEGORIES = [
 const CONTENT_BUCKETS = [
   { contentKey: 'simulacrum', displayName: 'Simulacrum', categories: [], confidence: 0.85,
     nameRules: ['simulacrum'] },
+  // 0.83: breachlord uniques/lineage gems (Xoph/Tul/Esh/Uul-Netol/Chayula = เจ้า Breach — ดรอปจาก Breach จริง)
   { contentKey: 'breach', displayName: 'Breach', categories: ['Breach'], confidence: 0.95,
-    nameRules: ['breachstone', 'breach splinter'] },
+    nameRules: ['breachstone', 'breach splinter', "xoph's", "tul's", "esh's", 'uul-netol', 'chayula'] },
   { contentKey: 'ritual', displayName: 'Ritual', categories: ['Ritual'], confidence: 0.9 },
   { contentKey: 'expedition', displayName: 'Expedition', categories: ['Expedition'], confidence: 0.85,
     nameRules: ['logbook'] },
@@ -108,13 +109,58 @@ const CATEGORY_TO_BUCKET = new Map();
 for (const bucket of CONTENT_BUCKETS) {
   for (const cat of bucket.categories) CATEGORY_TO_BUCKET.set(cat, bucket);
 }
-// 0.81: map ไอเทม → bucket — nameRules (substring จากชื่อ, hand-verified) ชนะ category mapping
-// เพื่อให้ของอย่าง "Simulacrum Splinter" เข้า content ที่ถูกไม่ว่าจะอยู่หมวด poe.ninja ไหน
+// ===== 0.83: cross-reference ตารางดรอปจาก Content Codex (wiki-verified) → ชื่อไอเทม → content =====
+// แก้เคส "Voices ไม่เข้า Simulacrum / ไอเทมบอสไม่เข้า content" — ใช้ข้อมูลดรอปจริงจาก poe2wiki
+// ที่เรามีอยู่แล้ว (data/content-codex.json) ไม่ใช่การเดา
+const CODEX_TO_BUCKET = {
+  simulacrum: 'simulacrum',
+  'xesht-we-that-are-one': 'breach',          // Xesht = pinnacle boss ของ Breach
+  'zarokh-the-temporal': 'trial_soulcores',   // Zarokh = บอส Trial of the Sekhemas
+  breach: 'breach', ritual: 'ritual', delirium: 'delirium', expedition: 'expedition',
+  abyss: 'abyss', 'essence-encounter': 'essence', strongbox: 'strongboxes',
+  'atziri-the-red-queen': 'fragments_bossing', 'the-aberration': 'fragments_bossing',
+  'the-arbiter-of-ash': 'fragments_bossing', 'the-arbiter-of-divinity': 'fragments_bossing',
+  'the-bodach': 'fragments_bossing', 'the-raven-trickster': 'fragments_bossing',
+  'vessel-of-kulemak': 'fragments_bossing',
+};
+// ไอเทมโผล่หลาย entry → content เจาะจงชนะ bossing รวม (เรียงตาม priority นี้)
+const CODEX_PRIORITY = ['simulacrum', 'breach', 'trial_soulcores', 'ritual', 'delirium', 'expedition', 'abyss', 'essence', 'strongboxes', 'fragments_bossing'];
+// hand-verified เพิ่มเติมนอก wiki (exact ชื่อ lowercase หลังตัดวงเล็บ baseType)
+const CURATED_ITEM_CONTENT = {
+  'voices': 'simulacrum',   // Voices (Sapphire) — unique จากบอส Simulacrum
+  'orb of light': 'abyss',  // ผู้ใช้ยืนยันว่าเป็นของ Abyss (ยังไม่โผล่ใน snapshot ตลาด — เผื่อไว้)
+};
+function loadCodexDropMap() {
+  const map = new Map(Object.entries(CURATED_ITEM_CONTENT));
+  try {
+    // คำนวณ path เอง — บล็อคนี้อยู่ก่อนบรรทัดประกาศ __dirname ของไฟล์ (TDZ) ห้ามใช้ตัวแปรนั้น
+    const codex = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'data', 'content-codex.json'), 'utf8'));
+    (codex.entries || []).forEach((e) => {
+      const bucketKey = CODEX_TO_BUCKET[e.id];
+      if (!bucketKey) return;
+      [...(Array.isArray(e.drops) ? e.drops : []), ...(Array.isArray(e.dropRates) ? e.dropRates : [])].forEach((d) => {
+        const nm = String((d && d.name) || '').toLowerCase().trim();
+        if (!nm) return;
+        const cur = map.get(nm);
+        if (!cur || CODEX_PRIORITY.indexOf(bucketKey) < CODEX_PRIORITY.indexOf(cur)) map.set(nm, bucketKey);
+      });
+    });
+  } catch { /* codex ไม่มี/อ่านพัง → ใช้ CURATED อย่างเดียว (ไม่ล้ม) */ }
+  return map;
+}
+const CODEX_DROP_MAP = loadCodexDropMap();
+const KEY_TO_BUCKET = new Map(CONTENT_BUCKETS.map((b) => [b.contentKey, b]));
+// ชื่อในตลาดมี baseType ต่อท้าย เช่น "Voices (Sapphire)" — ตัดวงเล็บออกก่อนเทียบกับชื่อใน wiki
+const marketBaseName = (n) => String(n || '').toLowerCase().replace(/\s*\([^)]*\)\s*$/, '').trim();
+
+// map ไอเทม → bucket (0.81/0.83): nameRules (hand substring) → ตารางดรอป codex/curated (exact) → category
 function bucketForItem(item) {
   const nm = String(item.name || '').toLowerCase();
   for (const bucket of CONTENT_BUCKETS) {
     if (Array.isArray(bucket.nameRules) && bucket.nameRules.some((r) => nm.includes(r))) return bucket;
   }
+  const codexKey = CODEX_DROP_MAP.get(marketBaseName(item.name));
+  if (codexKey && KEY_TO_BUCKET.get(codexKey)) return KEY_TO_BUCKET.get(codexKey);
   return CATEGORY_TO_BUCKET.get(item.category) || null;
 }
 

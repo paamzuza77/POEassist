@@ -5138,6 +5138,48 @@ window.ensureRawblockFonts = function () {
     .rbt-cat { display: none; }
     .radar-browse-catsel { max-width: 150px; }
   }
+
+  /* ---- patch 0.83: Market Radar layout — KPI ซ้าย · Filter ขวา · body สองคอลัมน์ (ลดความยาวหน้า) ----
+     โครงจริง: #pageRadar > (#pricePanel, #radarPanel) — hero/filter/body อยู่ใน #radarPanel */
+  #radarPanel { display: grid; grid-template-columns: minmax(300px, 11fr) minmax(280px, 9fr); gap: 12px 16px; align-items: start; }
+  #radarPanel > * { grid-column: 1 / -1; min-width: 0; }
+  #radarPanel > [hidden] { display: none !important; } /* radarSummary ที่ถูกซ่อน (0.82) ต้องไม่กินช่อง grid */
+  #radarPanel > #radarHero { grid-column: 1; margin: 0; }
+  #radarPanel > #radarFilterBox { grid-column: 2; margin: 0; align-self: stretch; }
+  /* KPI ย่อส่วน (ข้อ 2): 2x2 การ์ดเล็ก อยู่ฝั่งซ้ายคู่กับ Filter ฝั่งขวา */
+  .radar-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; }
+  .radar-kpi { padding: 9px 11px; border-radius: 10px; gap: 2px; }
+  .rk-value { font-size: 13.5px; }
+  .rk-sub { font-size: 10px; }
+  /* body สองคอลัมน์ (ข้อ 3): อันดับ content ซ้าย (แคบ) · Item Browser ขวา — จบในจอเดียวไม่ต้องเลื่อนยาว */
+  #radarBody.radar-body-dash {
+    display: grid;
+    grid-template-columns: minmax(300px, 9fr) minmax(360px, 11fr);
+    grid-template-areas:
+      "info    info"
+      "rankhead browser"
+      "ranklist browser"
+      "hidden  browser"
+      "errors  errors";
+    gap: 6px 16px;
+    align-items: start;
+  }
+  #radarBody.radar-body-dash > * { grid-column: 1 / -1; min-width: 0; } /* ของที่ไม่ได้ระบุ (เช่น empty state) เต็มแถว */
+  #radarBody.radar-body-dash > .radar-score-info { grid-area: info; }
+  #radarBody.radar-body-dash > .radar-rank-head { grid-area: rankhead; }
+  #radarBody.radar-body-dash > .radar-rank-list { grid-area: ranklist; }
+  #radarBody.radar-body-dash > .radar-hidden-note { grid-area: hidden; }
+  #radarBody.radar-body-dash > .radar-rising-box { grid-area: browser; margin: 0; align-self: stretch; }
+  #radarBody.radar-body-dash > .radar-errors { grid-area: errors; }
+  /* แถวอันดับฝั่งซ้ายแคบลง — ตัดคอลัมน์ mini-bar ออก (คะแนน % + สีแถวสื่อพอ) */
+  #radarBody.radar-body-dash .radar-rank-row { grid-template-columns: 40px 26px minmax(100px, 1fr) 74px 66px 58px 14px; }
+  #radarBody.radar-body-dash .rrr-bar { display: none; }
+  @media (max-width: 980px) {
+    #radarPanel { display: block; }
+    #radarPanel > #radarHero { margin-bottom: 10px; }
+    #radarBody.radar-body-dash { display: block; }
+    #radarBody.radar-body-dash .rrr-bar { display: inline-block; }
+  }
 </style>
 <!-- Modularization Phase 1 (patch 0.34): helper CSS ที่แยกออกจาก inline <style> ด้านบน
      วางหลัง </style> เพื่อคงลำดับ cascade เดิม (rule พื้นฐาน specificity ต่ำ — override ของ Trust theme ชนะด้วย specificity อยู่แล้ว) -->
@@ -11453,6 +11495,15 @@ document.getElementById('shopBulkClear').addEventListener('click', () => {
 // เพิ่ม patch ใหม่ที่ "ด้านบนสุด" ของ array นี้ทุกครั้งที่อัปเดตเว็บ (1-2 บรรทัดต่อ patch)
 const PATCH_NOTES = [
   {
+    version: '0.83',
+    date: '2026-07-23',
+    notes: [
+      'จับคู่ไอเทม→คอนเทนต์แม่นขึ้นมาก: ระบบ cross-reference ตารางดรอปจริงจาก Content Codex (poe2wiki) — ของบอสเข้าคอนเทนต์ที่ถูก เช่น Voices/Assailum/Perfidy → Simulacrum (คะแนน 48→60), ไอเทมตระกูล Breachlord (Xoph/Tul/Esh/Uul-Netol/Chayula) → Breach (คะแนน 94), Reliquary Keys → Bossing',
+      'จัดหน้า Market Radar ใหม่: การ์ดสถิติย่อเป็น 2×2 อยู่ซ้าย คู่กับกล่องตัวกรองขวาบรรทัดเดียวกัน, ด้านล่างแบ่งสองคอลัมน์ — อันดับคอนเทนต์ซ้าย · Item Browser ขวา — หน้าสั้นลงมาก ไม่ต้องเลื่อนยาว',
+      'การแจ้งเตือนคลิกนำทางได้แล้ว: แจ้งอัปเดตเวอร์ชันคลิกเปิด Patch Notes ได้เลย (ของเดิม: Watchlist→เช็คราคา, Stash Sale→Exile Hub, Backup→Settings ทำงานอยู่แล้ว)',
+    ],
+  },
+  {
     version: '0.82',
     date: '2026-07-23',
     notes: [
@@ -13935,6 +13986,9 @@ function renderRadar(data) {
   const meta = document.getElementById('radarMeta');
   body.innerHTML = '';
   meta.innerHTML = '';
+  // 0.83: เปิด layout สองคอลัมน์ (อันดับซ้าย · Item Browser ขวา) เฉพาะตอนมีการ์ดจริง —
+  // สถานะ loading/empty (radarBodyState) เขียนทับ body ตรงๆ ต้องไม่ติด grid
+  body.classList.add('radar-body-dash');
 
   // --- meta line: league + updated time + browser time + snapshot age (ไว้ debug ความสด) ---
   const updated = data.updatedAt ? new Date(data.updatedAt) : null;
@@ -14831,6 +14885,7 @@ function renderRadarItemBrowser(container) {
 function radarBodyState(node) {
   const body = document.getElementById('radarBody');
   if (!body) return;
+  body.classList.remove('radar-body-dash'); // 0.83: สถานะกลางไม่ใช้ grid สองคอลัมน์
   // hero + แถบสรุป (patch 0.43) อยู่นอก radarBody — ซ่อนไว้ระหว่าง loading/error กันโชว์ค่าค้าง
   const hero = document.getElementById('radarHero');
   if (hero) { hero.hidden = true; hero.innerHTML = ''; }
@@ -18876,6 +18931,7 @@ function runNotifAct(act) {
     if (act.tab) switchTab(act.tab);
     else if (act.price && typeof window.focusPriceLookup === 'function') window.focusPriceLookup();
     else if (act.settings) { const b = document.getElementById('settingsBtn'); if (b) b.click(); }
+    else if (act.patch) { const b = document.getElementById('patchNotesBtn'); if (b) b.click(); } // 0.83: เปิด Patch Notes
   } catch (e) { /* ข้าม */ }
 }
 // notifFmtAgo() ย้ายไป src/lib/format.ts แล้ว (patch 0.69) — bind จาก window.EA ที่ต้นสคริปต์
@@ -19000,7 +19056,7 @@ function closeNotifPanel() {
     const cur = (typeof PATCH_NOTES !== 'undefined' && PATCH_NOTES[0]) ? PATCH_NOTES[0].version : null;
     const seen = localStorage.getItem(LAST_SEEN);
     if (cur && seen && seen !== cur) {
-      pushNotification({ type: 'whatsnew', title: 'อัปเดตใหม่ v' + cur, body: 'มีฟีเจอร์/การแก้ไขใหม่ — กดดู Patch Notes', act: null, dedupeKey: 'whatsnew-' + cur });
+      pushNotification({ type: 'whatsnew', title: 'อัปเดตใหม่ v' + cur, body: 'มีฟีเจอร์/การแก้ไขใหม่ — กดดู Patch Notes', act: { patch: true }, dedupeKey: 'whatsnew-' + cur }); // 0.83: คลิกแล้วเปิด Patch Notes ได้จริง
     }
     if (cur) localStorage.setItem(LAST_SEEN, cur);
   } catch (e) { /* ข้าม */ }
