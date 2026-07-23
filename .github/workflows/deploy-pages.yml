@@ -1,0 +1,55 @@
+# P5 Phase 5 (patch 0.75) — deploy the Vite build to GitHub Pages.
+#
+# เริ่มแบบ manual (workflow_dispatch) ก่อน — จะได้ไม่มี run แดงก่อนผู้ใช้สลับ Pages source.
+# ขั้นตอนเปิดใช้:
+#   1) GitHub repo → Settings → Pages → Source = "GitHub Actions" (จาก "Deploy from a branch")
+#   2) Actions tab → "Deploy to GitHub Pages" → Run workflow (test ครั้งแรก)
+#   3) เช็คว่าเว็บ deploy ถูก แล้วค่อยเพิ่ม trigger `push: branches: [main]` ให้ deploy อัตโนมัติทุก commit
+# ก่อนสลับ Pages source: deploy เดิม (branch) ยังเสิร์ฟ = ไม่มีดาวน์ไทม์. สลับกลับได้ทุกเมื่อ.
+name: Deploy to GitHub Pages
+
+on:
+  workflow_dispatch: {}
+  # push:                 # ← เปิดหลัง test manual ผ่าน (auto-deploy ทุก push main รวม data update รายชั่วโมง)
+  #   branches: [main]
+
+permissions:
+  contents: read          # checkout
+  pages: write            # deploy-pages
+  id-token: write         # deploy-pages (OIDC)
+
+# deploy ทีละครั้ง ไม่ยกเลิกตัวที่กำลังรัน
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build (Vite → dist/, copies js/data/image/background/assets)
+        run: npm run build
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
