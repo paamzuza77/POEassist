@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-20T23:43:14.395Z",
+  "updatedAt": "2026-08-21T01:59:50.696Z",
   "league": {
     "name": "Runes of Aldur",
     "displayName": "gamescom Opening Night Live",
@@ -9,8 +9,8 @@
   },
   "stashSale": {
     "mode": "auto",
-    "nextStartAt": "2026-08-21T00:00:00.000Z",
-    "nextEndAt": null,
+    "nextStartAt": null,
+    "nextEndAt": "2026-08-25T00:00:00.000Z",
     "source": "poe2db.tw"
   }
 }
