@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2026-09-04T19:39:29.616Z",
+  "updatedAt": "2026-09-04T22:23:31.479Z",
   "league": {
-    "name": "Runes of Aldur",
+    "name": null,
     "displayName": "&nbsp; 1.0",
-    "startAt": "2026-05-29T20:00:00.000Z",
+    "startAt": "2026-09-04T20:00:00.000Z",
     "endAt": null,
     "source": "poe2db.tw"
   },
