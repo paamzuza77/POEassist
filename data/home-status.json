@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-12T20:52:28.204Z",
+  "updatedAt": "2026-11-13T01:53:02.828Z",
   "league": {
     "name": null,
     "displayName": "Release 1.0",
@@ -9,8 +9,8 @@
   },
   "stashSale": {
     "mode": "auto",
-    "nextStartAt": "2026-11-13T00:00:00.000Z",
-    "nextEndAt": null,
+    "nextStartAt": null,
+    "nextEndAt": "2026-11-17T00:00:00.000Z",
     "source": "poe2db.tw"
   }
 }
