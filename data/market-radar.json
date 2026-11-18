@@ -21483,5 +21483,7 @@
       "sourceUrls": []
     }
   ],
-  "errors": []
+  "errors": [
+    "index-state: ไม่พบ snapshot version ของลีก \"runesofaldur\" ใน index-state — เช็คชื่อลีกใน CONFIG"
+  ]
 }
